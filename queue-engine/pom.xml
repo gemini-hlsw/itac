@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>Queue Engine</name>
+
+    <description>
+        A family of modules that implement the queue engine and utilities for
+        extracting and writing information from/to the original Phase 1 model
+        and the persistence model.
+    </description>
+
+    <groupId>edu.gemini.tac</groupId>
+    <artifactId>queue-engine</artifactId>
+
+    <parent>
+        <groupId>edu.gemini.tac</groupId>
+        <artifactId>tacUmbrella</artifactId>
+        <version>2017.2.1-SNAPSHOT</version>
+    </parent>
+
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>qengine-ctx</module>
+        <module>qengine-util</module>
+        <module>qengine-p1</module>
+        <module>qengine-p2</module>
+        <module>qengine-log</module>
+        <module>qengine-p1-io</module>
+        <module>qengine-api</module>
+        <module>qengine-impl</module>
+        <module>qengine-skycalc</module>
+        <module>qengine-app</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang.modules</groupId>
+            <artifactId>scala-xml_2.11</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+    </dependencies>
+</project>

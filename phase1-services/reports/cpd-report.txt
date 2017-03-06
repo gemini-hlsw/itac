@@ -1,0 +1,222 @@
+Found a 13 line (44 tokens) duplication in the following files: 
+Starting at line 31 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/PeopleHibernateService.java
+Starting at line 47 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/PeopleHibernateService.java
+
+		final String queryString = String.format("from Person p where p.name = %s",userName);
+		final Query query = session.createQuery(queryString);
+		final Person person = (Person) query.uniqueResult();
+
+		transaction.commit();
+		session.close();
+
+		return person;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Person> getAllPeople() {
+=====================================================================
+Found a 13 line (36 tokens) duplication in the following files: 
+Starting at line 28 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+Starting at line 43 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+
+        final Query query = session.getNamedQuery("findActiveCommittees");
+        final List<Committee> committees = query.list();
+
+        transaction.commit();
+        session.close();
+
+        return committees;
+	}
+
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Proposal> getAllProposals(final Long committeeId) {
+=====================================================================
+Found a 5 line (32 tokens) duplication in the following files: 
+Starting at line 70 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+Starting at line 85 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+
+	public Committee getCommittee(final Long committeeId) {
+        final Session session = sessionFactory.openSession();
+        final Transaction transaction = session.beginTransaction();
+
+        final Query query = session.createQuery("from Committee c inner join fetch c.queues where c.id = " + committeeId);
+=====================================================================
+Found a 5 line (30 tokens) duplication in the following files: 
+Starting at line 55 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+Starting at line 70 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+
+	public List<Queue> getAllQueues(final Long committeeId) {
+        final Session session = sessionFactory.openSession();
+        final Transaction transaction = session.beginTransaction();
+
+        final Query query = session.createQuery("from Queue q where q.committee = " + committeeId);
+=====================================================================
+Found a 8 line (30 tokens) duplication in the following files: 
+Starting at line 54 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/LogHibernateService.java
+Starting at line 69 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/LogHibernateService.java
+
+		final Query logEntryQuery = session.getNamedQuery("getLogEntriesForQueue").setLong("queueId", queue.getId());
+		final List<LogEntry> list = logEntryQuery.list();
+		
+		transaction.commit();
+		session.close();
+		
+		return list;
+	}
+=====================================================================
+Found a 5 line (29 tokens) duplication in the following files: 
+Starting at line 24 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+Starting at line 39 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+
+	public List<Committee> getAllActiveCommittees() {
+        final Session session = sessionFactory.openSession();
+        final Transaction transaction = session.beginTransaction();
+
+        final Query query = session.getNamedQuery("findActiveCommittees");
+=====================================================================
+Found a 5 line (29 tokens) duplication in the following files: 
+Starting at line 59 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/PeopleHibernateService.java
+Starting at line 22 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/BandRestrictionsHibernateService.java
+
+	public List<BandRestrictionRule> getAllBandRestrictions() {
+        final Session session = sessionFactory.openSession();
+        final Transaction transaction = session.beginTransaction();
+
+        final Query query = session.createQuery("from BandRestrictionRule");
+=====================================================================
+Found a 5 line (29 tokens) duplication in the following files: 
+Starting at line 152 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/QueueHibernateService.java
+Starting at line 24 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+
+	public List<Committee> getAllCommittees() {
+        final Session session = sessionFactory.openSession();
+        final Transaction transaction = session.beginTransaction();
+
+        final Query query = session.getNamedQuery("findAllCommittees");
+=====================================================================
+Found a 5 line (29 tokens) duplication in the following files: 
+Starting at line 22 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/configuration/ConditionsHibernateService.java
+Starting at line 22 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/configuration/BinConfigurationsHibernateService.java
+Starting at line 23 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/RestrictedBinsHibernateService.java
+Starting at line 59 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/PeopleHibernateService.java
+
+	public List<Person> getAllPeople() {
+        final Session session = sessionFactory.openSession();
+        final Transaction transaction = session.beginTransaction();
+
+        final Query query = session.createQuery("from Person p");
+=====================================================================
+Found a 5 line (28 tokens) duplication in the following files: 
+Starting at line 70 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+Starting at line 22 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/BandRestrictionsHibernateService.java
+
+	public List<BandRestrictionRule> getAllBandRestrictions() {
+        final Session session = sessionFactory.openSession();
+        final Transaction transaction = session.beginTransaction();
+
+        final Query query = session.createQuery("from BandRestrictionRule");
+=====================================================================
+Found a 6 line (28 tokens) duplication in the following files: 
+Starting at line 24 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+Starting at line 55 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+Starting at line 100 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+
+	public Proposal getProposal(final Long committeeId, final Long proposalId) {
+        final Session session = sessionFactory.openSession();
+        final Transaction transaction = session.beginTransaction();
+
+        final Query query = 
+        	session.getNamedQuery("findProposalInCommittee").
+=====================================================================
+Found a 5 line (28 tokens) duplication in the following files: 
+Starting at line 50 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/LogHibernateService.java
+Starting at line 65 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/LogHibernateService.java
+
+	public List<LogEntry> getLogEntriesForQueue(final Queue queue) {
+		final Session session = sessionFactory.openSession();
+		final Transaction transaction = session.beginTransaction();
+
+		final Query logEntryQuery = session.getNamedQuery("getLogEntriesForQueue").setLong("queueId", queue.getId());
+=====================================================================
+Found a 5 line (28 tokens) duplication in the following files: 
+Starting at line 59 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/PeopleHibernateService.java
+Starting at line 70 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+
+	public List<Queue> getAllQueues(final Long committeeId) {
+        final Session session = sessionFactory.openSession();
+        final Transaction transaction = session.beginTransaction();
+
+        final Query query = session.createQuery("from Queue q where q.committee = " + committeeId);
+=====================================================================
+Found a 5 line (28 tokens) duplication in the following files: 
+Starting at line 27 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/PeopleHibernateService.java
+Starting at line 43 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/PeopleHibernateService.java
+Starting at line 117 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+
+	public Queue getQueue(final Long queueId) {
+		final Session session = sessionFactory.openSession();
+		final Transaction transaction = session.beginTransaction();
+
+		final String queryString = String.format("from Queue q where q.id = %d",queueId);
+=====================================================================
+Found a 5 line (28 tokens) duplication in the following files: 
+Starting at line 152 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/QueueHibernateService.java
+Starting at line 55 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+
+	public List<Proposal> getAllProposals(final Long committeeId) {
+        final Session session = sessionFactory.openSession();
+        final Transaction transaction = session.beginTransaction();
+
+        final Query query = session.getNamedQuery("findProposalsByCommittee").setLong("committeeId",committeeId);
+=====================================================================
+Found a 5 line (28 tokens) duplication in the following files: 
+Starting at line 22 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/configuration/ConditionsHibernateService.java
+Starting at line 70 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+
+	public List<Queue> getAllQueues(final Long committeeId) {
+        final Session session = sessionFactory.openSession();
+        final Transaction transaction = session.beginTransaction();
+
+        final Query query = session.createQuery("from Queue q where q.committee = " + committeeId);
+=====================================================================
+Found a 5 line (27 tokens) duplication in the following files: 
+Starting at line 22 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/configuration/ConditionsHibernateService.java
+Starting at line 152 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/QueueHibernateService.java
+
+	public List<Partner> findAllPartners() {
+		final Session session = sessionFactory.openSession();
+		final Transaction transaction = session.beginTransaction();
+
+		final Query query = session.getNamedQuery("findAllPartners");
+=====================================================================
+Found a 5 line (26 tokens) duplication in the following files: 
+Starting at line 152 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/QueueHibernateService.java
+Starting at line 85 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+
+	public Committee getCommittee(final Long committeeId) {
+        final Session session = sessionFactory.openSession();
+        final Transaction transaction = session.beginTransaction();
+
+        final Query query = session.createQuery("from Committee c inner join fetch c.queues where c.id = " + committeeId);
+=====================================================================
+Found a 4 line (26 tokens) duplication in the following files: 
+Starting at line 35 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/QueueHibernateService.java
+Starting at line 70 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/QueueHibernateService.java
+
+			final int partnerQuanta, final Long conditionBinsId, final Long binConfigurationsId,
+			final int band1Threshold, final int band2Threshold, final Integer band3Threshold,
+			final Integer band3ConditionsThreshold, final Boolean band3ForAllOverThreshold,
+			final int timeSetAsideForLPTAC, final Long[] lptacParticipatingPartners,
+=====================================================================
+Found a 5 line (26 tokens) duplication in the following files: 
+Starting at line 22 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/configuration/ConditionsHibernateService.java
+Starting at line 55 of /Users/ddawson/workspace/itac/phase1-services/src/main/java/edu/gemini/tac/service/CommitteeHibernateService.java
+
+	public List<Proposal> getAllProposals(final Long committeeId) {
+        final Session session = sessionFactory.openSession();
+        final Transaction transaction = session.beginTransaction();
+
+        final Query query = session.getNamedQuery("findProposalsByCommittee").setLong("committeeId",committeeId);

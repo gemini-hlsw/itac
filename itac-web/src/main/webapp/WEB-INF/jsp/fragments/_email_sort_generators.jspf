@@ -1,0 +1,73 @@
+<%-- A series of functions that generate the data for the reorder function defined in email_sort.js
+
+The pattern is pretty straightforward: Generate an array of JSON { key: value: } objects whose key is the sortable data
+and whose value is the proposal's id.
+
+Params:
+
+{proposals} : all proposals that are to be sorted
+{instruments_by_proposal_id} : a map of instruments 
+
+to be passed in , but I needed to do a service-layer call to get the instruments, so that uses a different page variable
+
+--%>
+
+<script type="text/javascript">
+
+//Compares the values of the 'key' field of two objects
+function key_compare(a,b) {
+  return (a.key > b.key ? 1 : ((a.key < b.key) ? -1 : 0));
+}
+
+//Sorted by band / partner / reference
+function band_sort() {
+    return [
+        <c:forEach items="${emails}" var="email" varStatus="status">
+            <c:set var="band"            value="${!empty email.banding ? email.banding.band.rank : (email.proposal.classical ? 'C' : '-') }"/>
+            <c:set var="abbreviation"    value="${!empty email.banding ? email.banding.partnerAbbreviation : email.proposal.partnerAbbreviation }"/>
+            <c:set var="referenceNumber" value="${!empty email.banding ? email.banding.partnerReferenceNumber : email.proposal.partnerReferenceNumber }"/>
+            {"key" : "<c:out value="${band}_${abbreviation}_${referenceNumber}" escapeXml="true"/>"  ,
+                "value" : "${email.id}" }${not status.last ? ',' : ''}</c:forEach>
+    ].sort(key_compare);
+}
+
+//Sorted by partner / reference
+function partner_sort() {
+    return [
+        <c:forEach items="${emails}" var="email" varStatus="status">
+            <c:set var="abbreviation"    value="${!empty email.banding ? email.banding.partnerAbbreviation : email.proposal.partnerAbbreviation }"/>
+            <c:set var="referenceNumber" value="${!empty email.banding ? email.banding.partnerReferenceNumber : email.proposal.partnerReferenceNumber }"/>
+            {"key" : "<c:out value="${abbreviation}_${referenceNumber}" escapeXml="true"/>"  ,
+                "value" : "${email.id}" }${not status.last ? ',' : ''}</c:forEach>
+    ].sort(key_compare);
+}
+
+//Sorted by reference
+function reference_sort() {
+    return [
+        <c:forEach items="${emails}" var="email" varStatus="status">
+            <c:set var="referenceNumber" value="${!empty email.banding ? email.banding.partnerReferenceNumber : email.proposal.partnerReferenceNumber }"/>
+            { "key" : "<c:out value="${referenceNumber}" escapeXml="true"/>",
+                "value" : "${email.id}" }${not status.last ? ',' : ''}</c:forEach>
+    ].sort(key_compare);
+}
+
+//Sorted by receiver address
+function address_sort() {
+    return [
+        <c:forEach items="${emails}" var="email" varStatus="status">
+        { "key" : "<c:out value="${email.address}" escapeXml="true"/>",
+            "value" : "${email.id}" }${not status.last ? ',' : ''}</c:forEach>
+    ].sort(key_compare);
+}
+
+//Sorted by failed timestamp
+function failed_sort() {
+    return [
+        <c:forEach items="${emails}" var="email" varStatus="status">
+        { "key" : "<c:out value="${email.errorTimestamp}" escapeXml="true"/>",
+            "value" : "${email.id}" }${not status.last ? ',' : ''}</c:forEach>
+    ].sort(key_compare);
+}
+
+</script>

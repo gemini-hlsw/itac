@@ -1,0 +1,92 @@
+			<footer>
+				<hr/>
+
+				<div class="span-24 last">
+					<a href="/tac/committees">Home</a>
+				</div>
+			</footer>
+		</div> <!-- This closes the div "container" defined in header.jspf -->
+	</body>
+	
+	<script type="text/javascript">	
+		$(function() {
+            <c:if test="${ empty flash }">
+            $('#flash').hide();
+            </c:if>
+            <c:if test="${ empty notice }">
+            $('#notice').hide();
+            </c:if>
+
+            <%@ include file="_iconize.jspf" %>
+            <%@ include file="_tooltips.jspf" %>
+
+            $('#loading').hide()
+                .ajaxStart(function() {
+                    $(this).show();
+                })
+                .ajaxStop(function() {
+                    $(this).hide();
+                });
+
+            $(window).scroll(function()
+            {
+                $('#message_box').animate({top:$(window).scrollTop()+"px" },{queue: false, duration: 350});
+                $('#loading').animate({top:$(window).scrollTop()+"px" },{queue: false, duration: 350});
+            });
+
+            //when the close button at right corner of the message box is clicked
+            $('#close_message').click(function()
+            {
+                //the messagebox scrolls down with top property and gets hidden with zero opacity
+                $('#message_box').animate({ top:"+=15px",opacity:0 }, "slow");
+            });
+
+			$("a", ".resources").button();
+            // Build the header breadcrumbing.
+            <c:choose>
+            <c:when test="${ empty committee.name }">
+			$(".resource-${topLevelController.canonical}").each(function() {
+				makeButtonLabelStrong($(this));
+			});
+			</c:when>
+			<c:otherwise>
+            $(".${committee.name}").each(function() {
+                makeButtonLabelStrong($(this));
+            });
+			</c:otherwise>
+			</c:choose>
+			$(".resource-${controller.canonical}").each(function() {
+				makeButtonLabelStrong($(this));
+			});
+		});
+
+        //Work-around for Firefox 3.6+ removing this fn, which is relied upon by Selenium
+        if (!document.getBoxObjectFor) {
+            document.getBoxObjectFor = function(el) {
+                var pos = {};
+
+                pos.x = el.offsetLeft;
+                pos.y = el.offsetTop;
+                parent = el.offsetParent;
+                if (parent != el) {
+                    while (parent) {
+                        pos.x += parent.offsetLeft;
+                        pos.y += parent.offsetTop;
+                        parent = parent.offsetParent;
+                    }
+                }
+
+                parent = el.offsetParent;
+                while (parent && parent != document.body) {
+                    pos.x -= parent.scrollLeft;
+                    if (parent.tagName != 'TR') {
+                        pos.y -= parent.scrollTop;
+                    }
+                    parent = parent.offsetParent;
+                }
+
+                return pos;
+            };
+        }
+	</script>
+</html>

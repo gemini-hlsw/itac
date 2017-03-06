@@ -1,0 +1,29 @@
+<c:if test="${ isAdmin }">
+    <span style="float:right"><input class="standardButton" type="submit" name="submitType" value="Edit"> </span>
+</c:if>
+<table style="border-collapse:collapse;">
+	<tr>
+		<td>Partner Ranking</td>
+		<td>${ ntacExtension.partnerRanking }</td>
+	</tr>
+	<tr>
+		<td>Partner Time</td>
+		<td>${ ntacExtension.partnerTime.timeAmount } ${ntacExtension.partnerTime.timeUnits.name}</td>
+	</tr>
+    <tr>
+        <td>Partner Comment</td>
+        <td>${ ntacExtension.partnerComment}</td>
+    </tr>
+    <tr>
+        <td>Partner Received</td>
+        <td>${ ntacExtension.partnerReceived}</td>
+    </tr>
+    <tr>
+        <td>Partner Support Email</td>
+        <td>${ ntacExtension.partnerSupportEmail }</td>
+    </tr>
+    <tr>
+        <td>Poor Weather Flag</td>
+        <td>${ ntacExtension.poorWeatherFlag }</td>
+    </tr>
+</table>

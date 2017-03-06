@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport
+        xmlns="http://jasperreports.sourceforge.net/jasperreports"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+        name="raDistributionInstrument"
+        language="java"
+        pageWidth="1100" pageHeight="850" columnWidth="555"
+        leftMargin="50" rightMargin="50" topMargin="50" bottomMargin="50">
+
+    <!-- parameters -->
+    <parameter name="subtitleString" class="java.lang.String"/>
+
+    <!-- fields -->
+	<field name="duplicateId" class="java.lang.Integer"/>
+    <field name="proposalTitle" class="java.lang.String"/>
+    <field name="piName" class="java.lang.String"/>
+    <field name="partner" class="java.lang.String"/>
+    <field name="partnerReference" class="java.lang.String"/>
+    <field name="targetName" class="java.lang.String"/>
+    <field name="targetCoordinates" class="java.lang.String"/>
+    <field name="targetInstrument" class="java.lang.String"/>
+    <field name="proposalUrl" class="java.lang.String"/>
+
+    <!-- sorting is important for grouping to work as expected! -->
+    <sortField name="targetInstrument" order="Ascending"/>
+    <sortField name="duplicateId" order="Ascending"/>
+    <sortField name="partner" order="Ascending"/>
+    <sortField name="partnerReference" order="Ascending"/>
+    <sortField name="targetName" order="Ascending"/>
+
+    <!-- grouping -->
+    <group name="duplicateGroup">
+        <groupExpression><![CDATA[$F{duplicateId}]]></groupExpression>
+        <groupHeader>
+            <band height="30">
+                <textField>
+                    <reportElement x="0" y="0" width="750" height="20"/>
+                    <textElement><font size="12" isBold="true"/></textElement>
+                    <textFieldExpression class="java.lang.String"><![CDATA[$F{targetInstrument} + " " + $F{targetName} + " " + $F{targetCoordinates}]]></textFieldExpression>
+                </textField>
+            </band>
+        </groupHeader>
+        <groupFooter>
+            <band height="10"/>
+        </groupFooter>
+    </group>
+
+    <!-- title -->
+    <title>
+        <band height="60">
+            <textField>
+                <reportElement x="0" y="0" width="750" height="30"/>
+                <textElement><font size="20" isBold="true"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA["Duplicate Targets"]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="0" y="30" width="750" height="30"/>
+                <textElement><font size="10" isBold="true"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$P{subtitleString}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <!-- details -->
+	<detail>
+		<band height="20" splitType="Stretch">
+            <textField>
+                <reportElement x="0" y="0" width="20" height="20"/>
+                <textElement/>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{partner}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="20" y="0" width="100" height="20"/>
+                <textElement/>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{partnerReference}]]></textFieldExpression>
+            </textField>
+            <textField hyperlinkType="Reference">
+                <reportElement x="120" y="0" width="450" height="20"/>
+                <textElement/>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{proposalTitle}]]></textFieldExpression>
+                <hyperlinkReferenceExpression><![CDATA[$F{proposalUrl}]]></hyperlinkReferenceExpression>
+            </textField>
+            <textField>
+                <reportElement x="570" y="0" width="150" height="20"/>
+                <textElement/>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{piName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="720" y="0" width="100" height="20"/>
+                <textElement/>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{targetName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="820" y="0" width="200" height="20"/>
+                <textElement/>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{targetCoordinates}]]></textFieldExpression>
+            </textField>
+		</band>
+	</detail>
+
+
+</jasperReport>

@@ -1,0 +1,72 @@
+<%-- A series of functions that generate the data for the reorder function defined in proposal_sort.js
+
+The pattern is pretty straightforward: Generate an array of JSON { key: value: } objects whose key is the sortable data
+and whose value is the proposal's id.
+
+Params:
+
+{proposals} : all proposals that are to be sorted
+{instruments_by_proposal_id} : a map of instruments 
+
+to be passed in , but I needed to do a service-layer call to get the instruments, so that uses a different page variable
+
+--%>
+
+<%-- Strange workaround because EL 'replace()' function won't work with '\n' --%>
+<% pageContext.setAttribute("newLineChar", "\n"); %>
+
+<script type="text/javascript">
+
+//Compares the values of the 'key' field of two objects
+function key_compare(a,b) {
+  return (a.key > b.key ? 1 : ((a.key < b.key) ? -1 : 0));
+}
+
+//Sorted by partner abbreviation and proposal key value
+function partner_sort() {
+    return [
+        <c:forEach items="${proposals}" var="proposal" varStatus="status">
+            {"key" : "<c:out value="${proposal.partner.abbreviation}_${proposal.partnerReferenceNumber})" escapeXml="true"/>"  ,
+                "value" : "${proposal.id}" }${not status.last ? ',' : ''}</c:forEach>
+    ].sort(key_compare);
+}
+
+//Sorted by PI last name and first name
+function primary_investigator_sort() {
+    return [
+        <c:forEach items="${proposals}" var="proposal" varStatus="status">
+        { "key" : "<c:out value="${proposal.phaseIProposal.investigators.pi.lastName} ${proposal.phaseIProposal.investigators.pi.firstName}" escapeXml="true"/>",
+            "value" : "${proposal.id}" }${not status.last ? ',' : ''}</c:forEach>
+    ].sort(key_compare);
+}
+
+//Sorted by instrument (from proposal.document.observatory.observationList.resourceSet ultimately)
+function instrument_sort() {
+    return [
+        <c:forEach items="${instruments_by_proposal_id}" var="kv" varStatus="status">
+        { "key" : "${kv.value}" ,
+            "value" : "${kv.key}" }${not status.last ? ',' : ''}</c:forEach>
+    ].sort(key_compare);
+}
+
+//Sorted by proposal title
+function title_sort() {
+    return [
+        <c:forEach items="${proposals}" var="proposal" varStatus="status">
+            <c:set var="title" value="${fn:replace(proposal.phaseIProposal.title, newLineChar, ' ')}"/>
+        { "key" : "<c:out value="${title}" escapeXml="true"/>",
+            "value" : "${proposal.id}" }${not status.last ? ',' : ''}</c:forEach>
+    ].sort(key_compare);
+}
+
+//Sorted by partner / partner rank
+function rank_sort() {
+    return [
+        <c:forEach items="${sortable_rank_by_proposal_id}" var="kv" varStatus="status">
+           { "key" : "${kv.value}" ,
+            "value" : "${kv.key}" }${not status.last ? ',' : ''}
+        </c:forEach>
+    ].sort(key_compare)
+}
+
+</script>

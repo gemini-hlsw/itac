@@ -1,0 +1,10 @@
+mvn package -Pproduction builds the war file (packaged itac web application) configured for production.
+mvn package -Pqa builds the war file (packaged itac web application) configured for the QA server.
+mvn jetty:run will bring up a server running the webapp on your local machine configured for the development environment
+
+Authorship note:
+Some icons used in this application are by Mark James (mjames@gmail.com http://www.famfamfam.com/lab/icons/silk) and are
+used per Creative Commons Attribution 2.5 License (http://creativecommons.org/licenses/by/2.5/).
+
+The login page image "Analemma with the Erechtheion" is used with permission of the author Anthony Ayiomamitis
+(http://www.perseus.gr/Astro-Solar-Analemma.htm)

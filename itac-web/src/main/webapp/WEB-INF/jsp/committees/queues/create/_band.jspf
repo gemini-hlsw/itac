@@ -1,0 +1,66 @@
+						<table id="band-cutoffs">
+							<thead>
+								<caption>Cutoffs</caption>
+								<td>&nbsp;</td>
+								<th>Upper</th>
+							</thead>
+							<tbody>
+								<tr>
+									<th scope="row">Band 1</th>
+									<td><input type="text" id="band-1-threshold" name="band-1-threshold" value="${ queue.band1Cutoff }" class="required number"></input></td>
+								</tr>
+								<tr>
+									<th scope="row">Band 2</th>
+									<td><input type="text" id="band-2-threshold" name="band-2-threshold" value="${ queue.band2Cutoff }" class="required number"></input></td>
+								</tr>
+								<tr>
+									<th scope="row">Band 3</th>
+									<td><input type="text" id="band-3-threshold" name="band-3-threshold" value="${ queue.band3Cutoff }" class="required number"></input></td>
+								</tr>
+							</tbody>
+						</table>
+						<fieldset id="band-3-conditions">
+							<legend>Band 3</legend>
+							<table>
+								<tr>
+									<td class="label"><label for="band-3-conditions-threshold" id="band-3-conditions-threshold-label">Band 3 conditions threshold (percentage, e.g. 60):</label></td>
+									<td><input type="text" id="band-3-conditions-threshold" id="band-3-conditions-threshold" value="${ (not empty queue.band3ConditionsThreshold) ? queue.band3ConditionsThreshold : 60}" class="number" disabled value="60"></input></td>
+								</tr>
+								<tr>
+									<td class="label" for="band-3-for-all-over-threshold" id="band-3-for-all-over-threshold-label">
+										<label>Use band 3 for all queue filling past threshold:</label>
+									</td>
+									<%-- Currently the queue engine does _not_ use this information so we will always enable it in the UI.
+									<td>
+										<c:choose>
+										<c:when test="${queue.useBand3AfterThresholdCrossed}">
+										<input type="checkbox" id="band-3-for-all-over-threshold" name="band-3-for-all-over-threshold" CHECKED></input>
+										</c:when>
+										<c:otherwise>
+										<input type="checkbox" id="band-3-for-all-over-threshold" name="band-3-for-all-over-threshold" ></input>
+										</c:otherwise>
+										</c:choose>
+									</td>
+									--%>
+									<td>
+									    <input type="checkbox" CHECKED disabled></input>
+									    <input type="hidden" name="band-3-for-all-over-threshold" value="true"></input>
+									</td>
+								</tr>
+							</table>
+						</fieldset>
+						<script type="text/javascript">
+						    $(function() {
+                                $("#band-3-conditions").qtip({
+                                    content: 'Currently the queue engine does not allow this to be configured.   The algorithm will always use band 3 conditions and will do so at the band 3 boundary.',
+                                    show: 'mouseover',
+                                    hide: 'mouseout',
+                                    position: {
+                                        corner: {
+                                            target: 'center',
+                                            tooltip: 'topRight'
+                                        }
+                                    }
+                                });
+						    });
+						</script>

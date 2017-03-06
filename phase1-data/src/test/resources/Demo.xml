@@ -1,0 +1,262 @@
+<?xml version='1.0'?>
+
+<!--
+  The GeminiDemo proposal, with a few details changed since NIRI blueprints
+  and valid keywords aren't defined yet.
+-->
+<proposal schemaVersion="2013.2.1" tacCategory="Solar System" >
+    <meta band3optionChosen="true">
+        <attachment>figure1.png</attachment>
+    </meta>
+
+    <semester year="2012" half="B"/>
+
+    <title>
+        Molecular Hydrogen Excitation in Actively Star-forming Dwarf Galaxies
+    </title>
+
+    <abstract>
+        We propose to observe a small sample of weak-continuum , dwarf galaxies
+        to investigate the excitation of molecular hydrogen in massive
+        star-forming complexes.  In the usable fraction of our previous
+        allocation we were able to observe one of our targets, NGC5461.  This
+        dataset unambiguously shows that the gas is excited in low density
+        photo-dissociation regions, contrary to the widespread assumption in
+        the literature that the H2 in galaxies is predominantly shock excited.
+        The weakness of the dwarf galaxy continua permits detection of the
+        higher level H2 transitions which are essential to determine the gas
+        excitation and relative contributions of thermal and UV-excited gas.
+    </abstract>
+
+    <keywords>
+        <keyword>Supergiants</keyword>
+        <keyword>Wolf-Rayet stars</keyword>
+    </keywords>
+
+    <investigators>
+        <pi id="investigator-1">
+            <firstName>Phil</firstName>
+            <lastName>Puxley</lastName>
+            <status>PhD</status>
+            <email>ppuxley@gemini.edu</email>
+            <phone>808-974-2501</phone>
+            <address>
+                <institution>Gemini Observatory - North</institution>
+                <address>
+                    Gemini Observatory
+                    670 N. Aohoku Place
+                    Hilo, HI 96720
+                </address>
+                <country>USA</country>
+            </address>
+        </pi>
+        <coi id="investigator-2">
+            <firstName>Matt</firstName>
+            <lastName>Mountain</lastName>
+            <status>PhD</status>
+            <email>mmountain@gemini.edu</email>
+            <phone>808-974-2523</phone>
+            <institution>Gemini Observatory - North</institution>
+        </coi>
+    </investigators>
+
+
+    <targets>
+        <sidereal id="target-1">
+            <name>NGC5253</name>
+            <!--
+              The schema also offers a degDeg option.  As in
+              <degDeg>
+                <ra>204.98042</ra>
+                <dec>-31.64028</dec>
+              </degDeg>
+            -->
+            <hmsDms><ra>13:39:55.3</ra><dec>-31:38:25</dec></hmsDms>
+            <magnitudes>
+                <!--
+                  Default system is "Vega".  Other options are "AB" and "Jy".
+                  For example:
+                    <magnitude system="Jy" band="B">...</magnitude>
+                -->
+                <magnitude band="B">10.87</magnitude>
+                <magnitude band="V">10.55</magnitude>
+                <magnitude band="K">14.70</magnitude>
+            </magnitudes>
+        </sidereal>
+        <sidereal id="target-2">
+            <name>Haro2</name>
+            <hmsDms><ra>10:32:32.0</ra><dec>54:24:03.5</dec></hmsDms>
+            <magnitudes>
+                <magnitude band="B">13.2</magnitude>
+                <magnitude band="V">13.4</magnitude>
+            </magnitudes>
+        </sidereal>
+        <sidereal id="target-3">
+            <name>Haro3</name>
+            <hmsDms><ra>10:45:22.1</ra><dec>55:57:38</dec></hmsDms>
+            <magnitudes>
+                <magnitude band="B">12.9</magnitude>
+            </magnitudes>
+        </sidereal>
+        <sidereal id="target-4">
+            <name>IIZw40</name>
+            <hmsDms><ra>05:55:42.7</ra><dec>03:23:07</dec></hmsDms>
+            <magnitudes>
+                <magnitude band="B">14.22</magnitude>
+            </magnitudes>
+        </sidereal>
+        <sidereal id="target-5">
+            <name>GSC0726600038</name>
+            <hmsDms><ra>13:40:17.297</ra><dec>-31:34:33.13</dec></hmsDms>
+            <magnitudes>
+                <magnitude band="V">12.35</magnitude>
+            </magnitudes>
+        </sidereal>
+    </targets>
+
+    <conditions>
+        <condition id="condition-1">
+            <name>Default</name>
+            <maxAirmass>1.75</maxAirmass>
+            <cc>50%/Clear</cc><iq>70%/Good</iq><sb>Any/Bright</sb><wv>Any</wv>
+        </condition>
+        <condition id="condition-2">
+            <name>Good Conditions</name>
+            <maxAirmass>1.5</maxAirmass>
+            <cc>50%/Clear</cc><iq>70%/Good</iq><sb>50%/Dark</sb><wv>80%/High</wv>
+        </condition>
+        <condition id="condition-3">
+            <name>Band 3 Observing Conditions</name>
+            <!-- maxAirmass is optional -->
+            <cc>70%/Cirrus</cc><iq>85%/Poor</iq><sb>Any/Bright</sb><wv>Any</wv>
+        </condition>
+    </conditions>
+
+    <blueprints>
+        <gmosS>
+            <regime>optical</regime>
+            <imaging id="blueprint-1">
+                <name>Imaging</name>
+                <visitor>false</visitor>
+                <filter>u (350 nm)</filter>
+                <filter>g (475 nm)</filter>
+            </imaging>
+        </gmosS>
+    </blueprints>
+
+    <observations>
+        <observation target="target-1" condition="condition-2" blueprint="blueprint-1" band="Band 3">
+            <time units="hr">3.0</time>
+            <guide> <!-- Optionaly a specific guide star may be used. -->
+                <guideStar target="target-5">
+                    <guider>GMOS OIWFS</guider>
+                </guideStar>
+            </guide>
+        </observation>
+        <observation target="target-2" condition="condition-1" blueprint="blueprint-1" band="Band 1/2">
+            <time units="hr">2.0</time>
+            <!-- The tool may calculate a success estimate. -->
+            <meta ck="0123456789abcdef">
+                <guiding>
+                    <percentage>70</percentage>
+                    <evaluation>Success</evaluation>
+                </guiding>
+                <visibility>Good</visibility>
+                <gsa>50</gsa>
+            </meta>
+        </observation>
+        <observation target="target-3" condition="condition-1" blueprint="blueprint-1" band="Band 1/2">
+            <time units="hr">2.0</time>
+        </observation>
+        <observation target="target-4" condition="condition-1" blueprint="blueprint-1" band="Band 1/2">
+            <time units="hr">8.0</time>
+        </observation>
+    </observations>
+
+    <proposalClass>
+        <classical key="933b9bcb-db23-42dc-b178-3e37dfc8507e">
+            <itac>
+                <accept>
+                    <programId>GS-2003A-Q-1</programId>
+                    <band>1</band>
+                    <award units="hr">18.0</award>
+                    <rollover>false</rollover>
+                </accept>
+                <comment>
+                    Excellent proposal, let's use it as a demo.
+                </comment>
+            </itac>
+            <ngo partnerLead="investigator-1">
+                <request>
+                    <time units="hr">6.0</time>
+                    <minTime units="hr">6.0</minTime>
+                </request>
+                <response>
+                  <receipt>
+                    <timestamp>2001-10-26T21:32:52</timestamp>
+                    <id>sub-1</id>
+                  </receipt>
+                  <accept>
+                      <email>joshuaBloch@partner.edu</email>
+                      <ranking>8</ranking>
+                      <recommend units="hr">10.0</recommend>
+                      <minRecommend units="hr">10.0</minRecommend>
+                      <poorWeather>false</poorWeather>
+                  </accept>
+                  <comment>
+                      We think this proposal should be scheduled.
+                  </comment>
+                </response>
+                <partner>au</partner>
+            </ngo>
+            <ngo partnerLead="investigator-1">
+                <request>
+                    <time units="hr">2.0</time>
+                    <minTime units="hr">2.0</minTime>
+                </request>
+                <response>
+                  <receipt>
+                    <timestamp>2001-10-26T21:32:52</timestamp>
+                    <id>sub-2</id>
+                  </receipt>
+                  <comment>
+                      Yo, accept this or die.
+                  </comment>
+                </response>
+                <partner>us</partner>
+            </ngo>
+            <ngo partnerLead="investigator-1">
+                <request>
+                    <time units="hr">20.0</time>
+                    <minTime units="hr">15.0</minTime>
+                </request>
+                <response>
+                  <receipt>
+                    <timestamp>2001-10-26T21:32:52</timestamp>
+                    <id>sub-3</id>
+                  </receipt>
+                  <comment>
+                      Yup, this is acceptable.
+                  </comment>
+                </response>
+                <partner>br</partner>
+            </ngo>
+            <ngo partnerLead="investigator-1">
+                <request>
+                    <time units="hr">13.0</time>
+                    <minTime units="hr">5.0</minTime>
+                </request>
+                <response>
+                  <receipt>
+                    <timestamp>2001-10-26T21:32:52</timestamp>
+                    <id>sub-4</id>
+                  </receipt>
+                  <comment>
+                      Yes, very good indeed.
+                  </comment>
+                </response>
+                <partner>gs</partner>
+            </ngo>
+        </classical>
+    </proposalClass>
+</proposal>

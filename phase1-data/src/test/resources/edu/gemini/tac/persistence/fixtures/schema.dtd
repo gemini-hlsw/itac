@@ -1,0 +1,857 @@
+<!ELEMENT dataset (
+    authorities*,
+    authority_roles*,
+    band_restriction_rules*,
+    bandings*,
+    bin_configurations*,
+    committees*,
+    condition_sets*,
+    conditions*,
+    dec_bin_sizes*,
+    partner_charges*,
+    log_entries*,
+    log_entry_types*,
+    log_notes*,
+    lptac_participants*,
+    memberships*,
+    p1_addresses*,
+    p1_allocations*,
+    p1_attachment_sets*,
+    p1_attachments*,
+    p1_commons*,
+    p1_contacts*,
+    p1_coordinate_systems*,
+    p1_documents*,
+    p1_emails*,
+    p1_extensions*,
+    p1_faxes*,
+    p1_gemini_allocation_extensions*,
+    p1_gemini_band3_extensions*,
+    p1_host_countries*,
+    p1_impossible_date_ranges*,
+    p1_investigators*,
+    p1_investigators_container*,
+    p1_itac_extensions*,
+    p1_itac_scheduled_date_ranges*,
+    p1_keyword_sets*,
+    p1_keywords*,
+    p1_observation_lists*,
+    p1_observations*,
+    p1_observatories*,
+    p1_observatory_extensions*,
+    p1_optimal_date_ranges*,
+    p1_partner_countries*,
+    p1_partner_submissions*,
+    p1_phones*,
+    p1_proposal_keys*,
+    p1_proposal_supports*,
+    p1_publications*,
+    p1_reference_list_supports*,
+    p1_references*,
+    p1_referent_supports*,
+    p1_requirements*,
+    p1_resource_categories*,
+    p1_resource_component_names*,
+    p1_resource_components*,
+    p1_resource_lists*,
+    p1_resources*,
+    p1_schedulings*,
+    p1_site_qualities*,
+    p1_sites*,
+    p1_sub_details_extensions*,
+    p1_submission_country_partner_submissions*,
+    p1_submissions*,
+    p1_sync_observing_date_ranges*,
+    p1_tac_extensions*,
+    p1_target_catalogs*,
+    p1_targets*,
+    p1_times*,
+    partners*,
+    people*,
+    proposals*,
+    queue_band_restriction_rules*,
+    queue_notes*,
+    queue_proposals_exchange*,
+    queue_proposals_classical*,
+    queue_restricted_bins*,
+    queues*,
+    ra_bin_sizes*,
+    restricted_bins*,
+    semesters*,
+    sites*)>
+
+<!ELEMENT authorities EMPTY>
+<!ATTLIST authorities
+    person_id CDATA #REQUIRED
+    role_id CDATA #REQUIRED
+>
+
+<!ELEMENT authority_roles EMPTY>
+<!ATTLIST authority_roles
+    id CDATA #REQUIRED
+    rolename CDATA #IMPLIED
+>
+
+<!ELEMENT band_restriction_rules EMPTY>
+<!ATTLIST band_restriction_rules
+    id CDATA #REQUIRED
+    rule_type CDATA #IMPLIED
+    name CDATA #IMPLIED
+>
+
+<!ELEMENT bandings EMPTY>
+<!ATTLIST bandings
+    id CDATA #REQUIRED
+    queue_id CDATA #IMPLIED
+    proposal_id CDATA #IMPLIED
+    rank CDATA #IMPLIED
+    description CDATA #IMPLIED
+    banding_type CDATA #IMPLIED
+    joint_banding_id CDATA #IMPLIED
+>
+
+<!ELEMENT bin_configurations EMPTY>
+<!ATTLIST bin_configurations
+    id CDATA #REQUIRED
+    name CDATA #IMPLIED
+    ra_bin_size_id CDATA #IMPLIED
+    dec_bin_size_id CDATA #IMPLIED
+    smoothing_length CDATA #IMPLIED
+    editable CDATA #IMPLIED
+>
+
+<!ELEMENT committees EMPTY>
+<!ATTLIST committees
+    id CDATA #REQUIRED
+    name CDATA #IMPLIED
+    active CDATA #IMPLIED
+    semester_id CDATA #IMPLIED
+>
+
+<!ELEMENT condition_sets EMPTY>
+<!ATTLIST condition_sets
+    id CDATA #REQUIRED
+    name CDATA #IMPLIED
+>
+
+<!ELEMENT conditions EMPTY>
+<!ATTLIST conditions
+    id CDATA #REQUIRED
+    condition_set_id CDATA #IMPLIED
+    name CDATA #IMPLIED
+    image_quality CDATA #IMPLIED
+    sky_background CDATA #IMPLIED
+    cloud_cover CDATA #IMPLIED
+    water_vapor CDATA #IMPLIED
+    available_percentage CDATA #IMPLIED
+>
+
+<!ELEMENT dec_bin_sizes EMPTY>
+<!ATTLIST dec_bin_sizes
+    id CDATA #REQUIRED
+    degrees CDATA #IMPLIED
+    minutes CDATA #IMPLIED
+    seconds CDATA #IMPLIED
+    fractions_of_seconds CDATA #IMPLIED
+>
+
+<!ELEMENT partner_charges EMPTY>
+<!ATTLIST partner_charges
+    id CDATA #REQUIRED
+    queue_id CDATA #IMPLIED
+    partner_id CDATA #IMPLIED
+    time_id CDATA #IMPLIED
+>
+
+<!ELEMENT log_entries EMPTY>
+<!ATTLIST log_entries
+    id CDATA #REQUIRED
+    created_at CDATA #IMPLIED
+    updated_at CDATA #IMPLIED
+    message CDATA #IMPLIED
+    queue_id CDATA #IMPLIED
+    committee_id CDATA #IMPLIED
+>
+
+<!ELEMENT log_entry_types EMPTY>
+<!ATTLIST log_entry_types
+    type CDATA #REQUIRED
+    log_entry_id CDATA #REQUIRED
+>
+
+<!ELEMENT log_notes EMPTY>
+<!ATTLIST log_notes
+    id CDATA #REQUIRED
+    note_text CDATA #IMPLIED
+    log_entry_id CDATA #IMPLIED
+>
+
+<!ELEMENT lptac_participants EMPTY>
+<!ATTLIST lptac_participants
+    queue_id CDATA #REQUIRED
+    partner_id CDATA #REQUIRED
+>
+
+<!ELEMENT memberships EMPTY>
+<!ATTLIST memberships
+    id CDATA #REQUIRED
+    person_id CDATA #IMPLIED
+    committee_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_addresses EMPTY>
+<!ATTLIST p1_addresses
+    address CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    site_id CDATA #REQUIRED
+>
+
+<!ELEMENT p1_allocations EMPTY>
+<!ATTLIST p1_allocations
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    proposal_support_id CDATA #IMPLIED
+    reference CDATA #IMPLIED
+    awarded_time_id CDATA #IMPLIED
+    percent_useful CDATA #IMPLIED
+    comment CDATA #IMPLIED
+>
+
+<!ELEMENT p1_attachment_sets EMPTY>
+<!ATTLIST p1_attachment_sets
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    text CDATA #IMPLIED
+>
+
+<!ELEMENT p1_attachments EMPTY>
+<!ATTLIST p1_attachments
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    name CDATA #IMPLIED
+    source CDATA #IMPLIED
+    file_type CDATA #IMPLIED
+    attachment_set_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_commons EMPTY>
+<!ATTLIST p1_commons
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    abstract CDATA #IMPLIED
+    title CDATA #IMPLIED
+    version CDATA #IMPLIED
+    investigators_container_id CDATA #IMPLIED
+    keyword_set_id CDATA #IMPLIED
+    scientific_justification_id CDATA #IMPLIED
+    target_catalog_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_contacts EMPTY>
+<!ATTLIST p1_contacts
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+>
+
+<!ELEMENT p1_coordinate_systems EMPTY>
+<!ATTLIST p1_coordinate_systems
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    type CDATA #IMPLIED
+    ra CDATA #IMPLIED
+    dec CDATA #IMPLIED
+    valid_date CDATA #IMPLIED
+    taiz CDATA #IMPLIED
+    system_option CDATA #IMPLIED
+    c1 CDATA #IMPLIED
+    c2 CDATA #IMPLIED
+    c1_tracking_rate CDATA #IMPLIED
+    c2_tracking_rate CDATA #IMPLIED
+    epoch_key CDATA #IMPLIED
+    epoch_value CDATA #IMPLIED
+    pm1_key CDATA #IMPLIED
+    pm1_value CDATA #IMPLIED
+    pm2_key CDATA #IMPLIED
+    pm2_value CDATA #IMPLIED
+    rv_key CDATA #IMPLIED
+    rv_value CDATA #IMPLIED
+    parallax_key CDATA #IMPLIED
+    parallax_value CDATA #IMPLIED
+    anode_key CDATA #IMPLIED
+    anode_value CDATA #IMPLIED
+    aq_key CDATA #IMPLIED
+    aq_value CDATA #IMPLIED
+    e CDATA #IMPLIED
+    inclination_key CDATA #IMPLIED
+    inclination_value CDATA #IMPLIED
+    lm_key CDATA #IMPLIED
+    lm_value CDATA #IMPLIED
+    n_key CDATA #IMPLIED
+    n_value CDATA #IMPLIED
+    perihelion_key CDATA #IMPLIED
+    perihelion_value CDATA #IMPLIED
+>
+
+<!ELEMENT p1_documents EMPTY>
+<!ATTLIST p1_documents
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    created CDATA #IMPLIED
+    last_modified CDATA #IMPLIED
+    proposal_key_id CDATA #IMPLIED
+    common_id CDATA #IMPLIED
+    import_run_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_emails EMPTY>
+<!ATTLIST p1_emails
+    email CDATA #REQUIRED
+    contact_id CDATA #REQUIRED
+>
+
+<!ELEMENT p1_extensions EMPTY>
+<!ATTLIST p1_extensions
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+>
+
+<!ELEMENT p1_faxes EMPTY>
+<!ATTLIST p1_faxes
+    fax CDATA #REQUIRED
+    contact_id CDATA #REQUIRED
+>
+
+<!ELEMENT p1_gemini_allocation_extensions EMPTY>
+<!ATTLIST p1_gemini_allocation_extensions
+    extension_id CDATA #REQUIRED
+    related_proposals_info CDATA #IMPLIED
+>
+
+<!ELEMENT p1_gemini_band3_extensions EMPTY>
+<!ATTLIST p1_gemini_band3_extensions
+    extension_id CDATA #REQUIRED
+    minimum_usable_time_id CDATA #IMPLIED
+    requested_time_id CDATA #IMPLIED
+    consideration_text CDATA #IMPLIED
+    override_suggested_value CDATA #IMPLIED
+    is_usable_in_band3 CDATA #IMPLIED
+    constraint_reference_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_host_countries EMPTY>
+<!ATTLIST p1_host_countries
+    submission_id CDATA #IMPLIED
+    type_code CDATA #IMPLIED
+    name CDATA #IMPLIED
+    key CDATA #IMPLIED
+    iso_country_code CDATA #IMPLIED
+    exclusive CDATA #IMPLIED
+    valid CDATA #IMPLIED
+>
+
+<!ELEMENT p1_impossible_date_ranges EMPTY>
+<!ATTLIST p1_impossible_date_ranges
+    start_date CDATA #REQUIRED
+    end_date CDATA #REQUIRED
+    scheduling_id CDATA #REQUIRED
+>
+
+<!ELEMENT p1_investigators EMPTY>
+<!ATTLIST p1_investigators
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    type CDATA #IMPLIED
+    visiting CDATA #IMPLIED
+    first_name CDATA #IMPLIED
+    last_name CDATA #IMPLIED
+    institution CDATA #IMPLIED
+    status CDATA #IMPLIED
+    site_id CDATA #IMPLIED
+    investigators_container_id CDATA #IMPLIED
+    contact_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_investigators_container EMPTY>
+<!ATTLIST p1_investigators_container
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    primary_investigator_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_itac_extensions EMPTY>
+<!ATTLIST p1_itac_extensions
+    extension_id CDATA #REQUIRED
+    gemini_reference CDATA #IMPLIED
+    contact_scientist CDATA #IMPLIED
+    queue_band CDATA #IMPLIED
+    awarded_time_id CDATA #IMPLIED
+    itac_comment CDATA #IMPLIED
+    gemini_comment CDATA #IMPLIED
+    gemini_contact_scientist_email CDATA #IMPLIED
+    rollover CDATA #IMPLIED
+>
+
+<!ELEMENT p1_itac_scheduled_date_ranges EMPTY>
+<!ATTLIST p1_itac_scheduled_date_ranges
+    start_date CDATA #REQUIRED
+    end_date CDATA #REQUIRED
+    itac_extension_id CDATA #REQUIRED
+>
+
+<!ELEMENT p1_keyword_sets EMPTY>
+<!ATTLIST p1_keyword_sets
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    category CDATA #IMPLIED
+    common_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_keywords EMPTY>
+<!ATTLIST p1_keywords
+    keyword CDATA #REQUIRED
+    keyword_set_id CDATA #REQUIRED
+>
+
+<!ELEMENT p1_observation_lists EMPTY>
+<!ATTLIST p1_observation_lists
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    requested_time_id CDATA #IMPLIED
+    constraint_list_id CDATA #IMPLIED
+    resource_list_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_observations EMPTY>
+<!ATTLIST p1_observations
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    total_time_id CDATA #IMPLIED
+    exposure_time_id CDATA #IMPLIED
+    observation_list_id CDATA #IMPLIED
+    observation_constraint_list_support_id CDATA #IMPLIED
+    observation_resource_list_support_id CDATA #IMPLIED
+    observation_target_list_support_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_observatories EMPTY>
+<!ATTLIST p1_observatories
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    observatory_id CDATA #IMPLIED
+    document_id CDATA #IMPLIED
+    site_id CDATA #IMPLIED
+    observation_list_id CDATA #IMPLIED
+    proposal_support_id CDATA #IMPLIED
+    scheduling_id CDATA #IMPLIED
+    technical_justification_id CDATA #IMPLIED
+    observatory_extension_id CDATA #IMPLIED
+    resource_list_id CDATA #IMPLIED
+    requirement_id CDATA #IMPLIED
+    observing_mode CDATA #IMPLIED
+    too_trigger CDATA #IMPLIED
+>
+
+<!ELEMENT p1_observatory_extensions EMPTY>
+<!ATTLIST p1_observatory_extensions
+    id CDATA #REQUIRED
+    type CDATA #IMPLIED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    sub_details_extension_id CDATA #IMPLIED
+    itac_extension_id CDATA #IMPLIED
+    gemini_band3_extension_id CDATA #IMPLIED
+    gemini_allocation_extension_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_optimal_date_ranges EMPTY>
+<!ATTLIST p1_optimal_date_ranges
+    start_date CDATA #REQUIRED
+    end_date CDATA #REQUIRED
+    scheduling_id CDATA #REQUIRED
+>
+
+<!ELEMENT p1_partner_countries EMPTY>
+<!ATTLIST p1_partner_countries
+    type_code CDATA #IMPLIED
+    name CDATA #IMPLIED
+    key CDATA #REQUIRED
+    iso_country_code CDATA #IMPLIED
+    exclusive CDATA #IMPLIED
+    valid CDATA #IMPLIED
+>
+
+<!ELEMENT p1_partner_submissions EMPTY>
+<!ATTLIST p1_partner_submissions
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    requested_time CDATA #IMPLIED
+    minimum_requested_time CDATA #IMPLIED
+    reference_number CDATA #IMPLIED
+    flag CDATA #IMPLIED
+    submission_status CDATA #IMPLIED
+    contact_first_name CDATA #IMPLIED
+    contact_last_name CDATA #IMPLIED
+    partner_type_code CDATA #IMPLIED
+    partner_name CDATA #IMPLIED
+    partner_key CDATA #IMPLIED
+    partner_iso_country_code CDATA #IMPLIED
+    partner_is_exclusive CDATA #IMPLIED
+    partner_is_valid CDATA #IMPLIED
+>
+
+<!ELEMENT p1_phones EMPTY>
+<!ATTLIST p1_phones
+    phone CDATA #REQUIRED
+    contact_id CDATA #REQUIRED
+>
+
+<!ELEMENT p1_proposal_keys EMPTY>
+<!ATTLIST p1_proposal_keys
+    id CDATA #REQUIRED
+    value CDATA #REQUIRED
+>
+
+<!ELEMENT p1_proposal_supports EMPTY>
+<!ATTLIST p1_proposal_supports
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+>
+
+<!ELEMENT p1_publications EMPTY>
+<!ATTLIST p1_publications
+    proposal_support_id CDATA #REQUIRED
+    text CDATA #REQUIRED
+    order_nr CDATA #REQUIRED
+>
+
+<!ELEMENT p1_reference_list_supports EMPTY>
+<!ATTLIST p1_reference_list_supports
+    id CDATA #REQUIRED
+    property_name CDATA #IMPLIED
+>
+
+<!ELEMENT p1_references EMPTY>
+<!ATTLIST p1_references
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    state CDATA #IMPLIED
+    reference_list_support_id CDATA #IMPLIED
+    referent_id CDATA #IMPLIED
+    referent_support_id CDATA #IMPLIED
+    referent_class CDATA #IMPLIED
+>
+
+<!ELEMENT p1_referent_supports EMPTY>
+<!ATTLIST p1_referent_supports
+    id CDATA #REQUIRED
+    referent_support_referent_id CDATA #IMPLIED
+    referent_class CDATA #IMPLIED
+    referent_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_requirements EMPTY>
+<!ATTLIST p1_requirements
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    travel_needs CDATA #IMPLIED
+    staff_support CDATA #IMPLIED
+>
+
+<!ELEMENT p1_resource_categories EMPTY>
+<!ATTLIST p1_resource_categories
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    resource_list_id CDATA #IMPLIED
+    resource_type CDATA #IMPLIED
+>
+
+<!ELEMENT p1_resource_component_names EMPTY>
+<!ATTLIST p1_resource_component_names
+    resource_component_id CDATA #REQUIRED
+    name CDATA #REQUIRED
+>
+
+<!ELEMENT p1_resource_components EMPTY>
+<!ATTLIST p1_resource_components
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    resource_id CDATA #IMPLIED
+    resource_component_id CDATA #IMPLIED
+    resource_component_type CDATA #IMPLIED
+>
+
+<!ELEMENT p1_resource_lists EMPTY>
+<!ATTLIST p1_resource_lists
+    extension_id CDATA #REQUIRED
+>
+
+<!ELEMENT p1_resources EMPTY>
+<!ATTLIST p1_resources
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    resource_category_id CDATA #IMPLIED
+    referent_support_id CDATA #IMPLIED
+    name CDATA #IMPLIED
+    category_type CDATA #IMPLIED
+    nickname CDATA #IMPLIED
+    string_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_schedulings EMPTY>
+<!ATTLIST p1_schedulings
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    impossible_comment CDATA #IMPLIED
+    optimal_comment CDATA #IMPLIED
+    sync_comment CDATA #IMPLIED
+    min_allocation_time_id CDATA #IMPLIED
+    future_time_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_site_qualities EMPTY>
+<!ATTLIST p1_site_qualities
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    name CDATA #IMPLIED
+    cloud_cover_key CDATA #IMPLIED
+    image_quality_key CDATA #IMPLIED
+    sky_background_key CDATA #IMPLIED
+    water_vapor_key CDATA #IMPLIED
+    observatory_extension_id CDATA #IMPLIED
+    referent_support_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_sites EMPTY>
+<!ATTLIST p1_sites
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    country CDATA #IMPLIED
+    institution CDATA #IMPLIED
+    addresses CDATA #IMPLIED
+    contact_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_sub_details_extensions EMPTY>
+<!ATTLIST p1_sub_details_extensions
+    extension_id CDATA #REQUIRED
+    submission_id CDATA #IMPLIED
+    gemini_received_date CDATA #IMPLIED
+>
+
+<!ELEMENT p1_submission_country_partner_submissions EMPTY>
+<!ATTLIST p1_submission_country_partner_submissions
+    submission_id CDATA #REQUIRED
+    partner_submission_id CDATA #REQUIRED
+    type_code CDATA #IMPLIED
+    name CDATA #IMPLIED
+    key CDATA #IMPLIED
+    iso_country_code CDATA #IMPLIED
+    exclusive CDATA #IMPLIED
+    valid CDATA #IMPLIED
+    partner_country_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_submissions EMPTY>
+<!ATTLIST p1_submissions
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    total_requested_time CDATA #IMPLIED
+    total_minimum_requested_time CDATA #IMPLIED
+    unit CDATA #IMPLIED
+    host_type_code CDATA #IMPLIED
+    host_name CDATA #IMPLIED
+    host_key CDATA #IMPLIED
+    host_iso_country_code CDATA #IMPLIED
+    host_is_exclusive CDATA #IMPLIED
+    host_is_valid CDATA #IMPLIED
+>
+
+<!ELEMENT p1_sync_observing_date_ranges EMPTY>
+<!ATTLIST p1_sync_observing_date_ranges
+    start_date CDATA #IMPLIED
+    end_date CDATA #IMPLIED
+    scheduling_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_tac_extensions EMPTY>
+<!ATTLIST p1_tac_extensions
+    extension_id CDATA #REQUIRED
+    observatory_extension_id CDATA #IMPLIED
+    partner_ranking CDATA #IMPLIED
+    partner_time_id CDATA #IMPLIED
+    partner_minimum_time_id CDATA #IMPLIED
+    partner_comment CDATA #IMPLIED
+    partner_received_date CDATA #IMPLIED
+    partner_support_email CDATA #IMPLIED
+    poor_weather_flag CDATA #IMPLIED
+    partner_type_code CDATA #IMPLIED
+    partner_name CDATA #IMPLIED
+    partner_key CDATA #IMPLIED
+    partner_iso_country_code CDATA #IMPLIED
+    partner_is_exclusive CDATA #IMPLIED
+    partner_is_valid CDATA #IMPLIED
+>
+
+<!ELEMENT p1_target_catalogs EMPTY>
+<!ATTLIST p1_target_catalogs
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+>
+
+<!ELEMENT p1_targets EMPTY>
+<!ATTLIST p1_targets
+    id CDATA #REQUIRED
+    parent_id CDATA #IMPLIED
+    parent_class CDATA #IMPLIED
+    name CDATA #IMPLIED
+    brightness CDATA #IMPLIED
+    target_type CDATA #IMPLIED
+    target_catalog_id CDATA #IMPLIED
+    coordinate_system_id CDATA #IMPLIED
+    referent_support_id CDATA #IMPLIED
+>
+
+<!ELEMENT p1_times EMPTY>
+<!ATTLIST p1_times
+    id CDATA #REQUIRED
+    time_amount CDATA #IMPLIED
+    unit CDATA #IMPLIED
+>
+
+<!ELEMENT partners EMPTY>
+<!ATTLIST partners
+    id CDATA #REQUIRED
+    name CDATA #IMPLIED
+    partner_country_key CDATA #IMPLIED
+    abbreviation CDATA #IMPLIED
+    percentage_share CDATA #IMPLIED
+    site CDATA #IMPLIED
+    ngo_feedback_email CDATA #IMPLIED 
+>
+
+<!ELEMENT people EMPTY>
+<!ATTLIST people
+    id CDATA #REQUIRED
+    name CDATA #IMPLIED
+    password CDATA #IMPLIED
+    enabled CDATA #IMPLIED
+    partner_id CDATA #IMPLIED
+>
+
+<!ELEMENT proposals EMPTY>
+<!ATTLIST proposals
+    id CDATA #REQUIRED
+    committee_id CDATA #IMPLIED
+    partner_id CDATA #IMPLIED
+    p1_document_id CDATA #IMPLIED
+    proposal_type CDATA #IMPLIED
+    joint_proposal_id CDATA #IMPLIED
+>
+
+<!ELEMENT queue_band_restriction_rules EMPTY>
+<!ATTLIST queue_band_restriction_rules
+    queue_id CDATA #REQUIRED
+    band_restriction_rule_id CDATA #REQUIRED
+>
+
+<!ELEMENT queue_notes EMPTY>
+<!ATTLIST queue_notes
+    id CDATA #REQUIRED
+    queue_id CDATA #IMPLIED
+    note CDATA #IMPLIED
+>
+
+<!ELEMENT queue_proposals_exchange EMPTY>
+<!ATTLIST queue_proposals_exchange
+    queue_id CDATA #IMPLIED
+    proposal_id CDATA #IMPLIED
+>
+
+<!ELEMENT queue_proposals_classical EMPTY>
+<!ATTLIST queue_proposals_classical
+    queue_id CDATA #IMPLIED
+    proposal_id CDATA #IMPLIED
+>
+
+<!ELEMENT queue_restricted_bins EMPTY>
+<!ATTLIST queue_restricted_bins
+    queue_id CDATA #REQUIRED
+    restricted_bin_id CDATA #REQUIRED
+>
+
+<!ELEMENT queues EMPTY>
+<!ATTLIST queues
+    id CDATA #REQUIRED
+    committee_id CDATA #IMPLIED
+    site_id CDATA #IMPLIED
+    total_time_available CDATA #IMPLIED
+    partner_with_initial_pick_id CDATA #IMPLIED
+    partner_quanta CDATA #IMPLIED
+    condition_set_id CDATA #IMPLIED
+    bin_configuration_id CDATA #IMPLIED
+    lptac_time CDATA #IMPLIED
+    band_1_cutoff CDATA #IMPLIED
+    band_2_cutoff CDATA #IMPLIED
+    band_3_cutoff CDATA #IMPLIED
+    band_3_conditions_threshold CDATA #IMPLIED
+    use_after_band_3 CDATA #IMPLIED
+    name CDATA #IMPLIED
+>
+
+<!ELEMENT ra_bin_sizes EMPTY>
+<!ATTLIST ra_bin_sizes
+    id CDATA #REQUIRED
+    hours CDATA #IMPLIED
+    minutes CDATA #IMPLIED
+    seconds CDATA #IMPLIED
+    fractions_of_seconds CDATA #IMPLIED
+>
+
+<!ELEMENT restricted_bins EMPTY>
+<!ATTLIST restricted_bins
+    id CDATA #REQUIRED
+    restricted_bin_type CDATA #IMPLIED
+    description CDATA #IMPLIED
+    units CDATA #IMPLIED
+    value CDATA #IMPLIED
+>
+
+<!ELEMENT semesters EMPTY>
+<!ATTLIST semesters
+    id CDATA #REQUIRED
+    display_name CDATA #IMPLIED
+>
+
+<!ELEMENT sites EMPTY>
+<!ATTLIST sites
+    id CDATA #REQUIRED
+    display_name CDATA #IMPLIED
+>
+

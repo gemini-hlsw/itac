@@ -1,0 +1,3 @@
+RestrictedTarget1	10:00:00.0	10:00:00.0
+RestrictedTarget2	11:00:00.0	11:00:00.0
+RestrictedTarget3	12:00:00.0	12:00:00.0

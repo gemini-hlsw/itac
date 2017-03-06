@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <semesters id="1" display_year="2010" name="B"/>
+	<committees id="10" name="ITAC 2010-B" active="true" semester_id="1"/>
+	<partners id="70" name="United States of America" partner_country_key="USA" abbreviation="US" />
+	<proposals id="100" committee_id="10" partner_id="70" p1_document_id="10000" />
+</dataset>

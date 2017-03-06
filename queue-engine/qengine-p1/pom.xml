@@ -1,0 +1,43 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <name>Queue Engine : Mini Phase 1 Model</name>
+
+    <description>
+        This module houses a "mini" phase 1 model containing only the
+        information of interest to the queue engine and in a format that is
+        convenient to work with (e.g., without any need to worry about bad
+        or missing data or nulls, etc.) This data is extracted from the
+        original Gemini Phase 1 model and from the persistence model.
+        This allows the queue engine to work with either underlying model.
+    </description>
+
+    <artifactId>qengine-p1</artifactId>
+
+    <parent>
+        <groupId>edu.gemini.tac</groupId>
+        <artifactId>queue-engine</artifactId>
+        <version>2017.2.1-SNAPSHOT</version>
+    </parent>
+
+    <packaging>jar</packaging>
+    <modelVersion>4.0.0</modelVersion>
+
+    <dependencies>
+        <dependency>
+            <groupId>edu.gemini.tac</groupId>
+            <artifactId>qengine-ctx</artifactId>
+            <version>2017.2.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.gemini.tac</groupId>
+            <artifactId>qengine-util</artifactId>
+            <version>2017.2.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.groupId}-${project.artifactId}</finalName>
+    </build>
+
+</project>

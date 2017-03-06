@@ -1,0 +1,1 @@
+{ 'proposalId' : '${proposalId}', 'isRolloverEligible' : '${isRolloverEligible}' }

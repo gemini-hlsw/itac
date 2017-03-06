@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport
+        xmlns="http://jasperreports.sourceforge.net/jasperreports"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+        name="raDistributionInstrument"
+        language="java"
+        pageWidth="1100" pageHeight="850" columnWidth="555"
+        leftMargin="50" rightMargin="50" topMargin="50" bottomMargin="50">
+
+    <!-- parameters -->
+    <parameter name="subtitleString" class="java.lang.String"/>
+
+    <!-- fields -->
+    <field name="partner" class="java.lang.String"/>
+	<field name="geminiId" class="java.lang.String"/>
+    <field name="ntacRef" class="java.lang.String"/>
+    <field name="scheduling" class="java.lang.String"/>
+    <!-- sort order -->
+    <sortField name="partner"/>
+    <sortField name="geminiId"/>
+    <sortField name="ntacRef"/>
+
+    <!-- title -->
+    <title>
+        <band height="60">
+            <staticText>
+                <reportElement x="0" y="0" width="750" height="30"/>
+                <textElement><font size="20" isBold="true"/></textElement>
+                <text><![CDATA[Scheduling Constraints Report]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="0" y="30" width="750" height="30"/>
+                <textElement><font size="10" isBold="true"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$P{subtitleString}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <!-- column header -->
+    <columnHeader>
+        <band height="20">
+            <staticText>
+                <reportElement x="0" y="0" width="50" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Partner]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="50" y="0" width="75" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Gemini ID]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="125" y="0" width="125" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[NTAC Reference]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="250" y="0" width="790" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Scheduling Note]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <!-- details -->
+	<detail>
+		<band height="20" splitType="Stretch">
+            <textField>
+                <reportElement x="0" y="0" width="50" height="20"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{partner}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="50" y="0" width="75" height="20"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{geminiId}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="125" y="0" width="125" height="20"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{ntacRef}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="250" y="0" width="790" height="20"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{scheduling}]]></textFieldExpression>
+            </textField>
+		</band>
+	</detail>
+
+
+</jasperReport>

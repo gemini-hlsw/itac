@@ -1,0 +1,608 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>edu.gemini.tac</groupId>
+    <artifactId>tacUmbrella</artifactId>
+    <version>2017.2.1-SNAPSHOT</version>
+    <name>TAC umbrella project</name>
+    <url>http://maven.apache.org</url>
+    <packaging>pom</packaging>
+
+    <scm>
+        <connection>scm:svn:http://source.gemini.edu/software/time-allocation-committee</connection>
+        <url>http://souce.gemini.edu/software/time-allocation/committee</url>
+    </scm>
+
+    <modules>
+        <module>itac-web</module>
+        <module>phase1-services</module>
+        <module>phase1-data</module>
+        <module>queue-engine</module>
+        <module>queue-service</module>
+        <module>itac-configuration</module>
+    </modules>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <hibernate.version>3.5.6-Final</hibernate.version>
+        <spring.version>3.0.2.RELEASE</spring.version>
+        <spring.security.version>3.0.3.RELEASE</spring.security.version>
+        <scala.version>2.11.8</scala.version>
+        <commons.version>2.5</commons.version>
+        <dbunit.version>2.4.7</dbunit.version>
+        <mockito.version>1.8.1</mockito.version>
+        <unitils.version>3.1</unitils.version>
+        <commons.dbcp.version>1.4</commons.dbcp.version>
+        <commons.httpclient.version>3.1</commons.httpclient.version>
+        <ocs.model.p1.version>2017001.1.0</ocs.model.p1.version>
+    </properties>
+    <repositories>
+        <repository>
+            <id>Gemini Development</id>
+            <url>http://sbfswgosxdev-mp1.cl.gemini.edu:8081/artifactory/libs-release-local</url>
+        </repository>
+        <repository>
+            <id>central</id>
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>
+        <!--repository>
+            <id>jboss</id>
+            <url>http://repository.jboss.org/maven2</url>
+        </repository-->
+        <!-- Spring security -->
+        <!--repository>
+            <id>com.springsource.repository.bundles.release</id>
+            <name>SpringSource Enterprise Bundle Repository - SpringSource Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/release</url>
+        </repository-->
+        <!-- Spring security END -->
+        <!--repository>
+            <id>com.springsource.repository.bundles.external</id>
+            <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/external</url>
+        </repository-->
+        <!-- Selenium -->
+        <!--repository>
+            <id>openqa</id>
+            <name>OpenQA Repository</name>
+            <url>http://nexus.openqa.org/content/repositories/releases/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository-->
+    </repositories>
+    <developers>
+        <developer>
+            <id>ddawson</id>
+            <name>Devin Dawson</name>
+            <email>ddawson@gemini.edu</email>
+            <timezone>-10</timezone>
+        </developer>
+        <developer>
+            <id>fnussber</id>
+            <name>Florian Nussberger</name>
+            <email>fnussber@gemini.edu</email>
+            <timezone>-10</timezone>
+        </developer>
+        <developer>
+            <id>lobrien</id>
+            <name>Larry O'Brien</name>
+            <email>lobrien@gemini.edu</email>
+            <timezone>-10</timezone>
+        </developer>
+        <developer>
+            <id>swalker</id>
+            <name>Shane Walker</name>
+            <email>swalker@gemini.edu</email>
+            <timezone>-4</timezone>
+        </developer>
+    </developers>
+
+    <distributionManagement>
+        <!-- releases repo -->
+        <repository>
+            <id>edu.gemini.releases</id>
+            <name>sbfosxdev01.cl.gemini.edu-releases</name>
+            <url>http://build.cl.gemini.edu:8081/artifactory/libs-releases-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>edu.gemini.releases</id>
+            <name>sbfosxdev01.cl.gemini.edu-snapshots</name>
+            <url>http://build.cl.gemini.edu:8081/artifactory/libs-snapshots-local</url>
+        </snapshotRepository>
+
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>defaultTest</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.8.1</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/*LongRunningTest.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- run long running tests only -> mainly for testing purposes -->
+        <profile>
+            <id>longRunningTest</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.8.1</version>
+                        <configuration>
+                            <!-- long running test need a lot of memory ! -->
+                            <argLine>-Xms1G -Xmx2G -XX:PermSize=512m -XX:MaxPermSize=512m</argLine>
+                            <includes>
+                                <include>**/*LongRunningTest.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>allTest</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.8.1</version>
+                        <configuration>
+                            <!-- long running test need a lot of memory ! -->
+                            <argLine>-Xms1G -Xmx2G -XX:PermSize=512m -XX:MaxPermSize=512m</argLine>
+                            <!--includes>
+                              <include>**/*LongRunningTest.java</include>
+                            </includes-->
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+
+        <profile>
+            <id>development</id>
+
+            <!-- this is the default profile -->
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+
+                <!-- itac jetty configuration file properties -->
+                <itac.jetty.database.name>//127.0.0.1/itac_dev_v2</itac.jetty.database.name>
+                <itac.jetty.database.user>itac</itac.jetty.database.user>
+                <itac.jetty.mailserver.host>localhost</itac.jetty.mailserver.host>
+                <itac.jetty.mailserver.port>25</itac.jetty.mailserver.port>
+                <itac.jetty.mailserver.fromAddress>fnussber@gemini.edu</itac.jetty.mailserver.fromAddress>
+                <itac.jetty.mailserver.testToAddress>fnussber@gemini.edu</itac.jetty.mailserver.testToAddress>
+                <!-- BEWARE: change this property ONLY if you really want to send emails to the outside world -->
+                <itac.jetty.mailserver.sendForReal>false</itac.jetty.mailserver.sendForReal>
+                <!-- the folder in the file system and access url for the pdfs -->
+                <itac.jetty.pdf.folder>/tmp/itac-jetty-pdfs</itac.jetty.pdf.folder>
+
+                <!-- other properties -->
+                <itac.test.database.datasets>base development_data</itac.test.database.datasets>
+                <itac.jetty.database.datasets>base development_data</itac.jetty.database.datasets>
+                <itac.database.loadDataFile>${basedir}/src/main/database/datasets/2011A.all.tar.gz
+                </itac.database.loadDataFile>
+                <itac.debug>true</itac.debug>
+                <itac.show_sql>false</itac.show_sql>
+                <!--<itac.org.hibernate.SQL>DEBUG</itac.org.hibernate.SQL> -->
+                <itac.org.hibernate.SQL>INFO</itac.org.hibernate.SQL>
+                <itac.log.edu.gemini>TRACE</itac.log.edu.gemini>
+                <itac.log.destination>/tmp</itac.log.destination>
+
+                <!-- services -->
+                <itac.skeletonService.url.north>http://gnodbtest2.hi.gemini.edu:13000/skeleton
+                </itac.skeletonService.url.north>
+                <itac.skeletonService.url.south>http://gsodbtest2.cl.gemini.edu:13000/skeleton
+                </itac.skeletonService.url.south>
+                <itac.rolloverURL.gs>http://gsodb.cl.gemini.edu:8442/rollover</itac.rolloverURL.gs>
+                <itac.rolloverURL.gn>http://gnodb.hi.gemini.edu:8442/rollover</itac.rolloverURL.gn>
+
+                <!-- db dump -->
+                <itac.test.dbdump.directory>/tmp/itac-dumps/</itac.test.dbdump.directory>
+                <itac.test.dbdump.user>postgres</itac.test.dbdump.user>
+
+            </properties>
+        </profile>
+
+        <!--
+        <profile>
+            <properties>
+            </properties>
+        </profile>
+        -->
+
+        <profile>
+            <id>build</id>
+            <properties>
+                <!-- itac.configuration file properties -->
+                <itac.test.database.name>itac_test_v2</itac.test.database.name>
+                <itac.test.database.user>itac</itac.test.database.user>
+                <itac.test.database.password></itac.test.database.password>
+                <itac.database.password></itac.database.password>
+                <itac.test.mailserver.host>localhost</itac.test.mailserver.host>
+                <itac.test.mailserver.port>25</itac.test.mailserver.port>
+                <itac.test.mailserver.fromAddress>fnussber@gemini.edu</itac.test.mailserver.fromAddress>
+                <itac.test.mailserver.testToAddress>fnussber@gemini.edu</itac.test.mailserver.testToAddress>
+                <itac.test.mailserver.sendForReal>false</itac.test.mailserver.sendForReal>
+                <itac.test.dbdump.directory>/tmp/itac-dumps/</itac.test.dbdump.directory>
+                <itac.test.dbdump.user>software</itac.test.dbdump.user>
+                <!-- the folder in the file system and access url for the pdfs -->
+                <itac.test.pdf.folder>/tmp/itac-pdfs</itac.test.pdf.folder>
+                <itac.test.pdf.url>file:///tmp/itac-pdfs</itac.test.pdf.url>
+
+                <!-- other properties -->
+                <itac.test.database.datasets>base</itac.test.database.datasets>
+                <itac.database.loadDataFile>${basedir}/src/main/database/datasets/2011A.all.tar.gz
+                </itac.database.loadDataFile>
+
+                <itac.debug>true</itac.debug>
+                <itac.rolloverODB>false</itac.rolloverODB>
+                <!-- Log all SQL DML statements as they are executed -->
+                <itac.org.hibernate.SQL>INFO</itac.org.hibernate.SQL>
+                <itac.log.edu.gemini>DEBUG</itac.log.edu.gemini>
+                <itac.show_sql>true</itac.show_sql>
+                <itac.log.edu.gemini>TRACE</itac.log.edu.gemini>
+                <itac.log.destination>/dev/null</itac.log.destination>
+
+                <!-- services -->
+                <itac.skeletonService.url.north>http://gsodbtest.cl.gemini.edu:13000/skeleton
+                </itac.skeletonService.url.north>
+                <itac.skeletonService.url.south>http://gnodbtest.hi.gemini.edu:13000/skeleton
+                </itac.skeletonService.url.south>
+
+            </properties>
+        </profile>
+        <profile>
+            <id>qa</id>
+            <properties>
+                <!-- itac.configuration file properties -->
+                <!-- EDIT IN CONFIG FILE
+                <itac.database.name>//hbf-qa-tac-db/itac_qa</itac.database.name>
+                <itac.database.user>itac</itac.database.user>
+                <itac.mailserver.host>localhost</itac.mailserver.host>
+                <itac.mailserver.port>25</itac.mailserver.port>
+                -->
+
+                <itac.test.database.name>itac_test_v2</itac.test.database.name>
+                <itac.test.database.user>itac</itac.test.database.user>
+                <itac.database.password></itac.database.password>
+                <itac.test.database.password></itac.test.database.password>
+                <!-- other properties -->
+                <itac.database.datasets>base qa_data</itac.database.datasets>
+                <itac.rolloverURL.gs>http://gsodbtest.cl.gemini.edu:13000/rollover</itac.rolloverURL.gs>
+                <itac.rolloverURL.gn>http://gnodbtest.hi.gemini.edu:13000/rollover</itac.rolloverURL.gn>
+                <itac.show_sql>false</itac.show_sql>
+                <itac.org.hibernate.SQL>WARN</itac.org.hibernate.SQL>
+                <itac.log.edu.gemini>DEBUG</itac.log.edu.gemini>
+                <itac.log.destination>/gemsoft/var/log/itac/qa</itac.log.destination>
+                <!-- db dump -->
+                <itac.test.dbdump.directory>/tmp/itac-dumps/</itac.test.dbdump.directory>
+                <itac.test.dbdump.user>postgres</itac.test.dbdump.user>
+            </properties>
+        </profile>
+        <profile>
+            <id>production</id>
+            <properties>
+                <!-- itac.configuration file properties -->
+                <!-- EDIT IN CONFIG FILE
+                <itac.database.name>itac_test</itac.database.name>
+                <itac.database.user>itac</itac.database.user>
+                <itac.mailserver.host>localhost</itac.mailserver.host>
+                <itac.mailserver.port>25</itac.mailserver.port>
+                -->
+
+                <!-- other properties -->
+                <itac.database.datasets>base production_data</itac.database.datasets>
+                <itac.show_sql>false</itac.show_sql>
+                <itac.org.hibernate.SQL>INFO</itac.org.hibernate.SQL>
+                <itac.log.edu.gemini>INFO</itac.log.edu.gemini>
+                <itac.log.destination>/gemsoft/var/log/itac/prod</itac.log.destination>
+            </properties>
+        </profile>
+
+    </profiles>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>2.4.1</version>
+                    <inherited>true</inherited>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.5</version>
+                    <inherited>true</inherited>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.3.1</version>
+                    <inherited>true</inherited>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>2.3</version>
+                    <inherited>true</inherited>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.5</version>
+                    <inherited>true</inherited>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.3.1</version>
+                    <inherited>true</inherited>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.zeroturnaround</groupId>
+                <artifactId>jrebel-maven-plugin</artifactId>
+                <version>1.1.3</version>
+                <executions>
+                    <execution>
+                        <id>generate-rebel-xml</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.2.1</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <version>2.15.2</version>
+                <executions>
+                    <execution>
+                        <id>1</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>2</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <scalaVersion>${scala.version}</scalaVersion>
+                    <args>
+                        <arg>-deprecation</arg>
+                        <arg>-feature</arg>
+                    </args>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>${scala.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scalaz</groupId>
+                <artifactId>scalaz-core_2.11</artifactId>
+                <version>7.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>gemini-nocs</groupId>
+                <artifactId>jsky-coords</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>gemini-nocs</groupId>
+                <artifactId>jsky-util</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>gemini-nocs</groupId>
+                <artifactId>pot-client</artifactId>
+                <version>1.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>gemini-nocs</groupId>
+                <artifactId>shared-skycalc</artifactId>
+                <version>1.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>gemini-nocs</groupId>
+                <artifactId>shared-skyobject</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>gemini-nocs</groupId>
+                <artifactId>shared-jini</artifactId>
+                <version>1.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>gemini-nocs</groupId>
+                <artifactId>shared-util</artifactId>
+                <version>1.0.2</version>
+            </dependency>
+            <dependency>
+                <groupId>gemini-nocs</groupId>
+                <artifactId>skycalc</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>gemini-nocs</groupId>
+                <artifactId>spModel</artifactId>
+                <version>1.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>gemini-nocs</groupId>
+                <artifactId>spModel-core</artifactId>
+                <version>1.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>gemini-nocs</groupId>
+                <artifactId>spModel-p1p2</artifactId>
+                <version>1.0.3</version>
+            </dependency>
+            <dependency>
+                <groupId>gemini-nocs</groupId>
+                <artifactId>spModel-pio</artifactId>
+                <version>1.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>gemini-nocs</groupId>
+                <artifactId>spModel-obsrec</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>gemini-nocs</groupId>
+                <artifactId>spModel-obsseq</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>gemini-nocs</groupId>
+                <artifactId>spModel-type</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>14.0.1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-clover2-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <generatePdf>true</generatePdf>
+                    <generateXml>true</generateXml>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <targetJdk>1.6</targetJdk>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.3.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jdepend-maven-plugin</artifactId>
+                <version>2.0-beta-2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>taglist-maven-plugin</artifactId>
+                <version>2.4</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.3.1</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>index</report>
+                            <report>project-team</report>
+                            <report>cim</report>
+                            <report>scm</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.7</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>1.2</version>
+                <configuration>
+                    <includes>
+                        <include>gemini-nocs:*</include>
+                    </includes>
+                    <processDependencies>false</processDependencies>
+                    <processDependencyManagement>true</processDependencyManagement>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <version>2.15.2</version>
+                <configuration>
+                    <scalaVersion>${scala.version}</scalaVersion>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+</project>

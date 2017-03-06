@@ -1,0 +1,38 @@
+                        <fieldset>
+                            <legend>Band restriction conditions</legend>
+                            <ul style="list-style-type: none">
+                                <c:choose>
+                                <c:when test="${ empty queue.bandRestrictionRules}">
+                                <c:forEach items="${bandRestrictions}" var="bandRestriction">
+                                <li>
+                                    <input type="checkbox" name="band-restrictions" value="${ bandRestriction.id }" checked></input>
+                                    ${ bandRestriction.name }
+                                </li>
+                                </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                <c:forEach items="${queue.bandRestrictionRules}" var="bandRestriction">
+                                <li>
+                                    <input type="checkbox" name="band-restrictions" value="${ bandRestriction.id }" checked></input>
+                                    ${ bandRestriction.name }
+                                </li>
+                                </c:forEach>
+                                </c:otherwise>
+                                </c:choose>
+                            </ul>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Active restricted bins</legend>
+                            <ul id="restricted-bins" style="list-style-type: none; float: left">
+                            <c:if test="${ not empty queue.restrictedBins }">
+                            <c:forEach items="${ queue.restrictedBins }" var="restrictedBin">
+                            <li>
+                                <input type="checkbox" id="restricted-bins-${restrictedBin.id}" name="restricted-bins" value="${ restrictedBin.id }" checked></input>
+                                <label>Restriction: ${restrictedBin.description}</label>
+                                <label> only allowed for </label><input class="readonly" readonly type="text" size="3" value="${ restrictedBin.value }"/> <label>${ restrictedBin.units } of observations.</label>
+                            </li>
+                            </c:forEach>
+                            </c:if>
+
+                            </ul>
+                        </fieldset>

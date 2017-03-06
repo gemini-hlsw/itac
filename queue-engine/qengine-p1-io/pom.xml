@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <name>Queue Engine : Phase 1 Model I/O</name>
+
+    <description>
+        Contains code for extracting information from the original Gemini
+        Phase 1 model into the Queue Engine mini-phase 1 model. This is where
+        errors and missing data are dealt with so that the queue engine can
+        rely on having only good data that is easy to access.
+    </description>
+
+    <artifactId>qengine-p1-io</artifactId>
+
+    <parent>
+        <groupId>edu.gemini.tac</groupId>
+        <artifactId>queue-engine</artifactId>
+        <version>2017.2.1-SNAPSHOT</version>
+    </parent>
+
+    <packaging>jar</packaging>
+    <modelVersion>4.0.0</modelVersion>
+
+    <dependencies>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.gemini.ocs</groupId>
+            <artifactId>edu-gemini-model-p1_2.11</artifactId>
+            <version>${ocs.model.p1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>gemini-nocs</groupId>
+            <artifactId>shared-skycalc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>gemini-nocs</groupId>
+            <artifactId>shared-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>gemini-nocs</groupId>
+            <artifactId>spModel-pio</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>edu.gemini.tac</groupId>
+            <artifactId>qengine-ctx</artifactId>
+            <version>2017.2.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.gemini.tac</groupId>
+            <artifactId>qengine-util</artifactId>
+            <version>2017.2.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.gemini.tac</groupId>
+            <artifactId>qengine-p1</artifactId>
+            <version>2017.2.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scalaz</groupId>
+            <artifactId>scalaz-core_2.11</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.groupId}-${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>copy-jetty-configuration</id>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <tasks>
+                                <!-- get the filtered jetty configuration file from the itac-configuration module -->
+                                <!-- this is a little bit of a hack, it would be nicer to use shared resources for
+                                     this but it's more complicated and the shared resouces plugin does not allow to
+                                     rename files... -->
+                                <copy file="${basedir}/../../itac-configuration/target/classes/itac-qa.properties"
+                                      tofile="${project.build.outputDirectory}/itac-qa.properties"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

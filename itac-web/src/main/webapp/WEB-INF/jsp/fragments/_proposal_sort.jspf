@@ -1,0 +1,17 @@
+                <div id="configure-sort" class="span-18 last clear hidden">
+                    <form action="#" style="float: right">
+                        <input type="radio" name="sort" value="partner" <c:if test="${!show_banding eq true}">checked="checked"</c:if> onclick="reorder(partner_sort())">Partner</input>
+                        <input type="radio" name="sort" value="rank_by_partner" onclick="reorder(rank_sort())">Rank (by partner)</input>
+                        <input type="radio" name="sort" value="instrument" onclick="reorder(instrument_sort())">Instrument</input>
+                        <input type="radio" name="sort" value="title" onclick="reorder(title_sort())">Title</input>
+                        <input type="radio" name="sort" value="pi" onclick="reorder(primary_investigator_sort())">Investigator</input>
+                        <c:if test="${show_banding eq true}">
+                            <br/>
+                            <input type="radio" name="sort" value="band_merge_index" checked="checked" onclick="reorder(band_merge_index_sort())">Band/Merge index</input>
+                            <input type="radio" name="sort" value="band_partner" onclick="reorder(band_partner_sort())">Band/Partner</input>
+                            <input type="radio" name="sort" value="band_instrument" onclick="reorder(band_instrument_sort())">Band/Instrument</input>
+                            <input type="radio" name="sort" value="band_title" onclick="reorder(band_title_sort())">Band/Title</input>
+                            <input type="radio" name="sort" value="band_pi" onclick="reorder(band_primary_investigator_sort())">Band/Investigator</input>
+                        </c:if>
+                    </form>
+                </div>

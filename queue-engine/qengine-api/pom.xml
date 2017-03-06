@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <name>Queue Engine : API</name>
+
+    <description>
+        Contains the API for configuring and executing the queue generation.
+    </description>
+
+    <artifactId>qengine-api</artifactId>
+
+    <parent>
+        <artifactId>queue-engine</artifactId>
+        <groupId>edu.gemini.tac</groupId>
+        <version>2017.2.1-SNAPSHOT</version>
+    </parent>
+
+    <packaging>jar</packaging>
+    <modelVersion>4.0.0</modelVersion>
+
+    <dependencies>
+        <dependency>
+            <groupId>edu.gemini.tac</groupId>
+            <artifactId>qengine-ctx</artifactId>
+            <version>2017.2.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.gemini.tac</groupId>
+            <artifactId>qengine-util</artifactId>
+            <version>2017.2.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.gemini.tac</groupId>
+            <artifactId>qengine-p1</artifactId>
+            <version>2017.2.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.gemini.tac</groupId>
+            <artifactId>qengine-p2</artifactId>
+            <version>2017.2.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.gemini.tac</groupId>
+            <artifactId>qengine-log</artifactId>
+            <version>2017.2.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.groupId}-${project.artifactId}</finalName>
+    </build>
+
+</project>

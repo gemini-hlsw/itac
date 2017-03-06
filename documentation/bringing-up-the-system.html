@@ -1,0 +1,92 @@
+<html>
+	<head>
+		<title>Bringing up the itac system</title>
+	</head>
+	<body>
+		<h1>Install buildR</h1>
+		<p>Scratch.  Do not install buildR.  I've spent about two hours walking down this rabbit hole now.  Currently, you're directed to install a release candidate that doesn't interact is dependent on rjb (ruby java bridge) that requires post install fixups.  I'm marking this one not production ready.</p>
+	<p>
+			Make sure you have a current version of ruby gems installed.  Available from http://rubygems.org/
+		</p>
+
+		<p>
+			From <a href="http://buildr.apache.org/installing.html">buildR install guide</a>
+			(below instructions are for Mac OS/X, others available at link)
+			Bring your gem install up to date.
+			<pre class="code">
+sudo gem update --system
+			</pre>
+confirm that your JAVA_HOME points to your Java install
+			<pre class="code">
+echo $JAVA_HOME
+			</pre>
+
+			Using gem (a ruby packaging system) install buildr.  Don't use the default gem install as of (4-7-10) as there is a bug (you'll know you're experiencing it if you see uninitialized constant Gem::Requirement::OP_RE errors).  See their mailing list archive around 4-10 for discussion. Download from <a href="http://people.apache.org/~toulmean/buildr/1.4.0/dist/"> rc site</a>.
+			
+			<pre class="code">
+@Deprecated sudo env JAVA_HOME=$JAVA_HOME gem install buildr
+sudo gem install -n /usr/local/bin buildr-1.4.0-java.gem
+
+
+			</pre>
+		</p>
+		<h1>Install Maven</h1>
+		<p>Acquire from the maven <a href="http://www.apache.org/dyn/closer.cgi/maven/binaries/apache-maven-2.2.1-bin.tar.gz">project</a> site.  </p>
+		<p>Untar to /usr/local.</p>
+		<p>Create a symbolic link</p>
+		<pre class="code">
+ln -s /usr/local/apache-maven-2.2.1/bin/mvn /usr/local/bin/mvn
+		</pre>
+
+
+		<h1>Install PostgreSQL</h1>
+		<p>Download a source distribution available at <a href="http://www.postgresql.org/download/">core distribution site</a></p>
+		<p>I'm initially developing with 8.4.3, but that may or may not be current, ask around.</p>
+		<p>It's recommended that you create a postgres user to run the server under.  Do that.</p>
+		<p>Build it as thus
+		<pre class="code">./configure --prefix /gemsoft/opt</pre>
+		<pre class="code">make</pre>
+		<pre class="code">make install</pre>
+		<p>
+			Add the following lines to your new postgres user's login startup (.bashrc, .profile, ...)
+			<pre class="code">
+export PGDATA=/gemsoft/var/pgdata
+export PATH=/gemsoft/opt/pgsql/bin/:$PATH
+			</pre>
+			From an account with sudo ability, 
+			<pre class="code">
+sudo mkdir -p /gemsoft/var/pgdata
+sudo chown postgres /gemsoft/var/pgdata
+			</pre>
+
+		</p>
+		<p>
+			As user postgres, Initialize a default database.
+			<pre class="code">
+initdb -E unicode
+			</pre>
+			Restrict it to listening to localhost to avoid running afoul of IS, by uncommenting the following line in postgresql.conf #listen_addresses = 'localhost'
+		</p>
+		<p>
+		  As user postgres, start it up.
+			<pre class="code">
+pg_ctl start
+			</pre>
+		</p>
+
+		<h1>Download Jetty</h1>
+		<p>Available at <a href="http://docs.codehaus.org/display/JETTY/Downloading+Jetty">codehaus</a>.</p>
+		<p>Initially beginning with version 6.1.23, available at <a href="http://dist.codehaus.org/jetty/jetty-6.1.23/">codehaus</a>.</p>
+		<p>Unzip the archive in /gemsoft/opt</p>
+		<p>Make a symlink</p>
+		<pre class="code">
+ln -s jetty-6.1.23 jetty
+		</pre>
+		<p>Test the install<p>
+		<pre class="code">
+java -jar start.jar etc/jetty.xml
+		</pre>
+	</body>
+
+</html>
+

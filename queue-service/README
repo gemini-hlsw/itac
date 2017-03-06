@@ -1,0 +1,18 @@
+The Queue Service provides access to the Queue Engine to the ITAC web
+application.  It ties together the wep app and the Queue Engine and contains a 
+
+* Persistence conversion to handle conversion from/to persistence model
+  for core classes.
+* Testing support for code that makes use of the persistence conversion.
+* Queue Service API written as a collection of Java interfaces, and a
+* Queue Service implementation of those interfaces written in Scala.
+
+The Queue Service API is written in terms of the web app data structures for
+representing the program queue and the configuration of the queue generation.
+It does not explicitly reference Queue Engine data structures or services.
+
+The implementation translates the web app data structures into versions
+palatable by the Queue Engine and generates the queue, returning the result
+to the caller.
+
+TODO: how the dependency injection will work.

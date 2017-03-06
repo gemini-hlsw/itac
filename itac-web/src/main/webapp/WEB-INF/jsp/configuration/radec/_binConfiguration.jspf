@@ -1,0 +1,5 @@
+							<tr>
+								<td><input class="readonly" type="text" size="32" disabled value="${binConfiguration.name}"/></td>
+								<td><input class="readonly bin"  type="text" size="8" disabled value="${binConfiguration.raBinSize.display}"/></td>
+								<td><input class="readonly bin" type="text" size="8" disabled value="${binConfiguration.decBinSize.display}"/></td>
+							</tr>

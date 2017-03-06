@@ -1,0 +1,69 @@
+                                <%-- Restrict output of sensitive information types --%>
+                                <c:set var="isAdmin" value="false"/>
+                                <security:authorize access="hasRole('ROLE_SECRETARY') or hasRole('ROLE_ADMIN')">
+                                    <c:set var="isAdmin" value="true"/>
+                                </security:authorize>
+                                <c:set var="partnersProposal" value="${ user.partner == proposal.partner}"/>
+                                <c:set var="isRestricted" value="false"/>
+                                <c:forEach items="${logEntry.types}" var="entryType">
+                                    <c:if test="${entryType eq 'PROPOSAL_EDITED'}">
+                                    <c:set var="isRestricted" value="true"/>
+                                        <c:if test="${isAdmin or partnersProposal}">
+                                            <c:set var="isRestricted" value="false"/>
+                                        </c:if>
+                                    </c:if>
+                                </c:forEach>
+
+                                <c:if test="${! isRestricted}">
+                                <li class="${logEntry.typeJoin}">
+								    <div>
+                                        <fmt:formatDate value="${ logEntry.updatedAt }" type="both" timeStyle="long" dateStyle="short" /> - ${ logEntry.message }
+                                        <c:choose>
+                                        <c:when test="${ isAdmin }">
+                                            <form method="post" action="log" enctype="multipart/form-data">
+
+
+                                                <div class="controls">
+                                                    <input type="submit" name="submit" value="Add Note" class="add"/>
+                                                </div>
+                                                <div class="editfields">
+                                                    <!-- hidden input field to let server side know, which entry is affected -->
+                                                    <input type="hidden" name="entryId" value="${logEntry.id}" class="index"/>
+                                                </div>
+
+                                            </form>
+
+                                            <c:choose>
+                                                <c:when test="${!empty logEntry.notes}">
+                                                    <c:forEach items="${logEntry.notes}" var="note">
+
+                                                        <form method="post" action="log" enctype="multipart/form-data">
+
+                                                            <div class="editfields">
+                                                                <textarea style="height: 40px" name="text">${note.text}</textarea>
+                                                                <!-- hidden input field to let server side know, which entry is affected -->
+                                                                <input type="hidden" name="entryId" value="${logEntry.id}" class="index"/>
+                                                                <input type="hidden" name="noteId" value="${note.id}" class="index"/>
+                                                            </div>
+                                                            <div class="controls">
+                                                                <input type="submit" name="submit" value="Save Note" class="save"/>
+                                                                <input type="submit" name="submit" value="Delete Note" class="delete"/>
+                                                            </div>
+                                                         </form>
+
+                                                    </c:forEach>
+
+                                                </c:when>
+                                            </c:choose>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:forEach items="${logEntry.notes}" var="note">
+                                                <p class="box">${note.text}</p>
+                                            </c:forEach>
+                                        </c:otherwise>
+                                        </c:choose>
+
+                                     </div>
+
+								</li>
+                                </c:if>

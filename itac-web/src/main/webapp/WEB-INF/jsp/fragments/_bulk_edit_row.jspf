@@ -1,0 +1,74 @@
+     <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+    <%-- FRAGMENT FOR ADMIN BULK EDITING ROWS --%>
+
+    <tr>
+
+        <%-- GEMINI ID --%>
+        <c:choose>
+            <c:when test="${not empty proposal.itac.accept.programId}"><td class="bold nowrap"><a href="/tac/committees/${committee.id}/proposals/${proposal.id}">${proposal.itac.accept.programId}</a></td></c:when>
+            <c:otherwise><td class="nowrap">Not Available</td></c:otherwise>
+        </c:choose>
+
+       <%-- PARTNER REFERENCE --%>
+        <c:choose>
+            <c:when test="${not empty submission.accept}"><td class="bold nowrap"><a href="/tac/committees/${committee.id}/proposals/${proposal.id}">${submission.receipt.receiptId}</a></td></c:when>
+            <c:otherwise><td class="nowrap">Partner has not accepted</td></c:otherwise>
+        </c:choose>
+
+        <%-- PI --%>
+        <td><b>${proposal.phaseIProposal.investigators.pi.lastName}</b></td>
+
+        <%-- SITE --%>
+        <c:choose>
+            <c:when test="${empty proposal.site}"><td>Exchange</td></c:when>
+            <c:otherwise><td>${proposal.site.displayName}</td></c:otherwise>
+        </c:choose>
+
+        <%-- PARTNER RANKING --%>
+        <c:choose>
+            <c:when test="${not empty submission.accept}">
+                <td class="editable numeric right" proposalId="${proposal.id}" partnerKey="${submission.partner.partnerCountryKey}" targetClass="TacExtension" targetField="partnerRanking"><fmt:formatNumber value="${ submission.accept.ranking }" maxFractionDigits="2" type="number"/></td>
+            </c:when>
+            <c:otherwise><td/></c:otherwise>
+        </c:choose>
+
+        <%-- PARTNER TIME --%>
+        <c:choose>
+            <c:when test="${not empty submission.accept}">
+                <td class="editable numeric right" proposalId="${proposal.id}" partnerKey="${submission.partner.partnerCountryKey}" targetClass="TacExtension" targetField="partnerTime"><fmt:formatNumber value="${ submission.accept.recommend.valueInHours }" minFractionDigits="2" maxFractionDigits="2" type="number"/></td>
+            </c:when>
+            <c:otherwise><td/></c:otherwise>
+        </c:choose>
+
+        <%-- PARTNER COMMENT --%>
+        <td class="editableArea" proposalId="${proposal.id}" partnerKey="${submission.partner.partnerCountryKey}" targetClass="TacExtension" targetField="partnerComment">${ submission.comment }</td>
+
+        <%-- ITAC COMMENT --%>
+        <td class="editableArea" proposalId="${proposal.id}" partnerKey="${submission.partner.partnerCountryKey}" targetClass="ITacExtension" targetField="itacComment">${ proposal.itac.comment }</td>
+
+        <%-- PARTNER CONTACT --%>
+        <c:choose>
+            <c:when test="${not empty submission.accept}">
+                <td class="editableArea" proposalId="${proposal.id}" partnerKey="${submission.partner.partnerCountryKey}" targetClass="TacExtension" targetField="partnerContact">${ submission.accept.email }</td>
+            </c:when>
+            <c:otherwise><td/></c:otherwise>
+        </c:choose>
+
+        <c:choose>
+            <c:when test="${isAdmin}">
+                <%-- GEMINI COMMENT --%>
+                <td class="editableArea" proposalId="${proposal.id}" partnerKey="${submission.partner.partnerCountryKey}" targetClass="ITacExtension" targetField="geminiComment">${ proposal.itac.geminiComment }</td>
+
+                <%-- CONTACT SCIENTIST --%>
+                <td class="editableArea" proposalId="${proposal.id}" partnerKey="${submission.partner.partnerCountryKey}" targetClass="ITacExtension" targetField="contactScientistEmail">${ proposal.itac.accept.contact }</td>
+            </c:when>
+            <c:otherwise>
+                <td/>
+                <td/>
+            </c:otherwise>
+        </c:choose>
+
+
+    </tr>
+

@@ -1,0 +1,1561 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <sites id="0" display_name="North"/>
+    <sites id="1" display_name="South"/>
+    <ra_bin_sizes id="210" hours="0" minutes="30" seconds="0" fractions_of_seconds="0"/>
+    <dec_bin_sizes id="220" degrees="0" minutes="30" seconds="0" fractions_of_seconds="0"/>
+    <restricted_bins id="200" restricted_bin_type="WaterVaporPercentageRestrictedBin"
+                     description="Water Vapor less than 50%"
+                     units="%" value="50"/>
+    <restricted_bins id="201" restricted_bin_type="LgsObservationsRestrictedBin" description="LGS Observations"
+                     units="hours" value="10"/>
+    <semesters id="0" display_year="2010" name="A"/>
+    <semesters id="1" display_year="2010" name="B"/>
+    <semesters id="2" display_year="2011" name="A"/>
+    <semesters id="3" display_year="2011" name="B"/>
+    <band_restriction_rules id="4" rule_type="RapidTooRestrictionInBandOne" name="Rapid ToO restriction in band 1"/>
+    <band_restriction_rules id="5" rule_type="LgsRestrictionInBandsOneAndTwo" name="LGS restriction in bands 1 and 2"/>
+    <band_restriction_rules id="6" rule_type="Iq20RestrictionNotInBand3"
+                            name="IQ20 restriction cannot be scheduled in band 3"/>
+    <bin_configurations id="250" name="Bin Configuration 1" ra_bin_size_id="210"
+                        dec_bin_size_id="220" smoothing_length="5" editable="false"/>
+    <bin_configurations id="251" name="Bin Configuration 2" ra_bin_size_id="210"
+                        dec_bin_size_id="220" smoothing_length="5" editable="false"/>
+    <bin_configurations id="252" name="Bin Configuration 3" ra_bin_size_id="210"
+                        dec_bin_size_id="220" smoothing_length="5" editable="false"/>
+    <bin_configurations id="253" name="Bin Configuration 4" ra_bin_size_id="210"
+                        dec_bin_size_id="220" smoothing_length="5" editable="false"/>
+    <bin_configurations id="254" name="Bin Configuration 5" ra_bin_size_id="210"
+                        dec_bin_size_id="220" smoothing_length="5" editable="true"/>
+    <committees id="7" name="ITAC 2011-A" active="false" semester_id="2"/>
+    <committees id="8" name="ITAC 2011-B" semester_id="3"/>
+    <committees id="9" name="ITAC 2010-A" semester_id="0"/>
+    <committees id="10" name="ITAC 2010-B" active="true" semester_id="1"/>
+    <condition_sets id="260" name="Semester A"/>
+    <condition_sets id="261" name="Semester B"/>
+    <conditions id="270" condition_set_id="260" name="super-seeing, dark, photometric" image_quality="SUPER"
+                sky_background="DARK" cloud_cover="PHOTOMETRIC" water_vapor="NOT_APPLICABLE" available_percentage="5"/>
+    <conditions id="271" condition_set_id="260" name="super-seeing, grey/bright, photometric" image_quality="SUPER"
+                sky_background="GREY_BRIGHT" cloud_cover="PHOTOMETRIC" water_vapor="NOT_APPLICABLE"
+                available_percentage="5"/>
+    <conditions id="272" condition_set_id="260" name="super-seeing, cloudy" image_quality="SUPER"
+                sky_background="NOT_APPLICABLE" cloud_cover="CLOUDY" water_vapor="NOT_APPLICABLE"
+                available_percentage="10"/>
+    <conditions id="273" condition_set_id="260" name="good-seeing, dark, photometric" image_quality="GOOD"
+                sky_background="DARK" cloud_cover="PHOTOMETRIC" water_vapor="NOT_APPLICABLE" available_percentage="15"/>
+    <conditions id="274" condition_set_id="260" name="good-seeing, grey/bright, photometric" image_quality="GOOD"
+                sky_background="GREY_BRIGHT" cloud_cover="PHOTOMETRIC" water_vapor="NOT_APPLICABLE"
+                available_percentage="15"/>
+    <conditions id="275" condition_set_id="260" name="good-seeing, cloudy" image_quality="GOOD"
+                sky_background="NOT_APPLICABLE"
+                cloud_cover="CLOUDY" water_vapor="NOT_APPLICABLE" available_percentage="25"/>
+    <conditions id="276" condition_set_id="260" name="poor-seeing, photometric" image_quality="POOR"
+                sky_background="NOT_APPLICABLE" cloud_cover="PHOTOMETRIC" water_vapor="NOT_APPLICABLE"
+                available_percentage="15"/>
+    <conditions id="277" condition_set_id="260" name="poor-seeing, cloudy" image_quality="POOR"
+                sky_background="NOT_APPLICABLE"
+                cloud_cover="CLOUDY" water_vapor="NOT_APPLICABLE" available_percentage="20"/>
+    <conditions id="278" condition_set_id="260" name="terrible seeing" image_quality="ANY"
+                sky_background="NOT_APPLICABLE"
+                cloud_cover="NOT_APPLICABLE" water_vapor="NOT_APPLICABLE" available_percentage="5"/>
+    <conditions id="280" condition_set_id="261" name="super-seeing, dark, photometric" image_quality="SUPER"
+                sky_background="DARK" cloud_cover="PHOTOMETRIC" water_vapor="NOT_APPLICABLE" available_percentage="5"/>
+    <conditions id="281" condition_set_id="261" name="super-seeing, grey/bright, photometric" image_quality="SUPER"
+                sky_background="GREY_BRIGHT" cloud_cover="PHOTOMETRIC" water_vapor="NOT_APPLICABLE"
+                available_percentage="5"/>
+    <conditions id="282" condition_set_id="261" name="super-seeing, cloudy" image_quality="SUPER"
+                sky_background="NOT_APPLICABLE" cloud_cover="CLOUDY" water_vapor="NOT_APPLICABLE"
+                available_percentage="10"/>
+    <conditions id="283" condition_set_id="261" name="good-seeing, dark, photometric" image_quality="GOOD"
+                sky_background="DARK" cloud_cover="PHOTOMETRIC" water_vapor="NOT_APPLICABLE" available_percentage="15"/>
+    <conditions id="284" condition_set_id="261" name="good-seeing, grey/bright, photometric" image_quality="GOOD"
+                sky_background="GREY_BRIGHT" cloud_cover="PHOTOMETRIC" water_vapor="NOT_APPLICABLE"
+                available_percentage="15"/>
+    <conditions id="285" condition_set_id="261" name="good-seeing, cloudy" image_quality="GOOD"
+                sky_background="NOT_APPLICABLE"
+                cloud_cover="CLOUDY" water_vapor="NOT_APPLICABLE" available_percentage="25"/>
+    <conditions id="286" condition_set_id="261" name="poor-seeing, photometric" image_quality="POOR"
+                sky_background="NOT_APPLICABLE" cloud_cover="PHOTOMETRIC" water_vapor="NOT_APPLICABLE"
+                available_percentage="15"/>
+    <conditions id="287" condition_set_id="261" name="poor-seeing, cloudy" image_quality="POOR"
+                sky_background="NOT_APPLICABLE"
+                cloud_cover="CLOUDY" water_vapor="NOT_APPLICABLE" available_percentage="20"/>
+    <conditions id="288" condition_set_id="261" name="terrible seeing" image_quality="ANY"
+                sky_background="NOT_APPLICABLE"
+                cloud_cover="NOT_APPLICABLE" water_vapor="NOT_APPLICABLE" available_percentage="5"/>
+
+    <p1_times id="10082" time_amount="0.0" unit="hours"/>
+    <p1_times id="10086" time_amount="0.33" unit="hours"/>
+    <p1_times id="10089" time_amount="0.33" unit="hours"/>
+    <p1_times id="10092" time_amount="0.34" unit="hours"/>
+    <p1_times id="10095" time_amount="0.33" unit="hours"/>
+    <p1_times id="10098" time_amount="0.33" unit="hours"/>
+    <p1_times id="10101" time_amount="0.34" unit="hours"/>
+    <p1_times id="10104" time_amount="38.0" unit="hours"/>
+    <p1_times id="10109" time_amount="5.0" unit="hours"/>
+    <p1_times id="10110" time_amount="40.0" unit="hours"/>
+    <p1_times id="10120" time_amount="40.0" unit="hours"/>
+    <p1_times id="10121" time_amount="40.0" unit="hours"/>
+    <p1_times id="20021" time_amount="40.0" unit="hours"/>
+    <p1_times id="20022" time_amount="40.0" unit="hours"/>
+    <p1_times id="20023" time_amount="40.0" unit="hours"/>
+    <p1_times id="20024" time_amount="40.0" unit="hours"/>
+    <p1_times id="20025" time_amount="40.0" unit="hours"/>
+    <p1_times id="10124" time_amount="4.0" unit="nights"/>
+    <p1_times id="10126" time_amount="4.0" unit="nights"/>
+    <p1_times id="10129" time_amount="0.0" unit="nights"/>
+    <p1_times id="10130" time_amount="1.0" unit="nights"/>
+    <p1_contacts id="10004"/>
+    <p1_contacts id="10006"/>
+    <p1_contacts id="10008"/>
+    <p1_contacts id="10010"/>
+    <p1_contacts id="10012"/>
+    <p1_contacts id="10014"/>
+
+    <p1_contacts id="20008"/>
+    <p1_contacts id="20010"/>
+    <p1_contacts id="20012"/>
+    <p1_contacts id="20014"/>
+
+    <p1_contacts id="30008"/>
+    <p1_contacts id="30010"/>
+    <p1_contacts id="30012"/>
+    <p1_contacts id="30014"/>
+
+    <p1_contacts id="40004"/>
+    <p1_contacts id="40006"/>
+    <p1_contacts id="40008"/>
+    <p1_contacts id="40010"/>
+    <p1_contacts id="40012"/>
+    <p1_contacts id="40014"/>
+    <p1_contacts id="40015"/>
+    <p1_contacts id="40016"/>
+    <p1_contacts id="40011"/>
+
+
+    <p1_contacts id="10139"/>
+    <p1_sites id="10005"
+              country="USA" institution="Gemini Observatory - North" contact_id="10006"/>
+    <p1_sites id="10138" country="USA" institution="Gemini Observatory" contact_id="10139"/>
+    <p1_addresses address="Gemini Observatory" site_id="10005"/>
+    <p1_addresses address="670 N. Aohoku Place" site_id="10005"/>
+    <p1_addresses address="Hilo" site_id="10005"/>
+    <p1_addresses address="HI" site_id="10005"/>
+    <p1_addresses address="96720" site_id="10005"/>
+    <p1_addresses address="670 A&apos;Ohoku Place" site_id="10138"/>
+    <p1_addresses address="Hilo, HI 96720" site_id="10138"/>
+    <p1_proposal_supports id="10122"/>
+    <p1_allocations id="10123"
+                    proposal_support_id="10122" reference="GS-2009A-C-6" awarded_time_id="10124" percent_useful="40"
+                    comment="One night of excellent weather. Data are reduced (some is shown in Fig. 2 of this proposal). Planning to write a Letter to ApJ this autumn, as well as one or more substantial papers later."/>
+    <p1_allocations id="10125"
+                    proposal_support_id="10122" reference="GS-2008A-C-2" awarded_time_id="10126" percent_useful="10"
+                    comment="Data are reduced, but are poor quality due to bad weather."/>
+    <p1_attachment_sets id="10016"
+                        text="The Galactic center (GC) is a fascinating environment, containing a multitude of extraordinary phenomena and extraordinary objects, not the least of which are three dense clusters of young and hot stars and a multimillion solar mass black hole.  Until recently it was thought that the interstellar gas within the central few hundred parsecs of the Galaxy consisted of three major components: an ultra high temperature X-ray-emitting plasma; ionized gas at T~10^4K responsible for the well-studied fine structure and radio recombination line emission; and cool and dense molecular clouds, which have also been observed in great detail at radio wavelengths.  However, our infrared spectroscopy of H3+ and CO, and in particular of a key absorption line from a metastable state of that H3+ (Goto et al 2002, Oka et al. 2005), has clearly revealed the presence of a fourth component, which in terms of density (50-200 cm-3) has the characteristics of Galactic diffuse cloud material, but which is considerably warmer (200-300 K).  This warm and diffuse environment appears to be unique to the Galactic center; it has not been found in any other Galactic clouds surveyed in H3+ to date. &#xA;&#xA;Spectroscopy of H3+ is difficult because its lines are weak owing to its low abundance. Until recently we have had available as probes of the line of sight to the Galactic center only a small number of luminous sources in the central cluster and out to about 30 pc, which are both sufficiently bright for high resolution spectroscopy and have smooth infrared spectra so the H3+ line profiles are uncontaminated. Our spectra of these sources  (e.g., Oka et al. 2005; Goto et al. 2008) show that the warm and diffuse component is present on every sightline and thus suggest that the environment in which it is found takes up a large fraction of the volume in the central few hundred parsecs.  That would strongly contradict the previous conceptual picture of GC gas (e.g., as illustrated in Lazio &amp; Cordes 1998), in which the warm and diffuse environment was not included at all. However, to truly evaluate the extent and physical nature of this new type of environment, sightlines covering a wider spatial extent of the GC are needed. It is therefore essential to find additional bright sources with featureless (or nearly featureless) spectra - either hot stars or stars encased in dense shells of warm dust - in a more extended region of the Galactic center.&#xA;&#xA;The GC is filled with bright infrared sources, but everywhere except at locations of the clusters of hot stars the overwhelming majority of them are red giants, whose complex photospheric spectra make them totally unsuitable as probes of the interstellar medium. Until very recently no smooth-spectrum objects were know far from those clusters. However, we have begun to use 2MASS and Spitzer (GLIMPSE) photometry to identify bright objects in the GC likely to have opaque dust shells. An oversimplified description of the technique is that the shorter wavelength IR colors are mainly used to weed out foreground (low extinction) sources and &quot;normal&quot; red giants, and the longer wavelength IR colors are mainly used to identify emission from dust shells.  However, the situation is far from straightforward, and our initial success rate, although orders of magnitude better than a random sampling, was only ~10%. &#xA;&#xA;The key second step in the process, and the step for which we are requesting time here, is to obtain low-resolution K band spectra, in particular covering the first overtone CO bands, to see if the candidates do indeed have smooth spectra. Once that is verified we proceed to high-resolution spectroscopy of interstellar CO and H3+.&#xA;&#xA;Our initial verification observations used UKIRT to obtain the low-resolution K-band spectra, but that option is no longer available. As mentioned above to date our identification technique is only moderately successful in terms of the fraction of candidates that indeed are smooth-spectrum sources (see Fig. 1).  However, in terms of what initial high-resolution spectra  of H3+ and CO toward these sources is revealing, the technique is already spectacularly successful, as illustrated in Fig. 2, which contains spectra just obtained with Phoenix on Gemini South in July 2009. The spectra of the two 2MASS sources in the figure are still to be understood in detail, but clearly reveal remarkable information about the gas dynamics, much of which is probably local to the Galactic center. &#xA;&#xA;Based on the results of our initial verification observations we have refined our selection technique and have produced a new set of ~120 GLIMPSE/2MASS candidates with -1.2 deg &lt; l &lt; +1.2 deg and -0.2 deg &lt; b &lt; +0.2 deg. We request time to obtain low-resolution K band spectra of each of them using NIRI. This search for smooth-spectrum sources is a key step to learning the extent and nature of the diffuse gas in the CMZ as well as obtaining similar information about other GC clouds. Even if the success rate on this new sample is no better than the previous search, the program should discover a dozen new and invaluable lines of sight for probing the GC. "/>
+    <p1_attachment_sets id="10140"
+                        text="Our new list of candidates contains 2MASS objects with 7&lt;K&lt;12, with most having K~9-10. They have red Spitzer/IRAC colors, with IRAC(3.6um) - IRAC(8um) &gt;2.  Only quick low-resolution spectra are needed with high enough S/N to clearly distinguish between a red giant spectrum (containing CO band heads) and a dust shell spectrum (smooth continuum steeply rising to longer wavelengths).  Thus, the spectra can be obtained in any weather condition in which clouds are at least 10% transmitting.  The source are in the GC, where many bright stars are available as guide stars.  We should be able to ensure that our guide stars are bright enough to be usable in CC90 conditions (2.5 mags of extinction).&#xA;&#xA;Although we would like occasional observations of calibration stars, it is not essential that one be observed on every night that a target is observed, as due to the prominence of the CO bands in red giants it should be easily possible, without ratioing, to determine if a target is a red giant or has a smooth continuum steeply rising to longer wavelength. Thus even if given low priority the program can easily be used as a filler in good conditions as well as in poor weather.&#xA;&#xA;The overhead associated with an individual NIRI spectroscopic observation is currently listed as 13 minutes. We suspect that our overheads will be a bit less than this because our targets are bright and are close to one another on the sky. Only a few minutes of spectroscopy is required per sourcee. For now we assume 20 minutes of total time per target and therefore request 40 hours. Any allocation less than this amount will be useful."/>
+    <p1_attachments id="10017"
+                    name="Fig 1 - Low resolution UKIRT/UISTspectra of two candidate smooth-spectrum GC sources, from our first attempt to identify such sources. The spectrum at left is clearly from a dust-embedded object suitable for absorption spectroscopy of the interstellar medium, while the object at right, a highly extinguished and very cool red giant, with CO and steam bands, is unsuitable. Emission features are due at least in part to H I recombination lines in the photosphere of the A-type calibration star. "
+                    source="GSTAFF_2010A_001_1.jpg" file_type="jpg" attachment_set_id="10016"/>
+    <p1_attachments id="10018"
+                    name="Fig 2a - Gemini South / Phoenix spectra of the H3+ R(1,1)l line at 3.715um and CO lines near 2.34um. The top spectrum of source GCS3-2, from Oka et al. (2005) shows narrow absorption lines, which have counterparts in CO (see Fig 2b), due to gas in foreground spiral arms, and a broad trough of absorption (not seen in CO) due to warm and diffuse gas in the inner few hundred parsecs of the Galaxy (see Oka et al 2005 for detailed discussion). The lower two spectra, obtained in July 2009, are of two smooth-spectrum sources identified in the UKIRT survey. The middle spectrum (same source as shown in Fig 1) contains at least four absorption components some of which are likely in foreground spiral arm material, but others of which are local to the GC. This line of sight is in the direction of the massive H II region Sgr C.  The remarkable spectrum at bottom consists of ~10 discrete absorption components. Further analysis and comparison with the corresponding CO spectrum (Fig 2b) is required to determine if this line of sight, which is in the direction of the Sgr B2 molecular cloud, includes the warm and diffuse component seen toward GCS3-2 and other GC sources.   "
+                    source="GSTAFF_2010A_001_2.jpg" file_type="jpg" attachment_set_id="10016"/>
+    <p1_attachments id="10019"
+                    name="Fig 2b - Spectra of the CO 2-0 R(1) line at 2.34um for the same targets as in Fig. 2a."
+                    source="GSTAFF_2010A_001_3.jpg"
+                    file_type="jpg" attachment_set_id="10016"/>
+    <p1_coordinate_systems id="10022"
+                           type="hmsdeg" system_option="J2000" c1="17:45:49.82" c2="-28:56:51.2"/>
+    <p1_coordinate_systems id="10026"
+                           type="hmsdeg" system_option="J2000" c1="17:44:30.5" c2="-29:25:7.4"/>
+    <p1_coordinate_systems id="10030"
+                           type="hmsdeg" system_option="J2000" c1="17:47:36.36" c2="-28:23:28.4"/>
+    <p1_coordinate_systems id="20030"
+                           type="hmsdeg" system_option="J2000" c1="17:47:36.36" c2="-28:23:28.4"/>
+
+    <p1_coordinate_systems id="10034"
+                           type="hmsdeg" system_option="J2000" c1="17:46:22.11" c2="-28:46:22.6"/>
+    <p1_coordinate_systems id="10038"
+                           type="hmsdeg" system_option="J2000" c1="17:43:38.01" c2="-29:39:49.1"/>
+    <p1_coordinate_systems id="10042"
+                           type="hmsdeg" system_option="J2000" c1="17:44:58.95" c2="-29:23:25.9"/>
+    <p1_coordinate_systems id="20042"
+                           type="hmsdeg" system_option="J2000" c1="17:44:58.95" c2="-29:23:25.9"/>
+
+    <p1_coordinate_systems id="10046"
+                           type="hmsdeg" system_option="J2000" c1="17:45:0.0" c2="-29:00:0.0"/>
+    <p1_coordinate_systems id="10050"
+                           type="hmsdeg" system_option="J2000" c1="17:45:48.01" c2="-28:50:41.5"/>
+    <p1_coordinate_systems id="10054"
+                           type="hmsdeg" system_option="J2000" c1="17:44:58.898" c2="-29:25:53.33"/>
+    <p1_coordinate_systems id="10058"
+                           type="hmsdeg" system_option="J2000" c1="17:48:03.802" c2="-28:24:54.43"/>
+    <p1_coordinate_systems id="20058"
+                           type="hmsdeg" system_option="J2000" c1="17:48:03.802" c2="-28:24:54.43"/>
+
+    <p1_coordinate_systems id="10062"
+                           type="hmsdeg" system_option="J2000" c1="17:46:00.79" c2="-28:41:50.78"/>
+    <p1_coordinate_systems id="10066"
+                           type="hmsdeg" system_option="J2000" c1="17:43:19.8" c2="-29:35:00.2"/>
+    <p1_coordinate_systems id="10070"
+                           type="hmsdeg" system_option="J2000" c1="17:45:18.257" c2="-29:28:37.99"/>
+    <p1_coordinate_systems id="10074"
+                           type="hmsdeg" system_option="J2000" c1="17:45:25.807" c2="-28:56:27.6"/>
+    <p1_emails email="tgeballe@gemini.edu" contact_id="10004"/>
+    <p1_emails email="t-oka@uchicago.edu" contact_id="10008"/>
+    <p1_emails email="nindrio2@astro.uiuc.edu" contact_id="10010"/>
+    <p1_emails email="Ben McCall &lt;bjmccall@uiuc.edu&gt;" contact_id="10012"/>
+    <p1_emails email="mgoto@mpia-hd.mpg.de" contact_id="10014"/>
+    <p1_emails email="helpadmin@gemini.edu" contact_id="10139"/>
+    <p1_extensions id="10107"/>
+    <p1_extensions id="10111"/>
+    <p1_extensions id="10112"/>
+    <p1_extensions id="10119"/>
+    <p1_extensions id="10131"/>
+    <p1_faxes fax="974-2599" contact_id="10004"/>
+    <p1_faxes fax="808-935-9235" contact_id="10139"/>
+    <p1_gemini_allocation_extensions extension_id="10111"
+                                     related_proposals_info="p1_gemini_allocation_extensions[10111] info "/>
+    <p1_gemini_band3_extensions extension_id="10107" minimum_usable_time_id="10109"
+                                requested_time_id="10110"
+                                consideration_text="Our observing conditions for Bands 1 and 2 are already very relaxed.  We can provide more than 120 targets if more time is available."
+                                override_suggested_value="true" is_usable_in_band3="true"
+                                constraint_reference_id="10108"/>
+    <p1_host_countries/>
+    <p1_investigators id="10003"
+                      type="PrimaryInvestigator" visiting="false" first_name="Thomas R. " last_name="Geballe"
+                      status="phd" site_id="10005"
+                      contact_id="10004" institution="10016"/>
+
+    <p1_investigators_container id="10002"
+                                primary_investigator_id="10003"/>
+
+    <p1_investigators id="10007"
+                      type="CoInvestigator" visiting="false" first_name="Takeshi" last_name="Oka"
+                      institution="University of Chicago"
+                      status="phd" investigators_container_id="10002" contact_id="10008"/>
+    <p1_investigators id="10009"
+                      type="CoInvestigator" visiting="false" first_name="Nick" last_name="Indriolo"
+                      institution="University of Illinois at Urbana-Champaign"
+                      status="gradNoThesis" investigators_container_id="10002" contact_id="10010"/>
+    <p1_investigators id="40011"
+                      type="CoInvestigator" visiting="false" first_name="Ben" last_name="McCall"
+                      institution="University of Illinois at Urbana-Champaign"
+                      status="phd" investigators_container_id="10002" contact_id="10012"/>
+    <p1_investigators id="10013"
+                      type="CoInvestigator" visiting="false" first_name="Miwa" last_name="Goto"
+                      institution="Max Planck Institutue for Astronomy - Heidelberg"
+                      status="phd" investigators_container_id="10002" contact_id="10014"/>
+
+
+    <p1_keyword_sets id="10015"
+                     category="galactic"/>
+    <p1_target_catalogs id="10020"/>
+    <p1_commons id="10001"
+                abstract="We request poor weather time to expand our search for bright objects with featureless infrared spectra in the line of sight to the Galactic center (GC). Such objects are needed in order to more thoroughly study the interstellar environment toward and within the center. Our previous research has used high resolution spectroscopy of H3+ and CO toward known sources in the central few tens of parsecs of the Galaxy to identify a previously unknown but apparently extensive component of warm  and diffuse  interstellar gas. Evidence to date suggests that this component pervades the central molecular zone (CMZ), which extends ~170 pc from the center, but it is necessary to identify additional smooth-spectrum sources further from the center to use as probes to determine the gas&apos; true extent. We have started identifying such sources based on 2MASS and GLIMPSE photometry and have already obtained some striking results both within and near the border of the CMZ.   The poor weather time requested here would allow us to survey 120 candidate smooth-spectrum objects and likely will produce a host of new sightlines that can be investigated using high-resolution IR spectroscopy."
+                title="Additional probes of the Galactic center&apos;s interstellar medium" version=""
+                investigators_container_id="10002"
+                keyword_set_id="10015" scientific_justification_id="10016" target_catalog_id="10020"/>
+    <p1_itac_extensions/>
+    <p1_itac_scheduled_date_ranges/>
+    <p1_keywords keyword="Absorption lines" keyword_set_id="10015"/>
+    <p1_keywords keyword="Dust" keyword_set_id="10015"/>
+    <p1_keywords keyword="Galactic center" keyword_set_id="10015"/>
+    <p1_keywords keyword="Molecular clouds" keyword_set_id="10015"/>
+    <p1_keywords keyword="Molecules" keyword_set_id="10015"/>
+    <p1_keywords keyword="Survey" keyword_set_id="10015"/>
+    <p1_reference_list_supports id="10080" property_name="ConstraintReferences"/>
+    <p1_reference_list_supports id="10083" property_name="ResourceReferences"/>
+    <p1_reference_list_supports id="10087" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="20087" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="30087" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="10090" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="20090" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="30090" property_name="TargetReferences"/>
+
+    <p1_reference_list_supports id="10093" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="20093" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="30093" property_name="TargetReferences"/>
+
+    <p1_reference_list_supports id="10096" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="20096" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="30096" property_name="TargetReferences"/>
+
+    <p1_reference_list_supports id="10099" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="20099" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="30099" property_name="TargetReferences"/>
+
+    <p1_reference_list_supports id="10102" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="20102" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="30102" property_name="TargetReferences"/>
+
+
+    <p1_reference_list_supports id="10105" property_name="TargetReferences"/>
+    <p1_observation_lists id="10079"
+                          requested_time_id="10082" constraint_list_id="10080" resource_list_id="10083"/>
+    <p1_observations id="10085"
+                     exposure_time_id="10086" observation_list_id="10079" observation_target_list_support_id="10087"/>
+    <p1_observations id="10088"
+                     exposure_time_id="10089" observation_list_id="10079" observation_target_list_support_id="10090"/>
+    <p1_observations id="10091"
+                     exposure_time_id="10092" observation_list_id="10079" observation_target_list_support_id="10093"/>
+    <p1_observations id="10094"
+                     exposure_time_id="10095" observation_list_id="10079" observation_target_list_support_id="10096"/>
+    <p1_observations id="10097"
+                     exposure_time_id="10098" observation_list_id="10079" observation_target_list_support_id="10099"/>
+    <p1_observations id="10100"
+                     exposure_time_id="10101" observation_list_id="10079" observation_target_list_support_id="10102"/>
+    <p1_observations id="10103"
+                     exposure_time_id="10104" observation_list_id="10079" observation_target_list_support_id="10105"/>
+    <p1_proposal_keys id="10077" value="000-10077-1234"/>
+    <p1_documents id="10000" created="2009-09-23 00:00:00.0" last_modified="2009-11-05 00:00:00.0"
+                  proposal_key_id="10077" common_id="10001" parent_id = "100" parent_class="class edu.gemini.tac.persistence.Proposal"/>
+    <p1_schedulings id="10128"
+                    impossible_comment="GC unavailable" optimal_comment="GC is available for maximum time each night"
+                    sync_comment=""
+                    min_allocation_time_id="10130" future_time_id="10129"/>
+    <p1_observatory_extensions id="10106" type="GeminiPart"
+
+                               sub_details_extension_id="10112" gemini_band3_extension_id="10107"
+                               gemini_allocation_extension_id="10111" itac_extension_id="20133" parent_class="class edu.gemini.phase1.model.P1Observatory" parent_id="10078"/>
+    <p1_observatories id="10078"
+                      observatory_id="gemini" document_id="10000" site_id="10138" observation_list_id="10079"
+                      proposal_support_id="10122"
+                      scheduling_id="10128" technical_justification_id="10140" observatory_extension_id="10106"
+                      resource_list_id="10131"
+                      requirement_id="10127" observing_mode="queue" too_trigger="no" parent_class="class edu.gemini.phase1.model.P1Document" parent_id="10000"/>
+    <p1_optimal_date_ranges start_date="2010-06-01 00:00:00.0" end_date="2010-07-14 00:00:00.0"
+                            scheduling_id="10128"/>
+    <p1_partner_countries/>
+    <p1_partner_submissions id="10114"
+                            requested_time="5.0"
+                            minimum_requested_time="5.0"
+                            reference_number="GSTAFF-2010A-001" flag="true" submission_status="pending"
+                            contact_first_name="Thomas R. "
+                            contact_last_name="Geballe" partner_type_code="5" partner_name="Gemini Staff"
+                            partner_key="GeminiStaff"
+                            partner_is_exclusive="false" partner_is_valid="true"/>
+    <p1_phones phone="974-2519" contact_id="10004"/>
+    <p1_phones phone="808-974-2500" contact_id="10139"/>
+    <p1_publications order_nr="0" proposal_support_id="10122"
+                     text="Hot and Diffuse Clouds near the Galactic Center Probed by Metastable H3+&#xA;T. Oka, T.R. Geballe, M. Goto, T. Usuda, B.J. McCall&#xA;ApJ, 632, 882-893 (2005)&#xA;"/>
+    <p1_publications order_nr="1" proposal_support_id="10122"
+                     text="H3+ toward and within the Galactic Centre&#xA;T.R. Geballe&#xA;Philosophical Transactions of the Royal Soc. A, 364, 3035-3042 (2006)&#xA;"/>
+    <p1_publications order_nr="2" proposal_support_id="10122"
+                     text="H3+ in Diffuse Interstellar Clouds: A Tracer of the Cosmic Ray Ionization Rate.&#xA;N. Indriolo, T. R. Geballe, T. Oka, B. J. McCall&#xA;ApJ, 671, 1736  (2007)&#xA;"/>
+    <p1_publications order_nr="3" proposal_support_id="10122"
+                     text="Absorption Line Survey of H3+ toward the Galactic Center II. Eight Infrared Sources within 30 pc of the Galactic Center&#xA;M. Goto, T. Usuda, T. Nagata, T. R. Geballe, B. J. McCall, N. Indriolo, H. Suto, T. Henning, C. P. Morong, T. Oka&#xA;ApJ, 688, 306-319  (2008)&#xA;"/>
+    <p1_publications order_nr="4" proposal_support_id="10122"
+                     text="Absorption Line Survey of H3+ toward the Galactic Center Sources GCS3-2 and GC IRS3&#xA;M. Goto, B.J. McCall, T.R. Geballe, T. Usuda, N. Kobayashi, H. Terada, T. Oka&#xA;PASJ, 54, 951 (2002)&#xA;"/>
+    <p1_references id="10024"
+                   state="1" reference_list_support_id="10087" referent_id="10021" referent_support_id="10023"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="10028"
+                   state="1" reference_list_support_id="10090" referent_id="10025" referent_support_id="10027"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="10032"
+                   state="1" reference_list_support_id="10093" referent_id="10029" referent_support_id="10031"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="10036"
+                   state="1" reference_list_support_id="10096" referent_id="10033" referent_support_id="10035"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="10040"
+                   state="1" reference_list_support_id="10099" referent_id="10037" referent_support_id="10039"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="10044"
+                   state="1" reference_list_support_id="10102" referent_id="10041" referent_support_id="10043"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="10048"
+                   state="1" reference_list_support_id="10105" referent_id="10045" referent_support_id="10047"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="10052"
+                   state="1" reference_list_support_id="10087" referent_id="10049" referent_support_id="10051"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="10056"
+                   state="1" reference_list_support_id="10090" referent_id="10053" referent_support_id="10055"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="10060"
+                   state="1" reference_list_support_id="10093" referent_id="10057" referent_support_id="10059"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="10064"
+                   state="1" reference_list_support_id="10096" referent_id="10061" referent_support_id="10063"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="10068"
+                   state="1" reference_list_support_id="10099" referent_id="10065" referent_support_id="10067"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="10072"
+                   state="1" reference_list_support_id="10102" referent_id="10069" referent_support_id="10071"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="10076"
+                   state="1" reference_list_support_id="10105" referent_id="10073" referent_support_id="10075"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="10081"
+                   state="1" reference_list_support_id="10080" referent_id="10117" referent_support_id="10118"
+                   referent_class="class edu.gemini.phase1.geminiExt.model.SiteQuality"/>
+    <p1_references id="10084"
+                   state="1" reference_list_support_id="10083" referent_id="10133" referent_support_id="10134"
+                   referent_class="class edu.gemini.phase1.model.P1Resource"/>
+    <p1_references id="10108" state="1" referent_id="10115" referent_support_id="10116"
+                   referent_class="class edu.gemini.phase1.geminiExt.model.SiteQuality"/>
+    <p1_referent_supports id="-1" referent_support_referent_id="target-PLACEHOLDER"/>
+    <p1_referent_supports id="-2" referent_support_referent_id="constraint-PLACEHOLDER"/>
+    <p1_referent_supports id="10023" referent_support_referent_id="target-1119541416"/>
+    <p1_referent_supports id="10027" referent_support_referent_id="target-1872474714"/>
+    <p1_referent_supports id="10031" referent_support_referent_id="target-501583032"/>
+    <p1_referent_supports id="10035" referent_support_referent_id="target-1287251034"/>
+    <p1_referent_supports id="10039" referent_support_referent_id="target-1712325475"/>
+    <p1_referent_supports id="10043" referent_support_referent_id="target-1208381540"/>
+    <p1_referent_supports id="10047" referent_support_referent_id="target-9949215"/>
+    <p1_referent_supports id="10051" referent_support_referent_id="target-2028347345"/>
+    <p1_referent_supports id="10055" referent_support_referent_id="target-1457155060"/>
+    <p1_referent_supports id="10059" referent_support_referent_id="target-1232704349"/>
+    <p1_referent_supports id="10063" referent_support_referent_id="target-1077868560"/>
+    <p1_referent_supports id="10067" referent_support_referent_id="target-625904878"/>
+    <p1_referent_supports id="10071" referent_support_referent_id="target-515693101"/>
+    <p1_referent_supports id="10075" referent_support_referent_id="target-1860215686"/>
+    <p1_referent_supports id="10116" referent_support_referent_id="constraint-46635017"/>
+    <p1_referent_supports id="10118" referent_support_referent_id="constraint-2110683211"/>
+    <p1_referent_supports id="10134" referent_support_referent_id="gemNIRI-1"/>
+    <p1_requirements id="10127"
+                     staff_support="none"/>
+    <p1_resource_categories id="10132"
+                            resource_list_id="10131" resource_type="Gemini North"/>
+    <p1_resource_categories id="20132"
+                            resource_list_id="20131" resource_type="Gemini North"/>
+    <p1_resource_categories id="30132"
+                            resource_list_id="30131" resource_type="Gemini North"/>
+    <p1_resources id="10133"
+                  resource_category_id="10132" referent_support_id="10134" name="NIRI" category_type="Gemini North"
+                  nickname=""
+                  string_id="gemNIRI-1"/>
+    <p1_resource_components id="10135"
+                            resource_id="10133" resource_component_type="Camera"/>
+    <p1_resource_components id="10136"
+                            resource_id="10133" resource_component_type="Disperser"/>
+    <p1_resource_components id="10137"
+                            resource_id="10133" resource_component_type="Focal Plane Unit"/>
+    <p1_resource_component_names resource_component_id="10135" name="f/6  (0.12 arcsec)"/>
+    <p1_resource_component_names resource_component_id="10136" name="K-grism"/>
+    <p1_resource_component_names resource_component_id="10137" name="f/6 6-pix slit center"/>
+    <p1_resource_lists extension_id="10131"/>
+    <p1_impossible_date_ranges start_date="2010-02-01 00:00:00.0" end_date="2010-03-21 00:00:00.0"
+                               scheduling_id="10128"/>
+    <p1_site_qualities id="10115"
+                       name="Band 3 Observing Conditions" cloud_cover_key="80" image_quality_key="Any"
+                       sky_background_key="Any"
+                       water_vapor_key="Any" observatory_extension_id="10106" referent_support_id="10116"/>
+    <p1_site_qualities id="10117"
+                       name="Global Default" cloud_cover_key="80" image_quality_key="Any" sky_background_key="Any"
+                       water_vapor_key="Any"
+                       observatory_extension_id="10106" referent_support_id="10118"/>
+    <p1_submission_country_partner_submissions submission_id="10113"
+                                               partner_submission_id="10114" type_code="5" name="Gemini Staff"
+                                               key="GeminiStaff" exclusive="false" valid="true"/>
+    <p1_submissions id="10113"
+
+                    total_requested_time="40.0" total_minimum_requested_time="5.0" unit="hours"/>
+    <p1_sub_details_extensions extension_id="10112" submission_id="10113"/>
+    <p1_sync_observing_date_ranges/>
+    <p1_tac_extensions extension_id="10119" observatory_extension_id="10106" partner_ranking="16"
+                       partner_time_id="10121" partner_minimum_time_id="10120" partner_comment=""
+                       partner_received_date="2009-09-23 00:00:00.0"
+                       partner_support_email="bat@baz" poor_weather_flag="true" partner_type_code="5"
+                       partner_name="Gemini Staff" partner_key="GeminiStaff"
+                       partner_is_exclusive="false" partner_is_valid="true" partner_original_time_id="20021" />
+    <p1_targets id="10021"
+                name="J17454982-2856512 "
+                brightness="K=8.8" target_type="science" target_catalog_id="10020" coordinate_system_id="10022"
+                referent_support_id="10023"/>
+    <p1_targets id="10025"
+                name="J17443050-2925074"
+                brightness="K=9.3" target_type="science" target_catalog_id="10020" coordinate_system_id="10026"
+                referent_support_id="10027"/>
+    <p1_targets id="10029"
+                name="J17473636-2823284"
+                brightness="K=9.3" target_type="science" target_catalog_id="10020" coordinate_system_id="10030"
+                referent_support_id="10031"/>
+    <p1_targets id="20029"
+                name="J17473636-2823284"
+                brightness="K=9.3" target_type="science" target_catalog_id="20020" coordinate_system_id="20030"
+                referent_support_id="-1"/>
+    <p1_targets id="10033"
+                name="J17462211-2846226"
+                brightness="K=9.2" target_type="science" target_catalog_id="10020" coordinate_system_id="10034"
+                referent_support_id="10035"/>
+    <p1_targets id="10037"
+                name="J17433801-2939491  "
+                brightness="K=10.1" target_type="science" target_catalog_id="10020" coordinate_system_id="10038"
+                referent_support_id="10039"/>
+    <p1_targets id="10041"
+                name="J17445895-2923259  "
+                brightness="K=11.1" target_type="science" target_catalog_id="10020" coordinate_system_id="10042"
+                referent_support_id="10043"/>
+    <p1_targets id="20041"
+                name="J17445895-2923259  "
+                brightness="K=11.1" target_type="science" target_catalog_id="20020" coordinate_system_id="10042"
+                referent_support_id="10043"/>
+    <p1_targets id="10045"
+                name="114 additional targets"
+                brightness="K=8-12" target_type="science" target_catalog_id="10020" coordinate_system_id="10046"
+                referent_support_id="10047"/>
+    <p1_targets id="10049"
+                name="GSC0684001264"
+                brightness="11.24 mag" target_type="wfs" target_catalog_id="10020" coordinate_system_id="10050"
+                referent_support_id="10051"/>
+    <p1_targets id="10053"
+                name="GSC0684000967"
+                brightness="10.49 mag" target_type="wfs" target_catalog_id="10020" coordinate_system_id="10054"
+                referent_support_id="10055"/>
+    <p1_targets id="10057"
+                name="GSC0684000179"
+                brightness="10.77 mag" target_type="wfs" target_catalog_id="10020" coordinate_system_id="10058"
+                referent_support_id="10059"/>
+
+    <p1_referent_supports id="20059" referent_support_referent_id="target-1232704349"/>
+    <p1_targets id="20057"
+                name="GSC0684000179"
+                brightness="10.77 mag" target_type="wfs" target_catalog_id="20020" coordinate_system_id="20058"
+                referent_support_id="20059"/>
+
+    <p1_targets id="10061"
+                name="GSC0684001519"
+                brightness="11.98 mag" target_type="wfs" target_catalog_id="10020" coordinate_system_id="10062"
+                referent_support_id="10063"/>
+    <p1_targets id="10065"
+                name="GSC0684001266"
+                brightness="11.36 mag" target_type="wfs" target_catalog_id="10020" coordinate_system_id="10066"
+                referent_support_id="10067"/>
+    <p1_targets id="10069"
+                name="GSC0684001211"
+                brightness="11.48 mag" target_type="wfs" target_catalog_id="10020" coordinate_system_id="10070"
+                referent_support_id="10071"/>
+    <p1_targets id="10073"
+                name="GSC0684000666"
+                brightness="10.76 mag" target_type="wfs" target_catalog_id="10020" coordinate_system_id="10074"
+                referent_support_id="10075"/>
+    <partners id="70" ngo_feedback_email="us_ngo@localhost" name="United States of America" partner_country_key="USA" abbreviation="US" is_country="true" percentage_share="40" site="BOTH"/>
+    <partners id="71" ngo_feedback_email="uk_ngo@localhost" name="United Kingdom" partner_country_key="UK" abbreviation="UK" is_country="true" percentage_share="18" site="BOTH"/>
+    <partners id="72" ngo_feedback_email="ca_ngo@localhost" name="Canada" partner_country_key="Canada" abbreviation="CA" is_country="true" percentage_share="12" site="BOTH"/>
+    <partners id="73" ngo_feedback_email="cl_ngo@localhost" name="Chile" partner_country_key="Chile" abbreviation="CL" is_country="true" percentage_share="10" site="SOUTH"/>
+    <partners id="74" ngo_feedback_email="au_ngo@localhost" name="Australia" partner_country_key="Australia" abbreviation="AU" is_country="true" percentage_share="5" site="BOTH"/>
+    <partners id="75" ngo_feedback_email="br_ngo@localhost" name="Brazil" partner_country_key="Brazil" abbreviation="BR" is_country="true" percentage_share="4" site="BOTH"/>
+    <partners id="76" ngo_feedback_email="ar_ngo@localhost" name="Argentina" partner_country_key="Argentina" abbreviation="AR" is_country="true" percentage_share="2" site="BOTH"/>
+    <partners id="77" ngo_feedback_email="uh_ngo@localhost" name="University of Hawaii" partner_country_key="UH" abbreviation="UH" is_country="false" percentage_share="10" site="NORTH"/>
+    <partners id="78" ngo_feedback_email="sub_ngo@localhost" name="Subaru" partner_country_key="Subaru" abbreviation="Subaru" is_country="false" percentage_share="0" site="BOTH"/>
+    <partners id="79" ngo_feedback_email="keck_ngo@localhost" name="Keck" partner_country_key="Keck" abbreviation="Keck" is_country="false" percentage_share="0" site="BOTH"/>
+    <partners id="80" ngo_feedback_email="gs_ngo@localhost" name="Gemini Staff" partner_country_key="GeminiStaff" abbreviation="GM" is_country="false" percentage_share="9" site="BOTH"/>
+
+    <people id="40" name="Sandy" password="password" enabled="true" partner_id="70"/>
+    <people id="41" name="Rosemary" password="password" enabled="true"/>
+    <people id="42" name="Bryan" password="password" enabled="true"/>
+    <people id="43" name="Andy" password="password" enabled="true"/>
+    <people id="44" name="Shane" password="password" enabled="true"/>
+    <people id="45" name="Vasu" password="password" enabled="false"/>
+    <people id="46" name="Devin" password="password" enabled="true"/>
+    <people id="47" name="Larry" password="password" enabled="true"/>
+    <people id="48" name="admin" password="password" enabled="true"/>
+    <people id="49" name="user" password="password" enabled="true"/>
+    <people id="50" name="committee_member" password="password" enabled="true" partner_id="70"/>
+    <people id="51" name="committee_secretary" password="password" enabled="true" partner_id="70"/>
+
+    <memberships id="50" person_id="40" committee_id="7"/>
+    <memberships id="51" person_id="41" committee_id="8"/>
+    <memberships id="52" person_id="42" committee_id="9"/>
+    <memberships id="53" person_id="43" committee_id="10"/>
+    <memberships id="54" person_id="41" committee_id="7"/>
+    <memberships id="55" person_id="42" committee_id="7"/>
+    <memberships id="56" person_id="43" committee_id="7"/>
+    <memberships id="57" person_id="44" committee_id="7"/>
+    <memberships id="58" person_id="45" committee_id="7"/>
+    <memberships id="59" person_id="46" committee_id="7"/>
+    <memberships id="60" person_id="48" committee_id="7"/>
+    <memberships id="61" person_id="48" committee_id="8"/>
+    <memberships id="62" person_id="48" committee_id="9"/>
+    <memberships id="63" person_id="48" committee_id="10"/>
+    <memberships id="64" person_id="50" committee_id="10"/>
+    <memberships id="65" person_id="50" committee_id="9"/>
+    <memberships id="66" person_id="51" committee_id="9"/>
+    <memberships id="67" person_id="51" committee_id="10"/>
+
+
+    <proposals id="100" committee_id="10" partner_id="70" p1_document_id="10000"
+               proposal_type="class edu.gemini.tac.persistence.Proposal"/>
+    <proposals id="101" committee_id="10" partner_id="71" p1_document_id="10141"
+               proposal_type="class edu.gemini.tac.persistence.Proposal"/>
+    <proposals id="102" committee_id="10" partner_id="72" p1_document_id="30141"
+               proposal_type="class edu.gemini.tac.persistence.Proposal"/>
+    <!-- dummy proposals for test cases where more than the proposals above are needed (JointBandingTest) -->
+    <!-- NOTE: this proposal will not be returned by committeeService.getAllProposalsForCommittee(), it seems to be broken in some way -->
+    <proposals id="103" committee_id="10" partner_id="70" p1_document_id="10777"
+               proposal_type="class edu.gemini.tac.persistence.Proposal"/>
+    <!-- dummy documents for additional proposals -->
+    <p1_documents id="10777" created="2009-09-23 00:00:00.0" last_modified="2009-11-05 00:00:00.0"
+                  proposal_key_id="10077" common_id="10001"/>
+    <queue_notes/>
+    <queues id="400" committee_id="9" site_id="0" total_time_available="200" partner_with_initial_pick_id="71"
+            partner_quanta="5" condition_set_id="260" bin_configuration_id="250" lptac_time="10" band_1_cutoff="30"
+            band_2_cutoff="60"
+            band_3_cutoff="100" band_3_conditions_threshold="60" use_after_band_3="false" name="queue 1"
+            finalized="false"/>
+    <queues id="401" committee_id="7" site_id="0" total_time_available="200" partner_with_initial_pick_id="71"
+            partner_quanta="5" condition_set_id="260" bin_configuration_id="250" lptac_time="10" band_1_cutoff="30"
+            band_2_cutoff="60"
+            band_3_cutoff="100" band_3_conditions_threshold="60" use_after_band_3="false" name="queue 1"
+            finalized="false"/>
+    <queues id="402" committee_id="8" site_id="0" total_time_available="200" partner_with_initial_pick_id="71"
+            partner_quanta="5" condition_set_id="260" bin_configuration_id="250" lptac_time="10" band_1_cutoff="30"
+            band_2_cutoff="60"
+            band_3_cutoff="100" band_3_conditions_threshold="60" use_after_band_3="false" name="queue 1"
+            finalized="false"/>
+    <queues id="403" committee_id="10" site_id="0" total_time_available="200" partner_with_initial_pick_id="71"
+            partner_quanta="5" condition_set_id="260" bin_configuration_id="250" lptac_time="10" band_1_cutoff="30"
+            band_2_cutoff="60"
+            band_3_cutoff="100" band_3_conditions_threshold="60" use_after_band_3="false" name="queue 1"
+            finalized="true"/>
+    <queues id="404" committee_id="9" site_id="0" total_time_available="200" partner_with_initial_pick_id="71"
+            partner_quanta="5" condition_set_id="260" bin_configuration_id="250" lptac_time="10" band_1_cutoff="30"
+            band_2_cutoff="60"
+            band_3_cutoff="100" band_3_conditions_threshold="60" use_after_band_3="false" name="queue 2"
+            finalized="false"/>
+    <queues id="405" committee_id="9" site_id="0" total_time_available="200" partner_with_initial_pick_id="71"
+            partner_quanta="5" condition_set_id="260" bin_configuration_id="250" lptac_time="10" band_1_cutoff="30"
+            band_2_cutoff="60"
+            band_3_cutoff="100" band_3_conditions_threshold="60" use_after_band_3="false" name="queue 3"
+            finalized="false"/>
+    <log_entries id="20" created_at="2010-01-01 01:02:03.0" updated_at="2010-01-01 01:02:03.0" message="generated."
+                 queue_id="400" committee_id="9"/>
+    <log_entries id="21" created_at="2010-01-01 01:02:03.0" updated_at="2010-01-01 01:02:03.0" message="1 generated."
+                 queue_id="400" committee_id="9"/>
+    <log_entries id="22" created_at="2010-01-01 01:02:03.0" updated_at="2010-01-01 01:02:03.0" message="1 generated."
+                 queue_id="400" committee_id="9"/>
+    <log_entries id="11" created_at="2010-01-01 01:02:03.0" updated_at="2010-01-01 01:02:03.0"
+                 message="37 proposals imported to committee."
+                 committee_id="9" queue_id="405"/>
+    <log_entries id="12" created_at="2010-01-01 01:02:03.0" updated_at="2010-01-01 01:02:03.0"
+                 message="Proposal PartnerName PartnerId imported to committee." committee_id="9"/>
+    <log_entries id="13" created_at="2010-01-01 01:02:03.0" updated_at="2010-01-01 01:02:03.0"
+                 message="Proposal PartnerName PartnerId edited in committee." committee_id="9"/>
+    <log_entries id="14" created_at="2010-01-01 01:02:03.0" updated_at="2010-01-01 01:02:03.0"
+                 message="Queue 1 generated."
+                 committee_id="9"/>
+    <log_entry_types log_entry_id="11" type="PROPOSAL_QUEUE_GENERATED"/>
+    <log_notes id="30" note_text="Fake note" log_entry_id="11"/>
+    <log_notes id="31" note_text="Fake note 2" log_entry_id="11"/>
+    <log_notes id="32" note_text="Fake note 3" log_entry_id="13"/>
+    <log_notes id="33" note_text="Fake note 4" log_entry_id="14"/>
+    <queue_restricted_bins queue_id="400" restricted_bin_id="200"/>
+    <queue_band_restriction_rules queue_id="400" band_restriction_rule_id="4"/>
+    <bandings id="500" queue_id="403" proposal_id="101" rank="1" description="Band One"
+              banding_type="class edu.gemini.tac.persistence.queues.Banding"/>
+    <bandings id="501" queue_id="403" proposal_id="100" rank="2" description="Band Two"
+              banding_type="class edu.gemini.tac.persistence.queues.Banding"/>
+    <bandings id="502" queue_id="403" proposal_id="102" rank="1" description="Band One"
+              banding_type="class edu.gemini.tac.persistence.queues.Banding"/>
+    <lptac_participants queue_id="400" partner_id="70"/>
+    <authority_roles id="1" rolename="ROLE_ADMIN"/>
+    <authority_roles id="2" rolename="ROLE_USER"/>
+    <authority_roles id="3" rolename="ROLE_COMMITTEE_MEMBER"/>
+    <authority_roles id="4" rolename="ROLE_QUEUE_WRITER"/>
+    <!-- Everyone's a USER -->
+    <authorities person_id="40" role_id="2"/>
+    <authorities person_id="41" role_id="2"/>
+    <authorities person_id="42" role_id="2"/>
+    <authorities person_id="43" role_id="2"/>
+    <authorities person_id="44" role_id="2"/>
+    <authorities person_id="45" role_id="2"/>
+    <authorities person_id="46" role_id="2"/>
+    <authorities person_id="47" role_id="2"/>
+    <authorities person_id="48" role_id="2"/>
+    <authorities person_id="49" role_id="2"/>
+    <authorities person_id="50" role_id="2"/>
+    <authorities person_id="51" role_id="2"/>
+
+    <!-- "admin" is ADMIN -->
+    <authorities person_id="48" role_id="1"/>
+    <!-- "committee_member is COMMITTEE_MEMBER -->
+    <authorities person_id="50" role_id="3"/>
+
+    <!-- "commitee_secretary" is COMMITTEE_MEMBER + ROLE_QUEUE_WRITER -->
+    <authorities person_id="51" role_id="3"/>
+    <authorities person_id="51" role_id="4"/>
+
+
+    <!-- Additional data to support joint testing support for Proposal 101 -->
+    <!-- Note that faked id's are intended to be Proposal 100s + 10000 -->
+    <!-- Any time there's an FK that's begins with a 1 it's a link to existing data -->
+    <!-- <proposals id="101" committee_id="10" partner_id="70" p1_document_id="10141" /> -->
+    <p1_partner_submissions id="20114"
+                            requested_time="5.0"
+                            minimum_requested_time="5.0"
+                            reference_number="GSTAFF-2010A-FAKE" flag="true" submission_status="pending"
+                            contact_first_name="George"
+                            contact_last_name="Cloney" partner_type_code="5" partner_name="Gemini Staff"
+                            partner_key="GeminiStaff"
+                            partner_is_exclusive="false" partner_is_valid="true"/>
+
+
+    <p1_submission_country_partner_submissions submission_id="20113"
+                                               partner_submission_id="20114" type_code="5" name="Gemini Staff"
+                                               key="GeminiStaff" exclusive="false" valid="true"/>
+    <p1_submissions id="20113"
+
+                    total_requested_time="40.0" total_minimum_requested_time="5.0" unit="hours"/>
+
+
+    <p1_sub_details_extensions extension_id="20112" submission_id="20113"/>
+
+
+    <p1_times id="20123" time_amount="1.0" unit="hours"/>
+    <p1_extensions id="20133"/>
+    <p1_itac_extensions extension_id="20133" gemini_reference="FAKE OTHER Gemini Reference"
+                        contact_scientist="Contact von Scientist" gemini_contact_scientist_email="contact@bar.com"
+                        queue_band="2" awarded_time_id="20123" itac_comment="itac lorem comment"
+                        gemini_comment="gemini lorem comment" rollover="false"/>
+
+
+    <p1_times id="20122" time_amount="1.0" unit="hours"/>
+    <p1_extensions id="20132"/>
+    <p1_itac_extensions extension_id="20132" gemini_reference="FAKE Gemini Reference"
+                        contact_scientist="Contact von Scientist" gemini_contact_scientist_email="contact@bar.com"
+                        queue_band="1" awarded_time_id="20122" itac_comment="itac comment"
+                        gemini_comment="gemini comment" rollover="false"/>
+
+    <p1_resource_lists extension_id="20131"/>
+
+    <p1_contacts id="20004"/>
+    <p1_emails email="foo@bar" contact_id="20004"/>
+    <p1_emails email="bat@bar" contact_id="20004"/>
+    <p1_phones phone="555-1234" contact_id="20004"/>
+    <p1_faxes fax="555-4321" contact_id="20004"/>
+
+
+    <p1_extensions id="20119"/>
+
+    <p1_times id="20121" time_amount="8.0" unit="hours"/>
+    <p1_times id="20120" time_amount="1.0" unit="hours"/>
+
+    <p1_tac_extensions extension_id="20119" observatory_extension_id="20106" partner_ranking="10"
+                       partner_time_id="20121" partner_minimum_time_id="20120" partner_comment=""
+                       partner_received_date="2009-09-23 00:00:00.0"
+                       partner_support_email="foo@bar" poor_weather_flag="false" partner_type_code="5"
+                       partner_name="Gemini Staff" partner_key="GeminiStaff"
+                       partner_is_exclusive="false" partner_is_valid="true" partner_original_time_id="20022"/>
+
+    <p1_referent_supports id="20116" referent_support_referent_id="constraint-12345678"/>
+
+    <p1_target_catalogs id="20020"/>
+
+
+    <p1_site_qualities id="20115"
+                       name="Band 3 Observing Conditions" cloud_cover_key="80" image_quality_key="Any"
+                       sky_background_key="Any"
+                       water_vapor_key="Any" observatory_extension_id="20106" referent_support_id="20116"/>
+
+
+    <p1_times id="20109" time_amount="0.0" unit="nights"/>
+    <p1_times id="20110" time_amount="1.0" unit="nights"/>
+
+    <p1_gemini_band3_extensions extension_id="20107" minimum_usable_time_id="20109"
+                                requested_time_id="20110"
+                                consideration_text="Fake band 3 consideration text. "
+                                override_suggested_value="true" is_usable_in_band3="true"
+                                constraint_reference_id="20108"/>
+
+
+    <p1_gemini_allocation_extensions extension_id="20111"
+                                     related_proposals_info="p1_gemini_allocation_extensions[20111] info "/>
+
+    <p1_requirements id="20127"
+                     staff_support="none"/>
+
+    <p1_extensions id="20131"/>
+
+
+    <p1_attachment_sets id="20140"
+                        text="Fake text LOREM IPSET BLAH BLAH "/>
+
+    <p1_times id="20129" time_amount="0.0" unit="nights"/>
+    <p1_times id="20130" time_amount="1.0" unit="nights"/>
+
+    <p1_schedulings id="20128"
+                    impossible_comment="GC unavailable" optimal_comment="GC is available for maximum time each night"
+                    sync_comment=""
+                    min_allocation_time_id="20130" future_time_id="20129"/>
+
+    <p1_extensions id="20107"/>
+
+    <p1_extensions id="20112"/>
+
+    <p1_extensions id="20111"/>
+
+    <p1_observatory_extensions id="20106" type="GeminiPart"
+
+                               sub_details_extension_id="20112" gemini_band3_extension_id="20107"
+                               gemini_allocation_extension_id="20111" itac_extension_id="20132"/>
+
+    <p1_proposal_supports id="20122"/>
+
+    <p1_times id="20124" time_amount="1.0" unit="nights"/>
+    <p1_allocations id="20123"
+                    proposal_support_id="20122" reference="GS-2009A-C-6" awarded_time_id="20124" percent_useful="40"
+                    comment="Fake comment -- One night of excellent weather. Data are reduced (some is shown in Fig. 2 of this proposal). Planning to write a Letter to ApJ this autumn, as well as one or more substantial papers later."/>
+
+    <p1_times id="20126" time_amount="4.0" unit="nights"/>
+
+    <p1_allocations id="20125"
+                    proposal_support_id="20122" reference="GS-2008A-C-2" awarded_time_id="20126" percent_useful="10"
+                    comment="Fake comment about poor quality due to bad weather."/>
+
+    <p1_reference_list_supports id="20083" property_name="ResourceReferences"/>
+
+    <p1_reference_list_supports id="20080" property_name="ConstraintReferences"/>
+
+    <p1_times id="20082" time_amount="0.0" unit="hours"/>
+
+    <p1_observation_lists id="20079"
+                          requested_time_id="20082" constraint_list_id="20080" resource_list_id="20083"/>
+
+
+    <p1_times id="20101" time_amount="1.0" unit="hours"/>
+    <p1_observations id="20100"
+                     exposure_time_id="20101" observation_list_id="20079" observation_target_list_support_id="20102"/>
+
+    <p1_times id="20104" time_amount="38.0" unit="hours"/>
+    <p1_reference_list_supports id="20105" property_name="TargetReferences"/>
+    <p1_observations id="20103"
+                     exposure_time_id="20104" observation_list_id="20079" observation_target_list_support_id="20105"/>
+
+    <p1_sites id="20138" country="USA" institution="Gemini Observatory" contact_id="10139"/>
+
+    <p1_observatories id="20078"
+                      observatory_id="gemini" document_id="10141" site_id="20138" observation_list_id="20079"
+                      proposal_support_id="20122"
+                      scheduling_id="20128" technical_justification_id="20140" observatory_extension_id="20106"
+                      resource_list_id="20131"
+                      requirement_id="20127" observing_mode="queue" too_trigger="no"/>
+
+
+    <p1_investigators_container id="20002"
+                                primary_investigator_id="20003"/>
+
+    <p1_investigators id="20003"
+                      type="PrimaryInvestigator" visiting="false" first_name="George" last_name="Cloney"
+                      status="phd" site_id="10005"
+                      contact_id="20004" institution="10016"/>
+
+    <p1_investigators id="20007"
+                      type="CoInvestigator" visiting="false" first_name="Luke" last_name="Skywalker"
+                      institution="University of Chicago"
+                      status="phd" investigators_container_id="20002" contact_id="20008"/>
+    <p1_investigators id="20009"
+                      type="CoInvestigator" visiting="false" first_name="Leia" last_name="Organa"
+                      institution="University of Illinois at Urbana-Champaign"
+                      status="gradNoThesis" investigators_container_id="20002" contact_id="20010"/>
+    <p1_investigators id="20011"
+                      type="CoInvestigator" visiting="false" first_name="Ben" last_name="Kenobi"
+                      institution="University of Illinois at Urbana-Champaign"
+                      status="phd" investigators_container_id="20002" contact_id="20012"/>
+    <p1_investigators id="20013"
+                      type="CoInvestigator" visiting="false" first_name="Darth" last_name="Vader"
+                      institution="Max Planck Institutue for Astronomy - Heidelberg"
+                      status="phd" investigators_container_id="20002" contact_id="20014"/>
+
+    <p1_keyword_sets id="20015"
+                     category="galactic"/>
+    <p1_keywords keyword="Absorption lines" keyword_set_id="20015"/>
+    <p1_keywords keyword="Dust" keyword_set_id="20015"/>
+    <p1_keywords keyword="Galactic center" keyword_set_id="20015"/>
+    <p1_keywords keyword="Molecular clouds" keyword_set_id="20015"/>
+    <p1_keywords keyword="Molecules" keyword_set_id="20015"/>
+    <p1_keywords keyword="Survey" keyword_set_id="20015"/>
+
+    <p1_attachment_sets id="20016"
+                        text="SCIENTIFIC JUSTIFICATION LOREM IPSET  "/>
+
+
+    <p1_commons id="20001"
+                abstract="This is a fake proposal" version="" investigators_container_id="20002"
+                keyword_set_id="20015" scientific_justification_id="20016" target_catalog_id="20020"/>
+
+
+    <p1_proposal_keys id="20077" value="000-20077-9a1c-1db000000000"/>
+
+    <p1_documents id="10141" created="2010-12-13 00:00:00.0" last_modified="2010-12-13 00:00:00.0"
+                  proposal_key_id="20077" common_id="20001"/>
+
+    <p1_referent_supports id="20043" referent_support_referent_id="target-ASDF"/>
+
+    <p1_references id="20060"
+                   state="1" reference_list_support_id="20093" referent_id="20057" referent_support_id="20059"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="20032"
+                   state="1" reference_list_support_id="20093" referent_id="20029" referent_support_id="20031"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="20044"
+                   state="1" reference_list_support_id="20102" referent_id="20041" referent_support_id="20043"
+                   referent_class="class edu.gemini.phase1.model.P1Target"/>
+    <p1_references id="20108" state="1" referent_id="20115" referent_support_id="20116"
+                   referent_class="class edu.gemini.phase1.geminiExt.model.SiteQuality"/>
+
+    <p1_times id="20086" time_amount="0.33" unit="hours"/>
+
+    <p1_observations id="20085"
+                     exposure_time_id="20086" observation_list_id="20079" observation_target_list_support_id="20087"/>
+    <p1_times id="20089" time_amount="0.33" unit="hours"/>
+
+    <p1_observations id="20088"
+                     exposure_time_id="20089" observation_list_id="20079" observation_target_list_support_id="20090"/>
+
+    <p1_times id="20092" time_amount="0.33" unit="hours"/>
+    <p1_observations id="20091"
+                     exposure_time_id="20092" observation_list_id="20079" observation_target_list_support_id="20093"/>
+
+    <p1_times id="20095" time_amount="0.33" unit="hours"/>
+    <p1_observations id="20094"
+                     exposure_time_id="20095" observation_list_id="20079" observation_target_list_support_id="20096"/>
+
+    <p1_times id="20098" time_amount="0.33" unit="hours"/>
+    <p1_observations id="20097"
+                     exposure_time_id="20098" observation_list_id="20079" observation_target_list_support_id="20099"/>
+
+
+    <!-- Joint Proposal for 100 and 101 -->
+    <p1_attachment_sets id="106484"
+                        text="The Galactic center (GC) is a fascinating environment, containing a multitude of extraordinary phenomena and extraordinary objects, not the least of which are three dense clusters of young and hot stars and a multimillion solar mass black hole.  Until recently it was thought that the interstellar gas within the central few hundred parsecs of the Galaxy consisted of three major components: an ultra high temperature X-ray-emitting plasma; ionized gas at T~10^4K responsible for the well-studied fine structure and radio recombination line emission; and cool and dense molecular clouds, which have also been observed in great detail at radio wavelengths.  However, our infrared spectroscopy of H3+ and CO, and in particular of a key absorption line from a metastable state of that H3+ (Goto et al 2002, Oka et al. 2005), has clearly revealed the presence of a fourth component, which in terms of density (50-200 cm-3) has the characteristics of Galactic diffuse cloud material, but which is considerably warmer (200-300 K).  This warm and diffuse environment appears to be unique to the Galactic center; it has not been found in any other Galactic clouds surveyed in H3+ to date. &#xA;&#xA;Spectroscopy of H3+ is difficult because its lines are weak owing to its low abundance. Until recently we have had available as probes of the line of sight to the Galactic center only a small number of luminous sources in the central cluster and out to about 30 pc, which are both sufficiently bright for high resolution spectroscopy and have smooth infrared spectra so the H3+ line profiles are uncontaminated. Our spectra of these sources  (e.g., Oka et al. 2005; Goto et al. 2008) show that the warm and diffuse component is present on every sightline and thus suggest that the environment in which it is found takes up a large fraction of the volume in the central few hundred parsecs.  That would strongly contradict the previous conceptual picture of GC gas (e.g., as illustrated in Lazio &amp; Cordes 1998), in which the warm and diffuse environment was not included at all. However, to truly evaluate the extent and physical nature of this new type of environment, sightlines covering a wider spatial extent of the GC are needed. It is therefore essential to find additional bright sources with featureless (or nearly featureless) spectra - either hot stars or stars encased in dense shells of warm dust - in a more extended region of the Galactic center.&#xA;&#xA;The GC is filled with bright infrared sources, but everywhere except at locations of the clusters of hot stars the overwhelming majority of them are red giants, whose complex photospheric spectra make them totally unsuitable as probes of the interstellar medium. Until very recently no smooth-spectrum objects were know far from those clusters. However, we have begun to use 2MASS and Spitzer (GLIMPSE) photometry to identify bright objects in the GC likely to have opaque dust shells. An oversimplified description of the technique is that the shorter wavelength IR colors are mainly used to weed out foreground (low extinction) sources and &quot;normal&quot; red giants, and the longer wavelength IR colors are mainly used to identify emission from dust shells.  However, the situation is far from straightforward, and our initial success rate, although orders of magnitude better than a random sampling, was only ~10%. &#xA;&#xA;The key second step in the process, and the step for which we are requesting time here, is to obtain low-resolution K band spectra, in particular covering the first overtone CO bands, to see if the candidates do indeed have smooth spectra. Once that is verified we proceed to high-resolution spectroscopy of interstellar CO and H3+.&#xA;&#xA;Our initial verification observations used UKIRT to obtain the low-resolution K-band spectra, but that option is no longer available. As mentioned above to date our identification technique is only moderately successful in terms of the fraction of candidates that indeed are smooth-spectrum sources (see Fig. 1).  However, in terms of what initial high-resolution spectra  of H3+ and CO toward these sources is revealing, the technique is already spectacularly successful, as illustrated in Fig. 2, which contains spectra just obtained with Phoenix on Gemini South in July 2009. The spectra of the two 2MASS sources in the figure are still to be understood in detail, but clearly reveal remarkable information about the gas dynamics, much of which is probably local to the Galactic center. &#xA;&#xA;Based on the results of our initial verification observations we have refined our selection technique and have produced a new set of ~120 GLIMPSE/2MASS candidates with -1.2 deg &lt; l &lt; +1.2 deg and -0.2 deg &lt; b &lt; +0.2 deg. We request time to obtain low-resolution K band spectra of each of them using NIRI. This search for smooth-spectrum sources is a key step to learning the extent and nature of the diffuse gas in the CMZ as well as obtaining similar information about other GC clouds. Even if the success rate on this new sample is no better than the previous search, the program should discover a dozen new and invaluable lines of sight for probing the GC. "/>
+    <p1_attachment_sets id="106548"
+                        text="Our new list of candidates contains 2MASS objects with 7&lt;K&lt;12, with most having K~9-10. They have red Spitzer/IRAC colors, with IRAC(3.6um) - IRAC(8um) &gt;2.  Only quick low-resolution spectra are needed with high enough S/N to clearly distinguish between a red giant spectrum (containing CO band heads) and a dust shell spectrum (smooth continuum steeply rising to longer wavelengths).  Thus, the spectra can be obtained in any weather condition in which clouds are at least 10% transmitting.  The source are in the GC, where many bright stars are available as guide stars.  We should be able to ensure that our guide stars are bright enough to be usable in CC90 conditions (2.5 mags of extinction).&#xA;&#xA;Although we would like occasional observations of calibration stars, it is not essential that one be observed on every night that a target is observed, as due to the prominence of the CO bands in red giants it should be easily possible, without ratioing, to determine if a target is a red giant or has a smooth continuum steeply rising to longer wavelength. Thus even if given low priority the program can easily be used as a filler in good conditions as well as in poor weather.&#xA;&#xA;The overhead associated with an individual NIRI spectroscopic observation is currently listed as 13 minutes. We suspect that our overheads will be a bit less than this because our targets are bright and are close to one another on the sky. Only a few minutes of spectroscopy is required per sourcee. For now we assume 20 minutes of total time per target and therefore request 40 hours. Any allocation less than this amount will be useful."/>
+    <p1_commons id="106472"
+                abstract="We request poor weather time to expand our search for bright objects with featureless infrared spectra in the line of sight to the Galactic center (GC). Such objects are needed in order to more thoroughly study the interstellar environment toward and within the center. Our previous research has used high resolution spectroscopy of H3+ and CO toward known sources in the central few tens of parsecs of the Galaxy to identify a previously unknown but apparently extensive component of warm  and diffuse  interstellar gas. Evidence to date suggests that this component pervades the central molecular zone (CMZ), which extends ~170 pc from the center, but it is necessary to identify additional smooth-spectrum sources further from the center to use as probes to determine the gas&apos; true extent. We have started identifying such sources based on 2MASS and GLIMPSE photometry and have already obtained some striking results both within and near the border of the CMZ.   The poor weather time requested here would allow us to survey 120 candidate smooth-spectrum objects and likely will produce a host of new sightlines that can be investigated using high-resolution IR spectroscopy."
+                title="Additional probes of the Galactic center&apos;s interstellar medium" version=""
+                investigators_container_id="106473" keyword_set_id="106483" scientific_justification_id="106484"
+                target_catalog_id="106485"/>
+    <p1_documents id="106471" created="2009-09-23 00:00:00.0" last_modified="2009-11-05 00:00:00.0"
+                  proposal_key_id="106486" common_id="106472"/>
+    <p1_extensions id="106489"/>
+    <p1_extensions id="106494"/>
+    <p1_extensions id="106495"/>
+    <p1_extensions id="106499"/>
+    <p1_extensions id="106547"/>
+    <p1_gemini_allocation_extensions extension_id="106494"
+                                     related_proposals_info="p1_gemini_allocation_extensions[10111] info "/>
+    <p1_gemini_band3_extensions extension_id="106489" minimum_usable_time_id="106492" requested_time_id="106493"
+                                consideration_text="Our observing conditions for Bands 1 and 2 are already very relaxed.  We can provide more than 120 targets if more time is available."
+                                override_suggested_value="true" is_usable_in_band3="true"
+                                constraint_reference_id="106490"/>
+    <p1_investigators id="106474" type="PrimaryInvestigator" visiting="false" first_name="Thomas R. /George"
+                      last_name="Geballe/Cloney" status="phd" site_id="10005" contact_id="40004"/>
+    <p1_investigators id="106475" type="CoInvestigator" visiting="false" first_name="Darth" last_name="Vader"
+                      institution="Max Planck Institutue for Astronomy - Heidelberg" status="phd"
+                      investigators_container_id="106473" contact_id="40014"/>
+    <p1_investigators id="106476" type="CoInvestigator" visiting="false" first_name="Ben" last_name="Kenobi"
+                      institution="University of Illinois at Urbana-Champaign" status="phd"
+                      investigators_container_id="106473" contact_id="40012"/>
+    <p1_investigators id="106477" type="CoInvestigator" visiting="false" first_name="Takeshi" last_name="Oka"
+                      institution="University of Chicago" status="phd" investigators_container_id="106473"
+                      contact_id="10008"/>
+    <p1_investigators id="106478" type="CoInvestigator" visiting="false" first_name="Nick" last_name="Indriolo"
+                      institution="University of Illinois at Urbana-Champaign" status="gradNoThesis"
+                      investigators_container_id="106473" contact_id="40010"/>
+    <p1_investigators id="106479" type="CoInvestigator" visiting="false" first_name="Leia" last_name="Organa"
+                      institution="University of Illinois at Urbana-Champaign" status="gradNoThesis"
+                      investigators_container_id="106473" contact_id="40011"/>
+    <p1_investigators id="106480" type="CoInvestigator" visiting="false" first_name="Luke" last_name="Skywalker"
+                      institution="University of Chicago" status="phd" investigators_container_id="106473"
+                      contact_id="10008"/>
+    <p1_investigators id="106481" type="CoInvestigator" visiting="false" first_name="Miwa" last_name="Goto"
+                      institution="Max Planck Institutue for Astronomy - Heidelberg" status="phd"
+                      investigators_container_id="106473" contact_id="40015"/>
+    <p1_investigators id="106482" type="CoInvestigator" visiting="false" first_name="Ben" last_name="McCall"
+                      institution="University of Illinois at Urbana-Champaign" status="phd"
+                      investigators_container_id="106473" contact_id="40016"/>
+    <p1_investigators_container id="106473" primary_investigator_id="106474"/>
+    <p1_keyword_sets id="106483" category="galactic"/>
+    <p1_observation_lists id="106502" requested_time_id="106505" constraint_list_id="106503" resource_list_id="106506"/>
+    <p1_observations id="106508" exposure_time_id="106509" observation_list_id="106502"
+                     observation_target_list_support_id="106510"/>
+    <p1_observations id="106513" exposure_time_id="106514" observation_list_id="106502"
+                     observation_target_list_support_id="106515"/>
+    <p1_observations id="106518" exposure_time_id="106519" observation_list_id="106502"
+                     observation_target_list_support_id="106520"/>
+    <p1_observations id="106523" exposure_time_id="106524" observation_list_id="106502"
+                     observation_target_list_support_id="106525"/>
+    <p1_observations id="106528" exposure_time_id="106529" observation_list_id="106502"
+                     observation_target_list_support_id="106530"/>
+    <p1_observations id="106533" exposure_time_id="106534" observation_list_id="106502"
+                     observation_target_list_support_id="106535"/>
+    <p1_observations id="206533" exposure_time_id="106534" observation_list_id="106502"
+                     observation_target_list_support_id="206535"/>
+
+    <p1_observations id="106538" exposure_time_id="106539" observation_list_id="106502"
+                     observation_target_list_support_id="106540"/>
+    <p1_observatories id="106487" observatory_id="gemini" document_id="106471" site_id="10138"
+                      observation_list_id="106502" proposal_support_id="106543" scheduling_id="106544"
+                      technical_justification_id="106548" observatory_extension_id="106488" resource_list_id="106547"
+                      requirement_id="10127" observing_mode="queue" too_trigger="no"/>
+    <p1_observatory_extensions id="106488" sub_details_extension_id="106495" gemini_band3_extension_id="106489"
+                               gemini_allocation_extension_id="106494" itac_extension_id="30133"/>
+    <p1_proposal_keys id="106486" value="000-106486-123456"/>
+    <p1_proposal_supports id="106543"/>
+    <p1_publications order_nr="0" proposal_support_id="106543"
+                     text="Absorption Line Survey of H3+ toward the Galactic Center II. Eight Infrared Sources within 30 pc of the Galactic Center&#xA;M. Goto, T. Usuda, T. Nagata, T. R. Geballe, B. J. McCall, N. Indriolo, H. Suto, T. Henning, C. P. Morong, T. Oka&#xA;ApJ, 688, 306-319  (2008)&#xA;"/>
+    <p1_publications order_nr="1" proposal_support_id="106543"
+                     text="Absorption Line Survey of H3+ toward the Galactic Center Sources GCS3-2 and GC IRS3&#xA;M. Goto, B.J. McCall, T.R. Geballe, T. Usuda, N. Kobayashi, H. Terada, T. Oka&#xA;PASJ, 54, 951 (2002)&#xA;"/>
+    <p1_publications order_nr="2" proposal_support_id="106543"
+                     text="H3+ in Diffuse Interstellar Clouds: A Tracer of the Cosmic Ray Ionization Rate.&#xA;N. Indriolo, T. R. Geballe, T. Oka, B. J. McCall&#xA;ApJ, 671, 1736  (2007)&#xA;"/>
+    <p1_publications order_nr="3" proposal_support_id="106543"
+                     text="H3+ toward and within the Galactic Centre&#xA;T.R. Geballe&#xA;Philosophical Transactions of the Royal Soc. A, 364, 3035-3042 (2006)&#xA;"/>
+    <p1_publications order_nr="4" proposal_support_id="106543"
+                     text="Hot and Diffuse Clouds near the Galactic Center Probed by Metastable H3+&#xA;T. Oka, T.R. Geballe, M. Goto, T. Usuda, B.J. McCall&#xA;ApJ, 632, 882-893 (2005)&#xA;"/>
+    <p1_reference_list_supports id="106503" property_name="ConstraintReferences"/>
+    <p1_reference_list_supports id="106506" property_name="ResourceReferences"/>
+    <p1_reference_list_supports id="106510" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="106515" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="106520" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="206520" property_name="TargetReferences"/>
+
+    <p1_reference_list_supports id="106525" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="106530" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="106535" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="206535" property_name="TargetReferences"/>
+
+    <p1_reference_list_supports id="106540" property_name="TargetReferences"/>
+    <p1_references id="106490" referent_id="106491"
+                   referent_class="class edu.gemini.phase1.geminiExt.model.SiteQuality" state="1"/>
+    <p1_references id="106504" reference_list_support_id="106503" referent_id="10117"
+                   referent_class="class edu.gemini.phase1.geminiExt.model.SiteQuality" state="1"/>
+    <p1_references id="106507" reference_list_support_id="106506" referent_id="10133"
+                   referent_class="class edu.gemini.phase1.geminiExt.model.P1Resource" state="1"/>
+    <p1_references id="106511" reference_list_support_id="106510" referent_id="10021"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="106512" reference_list_support_id="106510" referent_id="10049"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="106516" reference_list_support_id="106515" referent_id="10053"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="106517" reference_list_support_id="106515" referent_id="10025"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="106521" reference_list_support_id="106520" referent_id="10057"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="206521" reference_list_support_id="206520" referent_id="20057"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+
+    <p1_references id="106522" reference_list_support_id="106520" referent_id="10029"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="106526" reference_list_support_id="106525" referent_id="10033"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="106527" reference_list_support_id="106525" referent_id="10061"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="106531" reference_list_support_id="106530" referent_id="10037"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="106532" reference_list_support_id="106530" referent_id="10065"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="106536" reference_list_support_id="106535" referent_id="10041"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="206536" reference_list_support_id="206535" referent_id="20041"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="106537" reference_list_support_id="106535" referent_id="10069"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="106541" reference_list_support_id="106540" referent_id="10073"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="106542" reference_list_support_id="106540" referent_id="10045"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_resource_lists extension_id="106547"/>
+    <p1_schedulings id="106544" impossible_comment="GC unavailable"
+                    optimal_comment="GC is available for maximum time each night" sync_comment=""
+                    min_allocation_time_id="106546" future_time_id="106545"/>
+    <p1_site_qualities id="106491" name="Band 3 Observing Conditions" cloud_cover_key="80" image_quality_key="Any"
+                       sky_background_key="Any" water_vapor_key="Any" observatory_extension_id="10106"
+            />
+    <p1_site_qualities id="106497" name="Global Default" cloud_cover_key="80" image_quality_key="Any"
+                       sky_background_key="Any" water_vapor_key="Any" observatory_extension_id="106488"
+
+                       referent_support_id="-2"/>
+    <p1_site_qualities id="106498" name="Band 3 Observing Conditions" cloud_cover_key="80" image_quality_key="Any"
+                       sky_background_key="Any" water_vapor_key="Any" observatory_extension_id="106488"
+
+                       referent_support_id="-2"/>
+    <p1_sub_details_extensions extension_id="106495" submission_id="106496"/>
+    <p1_submissions id="106496" total_requested_time="40.0" total_minimum_requested_time="5.0" unit="hours"/>
+    <p1_tac_extensions extension_id="106499" observatory_extension_id="106488" partner_ranking="15"
+                       partner_time_id="106501" partner_minimum_time_id="106500" partner_comment=""
+                       partner_received_date="2009-09-23 00:00:00.0" partner_support_email="bat@baz;foo@bar"
+                       poor_weather_flag="false" partner_type_code="5" partner_name="Gemini Staff"
+                       partner_key="GeminiStaff" partner_is_exclusive="false" partner_is_valid="true"
+                       partner_original_time_id="20023"/>
+    <p1_target_catalogs id="106485"/>
+    <p1_times id="106492" time_amount="5.0" unit="hours"/>
+    <p1_times id="106493" time_amount="40.0" unit="hours"/>
+    <p1_times id="106500" time_amount="41.0" unit="hours"/>
+    <p1_times id="106501" time_amount="48.0" unit="hours"/>
+    <p1_times id="106505" time_amount="0.0" unit="hours"/>
+    <p1_times id="106509" time_amount="0.33" unit="hours"/>
+    <p1_times id="106514" time_amount="0.33" unit="hours"/>
+    <p1_times id="106519" time_amount="0.34" unit="hours"/>
+    <p1_times id="106524" time_amount="0.33" unit="hours"/>
+    <p1_times id="106529" time_amount="0.33" unit="hours"/>
+    <p1_times id="106534" time_amount="0.34" unit="hours"/>
+    <p1_times id="106539" time_amount="38.0" unit="hours"/>
+    <p1_times id="106545" time_amount="0.0" unit="nights"/>
+    <p1_times id="106546" time_amount="1.0" unit="nights"/>
+    <proposals id="106470" committee_id="10" partner_id="70" p1_document_id="106471"
+               proposal_type="class edu.gemini.tac.persistence.joints.JointProposal"/>
+
+    <!-- Additional data to support joint testing support for Proposal 102 -->
+    <!-- Note that faked id's are intended to be Proposal 100s + 20000 -->
+    <!-- Any time there's an FK that's begins with a 1 it's a link to existing data -->
+    <!-- <proposals id="102" committee_id="10" partner_id="70" p1_document_id="30141" /> -->
+    <p1_partner_submissions id="30114"
+                            requested_time="5.0"
+                            minimum_requested_time="5.0"
+                            reference_number="GSTAFF-2010A-FAKE" flag="true" submission_status="pending"
+                            contact_first_name="George"
+                            contact_last_name="Cloney" partner_type_code="5" partner_name="Gemini Staff"
+                            partner_key="GeminiStaff"
+                            partner_is_exclusive="false" partner_is_valid="true"/>
+
+
+    <p1_submission_country_partner_submissions submission_id="30113"
+                                               partner_submission_id="30114" type_code="5" name="Gemini Staff"
+                                               key="GeminiStaff" exclusive="false" valid="true"/>
+    <p1_submissions id="30113"
+
+                    total_requested_time="40.0" total_minimum_requested_time="5.0" unit="hours"/>
+
+
+    <p1_sub_details_extensions extension_id="30112" submission_id="30113"/>
+
+
+    <p1_times id="30123" time_amount="1.0" unit="hours"/>
+    <p1_extensions id="30133"/>
+    <p1_itac_extensions extension_id="30133" gemini_reference="FAKE OTHER Gemini Reference"
+                        contact_scientist="Contact von Scientist" gemini_contact_scientist_email="contact@bar.com"
+                        queue_band="2" awarded_time_id="30123" itac_comment="itac lorem comment"
+                        gemini_comment="gemini lorem comment" rollover="false"/>
+
+
+    <p1_times id="30122" time_amount="1.0" unit="hours"/>
+    <p1_extensions id="30132"/>
+    <p1_itac_extensions extension_id="30132" gemini_reference="FAKE Gemini Reference"
+                        contact_scientist="Contact von Scientist" gemini_contact_scientist_email="contact@bar.com"
+                        queue_band="1" awarded_time_id="30122" itac_comment="itac comment"
+                        gemini_comment="gemini comment" rollover="false"/>
+
+    <p1_resource_lists extension_id="30131"/>
+
+    <p1_contacts id="30004"/>
+    <p1_emails email="foo@bar" contact_id="30004"/>
+    <p1_emails email="bat@bar" contact_id="30004"/>
+    <p1_phones phone="555-1234" contact_id="30004"/>
+    <p1_faxes fax="555-4321" contact_id="30004"/>
+
+
+    <p1_extensions id="30119"/>
+
+    <p1_times id="30121" time_amount="8.0" unit="hours"/>
+    <p1_times id="30120" time_amount="1.0" unit="hours"/>
+
+    <p1_tac_extensions extension_id="30119" observatory_extension_id="30106" partner_ranking="10"
+                       partner_time_id="30121" partner_minimum_time_id="30120" partner_comment=""
+                       partner_received_date="3009-09-23 00:00:00.0"
+                       partner_support_email="foo@bar" poor_weather_flag="false" partner_type_code="5"
+                       partner_name="Gemini Staff" partner_key="GeminiStaff"
+                       partner_is_exclusive="false" partner_is_valid="true" partner_original_time_id="20024"/>
+
+    <p1_referent_supports id="30116" referent_support_referent_id="constraint-12345678"/>
+    <p1_referent_supports id="30043" referent_support_referent_id="target-ASDF"/>
+
+
+    <p1_site_qualities id="30115"
+                       name="Band 3 Observing Conditions" cloud_cover_key="80" image_quality_key="Any"
+                       sky_background_key="Any"
+                       water_vapor_key="Any" observatory_extension_id="30106"
+                       referent_support_id="-2"
+            />
+
+
+    <p1_references id="30108" state="1" referent_id="30115" referent_support_id="30116"
+                   referent_class="class edu.gemini.phase1.geminiExt.model.SiteQuality"/>
+
+
+    <p1_times id="30109" time_amount="0.0" unit="nights"/>
+    <p1_times id="30110" time_amount="1.0" unit="nights"/>
+
+    <p1_gemini_band3_extensions extension_id="30107" minimum_usable_time_id="30109"
+                                requested_time_id="30110"
+                                consideration_text="Fake band 3 consideration text. "
+                                override_suggested_value="true" is_usable_in_band3="true"
+                                constraint_reference_id="30108"/>
+
+
+    <p1_gemini_allocation_extensions extension_id="30111"
+                                     related_proposals_info="p1_gemini_allocation_extensions[20111] info "/>
+
+    <p1_requirements id="30127"
+                     staff_support="none"/>
+
+    <p1_extensions id="30131"/>
+
+
+    <p1_attachment_sets id="30140"
+                        text="Fake text LOREM IPSET BLAH BLAH "/>
+
+    <p1_times id="30129" time_amount="0.0" unit="nights"/>
+    <p1_times id="30130" time_amount="1.0" unit="nights"/>
+
+    <p1_schedulings id="30128"
+                    impossible_comment="GC unavailable" optimal_comment="GC is available for maximum time each night"
+                    sync_comment=""
+                    min_allocation_time_id="30130" future_time_id="30129"/>
+
+    <p1_extensions id="30107"/>
+
+    <p1_extensions id="30112"/>
+
+    <p1_extensions id="30111"/>
+
+    <p1_observatory_extensions id="30106" type="GeminiPart"
+
+                               sub_details_extension_id="30112" gemini_band3_extension_id="30107"
+                               gemini_allocation_extension_id="30111" itac_extension_id="30132"/>
+
+    <p1_proposal_supports id="30122"/>
+
+    <p1_times id="30124" time_amount="1.0" unit="nights"/>
+    <p1_allocations id="30123"
+                    proposal_support_id="30122" reference="GS-2009A-C-6" awarded_time_id="30124" percent_useful="40"
+                    comment="Fake comment -- One night of excellent weather. Data are reduced (some is shown in Fig. 2 of this proposal). Planning to write a Letter to ApJ this autumn, as well as one or more substantial papers later."/>
+
+    <p1_times id="30126" time_amount="4.0" unit="nights"/>
+
+    <p1_allocations id="30125"
+                    proposal_support_id="30122" reference="GS-2008A-C-2" awarded_time_id="30126" percent_useful="10"
+                    comment="Fake comment about poor quality due to bad weather."/>
+
+
+    <p1_reference_list_supports id="30083" property_name="ResourceReferences"/>
+
+    <p1_reference_list_supports id="30080" property_name="ConstraintReferences"/>
+
+    <p1_times id="30082" time_amount="0.0" unit="hours"/>
+
+    <p1_observation_lists id="30079"
+                          requested_time_id="30082" constraint_list_id="30080" resource_list_id="30083"/>
+
+
+    <p1_times id="30101" time_amount="1.0" unit="hours"/>
+
+    <p1_times id="30104" time_amount="38.0" unit="hours"/>
+    <p1_reference_list_supports id="30105" property_name="TargetReferences"/>
+    <p1_observations id="30103"
+                     exposure_time_id="30104" observation_list_id="30079" observation_target_list_support_id="30105"/>
+
+    <p1_sites id="30138" country="USA" institution="Gemini Observatory" contact_id="10139"/>
+
+    <p1_observatories id="30078"
+                      observatory_id="gemini" document_id="30141" site_id="30138" observation_list_id="30079"
+                      proposal_support_id="30122"
+                      scheduling_id="30128" technical_justification_id="30140" observatory_extension_id="30106"
+                      resource_list_id="30131"
+                      requirement_id="30127" observing_mode="queue" too_trigger="no"/>
+
+
+    <p1_investigators_container id="30002"
+                                primary_investigator_id="30003"/>
+
+    <p1_investigators id="30003"
+                      type="PrimaryInvestigator" visiting="false" first_name="Clark" last_name="Kent"
+                      status="phd" site_id="10005"
+                      contact_id="30004" institution="10016"/>
+
+    <p1_investigators id="30007"
+                      type="CoInvestigator" visiting="false" first_name="Clark" last_name="Gable"
+                      institution="University of Chicago"
+                      status="phd" investigators_container_id="30002" contact_id="30008"/>
+    <p1_investigators id="30009"
+                      type="CoInvestigator" visiting="false" first_name="Claudette" last_name="Colbert"
+                      institution="University of Illinois at Urbana-Champaign"
+                      status="gradNoThesis" investigators_container_id="30002" contact_id="30010"/>
+    <p1_investigators id="30011"
+                      type="CoInvestigator" visiting="false" first_name="Gregory" last_name="Peck"
+                      institution="University of Illinois at Urbana-Champaign"
+                      status="phd" investigators_container_id="30002" contact_id="30012"/>
+    <p1_investigators id="30013"
+                      type="CoInvestigator" visiting="false" first_name="Kathryn" last_name="Hepburn"
+                      institution="Max Planck Institutue for Astronomy - Heidelberg"
+                      status="phd" investigators_container_id="30002" contact_id="30014"/>
+
+    <p1_keyword_sets id="30015"
+                     category="galactic"/>
+    <p1_keywords keyword="Absorption lines" keyword_set_id="30015"/>
+    <p1_keywords keyword="Dust" keyword_set_id="30015"/>
+    <p1_keywords keyword="Galactic center" keyword_set_id="30015"/>
+    <p1_keywords keyword="Molecular clouds" keyword_set_id="30015"/>
+    <p1_keywords keyword="Molecules" keyword_set_id="30015"/>
+    <p1_keywords keyword="Survey" keyword_set_id="30015"/>
+
+    <p1_attachment_sets id="30016"
+                        text="SCIENTIFIC JUSTIFICATION LOREM IPSET  "/>
+
+    <p1_target_catalogs id="30020"/>
+
+    <p1_commons id="30001"
+                abstract="This is a fake proposal" version="" investigators_container_id="30002"
+                keyword_set_id="30015" scientific_justification_id="30016" target_catalog_id="30020"/>
+
+
+    <p1_proposal_keys id="30077" value="000-30077-9a1c-1db000000000"/>
+
+    <p1_documents id="30141" created="2010-12-13 00:00:00.0" last_modified="2010-12-13 00:00:00.0"
+                  proposal_key_id="30077" common_id="30001"/>
+
+
+    <!-- Joint Proposal for 100 and 101 -->
+    <p1_target_catalogs id="306485"/>
+
+    <p1_attachment_sets id="306484"
+                        text="The Galactic center (GC) is a fascinating environment, containing a multitude of extraordinary phenomena and extraordinary objects, not the least of which are three dense clusters of young and hot stars and a multimillion solar mass black hole.  Until recently it was thought that the interstellar gas within the central few hundred parsecs of the Galaxy consisted of three major components: an ultra high temperature X-ray-emitting plasma; ionized gas at T~10^4K responsible for the well-studied fine structure and radio recombination line emission; and cool and dense molecular clouds, which have also been observed in great detail at radio wavelengths.  However, our infrared spectroscopy of H3+ and CO, and in particular of a key absorption line from a metastable state of that H3+ (Goto et al 2002, Oka et al. 2005), has clearly revealed the presence of a fourth component, which in terms of density (50-200 cm-3) has the characteristics of Galactic diffuse cloud material, but which is considerably warmer (200-300 K).  This warm and diffuse environment appears to be unique to the Galactic center; it has not been found in any other Galactic clouds surveyed in H3+ to date. &#xA;&#xA;Spectroscopy of H3+ is difficult because its lines are weak owing to its low abundance. Until recently we have had available as probes of the line of sight to the Galactic center only a small number of luminous sources in the central cluster and out to about 30 pc, which are both sufficiently bright for high resolution spectroscopy and have smooth infrared spectra so the H3+ line profiles are uncontaminated. Our spectra of these sources  (e.g., Oka et al. 2005; Goto et al. 2008) show that the warm and diffuse component is present on every sightline and thus suggest that the environment in which it is found takes up a large fraction of the volume in the central few hundred parsecs.  That would strongly contradict the previous conceptual picture of GC gas (e.g., as illustrated in Lazio &amp; Cordes 1998), in which the warm and diffuse environment was not included at all. However, to truly evaluate the extent and physical nature of this new type of environment, sightlines covering a wider spatial extent of the GC are needed. It is therefore essential to find additional bright sources with featureless (or nearly featureless) spectra - either hot stars or stars encased in dense shells of warm dust - in a more extended region of the Galactic center.&#xA;&#xA;The GC is filled with bright infrared sources, but everywhere except at locations of the clusters of hot stars the overwhelming majority of them are red giants, whose complex photospheric spectra make them totally unsuitable as probes of the interstellar medium. Until very recently no smooth-spectrum objects were know far from those clusters. However, we have begun to use 2MASS and Spitzer (GLIMPSE) photometry to identify bright objects in the GC likely to have opaque dust shells. An oversimplified description of the technique is that the shorter wavelength IR colors are mainly used to weed out foreground (low extinction) sources and &quot;normal&quot; red giants, and the longer wavelength IR colors are mainly used to identify emission from dust shells.  However, the situation is far from straightforward, and our initial success rate, although orders of magnitude better than a random sampling, was only ~10%. &#xA;&#xA;The key second step in the process, and the step for which we are requesting time here, is to obtain low-resolution K band spectra, in particular covering the first overtone CO bands, to see if the candidates do indeed have smooth spectra. Once that is verified we proceed to high-resolution spectroscopy of interstellar CO and H3+.&#xA;&#xA;Our initial verification observations used UKIRT to obtain the low-resolution K-band spectra, but that option is no longer available. As mentioned above to date our identification technique is only moderately successful in terms of the fraction of candidates that indeed are smooth-spectrum sources (see Fig. 1).  However, in terms of what initial high-resolution spectra  of H3+ and CO toward these sources is revealing, the technique is already spectacularly successful, as illustrated in Fig. 2, which contains spectra just obtained with Phoenix on Gemini South in July 2009. The spectra of the two 2MASS sources in the figure are still to be understood in detail, but clearly reveal remarkable information about the gas dynamics, much of which is probably local to the Galactic center. &#xA;&#xA;Based on the results of our initial verification observations we have refined our selection technique and have produced a new set of ~120 GLIMPSE/2MASS candidates with -1.2 deg &lt; l &lt; +1.2 deg and -0.2 deg &lt; b &lt; +0.2 deg. We request time to obtain low-resolution K band spectra of each of them using NIRI. This search for smooth-spectrum sources is a key step to learning the extent and nature of the diffuse gas in the CMZ as well as obtaining similar information about other GC clouds. Even if the success rate on this new sample is no better than the previous search, the program should discover a dozen new and invaluable lines of sight for probing the GC. "/>
+    <p1_attachment_sets id="306548"
+                        text="Our new list of candidates contains 2MASS objects with 7&lt;K&lt;12, with most having K~9-10. They have red Spitzer/IRAC colors, with IRAC(3.6um) - IRAC(8um) &gt;2.  Only quick low-resolution spectra are needed with high enough S/N to clearly distinguish between a red giant spectrum (containing CO band heads) and a dust shell spectrum (smooth continuum steeply rising to longer wavelengths).  Thus, the spectra can be obtained in any weather condition in which clouds are at least 10% transmitting.  The source are in the GC, where many bright stars are available as guide stars.  We should be able to ensure that our guide stars are bright enough to be usable in CC90 conditions (2.5 mags of extinction).&#xA;&#xA;Although we would like occasional observations of calibration stars, it is not essential that one be observed on every night that a target is observed, as due to the prominence of the CO bands in red giants it should be easily possible, without ratioing, to determine if a target is a red giant or has a smooth continuum steeply rising to longer wavelength. Thus even if given low priority the program can easily be used as a filler in good conditions as well as in poor weather.&#xA;&#xA;The overhead associated with an individual NIRI spectroscopic observation is currently listed as 13 minutes. We suspect that our overheads will be a bit less than this because our targets are bright and are close to one another on the sky. Only a few minutes of spectroscopy is required per sourcee. For now we assume 20 minutes of total time per target and therefore request 40 hours. Any allocation less than this amount will be useful."/>
+    <p1_commons id="306472"
+                abstract="We request poor weather time to expand our search for bright objects with featureless infrared spectra in the line of sight to the Galactic center (GC). Such objects are needed in order to more thoroughly study the interstellar environment toward and within the center. Our previous research has used high resolution spectroscopy of H3+ and CO toward known sources in the central few tens of parsecs of the Galaxy to identify a previously unknown but apparently extensive component of warm  and diffuse  interstellar gas. Evidence to date suggests that this component pervades the central molecular zone (CMZ), which extends ~170 pc from the center, but it is necessary to identify additional smooth-spectrum sources further from the center to use as probes to determine the gas&apos; true extent. We have started identifying such sources based on 2MASS and GLIMPSE photometry and have already obtained some striking results both within and near the border of the CMZ.   The poor weather time requested here would allow us to survey 120 candidate smooth-spectrum objects and likely will produce a host of new sightlines that can be investigated using high-resolution IR spectroscopy."
+                title="Additional probes of the Galactic center&apos;s interstellar medium" version=""
+                investigators_container_id="306473" keyword_set_id="306483" scientific_justification_id="306484"
+                target_catalog_id="306485"/>
+    <p1_documents id="306471" created="2009-09-23 00:00:00.0" last_modified="2009-11-05 00:00:00.0"
+                  proposal_key_id="306486" common_id="306472"/>
+    <p1_extensions id="306489"/>
+    <p1_extensions id="306494"/>
+    <p1_extensions id="306495"/>
+    <p1_extensions id="306499"/>
+    <p1_extensions id="306547"/>
+    <p1_gemini_allocation_extensions extension_id="306494"
+                                     related_proposals_info="p1_gemini_allocation_extensions[10111] info "/>
+    <p1_gemini_band3_extensions extension_id="306489" minimum_usable_time_id="306492" requested_time_id="306493"
+                                consideration_text="Our observing conditions for Bands 1 and 2 are already very relaxed.  We can provide more than 120 targets if more time is available."
+                                override_suggested_value="true" is_usable_in_band3="true"
+                                constraint_reference_id="306490"/>
+    <p1_investigators id="306474" type="PrimaryInvestigator" visiting="false" first_name="Thomas R. /George"
+                      last_name="Geballe/Cloney" status="phd" site_id="10005" contact_id="30004"/>
+    <p1_investigators id="306475" type="CoInvestigator" visiting="false" first_name="Darth" last_name="Vader"
+                      institution="Max Planck Institutue for Astronomy - Heidelberg" status="phd"
+                      investigators_container_id="306473" contact_id="10014"/>
+    <p1_investigators id="306476" type="CoInvestigator" visiting="false" first_name="Ben" last_name="Kenobi"
+                      institution="University of Illinois at Urbana-Champaign" status="phd"
+                      investigators_container_id="306473" contact_id="10012"/>
+    <p1_investigators id="306477" type="CoInvestigator" visiting="false" first_name="Takeshi" last_name="Oka"
+                      institution="University of Chicago" status="phd" investigators_container_id="306473"
+                      contact_id="10008"/>
+    <p1_investigators id="306478" type="CoInvestigator" visiting="false" first_name="Nick" last_name="Indriolo"
+                      institution="University of Illinois at Urbana-Champaign" status="gradNoThesis"
+                      investigators_container_id="306473" contact_id="10010"/>
+    <p1_investigators id="306479" type="CoInvestigator" visiting="false" first_name="Leia" last_name="Organa"
+                      institution="University of Illinois at Urbana-Champaign" status="gradNoThesis"
+                      investigators_container_id="306473" contact_id="10010"/>
+    <p1_investigators id="306480" type="CoInvestigator" visiting="false" first_name="Luke" last_name="Skywalker"
+                      institution="University of Chicago" status="phd" investigators_container_id="306473"
+                      contact_id="10008"/>
+    <p1_investigators id="306481" type="CoInvestigator" visiting="false" first_name="Miwa" last_name="Goto"
+                      institution="Max Planck Institutue for Astronomy - Heidelberg" status="phd"
+                      investigators_container_id="306473" contact_id="10014"/>
+    <p1_investigators id="306482" type="CoInvestigator" visiting="false" first_name="Ben" last_name="McCall"
+                      institution="University of Illinois at Urbana-Champaign" status="phd"
+                      investigators_container_id="306473" contact_id="10012"/>
+    <p1_investigators_container id="306473" primary_investigator_id="306474"/>
+    <p1_keyword_sets id="306483" category="galactic"/>
+    <p1_observation_lists id="306502" requested_time_id="306505" constraint_list_id="306503" resource_list_id="306506"/>
+    <p1_observations id="306508" exposure_time_id="306509" observation_list_id="306502"
+                     observation_target_list_support_id="306510"/>
+    <p1_observations id="306513" exposure_time_id="306514" observation_list_id="306502"
+                     observation_target_list_support_id="306515"/>
+    <p1_observations id="306518" exposure_time_id="306519" observation_list_id="306502"
+                     observation_target_list_support_id="306520"/>
+    <p1_observations id="306523" exposure_time_id="306524" observation_list_id="306502"
+                     observation_target_list_support_id="306525"/>
+    <p1_observations id="306528" exposure_time_id="306529" observation_list_id="306502"
+                     observation_target_list_support_id="306530"/>
+    <p1_observations id="306533" exposure_time_id="306534" observation_list_id="306502"
+                     observation_target_list_support_id="306535"/>
+    <p1_observations id="306538" exposure_time_id="306539" observation_list_id="306502"
+                     observation_target_list_support_id="306540"/>
+    <p1_observatories id="306487" observatory_id="gemini" document_id="306471" site_id="30138"
+                      observation_list_id="306502" proposal_support_id="306543" scheduling_id="306544"
+                      technical_justification_id="306548" observatory_extension_id="306488" resource_list_id="306547"
+                      requirement_id="30127" observing_mode="queue" too_trigger="no"/>
+    <p1_observatory_extensions id="306488" sub_details_extension_id="306495" gemini_band3_extension_id="306489"
+                               gemini_allocation_extension_id="306494"/>
+    <p1_proposal_keys id="306486" value="000-306486-123456"/>
+    <p1_proposal_supports id="306543"/>
+    <p1_publications order_nr="0" proposal_support_id="306543"
+                     text="Absorption Line Survey of H3+ toward the Galactic Center II. Eight Infrared Sources within 30 pc of the Galactic Center&#xA;M. Goto, T. Usuda, T. Nagata, T. R. Geballe, B. J. McCall, N. Indriolo, H. Suto, T. Henning, C. P. Morong, T. Oka&#xA;ApJ, 688, 306-319  (2008)&#xA;"/>
+    <p1_publications order_nr="1" proposal_support_id="306543"
+                     text="Absorption Line Survey of H3+ toward the Galactic Center Sources GCS3-2 and GC IRS3&#xA;M. Goto, B.J. McCall, T.R. Geballe, T. Usuda, N. Kobayashi, H. Terada, T. Oka&#xA;PASJ, 54, 951 (2002)&#xA;"/>
+    <p1_publications order_nr="2" proposal_support_id="306543"
+                     text="H3+ in Diffuse Interstellar Clouds: A Tracer of the Cosmic Ray Ionization Rate.&#xA;N. Indriolo, T. R. Geballe, T. Oka, B. J. McCall&#xA;ApJ, 671, 1736  (2007)&#xA;"/>
+    <p1_publications order_nr="3" proposal_support_id="306543"
+                     text="H3+ toward and within the Galactic Centre&#xA;T.R. Geballe&#xA;Philosophical Transactions of the Royal Soc. A, 364, 3035-3042 (2006)&#xA;"/>
+    <p1_publications order_nr="4" proposal_support_id="306543"
+                     text="Hot and Diffuse Clouds near the Galactic Center Probed by Metastable H3+&#xA;T. Oka, T.R. Geballe, M. Goto, T. Usuda, B.J. McCall&#xA;ApJ, 632, 882-893 (2005)&#xA;"/>
+    <p1_reference_list_supports id="306503" property_name="ConstraintReferences"/>
+    <p1_reference_list_supports id="306506" property_name="ResourceReferences"/>
+    <p1_reference_list_supports id="306510" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="306515" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="306520" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="306525" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="306530" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="306535" property_name="TargetReferences"/>
+    <p1_reference_list_supports id="306540" property_name="TargetReferences"/>
+    <p1_references id="306490" referent_id="306491"
+                   referent_class="class edu.gemini.phase1.geminiExt.model.SiteQuality" state="1"/>
+    <p1_references id="306504" reference_list_support_id="306503" referent_id="30117"
+                   referent_class="class edu.gemini.phase1.geminiExt.model.SiteQuality" state="1"/>
+    <p1_references id="306507" reference_list_support_id="306506" referent_id="30133"
+                   referent_class="class edu.gemini.phase1.geminiExt.model.P1Resource" state="1"/>
+    <p1_references id="306511" reference_list_support_id="306510" referent_id="30021"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="306512" reference_list_support_id="306510" referent_id="30049"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="306516" reference_list_support_id="306515" referent_id="30053"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="306517" reference_list_support_id="306515" referent_id="30025"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="306521" reference_list_support_id="306520" referent_id="30057"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="306522" reference_list_support_id="306520" referent_id="30029"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="306526" reference_list_support_id="306525" referent_id="30033"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="306527" reference_list_support_id="306525" referent_id="30061"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="306531" reference_list_support_id="306530" referent_id="30037"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="306532" reference_list_support_id="306530" referent_id="30065"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="306536" reference_list_support_id="306535" referent_id="30041"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="306537" reference_list_support_id="306535" referent_id="30069"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="306541" reference_list_support_id="306540" referent_id="30073"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_references id="306542" reference_list_support_id="306540" referent_id="30045"
+                   referent_class="class edu.gemini.phase1.model.P1Target" state="1"/>
+    <p1_resource_lists extension_id="306547"/>
+    <p1_schedulings id="306544" impossible_comment="GC unavailable"
+                    optimal_comment="GC is available for maximum time each night" sync_comment=""
+                    min_allocation_time_id="306546" future_time_id="306545"/>
+    <p1_site_qualities id="306491" name="Band 3 Observing Conditions" cloud_cover_key="80" image_quality_key="Any"
+                       sky_background_key="Any" water_vapor_key="Any" observatory_extension_id="30106"
+            />
+    <p1_site_qualities id="306497" name="Global Default" cloud_cover_key="80" image_quality_key="Any"
+                       sky_background_key="Any" water_vapor_key="Any" observatory_extension_id="306488"
+
+                       referent_support_id="-2"/>
+    <p1_site_qualities id="306498" name="Band 3 Observing Conditions" cloud_cover_key="80" image_quality_key="Any"
+                       sky_background_key="Any" water_vapor_key="Any" observatory_extension_id="306488"
+
+                       referent_support_id="-2"/>
+    <p1_sub_details_extensions extension_id="306495" submission_id="306496"/>
+    <p1_submissions id="306496" total_requested_time="40.0" total_minimum_requested_time="5.0" unit="hours"/>
+    <p1_tac_extensions extension_id="306499" observatory_extension_id="306488" partner_ranking="15"
+                       partner_time_id="306501" partner_minimum_time_id="306500" partner_comment=""
+                       partner_received_date="2009-09-23 00:00:00.0" partner_support_email="bat@baz;foo@bar"
+                       poor_weather_flag="false" partner_type_code="5" partner_name="Gemini Staff"
+                       partner_key="GeminiStaff" partner_is_exclusive="false" partner_is_valid="true"
+                       partner_original_time_id="20025"/>
+    <p1_times id="306492" time_amount="5.0" unit="hours"/>
+    <p1_times id="306493" time_amount="40.0" unit="hours"/>
+    <p1_times id="306500" time_amount="41.0" unit="hours"/>
+    <p1_times id="306501" time_amount="48.0" unit="hours"/>
+    <p1_times id="306505" time_amount="0.0" unit="hours"/>
+    <p1_times id="306509" time_amount="0.33" unit="hours"/>
+    <p1_times id="306514" time_amount="0.33" unit="hours"/>
+    <p1_times id="306519" time_amount="0.34" unit="hours"/>
+    <p1_times id="306524" time_amount="0.33" unit="hours"/>
+    <p1_times id="306529" time_amount="0.33" unit="hours"/>
+    <p1_times id="306534" time_amount="0.34" unit="hours"/>
+    <p1_times id="306539" time_amount="38.0" unit="hours"/>
+    <p1_times id="306545" time_amount="0.0" unit="nights"/>
+    <p1_times id="306546" time_amount="1.0" unit="nights"/>
+    <proposals id="306470" committee_id="10" partner_id="70" p1_document_id="306471"
+               proposal_type="class edu.gemini.tac.persistence.joints.JointProposal"/>
+    <emails/>
+
+    <!-- Rollover test data -->
+    <p1_target_catalogs id="450000"/>
+
+
+    <p1_targets id="410000"
+                name="GSC0684000179"
+                brightness="10.77 mag" target_type="wfs" target_catalog_id="450000" coordinate_system_id="20058"
+                referent_support_id="20059"/>
+    <p1_targets id="410001"
+                name="GSC0684000179"
+                brightness="10.77 mag" target_type="wfs" target_catalog_id="450000" coordinate_system_id="20058"
+                referent_support_id="20059"/>
+    <p1_targets id="410002"
+                name="GSC0684000179"
+                brightness="10.77 mag" target_type="wfs" target_catalog_id="450000" coordinate_system_id="20058"
+                referent_support_id="20059"/>
+
+    <p1_site_qualities id="420000" name="Band 3 Observing Conditions" cloud_cover_key="80" image_quality_key="Any"
+                       sky_background_key="Any" water_vapor_key="Any" observatory_extension_id="30106"
+            />
+    <p1_times id="430000" time_amount="38.0" unit="hours"/>
+
+    <rollover_reports id="440000" site_id="0" report_type="class edu.gemini.tac.persistence.rollover.RolloverReport"
+                      set_name=""/>
+    <rollover_observations id="400000" partner_id="70" target_id="410000" site_quality_id="420000" time_id="430000"
+                           observation_id_reference="foo" rollover_report_id="440000"
+                           type="edu.gemini.tac.persistence.rollover.RolloverObservation"/>
+    <rollover_observations id="400001" partner_id="70" target_id="410001" site_quality_id="420000" time_id="430000"
+                           observation_id_reference="bar" rollover_report_id="440000"
+                           type="edu.gemini.tac.persistence.rollover.RolloverObservation"/>
+    <rollover_observations id="400002" partner_id="70" target_id="410002" site_quality_id="420000" time_id="430000"
+                           observation_id_reference="bat" rollover_report_id="440000"
+                           type="edu.gemini.tac.persistence.rollover.RolloverObservation"/>
+
+    <rollover_reports id="440001" site_id="0" report_type="class edu.gemini.tac.persistence.rollover.RolloverSet"
+                      set_name="Foo"/>
+    <rollover_reports id="440002" site_id="0" report_type="class edu.gemini.tac.persistence.rollover.RolloverSet"
+                      set_name="Bar"/>
+
+    <!-- Additional resources for Blackout functionality -->
+    <p1_resources id="20133"
+                  resource_category_id="20132" referent_support_id="10134" name="GMOS North"
+                  category_type="Gemini North"
+                  nickname=""
+                  string_id="gemGMOS-N"/>
+    <p1_resources id="101343"
+                  resource_category_id="20132" referent_support_id="10134" name="GNIRS" category_type="Gemini North"
+                  nickname=""
+                  string_id="gemGNIRS-1"/>
+    <p1_resources id="10134"
+                  resource_category_id="20132" referent_support_id="10134" name="NIFS" category_type="Gemini North"
+                  nickname=""
+                  string_id="gemNIFS-1"/>
+    <p1_resources id="20135"
+                  resource_category_id="20132" referent_support_id="10134" name="NIRI" category_type="Gemini North"
+                  nickname=""
+                  string_id="gemNIRI-1"/>
+    <!-- South resources for blackouts -->
+    <p1_resources id="20136"
+                  resource_category_id="20132" referent_support_id="10134" name="GMOS South"
+                  category_type="Gemini South"
+                  nickname=""
+                  string_id="gemGMOS-S"/>
+    <p1_resources id="20137"
+                  resource_category_id="20132" referent_support_id="10134" name="NICI" category_type="Gemini South"
+                  nickname=""
+                  string_id="gemNICI-1"/>
+    <p1_resources id="20139"
+                  resource_category_id="20132" referent_support_id="10134" name="T-ReCS" category_type="Gemini South"
+                  nickname=""
+                  string_id="gemT-ReCS-1"/>
+    <!-- External instruments -->
+    <p1_resources id="20140"
+                  resource_category_id="20132" referent_support_id="10134" name="Subprime Cam (Subaru)"
+                  category_type="Subaru"
+                  nickname=""
+                  string_id="gemSubprimeCam-1"/>
+
+
+</dataset>

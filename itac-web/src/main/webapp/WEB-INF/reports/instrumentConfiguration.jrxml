@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport
+        xmlns="http://jasperreports.sourceforge.net/jasperreports"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+        name="raDistributionInstrument"
+        language="java"
+        pageWidth="1100" pageHeight="850" columnWidth="555"
+        leftMargin="50" rightMargin="50" topMargin="50" bottomMargin="50">
+
+    <!-- parameters -->
+    <parameter name="subtitleString" class="java.lang.String"/>
+
+    <!-- fields -->
+	<field name="geminiId" class="java.lang.String"/>
+    <field name="partner" class="java.lang.String"/>
+    <field name="band" class="java.lang.String"/>
+    <field name="ntacRef" class="java.lang.String"/>
+    <field name="allocTime" class="java.lang.Double"/>
+    <field name="instrument" class="java.lang.String"/>
+    <field name="configCamera" class="java.lang.String"/>
+    <field name="configFocalPlaneUnit" class="java.lang.String"/>
+    <field name="configDisperser" class="java.lang.String"/>
+    <field name="configFilter" class="java.lang.String"/>
+    <field name="configAdaptiveOptics" class="java.lang.String"/>
+    <field name="multiObjectSpectrograph" class="java.lang.String"/>
+    <field name="configOther" class="java.lang.String"/>
+
+    <!-- sorting is important for grouping to work as expected! -->
+    <sortField name="instrument" order="Ascending"/>
+    <sortField name="partner" order="Ascending"/>
+    <sortField name="geminiId" order="Ascending"/>
+
+    <!-- variables -->
+    <variable name="totalAllocTimePerInstrument" class="java.lang.Double" calculation="Sum" resetType ="Group" resetGroup="instrumentGroup">
+        <variableExpression>
+            <![CDATA[$F{allocTime}]]>
+        </variableExpression>
+        <initialValueExpression>
+            <![CDATA[new java.lang.Double(0)]]>
+        </initialValueExpression>
+    </variable>
+    <!-- get us a number formatter -->
+    <variable name="nfc" class="java.text.NumberFormat" resetType="Report" calculation="Nothing">
+        <variableExpression>
+            <![CDATA[NumberFormat.getInstance());((NumberFormat)value).setMinimumFractionDigits(1);((NumberFormat)value).setMaximumFractionDigits(1]]>
+        </variableExpression>
+    </variable>
+
+
+    <!-- grouping -->
+    <group name="instrumentGroup">
+        <groupExpression>
+            <![CDATA[$F{instrument}]]>
+        </groupExpression>
+        <groupHeader>
+            <band height="20">
+                <textField>
+                    <reportElement x="0" y="0" width="100" height="20"/>
+                    <textElement><font size="10" isBold="true"/></textElement>
+                    <textFieldExpression><![CDATA[$F{instrument}]]></textFieldExpression>
+                </textField>
+            </band>
+        </groupHeader>
+        <groupFooter>
+            <band height="20">
+                <textField>
+                    <reportElement x="0" y="0" width="1000" height="20"/>
+                    <textElement><font isBold="true"/></textElement>
+                    <textFieldExpression>"Total allocated time for instrument " + $F{instrument} + " = " +
+                        $V{nfc}.format($V{totalAllocTimePerInstrument}/60.0) + " hours  (" +
+                        $V{nfc}.format($V{totalAllocTimePerInstrument}) + " minutes)"
+                    </textFieldExpression>
+                </textField>
+             </band>
+        </groupFooter>
+    </group>
+
+    <!-- title -->
+    <title>
+        <band height="60">
+            <staticText>
+                <reportElement x="0" y="0" width="750" height="30"/>
+                <textElement><font size="20" isBold="true"/></textElement>
+                <text><![CDATA[Instrument Configuration Report]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="0" y="30" width="750" height="30"/>
+                <textElement><font size="10" isBold="true"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$P{subtitleString}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <!-- column header -->
+    <columnHeader>
+        <band height="20">
+            <staticText>
+                <reportElement x="0" y="0" width="50" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Partner]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="50" y="0" width="75" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Gemini ID]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="125" y="0" width="75" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[NTAC Reference]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="200" y="0" width="30" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Band]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="230" y="0" width="40" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Time]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="270" y="0" width="120" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Camera]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="390" y="0" width="120" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Focal Plane Unit]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="510" y="0" width="120" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Disperser]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="630" y="0" width="120" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Filter]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="750" y="0" width="120" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Adaptive Optics]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="870" y="0" width="50" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[MOS]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="920" y="0" width="120" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Other]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <!-- details -->
+    <detail>
+        <band height="20" splitType="Stretch">
+            <textField>
+                <reportElement x="0" y="0" width="50" height="20"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{partner}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="50" y="0" width="75" height="20"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{geminiId}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="125" y="0" width="75" height="20"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{ntacRef}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="200" y="0" width="30" height="20"/>
+                <textElement textAlignment="Right"><font size="8"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{band}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#.0">
+                <reportElement x="230" y="0" width="35" height="20"/>
+                <textElement textAlignment="Right"><font size="8"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$V{nfc}.format($F{allocTime})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="270" y="0" width="120" height="20"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{configCamera}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="390" y="0" width="120" height="20"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{configFocalPlaneUnit}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="510" y="0" width="120" height="20"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{configDisperser}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="630" y="0" width="120" height="20">
+                    <property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
+                </reportElement>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{configFilter}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="750" y="0" width="120" height="20"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{configAdaptiveOptics}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="870" y="0" width="120" height="20"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{multiObjectSpectrograph}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="920" y="0" width="120" height="20"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{configOther}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+
+</jasperReport>

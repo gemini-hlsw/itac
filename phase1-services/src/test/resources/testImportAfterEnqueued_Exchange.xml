@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no" ?>
+<!DOCTYPE phase1Document PUBLIC
+ "-//Gemini Observatory//DTD for Phase 1 Proposals//EN"
+ "http://ftp.gemini.edu/Support/xml/dtds/AstronomyPhase1.dtd" [
+<!ENTITY % gemini PUBLIC "-//Gemini Observatory//DTD for Gemini Phase 1//EN" "http://ftp.gemini.edu/Support/xml/dtds/Gemini.dtd">
+%gemini;
+]>
+
+<!--
+  This phase1 document was produced by the Gemini Phase 1 Tool.
+  Written for AstronomyPhase1 DTD version  : 1.5
+  This document was created : 2007-03-30
+-->
+<!--
+  This document contains a Gemini 8-m Telescopes Proposal (gemini)
+  Gemini DTD version    : 2.5
+  Semester Title        : 2007B
+  Proposal Due Date     : 2007-03-31
+  Principal Investigator: Fernando Roig
+
+-->
+<phase1Document created="2007-03-30" proposalKey="ITAC452_EXCHANGE" lastModified="2007-05-16" dtdVersion="1.5">
+  <common>
+    <title>Mineralogy of V-type candidates in the outer belt</title>
+    <abstract>The existence of basalt in the surface of asteroids provides information about their thermal history that is expected to be related not only to 
+their formation but also to their collisional evolution. Basaltic asteroids are classified as V-type, and the existence of these bodies in 
+the outer asteroid belt was unsuspected until the discovery of (1459) Magnya, the only known asteroid of this kind in that part of the belt. 
+Recently, Roig &amp; Gil-Hutton (2006) published a list of 8 candidate V-type asteroids in the middle/outer belt, predicted on the basis of the 
+four color photometry of the Sloan Digital Sky Survey. Low resolution spectra in the visible of two of these candidates,(7472) Florian and 
+(10537) 1991 RY16, have been obtained by us on November 2006, indicating that they could actually be V-type asteroids. However, the presence of a shallow absorption band around 0.6 microns, which has never been observed before in other V-type spectra, prevents to include them in any of the already defined taxonomic classes. In order to determine whether we have discovered two basaltic asteroids with a particular mineralogical composition or two asteroids belonging to a new taxonomic class, we propose to observe the NIR range of the spectra of these two objects to completely characterize the mineralogy of their surfaces.
+</abstract>
+    <scienceJustification>
+      <embeddedText>A few years ago, most of the known basaltic asteroids, classified as V-type in the common taxonomical classification schemes, were members of the Vesta dynamical family. Nowadays, several V-type asteroids are know to reside outside the Vesta family (e.g. Burbine et al., 2001; Florczak et al., 2002), and several NEAs with basaltic mineralogical surface composition have been recognized (e.g. Cruikshank et al., 1991; Binzel et al., 2004; Duffard et al., 2006). The asteroid (1459) Magnya, a basaltic object in the outer asteroid belt (Lazzaro et al., 2000), is too far away from the Vesta family to have a real probability of coming from it (Michtchenko et al., 2002).
+
+Basaltic materials on the surface on an asteroid are indicators of past partial melting, a phenomenon that occurs due to the complicated
+interplay of heating (e.g. short-lived  radioactive isotope decay, gravitational energy released during accretion, chemical reactions) and
+cooling processes (e.g. thermal radiation, fluid convection) within the interior of rocky bodies. Thus far astronomical observations have been
+unsuccessful at providing a coherent picture of how these processes affect the observed diversity among Main Belt asteroids, specifically
+with regards to metal-silicate differentiation. 
+
+Roig &amp; Gil-Hutton (2006) presented the possibility of searching yet unknown V-type asteroids using photometric data from the Sloan Digital Sky Survey (SDSS). A sub-product of this survey is the Moving Objects Catalog (MOC), which in its third release provides five band photometry for 43424 asteroids (Ivezic et al., 2001; Juric et al., 2002). Roig &amp; Gil-Hutton (2006) introduced a systematic method to identify possible candidate V-type asteroids from the SDSS-MOC, applying the Principal Components Analysis to the data. They found 263 V-type candidates that are not members of the Vesta dynamical family. The most interesting result is the presence of 8 V-type candidates in the middle/outer asteroid belt, i.e. with a &gt; 2.5 AU: (7472), (10537), (21238), (40521), (44496), (55613), (66905) and (105041). These asteroids are quite isolated in proper elements space and do not belong to any of the major dynamical families. They are not close in proper elements space to (1459) Magnya either. In a recent study, Binzel et al. (2006) analised the spectra of (21238) in the near infrared (NIR) and confirmed its basaltic nature.
+
+Low resolution spectra in the visible of (7472) Kumakiri and (10537) 1991 RY16 (see figure 1) have been obtained by us on November 14th,2006, using the Calar Alto Faint Object Spectrograph (CAFOS) at the 2.2m telescope in Calar Alto Observatory, Spain. The reflectance spectra of the two bodies seem to correspond to that of a V-type asteroid. However, the presence of a shallow absorption band around 0.6 microns, which has never been observed before in other V-type spectra, prevents to include them in any of the already defined taxonomic classes (Bus, 1999). It is worth noting that the observed band is real and its presence in the spectrum of (10537) has been confirmed independently by other observers (Moskovitz et al., 2007, pers. comm.). Therefore, we do not know whether we have discovered two basaltic asteroids with a very particular and previously unseen mineralogical composition or two objects of non basaltic nature that have to be included in a totally new taxonomic class. The only way to solve this problem is through the analysis of the NIR spectra.
+
+Therefore, in this proposal we want to observe the NIR range of the spectra of (7472) and (10537) to completely characterize the
+mineralogy of their surfaces. For this task, we propose to use Gemini North with NIRI in spectroscopic mode. 
+
+References:
+
+- Binzel, R. P.; Rivkin, A. S.; Bus, S. J.; Tokunaga, A. T., 2004.  American Astronomical Society, DPS meeting #36, #28.05; Bulletin of the American Astronomical Society, Vol. 36, p.1131.
+
+- Binzel, R.P., Masi, G., Foglia, S., 2006, American Astronomical Society, DPS meeting #38, #71.06.
+
+- Burbine, T. H.; Buchanan, P. C.; Binzel, R. P.; Bus, S. J.; Hiroi, T.; Hinrichs, J. L.; Meibom, A.; McCoy, T. J., 2001. Meteoritics &amp; Planetary Science 36,  761-781.
+
+- Bus, S. J., 1999. 	Compositional structure in the asteroid belt: Results of a spectroscopic survey, PhD Thesis, Massachusetts Institute of Technology.
+
+- Cruikshank, D. P.; Tholen, D. J.; Bell, J. F.; Hartmann, W. K.; Brown, R. H., 1991. Icarus  89, 1-13. 
+
+- Duffard, R.; de Le?n, J.; Licandro, J.; Lazzaro, D.; Serra-Ricart, M., 2006. Astronomy and Astrophysics, 456, 775-781.
+
+- Ivezic et al. 2001. Astronomical Journal 122, 2749-2784.
+
+- Florczak, M., Lazzaro, D., and Duffard, R.  2002. Icarus 159, 178.
+
+- Juric et al. 2002. Astronomical Journal 124, 1776-1787. 
+
+- Lazzaro, D., Michtchenko, T.A., Carvano, J.M., Binzel, R.P., Bus, S.J., Burbine, T.H., Mothe-Diniz, T., Florczak, M., Angeli, C.A., and Harris, A.W. 2000. Science 288, 2033.
+
+- Michtchenko, T.A., Lazzaro, D., Ferraz-Melo, S., and Floar, F. 2002. Icarus 158, 343.
+
+- Roig, F., and Gil-Hutton, R. 2006. Icarus 183, 411-419..
+</embeddedText>
+      <attachment name="Figure 1" src="Gemini_2007B_008_6.pdf" type="pdf"/>
+    </scienceJustification>
+    <keywords category="solarSystem">
+      <keyword>Asteroids</keyword>
+    </keywords>
+    <!--
+      The principal investigator and co investigators are listed here.
+    -->
+    <investigators>
+      <pi status="phd" visiting="false">
+        <name><first>Fernando</first><last>NUSSBERGERCHEN</last></name>
+        <contact>
+          <email>froig@on.br</email>
+          <phone>+55-21-38789205</phone>
+          <fax>+55-21-25898972</fax>
+        </contact>
+        <site>
+          <institution>MCT - Observatorio Nacional</institution>
+          <address>Rua General Jose Cristino 77</address>
+          <address>20921-400 Sao Cristovao</address>
+          <address>Rio de Janeiro</address>
+          <country>Brazil</country>
+          <contact>
+          </contact>
+        </site>
+      </pi>
+      <coi visiting="false">
+        <name><first>Daniela </first><last>Lazzaro</last></name>
+        <contact>
+          <email>lazzaro@on.br</email>
+          <phone>+55-21-38789205</phone>
+          <fax>+55-21-25898972</fax>
+        </contact>
+        <institution>MCT - Observatorio Nacional</institution>
+      </coi>
+      <coi visiting="false">
+        <name><first>Ricardo</first><last>Gil-Hutton</last></name>
+        <contact>
+          <email>rgilhutton@casleo.gov.ar</email>
+          <phone>+54-264-4213653 ext. 127</phone>
+          <fax>+54-264-4213653 ext. 201</fax>
+        </contact>
+        <institution>Complejo Astronomico El Leoncito (CASLEO)</institution>
+      </coi>
+      <coi visiting="false">
+        <name><first>Marcela</first><last>Canada Assandri</last></name>
+        <contact>
+          <email>mcanada@casleo.gov.ar</email>
+          <phone>+54-264-4234129</phone>
+        </contact>
+        <institution>Universidad Nacional de San Juan</institution>
+      </coi>
+      <coi visiting="false">
+        <name><first>Valeria</first><last>Mesa</last></name>
+        <contact>
+          <email>valemesa17@hotmail.com</email>
+          <phone>+54-264-4234129</phone>
+        </contact>
+        <institution>Universidad Nacional de San Juan</institution>
+      </coi>
+    </investigators>
+    <!--
+      The available targets are listed here.
+    -->
+    <targetCatalog>
+      <target id="ref-0" type="science">
+        <targetName>(7472) Florian</targetName>
+        <targetBrightness>V=17.2</targetBrightness>
+        <nonSidSystem type="J2000">
+          <c1>13:09:32.7</c1>
+          <c2>03:33:5.0</c2>
+          <taizDate>2007-12-28</taizDate>
+          <taizTime>21:00:00</taizTime>
+        </nonSidSystem>
+      </target>
+      <target id="ref-1" type="science">
+        <targetName>(10537) 1991 RY16</targetName>
+        <targetBrightness>V=17.5</targetBrightness>
+        <nonSidSystem type="J2000">
+          <c1>09:34:50.8</c1>
+          <c2>23:50:55.0</c2>
+          <taizDate>2007-12-28</taizDate>
+          <taizTime>21:00:00</taizTime>
+        </nonSidSystem>
+      </target>
+      <target id="ref-2" type="science">
+        <targetName>HIP 58949</targetName>
+        <targetBrightness>V=8.16</targetBrightness>
+        <hmsdegSystem type="J2000">
+          <c1>12:05:12.53</c1>
+          <c2>-1:30:32.5</c2>
+        </hmsdegSystem>
+      </target>
+      <target id="ref-3" type="science">
+        <targetName>HIP 70319</targetName>
+        <targetBrightness>V=6.25</targetBrightness>
+        <hmsdegSystem type="J2000">
+          <c1>14:23:15.28</c1>
+          <c2>01:14:29.6</c2>
+        </hmsdegSystem>
+      </target>
+      <target id="ref-4" type="science">
+        <targetName>HIP 33277</targetName>
+        <targetBrightness>V=5.74</targetBrightness>
+        <hmsdegSystem type="J2000">
+          <c1>06:55:18.67</c1>
+          <c2>25:22:32.5</c2>
+        </hmsdegSystem>
+      </target>
+      <target id="ref-5" type="science">
+        <targetName>HIP 59414</targetName>
+        <targetBrightness>V=7.51</targetBrightness>
+        <hmsdegSystem type="J2000">
+          <c1>12:11:15.19</c1>
+          <c2>24:45:12.8</c2>
+        </hmsdegSystem>
+      </target>
+      <target id="ref-6" type="wfs">
+        <targetName>33050202</targetName>
+        <targetBrightness>13.65 UCmag,12.602 Jmag,12.193 Kmag</targetBrightness>
+        <hmsdegSystem type="J2000">
+          <c1>13:09:10.116</c1>
+          <c2>3:33:55.97</c2>
+        </hmsdegSystem>
+      </target>
+      <target id="ref-7" type="wfs">
+        <targetName>40186035</targetName>
+        <targetBrightness>12.25 UCmag,11.168 Jmag,10.626 Kmag</targetBrightness>
+        <hmsdegSystem type="J2000">
+          <c1>9:34:21.998</c1>
+          <c2>23:52:51.72</c2>
+        </hmsdegSystem>
+      </target>
+      <target id="ref-6" type="wfs">
+        <targetName>33050202</targetName>
+        <targetBrightness>13.65 UCmag,12.602 Jmag,12.193 Kmag</targetBrightness>
+        <hmsdegSystem type="J2000">
+          <c1>13:09:10.116</c1>
+          <c2>3:33:55.97</c2>
+        </hmsdegSystem>
+      </target>
+      <target id="ref-7" type="wfs">
+        <targetName>40186035</targetName>
+        <targetBrightness>12.25 UCmag,11.168 Jmag,10.626 Kmag</targetBrightness>
+        <hmsdegSystem type="J2000">
+          <c1>9:34:21.998</c1>
+          <c2>23:52:51.72</c2>
+        </hmsdegSystem>
+      </target>
+      <target id="ref-8" type="wfs">
+        <targetName>31171047</targetName>
+        <targetBrightness>12.08 UCmag,10.499 Jmag,9.811 Kmag</targetBrightness>
+        <hmsdegSystem type="J2000">
+          <c1>12:04:49.561</c1>
+          <c2>-1:30:45.16</c2>
+        </hmsdegSystem>
+      </target>
+      <target id="ref-9" type="wfs">
+        <targetName>32210659</targetName>
+        <targetBrightness>13.25 UCmag,12.395 Jmag,12.049 Kmag</targetBrightness>
+        <hmsdegSystem type="J2000">
+          <c1>14:23:28.727</c1>
+          <c2>1:19:09.23</c2>
+        </hmsdegSystem>
+      </target>
+      <target id="ref-10" type="wfs">
+        <targetName>40672210</targetName>
+        <targetBrightness>14.88 UCmag,13.983 Jmag,13.558 Kmag</targetBrightness>
+        <hmsdegSystem type="J2000">
+          <c1>6:54:51.175</c1>
+          <c2>25:24:24.15</c2>
+        </hmsdegSystem>
+      </target>
+      <target id="ref-11" type="wfs">
+        <targetName>40520782</targetName>
+        <targetBrightness>11.24 UCmag,10.057 Jmag,9.610 Kmag</targetBrightness>
+        <hmsdegSystem type="J2000">
+          <c1>12:11:05.492</c1>
+          <c2>24:39:33.41</c2>
+        </hmsdegSystem>
+      </target>
+    </targetCatalog>
+  </common>
+  <!--
+    Each observatory has an observatory element starting here.
+  -->
+  <observatory observatoryId="gemini">
+    <site>
+      <institution>Gemini Observatory</institution>
+      <address>670 A'Ohoku Place</address>
+      <address>Hilo, HI 96720</address>
+      <country>USA</country>
+      <contact>
+        <email>helpadmin@gemini.edu</email>
+        <phone>808-974-2500</phone>
+        <fax>808-935-9235</fax>
+      </contact>
+    </site>
+    <!--
+      The obsList ties together the targets, resources, and constraints.
+    -->
+    <obsList>
+      <totalTime units="hours">11.233333333333333</totalTime>
+      <requestedTime units="hours">0.0</requestedTime>
+      <constraintRef constraintId="ref-12"/>
+      <resourceRef resourceId="gemNIRI-1"/>
+      <observation>
+        <targetRef targetId="ref-0"/>
+        <targetRef targetId="ref-6"/>
+        <expTime units="minutes">200.0</expTime>
+        <expTotalTime units="minutes">200.0</expTotalTime>
+      </observation>
+      <observation>
+        <targetRef targetId="ref-1"/>
+        <targetRef targetId="ref-7"/>
+        <expTime units="minutes">390.0</expTime>
+        <expTotalTime units="minutes">390.0</expTotalTime>
+      </observation>
+      <observation>
+        <targetRef targetId="ref-2"/>
+        <targetRef targetId="ref-8"/>
+        <expTime units="minutes">21.0</expTime>
+        <expTotalTime units="minutes">21.0</expTotalTime>
+      </observation>
+      <observation>
+        <targetRef targetId="ref-3"/>
+        <targetRef targetId="ref-9"/>
+        <expTime units="minutes">21.0</expTime>
+        <expTotalTime units="minutes">21.0</expTotalTime>
+      </observation>
+      <observation>
+        <targetRef targetId="ref-4"/>
+        <targetRef targetId="ref-10"/>
+        <expTime units="minutes">21.0</expTime>
+        <expTotalTime units="minutes">21.0</expTotalTime>
+      </observation>
+      <observation>
+        <targetRef targetId="ref-5"/>
+        <targetRef targetId="ref-11"/>
+        <expTime units="minutes">21.0</expTime>
+        <expTotalTime units="minutes">21.0</expTotalTime>
+      </observation>
+    </obsList>
+    <observingMode mode="classical"/>
+    <tooTrigger value="no"/>
+    <requirements>
+    </requirements>
+    <proposalSupport>
+      <publication>Florczak, M., Lazzaro, D., Duffard, R.. et al (2002) &quot;Discovering New V-Type asteroids in the vicinity of Vesta&quot;. Icarus, 159, 178.</publication>
+      <publication>Mitchtchenko, T., Lazzaro, D., Ferraz-Melo, S. et al (2002) &quot;Origin of the Basaltic Asteroid (1459) Magnya. A dynamical and Mineralogical study of the outer Main Belt&quot;. Icarus, 158, 343.</publication>
+      <publication>Carvano, J. M.; Mothe-Diniz, T.; Lazzaro, D. (2003) &quot;Search for relations among a sample of 460 asteroids with featureless spectra&quot;. Icarus, 161, 356</publication>
+      <publication>Duffard, R.D., Lazzaro, D., Licandro, J., De Sanctis, M. C., Capria, M. T., and Carvano, J. M. (2004) &quot;Mineralogical characterization of some Basaltic asteroids in the neighbourhood of (4) Vesta: First Results&quot;. Icarus  171, 120-132</publication>
+      <publication>Carruba, V, Michtchenko, T., Roig, F., Ferraz-Melo, S., and Nesvorny, D. (2005) &quot;On the V-type asteroids outside Vesta family: The cases of 959 Elisa and 809 Lundia&quot;, IAU Symposium 229 &quot;Asteroids, Comets, Meteors&quot;, August 7-12, 2005, Brazil.</publication>
+      <publication>Duffard, R., and Lazzaro, D. (2005) &quot;Mineralogical correlation between HED meteorites and V-type asteroids&quot;, IAU Symposium 229 &quot;Asteroids, Comets, Meteors&quot;, August 7-12, 2005, Brazil.</publication>
+      <publication>Gil-Hutton, R., and Lazzaro, D. (2005) &quot;Polarimetric albedo of V-type asteroids&quot;, IAU Symposium 229 &quot;Asteroids, Comets, Meteors&quot;, August 7-12, 2005, Brazil.</publication>
+      <publication>Roig, F., and Gil-Hutton, R. (2006) Selecting candidate V-type asteroids from the analysis of the Sloan Digital Sky Survey colors. Icarus 183, 411-419..</publication>
+      <publication>Duffard, R.; de Leon, J.; Licandro, J.; Lazzaro, D.; Serra-Ricart, M., (2006) Basaltic asteroids in the Near-Earth Objects population: a mineralogical analysis. Astronomy and Astrophysics, 456, 775-781.</publication>
+      <allocation>
+        <allocationReference>GN-2005A</allocationReference>
+        <awardedTime units="hours">4.1</awardedTime>
+        <percentUsefulTime>26</percentUsefulTime>
+        <comment>Data OK, but we need more observations.</comment>
+      </allocation>
+      <allocation>
+        <allocationReference>GS-2006A-Q51</allocationReference>
+        <awardedTime units="hours">5.4</awardedTime>
+        <percentUsefulTime>79</percentUsefulTime>
+        <comment>Data is not very good.</comment>
+      </allocation>
+      <allocation>
+        <allocationReference>GN-2006B-Q-32</allocationReference>
+        <awardedTime units="hours">1.2</awardedTime>
+        <percentUsefulTime>100</percentUsefulTime>
+        <comment>Data OK, but we receive only a small percentage of the time we ask for.</comment>
+      </allocation>
+      <allocation>
+        <allocationReference>GN-2006B-Q-102</allocationReference>
+        <awardedTime units="hours">5.31</awardedTime>
+        <percentUsefulTime>0</percentUsefulTime>
+        <comment>Poor weather program</comment>
+      </allocation>
+      <allocation>
+        <allocationReference>GS-2006B-Q-80</allocationReference>
+        <awardedTime units="hours">14.26</awardedTime>
+        <percentUsefulTime>0</percentUsefulTime>
+        <comment>Poor weather program</comment>
+      </allocation>
+      <allocation>
+        <allocationReference>GS-2007A-C-6</allocationReference>
+        <awardedTime units="hours">30.0</awardedTime>
+        <percentUsefulTime>70</percentUsefulTime>
+        <comment>Reducing the data</comment>
+      </allocation>
+    </proposalSupport>
+    <scheduling>
+      <optimalDates>
+        <dateRange>
+          <startDate>
+            <year>2007</year><month>12</month><day>1</day>
+          </startDate>
+          <endDate>
+            <year>2007</year><month>12</month><day>20</day>
+          </endDate>
+        </dateRange>
+        <dateRange>
+          <startDate>
+            <year>2007</year><month>12</month><day>28</day>
+          </startDate>
+          <endDate>
+            <year>2008</year><month>1</month><day>18</day>
+          </endDate>
+        </dateRange>
+        <dateRange>
+          <startDate>
+            <year>2008</year><month>1</month><day>25</day>
+          </startDate>
+          <endDate>
+            <year>2008</year><month>1</month><day>31</day>
+          </endDate>
+        </dateRange>
+        <comment>The observational windows for the targets are: Dec 14, 2007 - Jan 31, 2008 for (7472) and Dec 01, 2007 - Jan 31, 2008 for (10537).</comment>
+      </optimalDates>
+      <impossibleDates>
+        <dateRange>
+          <startDate>
+            <year>2007</year><month>8</month><day>1</day>
+          </startDate>
+          <endDate>
+            <year>2007</year><month>11</month><day>30</day>
+          </endDate>
+        </dateRange>
+        <comment>The targets are near the Sun (elongations less that 70 degrees) or fainter than V=18.1</comment>
+      </impossibleDates>
+    </scheduling>
+    <technicalJustification>
+      <embeddedText>We propose to obtain spectra of our targets in the outer main asteroid belt in the NIR, in order to completely characterize the
+mineralogy of their surfaces. To accomplish this scientific goal, the observations must be carried out on a large aperture telescope that allows to obtain spectra with signal-to-noise ratio good enough as to detect any absorption band in the spectrum which could indicate something about the surface composition of the targets. Then, it is necessary to reach S/N ratios greater than 20 in the 1000-2500 nm range with a resolution of R ~ 200. This requirement would be very difficult to accomplish on smaller telescopes for asteroids as faint as V &gt; 18.
+
+Since the target asteroids are non-sideral objects, we choose as observing windows the periods where they  are at solar elongations larger than 70 degrees and brighter than V=18.1, i.e., Dec 14, 2007 - Jan 31, 2008 for (7472) and Dec 01, 2007 - Jan 31, 2008 for (10537).
+The PWFS will be used to provide image motion compensation since there are many guide stars available within the patrol annulus (5 to 7 arcmin) around each target during their observing windows. 
+ 
+The observations must be carried out through the same NIRI instrumental configuration (f/6 camera, J-, H-, and K-grisms, 6 pixels slit) for all targets. This configuration provide a resolution of R~500 for the desired spectral range but R=200 is enough to accomplish the scientific goal of the program, so it is possible to do a 2:1 rebinning of the spectrum  to improve the final signal-to-noise ratio by a factor of ~1.4. In addition to the usual CuAr calibration, we will also need to observe telluric standard stars through the same instrumental configuration to remove the telluric signature and to get the reflectance spectrum inmediatedly before and after each target. 
+
+The integration times were obtained with the Integration Time Calculator for NIRI, and the goal is to attain a minimum signal-to-noise ratio of 20-25 for the complete spectral range with a resolution of 200 or, thanks to the rebinning explained in the previous paragraph, a signal-to-noise ratio of ~14-17 with a resolution of 500.  
+
+It is worth noting that the observing conditions we have requested are the worst conditions under which it is still possible to accomplish the stated scientific goal [image quality  = 70%,  sky transparency (cloud cover) = 50%, sky transparency (water vapor) = 100%, sky background = 100%, air mass &lt; 1.5]. The frequency of occurrence of these observing conditions is 35%.  The Integration Time Calculator result for the faintest magnitude reached by the targets during the observing window (V=17.2 and 18.1, with a spectral distribution of a G2V star) are given as attach files. 
+
+The observing sequence will be the same for all the targets and follows the standard ABBA pattern with individual exposure times of 180 seconds. This pattern will be repeated until the total integration time will be obtained.  For each target, the effective integration times (calculated to attain a minimum S/N = 20) for each grism are:
+
+(7472) - J=2700 sec, H=2700 sec, Ks=1800 sec 
+
+(10537) - J=5400 sec, H=5400 sec, Ks=3600 sec
+
+Taking into account that 25% of the total time is lossing due to offsetting, WFS re-adquisition, readout, etc. during the dither pattern, the total observing time for each object is 160 minutes, and 320 minutes, respectively. Since  the acquisition overhead associated with setting up on each new science target is 20 minutes for a spectroscopic acquisition with NIRI+PWFS and 10 minutes for a re-acquisition, which is mandatory each hour,  and we want to observe bright NIR telluric standard stars  (included in the targets list) before and after each target (with total observing time for each standard of less than 1 minute), the total observing time of the program is 11.23 hours.</embeddedText>
+      <attachment name="V=17.2, J-grism" src="Gemini_2007B_008_2.dat" type="txt"/>
+      <attachment name="V=17.2, H-grism" src="Gemini_2007B_008_7.dat" type="txt"/>
+      <attachment name="V=17.2, K-grism" src="Gemini_2007B_008_4.dat" type="txt"/>
+      <attachment name="V=18.1, J-grism" src="Gemini_2007B_008_3.dat" type="txt"/>
+      <attachment name="V=18.1, H-grism" src="Gemini_2007B_008_1.dat" type="txt"/>
+      <attachment name="V=18.1, K-grism" src="Gemini_2007B_008_5.dat" type="txt"/>
+    </technicalJustification>
+    <!--
+        The resourceList provides the selected resources for the observatory.
+    -->
+    <resourceList>
+      <resourceCategory>
+        <resourceType>Gemini North</resourceType>
+        <resource id="gemNIRI-1">
+          <resourceName>NIRI</resourceName>
+          <resourceNickname></resourceNickname>
+          <resourceComp>
+            <resourceCompType>Camera</resourceCompType>
+            <resourceCompName>f/6  (0.12 arcsec)</resourceCompName>
+          </resourceComp>
+          <resourceComp>
+            <resourceCompType>Disperser</resourceCompType>
+            <resourceCompName>J-grism</resourceCompName>
+            <resourceCompName>H-grism</resourceCompName>
+            <resourceCompName>K-grism</resourceCompName>
+          </resourceComp>
+          <resourceComp>
+            <resourceCompType>Focal Plane Unit</resourceCompType>
+            <resourceCompName>6-pix slit center</resourceCompName>
+          </resourceComp>
+        </resource>
+      </resourceCategory>
+    </resourceList>
+    <extension type="subDetails">
+      <geminiSubDetailsExtension>
+        <semesterTitle>2007B</semesterTitle>
+        <semesterLimits>
+          <dateRange>
+            <startDate>
+              <year>2007</year><month>8</month><day>1</day>
+            </startDate>
+            <endDate>
+              <year>2008</year><month>1</month><day>31</day>
+            </endDate>
+          </dateRange>
+        </semesterLimits>
+        <dueDate>
+          <date>
+            <year>2007</year><month>3</month><day>31</day>
+          </date>
+        </dueDate>
+        <submissions>
+          <submissionTotalRequestedTime units="hours">20.23</submissionTotalRequestedTime>
+          <submissionTotalMinimumRequestedTime units="hours">11.23</submissionTotalMinimumRequestedTime>
+          <partnerSubmission partnerName="Keck" submissionFlag="true" submissionStatus="pending">
+              <submissionRequestedTime units="hours">7.2</submissionRequestedTime>
+              <submissionMinimumRequestedTime units="hours">7.2</submissionMinimumRequestedTime>
+              <partnerProposalContact>
+                  <name><first>Ricardo</first><last>Gil-Hutton</last></name>
+              </partnerProposalContact>
+              <partnerReferenceNumber>ArG/2007B/008</partnerReferenceNumber>
+          </partnerSubmission>
+          <partnerSubmission partnerName="Subaru" submissionStatus="pending">
+              <submissionRequestedTime units="hours">4.03</submissionRequestedTime>
+              <submissionMinimumRequestedTime units="hours">4.03</submissionMinimumRequestedTime>
+              <partnerProposalContact>
+                  <name><first>Fernando</first><last>Roig</last></name>
+              </partnerProposalContact>
+              <partnerReferenceNumber></partnerReferenceNumber>
+          </partnerSubmission>
+        </submissions>
+      </geminiSubDetailsExtension>
+    </extension>
+    <extension type="allocations">
+      <geminiAllocationsExtension>
+        <relatedProposals>- Polarimetric albedos of V-type asteroids, Complejo Astronomico El Leoncito, May 15-16, 2007, June 13-14, 2007.
+
+- Polarimetric albedos of V-type asteroids, Complejo Astronomico El Leoncito, September - October 2007, in evaluation.
+
+- Mineralogy of outer belt asteroids, William Herschel Telescope, September - October 2007, in evaluation.</relatedProposals>
+      </geminiAllocationsExtension>
+    </extension>
+    <extension type="tac">
+      <geminiTACExtension partnerName="Subaru" poorWeatherFlag="false">
+        <partnerRanking>3</partnerRanking>
+        <partnerRecommendedTime units="hours">7.2</partnerRecommendedTime>
+        <partnerMinimumTime units="hours">7.2</partnerMinimumTime>
+        <partnerReceivedDate>
+          <date>
+            <year>2007</year><month>3</month><day>31</day>
+          </date>
+        </partnerReceivedDate>
+        <partnerSupportEmail>cquiroga@fcaglp.fcaglp.unlp.edu.ar</partnerSupportEmail>
+      </geminiTACExtension>
+    </extension>
+    <extension type="tac">
+      <geminiTACExtension partnerName="Keck" poorWeatherFlag="false">
+        <partnerRanking></partnerRanking>
+        <partnerRecommendedTime units="hours">0.0</partnerRecommendedTime>
+        <partnerMinimumTime units="hours">0.0</partnerMinimumTime>
+        <partnerReceivedDate>
+          <date>
+            <year>2007</year><month>3</month><day>31</day>
+          </date>
+        </partnerReceivedDate>
+        <partnerSupportEmail></partnerSupportEmail>
+      </geminiTACExtension>
+    </extension>
+    <extension type="band3">
+      <geminiBand3Extension usableInBand3="false">
+        <minimumUsableBand3Time units="hours">0.0</minimumUsableBand3Time>
+        <band3ConsiderationText>
+          <embeddedText></embeddedText>
+        </band3ConsiderationText>
+      </geminiBand3Extension>
+    </extension>
+    <constraint type="observingConditions" name="Global Default" id="ref-12">
+      <geminiObsConditionsConstraint imageQuality="70" skyBackground="Any" waterVapor="Any" cloudCover="50"/>
+    </constraint>
+  </observatory>
+</phase1Document>

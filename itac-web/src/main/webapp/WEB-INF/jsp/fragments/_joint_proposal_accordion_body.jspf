@@ -1,0 +1,10 @@
+<%@ page import="edu.gemini.tac.persistence.joints.JointProposal" %>
+
+<h4 class="span-6">Allocated time per partner</h4>
+<c:forEach items="${ proposal.proposals }" var="component">
+    <p><a href="/tac/committees/${proposal.committee.id}/proposals/{ $component.id }">http://localhost:1973/tac/committees/171671/proposals/{$component.id} </a></p>
+</c:forEach>
+<p>TODO: CHL: 4 USA: 6</p>
+<p><a href="#">href="/tac/committees/${proposal.committee.id}/proposals/${ proposal.id} </a></p>
+
+<div style="clear: both">&nbsp;</div>

@@ -1,0 +1,26 @@
+<c:forEach items="${ exchangeProposals }" var="proposal" varStatus="status">
+    <c:forEach items="${ proposal.phaseIProposal.submissions }" var="submission">
+    <c:set var="submissionRequestedTime" value="${ proposal.totalRequestedTime.value }"/>
+    <c:set var="partnersSubmission" value="${ submission.partner.partnerCountryKey == partnerCountryKey }"/>
+    <tr class="exchangeScope ${ proposal.site }">
+        <td>${ submission.partner.partnerCountryKey }</td>
+        <td><a href="/tac/committees/${proposal.committee.id}/proposals/${proposal.id}">${ submission.receipt.receiptId }</a></td>
+        <td>${submission.accept.ranking}</td>
+        <td>
+        <c:if test="${ partnersSubmission }">
+            <c:set var="primaryRecommended" value="${ (!empty proposal.phaseIProposal.primary.accept.recommend) ? proposal.phaseIProposal.primary.accept.recommend.valueInHours : 'Unknown' }"/>
+            <fmt:formatNumber value="${ primaryRecommended }" minFractionDigits="1" maxFractionDigits="2" type="number"/>
+        </c:if>
+        </td>
+        <td>${ proposal.site.displayName }</td>
+        <td class="scheduleTd" >
+        <span class="scheduleButton" name="${proposal.id}">
+        <c:if test="${ partnersSubmission }">
+            <input class="scheduleCheckbox" type="checkbox" name="exchange-accepted" value="${proposal.id}" id="exchange-accepted-${proposal.id}">
+            <label for="exchange-accepted-${ proposal.id}" class="scheduleLabel">Schedule</label>
+        </c:if>
+        </span>
+        </td>
+    </tr>
+    </c:forEach>
+</c:forEach>

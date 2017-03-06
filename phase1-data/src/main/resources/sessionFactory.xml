@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <bean id="sessionFactory"
+          class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+        <property name="dataSource" ref="itacDataSource" />
+        <property name="annotatedClasses">
+            <list>
+                <value>edu.gemini.tac.persistence.BroadcastMessage</value>
+                <value>edu.gemini.tac.persistence.Committee</value>
+                <value>edu.gemini.tac.persistence.LogEntry</value>
+                <value>edu.gemini.tac.persistence.LogNote</value>
+                <value>edu.gemini.tac.persistence.Partner</value>
+                <value>edu.gemini.tac.persistence.Person</value>
+                <value>edu.gemini.tac.persistence.Proposal</value>
+                <value>edu.gemini.tac.persistence.ProposalIssue</value>
+                <value>edu.gemini.tac.persistence.joints.JointProposal</value>
+                <value>edu.gemini.tac.persistence.Semester</value>
+                <value>edu.gemini.tac.persistence.Site</value>
+                <value>edu.gemini.tac.persistence.bandrestriction.BandRestrictionRule</value>
+                <value>edu.gemini.tac.persistence.bandrestriction.Iq20RestrictionNotInBand3</value>
+                <value>edu.gemini.tac.persistence.bandrestriction.LgsRestrictionInBandsOneAndTwo</value>
+                <value>edu.gemini.tac.persistence.bandrestriction.RapidTooRestrictionInBandOne</value>
+                <value>edu.gemini.tac.persistence.bandrestriction.LargeProgramRestrictionNotInBand3</value>
+                <value>edu.gemini.tac.persistence.bin.BinConfiguration</value>
+                <value>edu.gemini.tac.persistence.bin.DecBinSize</value>
+                <value>edu.gemini.tac.persistence.bin.RABinSize</value>
+                <value>edu.gemini.tac.persistence.condition.ConditionBucket</value>
+                <value>edu.gemini.tac.persistence.condition.ConditionSet</value>
+                <value>edu.gemini.tac.persistence.phase1.proposal.PhaseIProposal</value>
+                <value>edu.gemini.tac.persistence.phase1.proposal.ClassicalProposal</value>
+                <value>edu.gemini.tac.persistence.phase1.proposal.ExchangeProposal</value>
+                <value>edu.gemini.tac.persistence.phase1.proposal.QueueProposal</value>
+                <value>edu.gemini.tac.persistence.phase1.proposal.SpecialProposal</value>
+                <value>edu.gemini.tac.persistence.phase1.proposal.LargeProgram</value>
+                <value>edu.gemini.tac.persistence.phase1.Investigator</value>
+                <value>edu.gemini.tac.persistence.phase1.PrincipalInvestigator</value>
+                <value>edu.gemini.tac.persistence.phase1.CoInvestigator</value>
+                <value>edu.gemini.tac.persistence.phase1.Target</value>
+                <value>edu.gemini.tac.persistence.phase1.SiderealTarget</value>
+                <value>edu.gemini.tac.persistence.phase1.NonsiderealTarget</value>
+                <value>edu.gemini.tac.persistence.phase1.TooTarget</value>
+                <value>edu.gemini.tac.persistence.phase1.Magnitude</value>
+                <value>edu.gemini.tac.persistence.phase1.ProperMotion</value>
+                <value>edu.gemini.tac.persistence.phase1.EphemerisElement</value>
+                <value>edu.gemini.tac.persistence.phase1.Coordinates</value>
+                <value>edu.gemini.tac.persistence.phase1.DegDegCoordinates</value>
+                <value>edu.gemini.tac.persistence.phase1.HmsDmsCoordinates</value>
+                <value>edu.gemini.tac.persistence.phase1.Condition</value>
+                <value>edu.gemini.tac.persistence.phase1.Observation</value>
+                <value>edu.gemini.tac.persistence.phase1.GuideStar</value>
+                <value>edu.gemini.tac.persistence.phase1.submission.NgoSubmission</value>
+                <value>edu.gemini.tac.persistence.phase1.submission.ExchangeSubmission</value>
+                <value>edu.gemini.tac.persistence.phase1.submission.SpecialSubmission</value>
+                <value>edu.gemini.tac.persistence.phase1.submission.LargeProgramSubmission</value>
+                <value>edu.gemini.tac.persistence.phase1.submission.SubmissionRequest</value>
+                <value>edu.gemini.tac.persistence.phase1.submission.SubmissionAccept</value>
+                <value>edu.gemini.tac.persistence.phase1.submission.SubmissionReceipt</value>
+                <value>edu.gemini.tac.persistence.phase1.Itac</value>
+                <value>edu.gemini.tac.persistence.phase1.queues.PartnerSequence</value>
+                <value>edu.gemini.tac.persistence.phase1.queues.PartnerPercentage</value>
+
+                <value>edu.gemini.tac.persistence.phase1.blueprint.flamingos2.Flamingos2BlueprintImaging</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.flamingos2.Flamingos2BlueprintLongslit</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.flamingos2.Flamingos2BlueprintMos</value>
+
+                <value>edu.gemini.tac.persistence.phase1.blueprint.gmosn.GmosNBlueprintIfu</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.gmosn.GmosNBlueprintLongSlit</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.gmosn.GmosNBlueprintLongSlitNs</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.gmosn.GmosNBlueprintMos</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.gmosn.GmosNBlueprintImaging</value>
+
+                <value>edu.gemini.tac.persistence.phase1.blueprint.gmoss.GmosSBlueprintIfu</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.gmoss.GmosSBlueprintIfuNs</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.gmoss.GmosSBlueprintLongSlit</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.gmoss.GmosSBlueprintLongSlitNs</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.gmoss.GmosSBlueprintMos</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.gmoss.GmosSBlueprintImaging</value>
+
+                <value>edu.gemini.tac.persistence.phase1.blueprint.gnirs.GnirsBlueprintBase</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.gnirs.GnirsBlueprintImaging</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.gnirs.GnirsBlueprintSpectroscopy</value>
+
+                <value>edu.gemini.tac.persistence.phase1.blueprint.gpi.GpiBlueprint</value>
+
+                <value>edu.gemini.tac.persistence.phase1.blueprint.michelle.MichelleBlueprintImaging</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.michelle.MichelleBlueprintSpectroscopy</value>
+
+                <value>edu.gemini.tac.persistence.phase1.blueprint.nici.NiciBlueprintCoronagraphic</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.nici.NiciBlueprintStandard</value>
+
+                <value>edu.gemini.tac.persistence.phase1.blueprint.nifs.NifsBlueprintAo</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.nifs.NifsBlueprint</value>
+
+                <value>edu.gemini.tac.persistence.phase1.blueprint.niri.NiriBlueprint</value>
+
+                <value>edu.gemini.tac.persistence.phase1.blueprint.phoenix.PhoenixBlueprint</value>
+
+                <value>edu.gemini.tac.persistence.phase1.blueprint.dssi.DssiBlueprint</value>
+
+                <value>edu.gemini.tac.persistence.phase1.blueprint.texes.TexesBlueprint</value>
+
+                <value>edu.gemini.tac.persistence.phase1.blueprint.trecs.TrecsBlueprintImaging</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.trecs.TrecsBlueprintSpectroscopy</value>
+
+                <value>edu.gemini.tac.persistence.phase1.blueprint.graces.GracesBlueprint</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.gsaoi.GsaoiBlueprint</value>
+
+                <value>edu.gemini.tac.persistence.phase1.blueprint.visitor.VisitorGNBlueprint</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.visitor.VisitorGSBlueprint</value>
+
+                <value>edu.gemini.tac.persistence.phase1.blueprint.exchange.SubaruBlueprint</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.exchange.KeckBlueprint</value>
+
+                <value>edu.gemini.tac.persistence.queues.Queue</value>
+                <value>edu.gemini.tac.persistence.queues.QueueNote</value>
+                <value>edu.gemini.tac.persistence.restrictedbin.LgsObservationsRestrictedBin</value>
+                <value>edu.gemini.tac.persistence.restrictedbin.RestrictedBin</value>
+                <value>edu.gemini.tac.persistence.restrictedbin.WaterVaporPercentageRestrictedBin</value>
+                <value>edu.gemini.tac.persistence.security.AuthorityRole</value>
+                <value>edu.gemini.tac.persistence.queues.Banding</value>
+                <value>edu.gemini.tac.persistence.queues.JointBanding</value>
+                <value>edu.gemini.tac.persistence.queues.ScienceBand</value>
+                <value>edu.gemini.tac.persistence.queues.partnerCharges.ExchangePartnerCharge</value>
+                <value>edu.gemini.tac.persistence.queues.partnerCharges.RolloverPartnerCharge</value>
+                <value>edu.gemini.tac.persistence.queues.partnerCharges.ClassicalPartnerCharge</value>
+                <value>edu.gemini.tac.persistence.queues.partnerCharges.AvailablePartnerTime</value>
+                <value>edu.gemini.tac.persistence.queues.partnerCharges.AdjustmentPartnerCharge</value>
+                <value>edu.gemini.tac.persistence.queues.partnerCharges.PartnerExchangePartnerCharge</value>
+                <value>edu.gemini.tac.persistence.rollover.RolloverObservation</value>
+                <value>edu.gemini.tac.persistence.rollover.DerivedRolloverObservation</value>
+                <value>edu.gemini.tac.persistence.rollover.RolloverReport</value>
+                <value>edu.gemini.tac.persistence.rollover.RolloverSet</value>
+                <value>edu.gemini.tac.persistence.daterange.DateRangePersister</value>
+                <value>edu.gemini.tac.persistence.daterange.Blackout</value>
+                <value>edu.gemini.tac.persistence.daterange.Shutdown</value>
+
+                <value>edu.gemini.tac.persistence.emails.Template</value>
+                <value>edu.gemini.tac.persistence.emails.Template.PiSuccessful</value>
+                <value>edu.gemini.tac.persistence.emails.Template.UnSuccessful</value>
+                <value>edu.gemini.tac.persistence.emails.Template.NgoClassical</value>
+                <value>edu.gemini.tac.persistence.emails.Template.NgoClassicalJoint</value>
+                <value>edu.gemini.tac.persistence.emails.Template.NgoExchange</value>
+                <value>edu.gemini.tac.persistence.emails.Template.NgoExchangeJoint</value>
+                <value>edu.gemini.tac.persistence.emails.Template.NgoPoorWeather</value>
+                <value>edu.gemini.tac.persistence.emails.Template.NgoPoorWeatherJoint</value>
+                <value>edu.gemini.tac.persistence.emails.Template.NgoQueue</value>
+                <value>edu.gemini.tac.persistence.emails.Template.NgoQueueJoint</value>
+
+                <value>edu.gemini.tac.persistence.emails.Email</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+                <prop key="hibernate.show_sql">${itac.show_sql}</prop>
+                <prop key="hibernate.cache.region.factory_class">net.sf.ehcache.hibernate.SingletonEhCacheRegionFactory</prop>
+                <prop key="net.sf.ehcache.configurationResourceName">/ehcache.xml</prop>
+                <prop key="hibernate.cache.use_second_level_cache">true</prop>
+                <prop key="hibernate.cache.use_query_cache">true</prop>
+                <prop key="hibernate.generate_statistics">true</prop>
+                <prop key="hibernate.cache.use_structured_entries">true</prop>
+            </props>
+        </property>
+    </bean>
+
+</beans>

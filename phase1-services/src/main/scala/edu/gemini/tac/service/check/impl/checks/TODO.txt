@@ -1,0 +1,9 @@
+- ClassicalTimeRequest.  Not sure how this should work.  Should it be the
+  sum of all time requests that must be made in nights or a multiple of 10 hrs?
+  Or should each and every component of a joint be made in nights or a
+  multiple of 10?  Seems like the former because you could have a joint with
+  one part 5 hours and the other part also 5 hours?  What if one part is 10 hrs
+  and the other part is 1 hour, but the 1 hour partner recommends 0?
+
+- RankingCheck, ReferenceCheck, SubmissionPartnerCheck.  Testing the "ignore
+ joint proposal" branch is difficult because we need a mock hibernate session.

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="raDistributionInstrument" language="java" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+
+    <!-- parameters -->
+    <parameter name="subtitleString" class="java.lang.String"/>
+
+    <!-- fields -->
+    <field name="siteName" class="java.lang.String"/>
+	<field name="instrumentName" class="java.lang.String"/>
+	<field name="hours" class="java.lang.Double"/>
+	<field name="raBin" class="java.lang.Integer"/>
+    <field name="laser" class="java.lang.Boolean"/>
+    <field name="rank" class="java.lang.Long"/>
+    <field name="bandName" class="java.lang.String"/>
+
+    <!-- sorting -->
+    <sortField name="raBin" order="Ascending"/>
+    <sortField name="rank" order="Ascending"/>
+
+    <!-- variables -->
+    <variable name="totalHours" class="java.lang.Double" calculation="Sum" resetType ="Report">
+        <variableExpression>
+            <![CDATA[$F{hours}]]>
+        </variableExpression>
+        <initialValueExpression>
+            <![CDATA[new java.lang.Double(0)]]>
+        </initialValueExpression>
+    </variable>
+    <variable name="totalHoursPerBandPerBin" class="java.lang.Double" calculation="Sum" resetType ="Group" resetGroup="bandBinGroup">
+        <variableExpression>
+            <![CDATA[$F{hours}]]>
+        </variableExpression>
+        <initialValueExpression>
+            <![CDATA[new java.lang.Double(0)]]>
+        </initialValueExpression>
+    </variable>
+    <!-- get us a number formatter -->
+    <variable name="nfc" class="java.text.NumberFormat" resetType="Report" calculation="Nothing">
+        <variableExpression>
+            <![CDATA[NumberFormat.getInstance());((NumberFormat)value).setMaximumFractionDigits(0]]>
+        </variableExpression>
+    </variable>
+
+    <!-- grouping -->
+    <group name="bandBinGroup">
+        <groupExpression>
+            <![CDATA[$F{raBin}+$F{rank}]]>
+        </groupExpression>
+    </group>
+
+	<summary>
+        <!--
+            ra distribution by bands
+        -->
+        <band height="250" splitType="Stretch">
+            <stackedBarChart>
+                <chart>
+                    <reportElement x="35" y="0" width="505" height="200"/>
+                    <chartTitle>
+                        <font size="10" isBold="true" />
+                        <titleExpression><![CDATA["RA Distribution by Band (Total = "+$V{nfc}.format($V{totalHours})+" hrs)"]]></titleExpression>
+                    </chartTitle>
+                    <chartSubtitle>
+                        <font size="8" isBold="true" />
+                        <subtitleExpression><![CDATA[$P{subtitleString}]]></subtitleExpression>
+                    </chartSubtitle>
+                    <chartLegend/>
+                </chart>
+                <categoryDataset>
+                    <categorySeries>
+                        <seriesExpression><![CDATA[$F{bandName}]]></seriesExpression>
+                        <categoryExpression><![CDATA[$F{raBin}]]></categoryExpression>
+                        <valueExpression><![CDATA[$V{totalHoursPerBandPerBin}]]></valueExpression>
+                    </categorySeries>
+                </categoryDataset>
+                <barPlot>
+                    <plot/>
+                    <itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+                    <categoryAxisLabelExpression><![CDATA["2 Hour RA Bins (-1 = ToO)"]]></categoryAxisLabelExpression>
+                    <categoryAxisFormat>
+                        <axisFormat>
+                            <labelFont/>
+                            <tickLabelFont/>
+                        </axisFormat>
+                    </categoryAxisFormat>
+                    <valueAxisLabelExpression><![CDATA["Hours"]]></valueAxisLabelExpression>
+                    <valueAxisFormat>
+                        <axisFormat>
+                            <labelFont/>
+                            <tickLabelFont/>
+                        </axisFormat>
+                    </valueAxisFormat>
+                </barPlot>
+            </stackedBarChart>
+        </band>
+	</summary>
+</jasperReport>

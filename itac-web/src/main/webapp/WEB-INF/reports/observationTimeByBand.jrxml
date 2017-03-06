@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="raDistributionInstrument" language="java" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+
+    <!-- parameters -->
+    <parameter name="subtitleString" class="java.lang.String"/>
+
+    <!-- fields -->
+    <field name="rank" class="java.lang.Long"/>
+    <field name="band" class="java.lang.String"/>
+	<field name="instrument" class="java.lang.String"/>
+	<field name="hours" class="java.lang.Double"/>
+
+    <!-- sorting by rank (sorting by band name does not provide expected order...) -->
+    <sortField name="rank" order="Ascending"/>
+
+    <!-- variables -->
+    <variable name="totalAllocatedTime" class="java.lang.Double" calculation="Sum" resetType ="Report">
+        <variableExpression>
+            <![CDATA[$F{hours}]]>
+        </variableExpression>
+        <initialValueExpression>
+            <![CDATA[new java.lang.Double(0)]]>
+        </initialValueExpression>
+    </variable>
+    <variable name="totalBandTime" class="java.lang.Double" calculation="Sum" resetType ="Group" resetGroup="bandGroup">
+        <variableExpression>
+            <![CDATA[$F{hours}]]>
+        </variableExpression>
+        <initialValueExpression>
+            <![CDATA[new java.lang.Double(0)]]>
+        </initialValueExpression>
+    </variable>
+    <!-- get us a number formatter -->
+    <variable name="nfc" class="java.text.NumberFormat" resetType="Report" calculation="Nothing">
+        <variableExpression>
+            <![CDATA[NumberFormat.getInstance());((NumberFormat)value).setMaximumFractionDigits(0]]>
+        </variableExpression>
+    </variable>
+
+    <!-- grouping -->
+    <group name="bandGroup">
+        <groupExpression>
+            <![CDATA[$F{rank}]]>
+        </groupExpression>
+
+<!-- debugging...
+        <groupFooter>
+            <band height="40">
+             <textField>
+                <reportElement x="0" y="0" width="300" height="20" />
+                <textFieldExpression>"TOTAL = " + $V{totalInstrumentTime}</textFieldExpression>
+               </textField>
+            </band>
+        </groupFooter>
+-->
+    </group>
+
+
+<!-- debugging...
+	<detail>
+		<band height="20" splitType="Stretch">
+            <textField>
+                <reportElement x="0" y="0" width="100" height="20"/>
+                <textElement/>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{band}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="100" y="0" width="100" height="20"/>
+                <textElement/>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{instrument}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.0">
+                <reportElement x="200" y="0" width="100" height="20"/>
+                <textElement/>
+                <textFieldExpression class="java.lang.Double"><![CDATA[$F{hours}]]></textFieldExpression>
+            </textField>
+		</band>
+	</detail>
+-->
+	<summary>
+        <!--
+            observation times by instruments
+        -->
+        <band height="250" splitType="Stretch">
+            <pieChart>
+                <chart evaluationTime="Report">
+                    <reportElement x="35" y="0" width="505" height="200"/>
+                    <chartTitle>
+                        <font size="10" isBold="true" />
+                        <titleExpression><![CDATA["Observation Time by Band (Total = "+$V{nfc}.format($V{totalAllocatedTime})+" hrs)"]]></titleExpression>
+                    </chartTitle>
+                    <chartSubtitle>
+                        <font size="8" isBold="true" />
+                        <subtitleExpression><![CDATA[$P{subtitleString}]]></subtitleExpression>
+                    </chartSubtitle>
+                    <chartLegend/>
+                </chart>
+                <pieDataset>
+                    <keyExpression><![CDATA[$F{band}]]></keyExpression>
+                    <valueExpression><![CDATA[java.lang.Math.round($V{totalBandTime})]]></valueExpression>
+                </pieDataset>
+                <piePlot labelFormat="{1} ({2})" isShowLabels="true" >
+                    <plot/>
+                </piePlot>
+            </pieChart>
+        </band>
+	</summary>
+</jasperReport>

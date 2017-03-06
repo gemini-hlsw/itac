@@ -1,0 +1,20 @@
+				<div id="configure-filters" class="span-9 last">
+					<form action="#" id="tag-filter" style="float: right">
+						<fieldset>
+						<legend>filters</legend>
+                        <span class="filter-control"><input type="checkbox" name="PROPOSAL_ADDED" value="PROPOSAL_ADDED"/><label for="PROPOSAL_ADDED">Proposal accepted</label></span>
+                        <span class="filter-control"><input type="checkbox" name="PROPOSAL_SKIPPED" value="PROPOSAL_SKIPPED"/><label for="PROPOSAL_SKIPPED">Proposal skipped</label></span>
+                        <span class="filter-control"><input type="checkbox" name="PROPOSAL_HASNOTE" value="PROPOSAL_HASNOTE"/><label for="PROPOSAL_HASNOTE">Has note</label></span>
+						<span class="filter-control"><input type="checkbox" name="PROPOSAL_EDITED" value="PROPOSAL_EDITED"/><label for="PROPOSAL_EDITED">Edited</label></span>
+						<span class="filter-control"><input type="checkbox" name="PROPOSAL_BULK_IMPORT" value="PROPOSAL_BULK_IMPORT"/><label for="PROPOSAL_BULK_IMPORT">Bulk import</label></span>
+						<span class="filter-control"><input type="checkbox" name="PROPOSAL_SINGLE_IMPORT" value="PROPOSAL_SINGLE_IMPORT"/><label for="PROPOSAL_SINGLE_IMPORT">Single import</label></span>
+						<span class="filter-control"><input type="checkbox" name="PROPOSAL_QUEUE_GENERATED" value="PROPOSAL_QUEUE_GENERATED"/><label for="PROPOSAL_QUEUE_GENERATED">Queue generation</label></span>
+                        <span class="filter-control"><input type="checkbox" name="QUEUE_ERROR" value="QUEUE_ERROR"/><label for="QUEUE_ERROR">Queue error</label></span>
+                        <hr/>
+                        <c:if test="${ !empty initialSearch}">
+                            <c:set var="searchTerm" value="${ initialSearch }"></c:set>
+                        </c:if>
+                        <input type="text" id="search" value="${ searchTerm }"><label for="search">&nbsp;Freeform search</label>
+						</fieldset>
+					</form>
+				</div>

@@ -1,0 +1,104 @@
+						<table>
+							<tr>
+								<td class="label"><label for="site">Site:</label></td>
+								<td>
+									<select id="site" name="site" class="required">
+										<c:choose>
+										<c:when test="${ empty queue.site }">
+										<option value="" selected></option>
+										<option value="North">North</option>
+										<option value="South">South</option>
+										</c:when>
+										<c:otherwise>
+										<option value=""></option>
+											<c:choose>
+											<c:when test="${ queue.site.displayName == \"North\"}">
+										<option value="North" SELECTED>North</option>
+										<option value="South">South</option>
+											</c:when>
+											<c:otherwise>
+										<option value="North" selected>North</option>
+										<option value="South">South</option>
+											</c:otherwise>
+											</c:choose>
+										</c:otherwise>
+										</c:choose>
+									</select>
+								</td>
+							</tr>
+						
+							<tr>
+								<td class="label"><label for="total-time-available">Total time available (in hours):</label></td>
+								<td><input type="text" id="total-time-available" name="total-time-available" value="${ queue.totalTimeAvailable }" class="required number"></input></td>
+							</tr>
+							<tr>
+								<td class="label"><label for="partner-initial-pick">Partner with initial pick:</label></td>
+								<td>
+									<select id="partner-initial-pick" name="partner-initial-pick" class="required">
+										<c:choose>
+										<c:when test="${ empty queue.partnerWithInitialPick }">
+										<option value="" selected></option>
+										<c:forEach items="${partners}" var="partner">
+										<c:if test="${ partner.chargeable }"><option value="${partner.id}">${partner.name}</option></c:if>
+										</c:forEach>
+										</c:when>
+										<c:otherwise>
+										<option value=""></option>
+										<c:forEach items="${partners}" var="partner">
+											<c:choose>
+											<c:when test="${ partner.id eq queue.partnerWithInitialPick.id}">
+										<option value="${partner.id}" selected>${partner.name}</option>
+											</c:when>
+											<c:otherwise>
+										<c:if test="${ partner.chargeable }"><option value="${partner.id}">${partner.name}</option></c:if>
+											</c:otherwise>
+											</c:choose>
+										</c:forEach>
+										</c:otherwise>
+										</c:choose>
+									</select>
+								</td>
+							</tr>
+						
+							<tr>
+								<td class="label"><label for="condition-bins">Condition bins:</label></td>
+								<td>
+									<select id="condition-bins" name="condition-bins" class="required">
+										<c:choose>
+										<c:when test="${ empty queue.conditionSet }">
+										<option value="" selected></option>
+										<c:forEach items="${conditionBins}" var="conditionBin">
+										<option value="${conditionBin.id}">${conditionBin.name}</option>
+										</c:forEach>
+										</c:when>
+										<c:otherwise>
+										<option value="${queue.conditionSet.id}" selected >${queue.conditionSet.name}</option>
+										</c:otherwise>
+										</c:choose>
+									</select>
+								</td>
+							</tr>
+
+							<tr>
+								<td class="label"><label for="radec">RA/Dec set:</label></td>
+								<td>
+									<select id="bin-configurations" name="bin-configurations" class="required">
+										<c:choose>
+										<c:when test="${ empty queue.binConfiguration }">
+										<option value="" selected></option>
+										<c:forEach items="${binConfigurations}" var="binConfiguration">
+										<option value="${binConfiguration.id}" >${binConfiguration.name}</option>
+										</c:forEach>
+										</c:when>
+										<c:otherwise>
+										<option value="${queue.binConfiguration.id}" >${queue.binConfiguration.name}</option>
+										</c:otherwise>
+										</c:choose>
+									</select>
+								</td>
+							</tr>
+
+							<tr>
+							    <td class="label"><label for"queue-overfill-limit">Queue filling limit: percentage over 80</label></td>
+							    <td><input type="text" id="queue-overfill-limit" name="queue-overfill-limit" value="${ queue.overfillLimit }" class="required number"></input></td>
+						</table>

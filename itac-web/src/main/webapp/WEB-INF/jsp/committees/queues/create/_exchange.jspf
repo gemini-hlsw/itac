@@ -1,0 +1,86 @@
+<table id="exchangeProposals">
+    <caption>
+        Exchange proposals
+		<span style="float: right">
+			<table>
+                <tr>
+                    <th>Keck</th>
+                    <th>Subaru</th>
+                    <th>North</th>
+                    <th>South</th>
+                </tr>
+                <tr>
+                    <td class="keckAvailable">0</td>
+                    <td class="subaruAvailable">0</td>
+                    <td class="northAvailable">0</td>
+                    <td class="southAvailable">0</td>
+                </tr>
+            </table>
+		</span>
+    </caption>
+    <thead>
+    <tr>
+        <th>Partner</th>
+        <th>Partner Reference #</th>
+        <th>Rank</th>
+        <th>Hours</th>
+        <th>Site</th>
+        <th id="scheduleHeader">Schedule</th>
+    </tr>
+    </thead>
+    <tbody>
+    <c:if test="${ !empty fromKeckProposals }">
+        <c:set var="exchangeProposals" value="${fromKeckProposals}"/>
+        <c:set var="partnerCountryKey" value="KECK"/>
+        <%@ include file="_exchangeFrom.jspf" %>
+    </c:if>
+
+    <c:if test="${ !empty fromSubaruProposals }">
+    <c:set var="exchangeProposals" value="${fromSubaruProposals}"/>
+    <c:set var="partnerCountryKey" value="SUBARU"/>
+    <%@ include file="_exchangeFrom.jspf" %>
+    </tbody>
+    </c:if>
+</table>
+
+<p>Schedule Subaru:
+    <span id="subaruQueueToggle">
+    <input type="radio" name="subaruStrategyUseQueue" value="false" id="subaruAsExchange" checked="checked"/><label for="subaruAsExchange">via Exchange</label>
+    <input type="radio" name="subaruStrategyUseQueue" value="true" id="subaruAsQueue"/><label for="subaruAsQueue">as Partner</label>
+    </span>
+</p>
+
+<table id="exchange-partner-allocation">
+    <caption>Partner allocation</caption>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Keck[<span id="keckRemaining"></span>/<span class="keckAvailable"></span>]</th>
+        <th>Subaru[<span id="subaruRemaining"></span>/<span class="subaruAvailable"></span>]</th>
+        <th>North</th>
+        <th>South</th>
+        <th>%</th>
+        <th>Hours [<span data-var="queueTime" data-format="%.0f"></span>]</th>
+    </tr>
+    </thead>
+    <tbody>
+    <c:forEach items="${partners}" var="partner">
+        <c:if test="${ partner.chargeable }">
+            <tr>
+                <td>${ partner.name } <input type="hidden" name="exchange-partners-in-order" value="${partner.partnerCountryKey}"/>
+</td>
+                <td><input type="text" name="keck-ex-participating" class="affectsAllocation keck" value="0"
+                           id="exchKeck${partner.partnerCountryKey}"/></td>
+                <td><input type="text" name="subaru-ex-participating" class="affectsAllocation subaru" value="0"
+                           id="exchSubaru${partner.partnerCountryKey}"/></td>
+                <td><span class="northCost"></span></td>
+                <td><span class="southCost"></span></td>
+                <td><span class="queuePct" data-var="pct${partner.partnerCountryKey}" data-format="%.1f"></span></td>
+                <td><span class="queueHrs" data-var="hrs${partner.partnerCountryKey}" data-format="%.1f"></span></td>
+            </tr>
+        </c:if>
+    </c:forEach>
+    </tbody>
+</table>
+
+<!-- See exchangeTab.js for manipulation code -->

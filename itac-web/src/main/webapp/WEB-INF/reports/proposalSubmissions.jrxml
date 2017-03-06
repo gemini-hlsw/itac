@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="raDistributionInstrument" pageWidth="1400" pageHeight="850" columnWidth="1300" leftMargin="50" rightMargin="50" topMargin="50" bottomMargin="50">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="subtitleString" class="java.lang.String"/>
+	<field name="partnerReference" class="java.lang.String"/>
+	<field name="keywordsCategory" class="java.lang.String"/>
+	<field name="piName" class="java.lang.String"/>
+	<field name="partnerScientist" class="java.lang.String"/>
+	<field name="title" class="java.lang.String"/>
+	<field name="instruments" class="java.lang.String"/>
+	<field name="band3" class="java.lang.String"/>
+	<field name="submissionRequestedTime" class="java.lang.String"/>
+	<field name="partnerRequestedTime" class="java.lang.String"/>
+	<field name="minimumPartnerRequest" class="java.lang.String"/>
+	<field name="timeUnits" class="java.lang.String"/>
+	<field name="partners" class="java.lang.String"/>
+	<field name="site" class="java.lang.String"/>
+	<field name="queueOrClassical" class="java.lang.String"/>
+	<field name="PW" class="java.lang.String"/>
+	<field name="toO" class="java.lang.String"/>
+	<field name="lgs" class="java.lang.String"/>
+	<sortField name="partners"/>
+	<sortField name="partnerReference"/>
+	<title>
+		<band height="60">
+			<textField>
+				<reportElement x="0" y="0" width="750" height="30"/>
+				<textElement>
+					<font size="20" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Proposal Submissions"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="30" width="750" height="30"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{subtitleString}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="20">
+			<staticText>
+				<reportElement x="0" y="0" width="65" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Partners]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="65" y="0" width="121" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Partner Reference]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="186" y="0" width="67" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Keywords]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="253" y="0" width="80" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PI Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="333" y="0" width="80" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Partner Lead Sci]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="413" y="0" width="140" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Title]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="777" y="0" width="100" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Instruments]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="877" y="0" width="25" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[B3 OK?]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="902" y="0" width="73" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sub Req Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="975" y="0" width="85" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Min Partner Req]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1130" y="0" width="35" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Units]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1165" y="0" width="25" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Site]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1195" y="0" width="28" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Q/C]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1223" y="0" width="25" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PW?]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1248" y="0" width="27" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ToO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1275" y="0" width="25" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[LGS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1060" y="0" width="70" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Partner Alloc]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="65" height="20"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{partners}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="65" y="0" width="121" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{partnerReference}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="186" y="0" width="67" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{keywordsCategory}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="253" y="0" width="80" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{piName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="333" y="0" width="80" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{partnerScientist}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="413" y="0" width="364" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{title}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="777" y="0" width="100" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{instruments}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="877" y="0" width="25" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{band3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="902" y="0" width="73" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{submissionRequestedTime}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="1060" y="0" width="70" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{partnerRequestedTime}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="975" y="0" width="85" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{minimumPartnerRequest}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1130" y="0" width="35" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{timeUnits}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1165" y="0" width="30" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{site}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1195" y="0" width="28" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{queueOrClassical}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1223" y="0" width="25" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{PW}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1248" y="0" width="27" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{toO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1275" y="0" width="25" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{lgs}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

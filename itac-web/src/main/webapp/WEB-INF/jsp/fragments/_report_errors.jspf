@@ -1,0 +1,27 @@
+                <!-- deal with errors -->
+                <c:if test="${ not empty errors }">
+                    <div class="span-17 error">
+                        <h3 class="box-header">ERRORS</h3>
+                        This report produced the following errors:</br>
+                        <a href="${ reportUrl }">[Create report ignoring all proposals with errors.]</a>
+                        <ul>
+                            <c:forEach items="${ errors }" var="error" varStatus ="status">
+                                <li>
+                                    <a href="/tac/committees/${ committee.id }/proposals/${ error.proposal.id }">
+                                    ${ error.proposal.id } : ${ error.message }
+                                    </a>
+                                </li>
+                            </c:forEach>
+                        </ul>
+                    </div>
+                </c:if>
+
+                <!-- deal with empty reports -->
+                <c:if test="${ not empty reportIsEmpty }">
+                    <div class="span-17 error">
+                        <h3 class="box-header">Empty Report</h3>
+                        The requested report does not contain any data.</br>
+                    </div>
+                </c:if>
+
+
