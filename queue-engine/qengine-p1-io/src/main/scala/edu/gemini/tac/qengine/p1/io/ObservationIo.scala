@@ -118,7 +118,7 @@ object ObservationIo {
   }
 
   def time(o: im.Observation): ValidationNel[String, Time] =
-    o.time.map(_.nonNegativeQueueEngineTime("observation")) | MISSING_TIME.failureNel[Time]
+    o.totalTime.map(_.nonNegativeQueueEngineTime("observation")) | MISSING_TIME.failureNel[Time]
 
   def lgs(o: im.Observation): ValidationNel[String, Boolean] =
     o.blueprint.map {
