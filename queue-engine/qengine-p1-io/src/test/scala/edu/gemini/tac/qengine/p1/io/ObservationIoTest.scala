@@ -100,7 +100,9 @@ class ObservationIoTest {
     }
 
   @Test def readNoBlueprint(): Unit = {
-    missing(ObservationIo.MISSING_BLUEPRINT) {
+    // With the new model if there is no blueprint the calculation for time
+    // fails. When an observation is read the time is read before the blueprint.
+    missing(ObservationIo.MISSING_TIME) {
       new ProposalFixture {
         override def observation = im.Observation(
           None,
