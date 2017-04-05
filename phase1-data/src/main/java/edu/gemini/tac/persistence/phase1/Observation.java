@@ -41,6 +41,24 @@ public class Observation implements IValidateable {
     protected BlueprintBase blueprint;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "value",
+                    column=@Column(name = "prog_time_amount_value")),
+            @AttributeOverride(name = "units",
+                    column=@Column(name = "prog_time_amount_unit"))
+    })
+    protected TimeAmount progTime;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "value",
+                    column=@Column(name = "part_time_amount_value")),
+            @AttributeOverride(name = "units",
+                    column=@Column(name = "part_time_amount_unit"))
+    })
+    protected TimeAmount partTime;
+
+    @Embedded
     protected TimeAmount time;
 
     @OneToMany(cascade = CascadeType.ALL,
@@ -142,6 +160,10 @@ public class Observation implements IValidateable {
         return blueprint;
     }
 
+    public TimeAmount getProgTime() { return progTime; }
+
+    public TimeAmount getPartTime() { return partTime; }
+
     public TimeAmount getTime() {
         return time;
     }
@@ -157,6 +179,10 @@ public class Observation implements IValidateable {
     public void setBlueprint(BlueprintBase blueprint) {
         this.blueprint = blueprint;
     }
+
+    public void setProgTime(TimeAmount progTime) { this.progTime = progTime; }
+
+    public void setPartTime(TimeAmount partTime) { this.partTime = partTime; }
 
     public void setTime(TimeAmount time) {
         this.time = time;
