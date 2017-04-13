@@ -59,6 +59,13 @@ public class Observation implements IValidateable {
     protected TimeAmount partTime;
 
     @Embedded
+    // For consistency
+    @AttributeOverrides({
+            @AttributeOverride(name = "value",
+                    column=@Column(name = "time_amount_value")),
+            @AttributeOverride(name = "units",
+                    column=@Column(name = "time_amount_unit"))
+    })
     protected TimeAmount time;
 
     @OneToMany(cascade = CascadeType.ALL,
@@ -136,6 +143,8 @@ public class Observation implements IValidateable {
             guideStars.add(new GuideStar(g, this));
         }
 
+        setProgTime(new TimeAmount(copied.getProgTime()));
+        setPartTime(new TimeAmount(copied.getPartTime()));
         setTime(new TimeAmount(copied.getTime()));
         setProposal(phaseIProposal);
         setBand(copied.getBand());
