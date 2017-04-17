@@ -174,7 +174,7 @@ class ProposalBuilderTest {
 
   @Test def testAddJointProposal() {
     val site = Site.south
-    val qs = ProposalQueueBuilder(new QueueTime(site, PartnerTime.distribute(Time.hours(100), site, partners)))
+    val qs = ProposalQueueBuilder(QueueTime(site, PartnerTime.distribute(Time.hours(100), site, partners)))
     val propGS = mkProp(10, "gs1")
     val propUS = mkProp(US, 20, "us1")
     val joint = new JointProposal("j1", propGS, List(propGS.ntac, propUS.ntac))

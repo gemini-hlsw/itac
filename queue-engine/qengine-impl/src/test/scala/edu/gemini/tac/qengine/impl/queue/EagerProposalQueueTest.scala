@@ -39,7 +39,7 @@ class EagerProposalQueueTest {
   private def otherPart(propTimeHours: Int, ref: String, mp: JointProposalPart): JointProposalPart =
     JointProposalPart(mp.jointIdValue, mp.core.copy(ntac = Ntac(GS, ref, 0, Time.hours(propTimeHours))))
 
-  private val qs = ProposalQueueBuilder(new QueueTime(Site.south, PartnerTime(partners, GS -> Time.hours(100)), QueueBandPercentages(30, 30, 40)), EagerMergeStrategy)
+  private val qs = ProposalQueueBuilder(QueueTime(Site.south, PartnerTime(partners, GS -> Time.hours(100)), QueueBandPercentages(30, 30, 40), Some(QueueTime.DefaultPartnerOverfillAllowance)), EagerMergeStrategy)
   private val qtime = qs.queueTime
 
   @Test def testPromotePart() {

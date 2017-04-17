@@ -19,7 +19,7 @@ class FinalProposalQueueTest {
 
   val delta     = 0.000001
   val site      = Site.south
-  val queueTime = new QueueTime(site, PartnerTime.distribute(Time.hours(100), site, partners))
+  val queueTime = QueueTime(site, PartnerTime.distribute(Time.hours(100), site, partners))
 
   private def mkProp(partner: Partner, propTimeHours: Int, id: String): CoreProposal = {
     val ntac = Ntac(partner, id, 0, Time.hours(propTimeHours))
