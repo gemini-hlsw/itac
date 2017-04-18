@@ -743,12 +743,6 @@ public class ProposalHibernateService implements IProposalService {
             Validate.notNull(band);
             observation.setBand(band);
         }
-        if (field.equals("observationTime")) {
-            final BigDecimal newTime = new BigDecimal(value);
-            fromValueBuffer.append(observation.getTime().getPrettyString());
-            Validate.notNull(newTime);
-            observation.setTime(new TimeAmount(newTime, TimeUnit.HR));
-        }
 
         return invalidateQueues;
     }

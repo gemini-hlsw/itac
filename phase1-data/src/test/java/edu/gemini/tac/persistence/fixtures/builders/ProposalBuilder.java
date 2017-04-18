@@ -599,6 +599,8 @@ public abstract class ProposalBuilder {
         // put together the observation
         Observation o = new Observation();
         o.setBand(b);
+        o.setProgTime(new TimeAmount(0, TimeUnit.HR));
+        o.setPartTime(new TimeAmount(0, TimeUnit.HR));
         o.setTime(time);
         o.setProposal(phaseIProposal);
         // blueprint, condition and target have to be copied from "templates" (or re-used if they have already

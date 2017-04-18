@@ -128,6 +128,12 @@ public class MutableToHibernateConverter {
 
             observation.setTarget(targetMap.get(mo.getTarget().getId()));
 
+            final TimeAmount progTimeAmount = new TimeAmount(mo.getProgTime());
+            observation.setProgTime(progTimeAmount);
+
+            final TimeAmount partTimeAmount = new TimeAmount(mo.getPartTime());
+            observation.setPartTime(partTimeAmount);
+
             final TimeAmount timeAmount = new TimeAmount(mo.getTime());
             observation.setTime(timeAmount);
 

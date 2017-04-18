@@ -160,6 +160,8 @@ public class HibernateToMutableConverter {
                     mo.setMeta(ho.getMetaData().toMutable());
                 }
 
+                mo.setProgTime(ho.getProgTime().toMutable());
+                mo.setPartTime(ho.getPartTime().toMutable());
                 mo.setTime(ho.getTime().toMutable());
                 mo.setBand(ho.getBand());
 
