@@ -1,4 +1,4 @@
-UPDATE schema_version SET version = 92;
+UPDATE schema_version SET version = 93;
 
 alter table v2_blueprints add column visitor_site varchar(40);
 update v2_blueprints set instrument='PHOENIX_GS' where instrument='PHOENIX';

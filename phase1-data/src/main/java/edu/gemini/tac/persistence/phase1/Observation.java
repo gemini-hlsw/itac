@@ -41,6 +41,31 @@ public class Observation implements IValidateable {
     protected BlueprintBase blueprint;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "value",
+                    column=@Column(name = "prog_time_amount_value")),
+            @AttributeOverride(name = "units",
+                    column=@Column(name = "prog_time_amount_unit"))
+    })
+    protected TimeAmount progTime;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "value",
+                    column=@Column(name = "part_time_amount_value")),
+            @AttributeOverride(name = "units",
+                    column=@Column(name = "part_time_amount_unit"))
+    })
+    protected TimeAmount partTime;
+
+    @Embedded
+    // For consistency
+    @AttributeOverrides({
+            @AttributeOverride(name = "value",
+                    column=@Column(name = "time_amount_value")),
+            @AttributeOverride(name = "units",
+                    column=@Column(name = "time_amount_unit"))
+    })
     protected TimeAmount time;
 
     @OneToMany(cascade = CascadeType.ALL,
@@ -118,6 +143,8 @@ public class Observation implements IValidateable {
             guideStars.add(new GuideStar(g, this));
         }
 
+        setProgTime(new TimeAmount(copied.getProgTime()));
+        setPartTime(new TimeAmount(copied.getPartTime()));
         setTime(new TimeAmount(copied.getTime()));
         setProposal(phaseIProposal);
         setBand(copied.getBand());
@@ -142,6 +169,10 @@ public class Observation implements IValidateable {
         return blueprint;
     }
 
+    public TimeAmount getProgTime() { return progTime; }
+
+    public TimeAmount getPartTime() { return partTime; }
+
     public TimeAmount getTime() {
         return time;
     }
@@ -158,9 +189,11 @@ public class Observation implements IValidateable {
         this.blueprint = blueprint;
     }
 
-    public void setTime(TimeAmount time) {
-        this.time = time;
-    }
+    public void setProgTime(TimeAmount progTime) { this.progTime = progTime; }
+
+    public void setPartTime(TimeAmount partTime) { this.partTime = partTime; }
+
+    public void setTime(TimeAmount time) { this.time = time; }
 
     public void setGuideStars(Set<GuideStar> guideStars) {
         this.guideStars = guideStars;
@@ -239,6 +272,8 @@ public class Observation implements IValidateable {
         if (metaData != null ? !metaData.equals(that.metaData) : that.metaData != null) return false;
         if (proposal != null ? !proposal.equals(that.proposal) : that.proposal != null) return false;
         if (target != null ? !target.equals(that.target) : that.target != null) return false;
+        if (progTime != null ? !progTime.equals(that.time) : that.progTime != null) return false;
+        if (partTime != null ? !partTime.equals(that.time) : that.partTime != null) return false;
         if (time != null ? !time.equals(that.time) : that.time != null) return false;
 
         return true;
@@ -261,6 +296,8 @@ public class Observation implements IValidateable {
         if (blueprint != null ? !blueprint.equalsForComponent(that.blueprint) : that.blueprint != null) return false;
         if (condition != null ? !condition.equals(that.condition) : that.condition != null) return false;
         if (target != null ? !target.equals(that.target) : that.target != null) return false;
+        if (progTime != null ? !progTime.equals(that.progTime) : that.progTime != null) return false;
+        if (partTime != null ? !partTime.equals(that.partTime) : that.partTime != null) return false;
         if (time != null ? !time.equals(that.time) : that.time != null) return false;
 
         return true;
@@ -271,6 +308,8 @@ public class Observation implements IValidateable {
         int result = target != null ? target.hashCode() : 0;
         result = 31 * result + (condition != null ? condition.hashCode() : 0);
         result = 31 * result + (blueprint != null ? blueprint.hashCode() : 0);
+        result = 31 * result + (progTime != null ? progTime.hashCode() : 0);
+        result = 31 * result + (partTime != null ? partTime.hashCode() : 0);
         result = 31 * result + (time != null ? time.hashCode() : 0);
         result = 31 * result + (proposal != null ? proposal.hashCode() : 0);
         result = 31 * result + (band != null ? band.hashCode() : 0);

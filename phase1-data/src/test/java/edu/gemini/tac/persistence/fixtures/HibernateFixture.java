@@ -856,6 +856,8 @@ public class HibernateFixture extends Fixture {
             observation.setBlueprint(bb);
             observation.setGuideStars(gss);
             observation.setMetaData(observationMetaData);
+            observation.setProgTime(timeAmount);
+            observation.setPartTime(timeAmount);
             observation.setTime(timeAmount);
             observation.setTarget(t);
             if (i % 4 == 0)
@@ -924,6 +926,8 @@ public class HibernateFixture extends Fixture {
         Observation o = observations.get(i % observations.size());
         Observation o2 = new Observation();
         o2.setTarget(o.getTarget());
+        o2.setProgTime(o.getProgTime());
+        o2.setPartTime(o.getPartTime());
         o2.setTime(o.getTime());
         o2.setBlueprint(o.getBlueprint());
         o2.setCondition(o.getCondition());

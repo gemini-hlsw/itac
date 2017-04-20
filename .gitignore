@@ -4,3 +4,4 @@ target
 .settings
 **/*.iml
 **/*.ipr
+/itac-web/bin/
