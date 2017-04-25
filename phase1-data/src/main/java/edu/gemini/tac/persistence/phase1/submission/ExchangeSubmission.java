@@ -72,6 +72,8 @@ public class ExchangeSubmission extends PartnerSubmission {
             return ExchangePartner.KECK;
         } else if (partner.getPartnerCountryKey().equals(ExchangePartner.SUBARU.name())) {
             return ExchangePartner.SUBARU;
+        } else if (partner.getPartnerCountryKey().equals(ExchangePartner.CFHT.name())) {
+            return ExchangePartner.CFHT;
         } else {
             throw new IllegalArgumentException("not a valid exchange partner " + partner.getName());
         }
