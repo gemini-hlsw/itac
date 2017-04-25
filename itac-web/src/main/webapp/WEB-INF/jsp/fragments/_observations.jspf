@@ -24,9 +24,7 @@
                 <td class="observation loud ${ observation.target.targetClass}">${observation.target.name}</td>
                 <td class="observation position" title="${observation.target.positionDisplay}"><str:truncateNicely lower="20" upper="30">${observation.target.positionDisplay}</str:truncateNicely></td>
                 <td class="observation brightness" title="${observation.target.brightnessDisplay}"><str:truncateNicely lower="20" upper="30">${observation.target.brightnessDisplay}</str:truncateNicely></td>
-                <td class="observation"><span class="observationEditField numeric" name="observationTime" id="observation_time_${ observation.id }"><fmt:formatNumber value="${ observation.time.valueInHours }" minFractionDigits="1" maxFractionDigits="2" type="number"/>
-                                </span> hours
-                </td>
+                <td class="observation">${observation.time.prettyString}</td>
                 <td class="observation observationBand" >
                     <select id="observation_band_selecter_${observation.id}">
                         <option value="BAND_1_2" <c:if test="${observation.band == 'BAND_1_2'}">selected</c:if>>Band 1 or 2</option>
