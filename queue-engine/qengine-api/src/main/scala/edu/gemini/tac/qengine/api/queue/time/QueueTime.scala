@@ -13,6 +13,8 @@ import java.util.logging.{Logger, Level}
   * time and the size of the time quantum for each partner.
   */
 sealed trait QueueTime {
+  def site: Site
+
   def fullPartnerTime: PartnerTime
 
   def bandPercentages: QueueBandPercentages
@@ -24,13 +26,13 @@ sealed trait QueueTime {
   def full: Time
 
   /** The time amount at which Band 1 scheduling ends. */
-  val band1End: Time
+  def band1End: Time
 
   /** The time amount at which Band 2 scheduling ends. */
-  val band2End: Time
+  def band2End: Time
 
   /** The time amount at which Band 3 scheduling ends (and alias for {@link #guaranteed}). */
-  val band3End: Time
+  def band3End: Time
 
   /** The time amount at which Band 4 scheduling ends (an alias for {@link #full}). */
   def band4End: Time
@@ -46,23 +48,47 @@ sealed trait QueueTime {
     * proposals will not usually add up to exactly the amount of time available
     * in a band.  Queue band 1 always starts at zero.
     */
-  def range(band: QueueBand): (Time, Time)
+  def range(band: QueueBand): (Time, Time) =
+    band match {
+      case QBand1 => (Time.ZeroHours, band1End)
+      case QBand2 => (band1End,       band2End)
+      case QBand3 => (band2End,       band3End)
+      case QBand4 => (band3End,       band4End)
+    }
 
   /** Gets the nominal band that corresponds to the given time according only to
     * the queue time and band percentages. In reality band 1 will usually extend
     * into part of the time which was allocated for band 2 and band 2 will extend
     * into band 3.
     */
-  def band(time: Time): QueueBand
+  def band(time: Time): QueueBand =
+    time match {
+      case u if u < band1End  => QBand1
+      case u if u < band2End  => QBand2
+      case u if u < band3End  => QBand3
+      case _                  => QBand4
+    }
 
   /** Size of time quantum as
     * (partner queue time * 300) / (total queue time * partner percentage share)
     */
-  def quantum(p: Partner): Time
+  def quantum(p: Partner): Time = {
+    val fullQueueTimeForThisPartnerTimesOneHundred = full.toHours.value * p.percentAt(site)
+    if (fullQueueTimeForThisPartnerTimesOneHundred == 0)
+      Time.ZeroHours
+    else {
+      val d1 = fullPartnerTime(p).toHours.value * QueueTime.CycleTimeConstant
+      Time.hours(d1/fullQueueTimeForThisPartnerTimesOneHundred)
+    }
+  }
 
   /** Gets a map of Partner -> Time quantum with keys for all partners.
     */
-  def partnerQuanta: PartnerTime
+  def partnerQuanta: PartnerTime = {
+    val ps = fullPartnerTime.partners
+    PartnerTime(ps, ps.map { p => p -> quantum(p) }: _*)
+  }
+
 
   /** Computes the amount of time that is nominally designated for the given
     * partner (independent of band, category, etc).  The actual amount of time
@@ -117,7 +143,7 @@ import QueueTime.Log
 /** Implementation of `QueueTime` derived from overall partner allocation and
   * band percentages.
   */
-final class DerivedQueueTime(site: Site,
+final class DerivedQueueTime(val site: Site,
                 val fullPartnerTime: PartnerTime,
                 val bandPercentages: QueueBandPercentages,
                 val partnerOverfillAllowance: Option[Percent]) extends QueueTime {
@@ -143,22 +169,6 @@ final class DerivedQueueTime(site: Site,
   override def partnerTime(cat: Category): PartnerTime   =
     fullPartnerTime * bandPercentages(cat)
 
-  override def range(band: QueueBand): (Time, Time) =
-    band match {
-      case QBand1 => (Time.ZeroHours, band1End)
-      case QBand2 => (band1End,       band2End)
-      case QBand3 => (band2End,       band3End)
-      case QBand4 => (band3End,       band4End)
-    }
-
-  override def band(time: Time): QueueBand =
-    time match {
-      case u if u < band1End  => QBand1
-      case u if u < band2End  => QBand2
-      case u if u < band3End  => QBand3
-      case _                  => QBand4
-    }
-
   override def apply(partner: Partner): Time =
     fullPartnerTime(partner)
 
@@ -173,19 +183,83 @@ final class DerivedQueueTime(site: Site,
 
   override def apply(cat: Category, p: Partner): Time =
     fullPartnerTime(p) * bandPercentages(cat)
-
-  override def quantum(p: Partner): Time = {
-    val fullQueueTimeForThisPartnerTimesOneHundred = full.toHours.value * p.percentAt(site)
-    if (fullQueueTimeForThisPartnerTimesOneHundred == 0)
-      Time.ZeroHours
-    else {
-      val d1 = fullPartnerTime(p).toHours.value * QueueTime.CycleTimeConstant
-      Time.hours(d1/fullQueueTimeForThisPartnerTimesOneHundred)
-    }
-  }
-
-  override def partnerQuanta: PartnerTime = {
-    val ps = fullPartnerTime.partners
-    PartnerTime(ps, ps.map { p => p -> quantum(p) }: _*)
-  }
 }
+
+/** Implementation of `QueueTime` derived from overall partner allocation and
+  * band percentages.
+  */
+final class ExplicitQueueTime(val site: Site, categorizedTimes: Map[(Partner, QueueBand), Time], val partnerOverfillAllowance: Option[Percent]) extends QueueTime {
+
+  val allPartners: List[Partner] =
+    categorizedTimes.keys.map(_._1).toSet.toList
+
+  val bandTimes: Map[QueueBand, Time] =
+    (Map.empty[QueueBand, Time].withDefaultValue(Time.Zero)/:categorizedTimes) { case (m,((_, b), t)) =>
+      m.updated(b, m(b) + t)
+    }
+
+  val partnerTimes: Map[Partner, Time] =
+    (Map.empty[Partner, Time].withDefaultValue(Time.Zero)/:categorizedTimes) { case (m, ((p, _), t)) =>
+      m.updated(p, m(p) + t)
+    }
+
+  private def sum(filter: ((Partner, QueueBand)) => Boolean): Time =
+    (Time.Zero/:categorizedTimes) { case (sum, (pb, t)) =>
+        sum + (if (filter(pb)) t else Time.Zero)
+    }
+
+  override val fullPartnerTime: PartnerTime =
+    PartnerTime(allPartners, partnerTimes)
+
+  override val bandPercentages: QueueBandPercentages = {
+    val sum = bandTimes.values.map(_.ms).sum
+
+    def perc(b: QueueBand): Int =
+      math.floor((bandTimes(b).ms.toDouble / sum) * 100).toInt
+
+    if (sum == 0) QueueBandPercentages.Default
+    else          QueueBandPercentages(perc(QBand1), perc(QBand2), perc(QBand3))
+  }
+
+  override val full: Time =
+    sum(Function.const(true))
+
+  override val band1End: Time =
+    bandTimes(QBand1)
+
+  override val band2End: Time =
+    band1End + bandTimes(QBand2)
+
+  override val band3End: Time =
+    band2End + bandTimes(QBand3)
+
+  override def band4End: Time =
+    full
+
+  private def bandFilteredPartnerTime(f: QueueBand => Boolean): PartnerTime = {
+    val m = categorizedTimes.collect { case ((p, b), t) if f(b) => p -> t }.toMap
+    PartnerTime(allPartners, m)
+  }
+
+  override def partnerTime(band: QueueBand): PartnerTime =
+    bandFilteredPartnerTime(_ == band)
+
+  override def partnerTime(cat: Category): PartnerTime   =
+    bandFilteredPartnerTime(_.categories(cat))
+
+  override def apply(partner: Partner): Time =
+    fullPartnerTime(partner)
+
+  override def apply(band: QueueBand): Time =
+    bandTimes(band)
+
+  override def apply(cat: Category): Time =
+    sum { case (_, b) => b.categories(cat) }
+
+  override def apply(band: QueueBand, p: Partner): Time =
+    categorizedTimes.getOrElse((p, band), Time.Zero)
+
+  override def apply(cat: Category, p: Partner): Time =
+    sum { case (p0, b) => p == p0 && b.categories(cat) }
+}
+
