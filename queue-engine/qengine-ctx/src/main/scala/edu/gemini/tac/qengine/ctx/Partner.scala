@@ -28,7 +28,11 @@ case class Partner(id: String, fullName: String, share: Percent, sites: Set[Site
   /**
    * Gets the partner's percentage share at the given site.
    */
-  def percentAt(s: Site): Double = if (sites.contains(s)) share.doubleValue else 0.0
+  def percentAt(s: Site): Percent =
+    if (sites.contains(s)) share else Percent.Zero
+
+  def percentDoubleAt(s: Site): Double =
+    percentAt(s).doubleValue
 
   override def toString: String = id
 

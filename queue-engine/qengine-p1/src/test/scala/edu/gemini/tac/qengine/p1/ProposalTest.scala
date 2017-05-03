@@ -11,7 +11,7 @@ class ProposalTest {
     val p = Mockito.mock(classOf[Partner])
     Mockito.when(p.id).thenReturn(partnerCountryKey)
     Mockito.when(p.share).thenReturn(Percent(proportion * 100.0))
-    Mockito.when(p.percentAt(Matchers.anyObject())).thenReturn(proportion)
+    Mockito.when(p.percentDoubleAt(Matchers.anyObject())).thenReturn(proportion)
     p
   }
 

@@ -124,8 +124,8 @@ class QueueTimeExtractorTest{
 
     val a = new QueueTimeExtractor(q, partners)
     val m = a.extract.toOption.get.fullPartnerTime
-    assertEquals(US.percentAt(Site.north), m(US).toHours.value, 0.000001)
-    assertEquals(BR.percentAt(Site.north), m(BR).toHours.value, 0.000001)
+    assertEquals(US.percentDoubleAt(Site.north), m(US).toHours.value, 0.000001)
+    assertEquals(BR.percentDoubleAt(Site.north), m(BR).toHours.value, 0.000001)
     partners.foreach {
       p => assertEquals("Wrong percentage for " + p.id , p.percentAt(Site.north), m(p).toHours.value, Double.MinValue)
     }
@@ -196,18 +196,18 @@ class QueueTimeExtractorTest{
     )
     val rop = RolloverReport(List(ro))
 
-    def roTime(p: Partner): Double = p.percentAt(Site.north)/10.0
+    def roTime(p: Partner): Double = p.percentDoubleAt(Site.north)/10.0
 
     val a = new QueueTimeExtractor(q, partners, rop, List(us))
     val m = a.extract.toOption.get.fullPartnerTime
-    assertSameTime(US.percentAt(Site.north) - 5.0 - roTime(US), m(US))
-    assertSameTime(AR.percentAt(Site.north) - roTime(AR), m(AR))
-    assertSameTime(BR.percentAt(Site.north) - 1.0 - roTime(BR), m(BR))
-    assertSameTime(UH.percentAt(Site.north) - roTime(UH), m(UH))
+    assertSameTime(US.percentDoubleAt(Site.north) - 5.0 - roTime(US), m(US))
+    assertSameTime(AR.percentDoubleAt(Site.north) - roTime(AR), m(AR))
+    assertSameTime(BR.percentDoubleAt(Site.north) - 1.0 - roTime(BR), m(BR))
+    assertSameTime(UH.percentDoubleAt(Site.north) - roTime(UH), m(UH))
 
     val ptc = a.partnerTimeCalc.toOption.get
-    assertSameTime(US.percentAt(Site.north), ptc.base(US))
-    assertSameTime(AR.percentAt(Site.north), ptc.base(AR))
+    assertSameTime(US.percentDoubleAt(Site.north), ptc.base(US))
+    assertSameTime(AR.percentDoubleAt(Site.north), ptc.base(AR))
     assertSameTime( 5.0, ptc.classical(US))
     assertSameTime( 0.0, ptc.classical(UH))
     assertSameTime( 1.0, ptc.exchange(BR))

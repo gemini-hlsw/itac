@@ -185,7 +185,7 @@ final class DerivedQueueTime(val site: Site,
     fullPartnerTime(p) * bandPercentages(cat)
 
   override def partnerPercent(p: Partner): Percent =
-    Percent(p.percentAt(site))
+    p.percentAt(site)
 
 }
 

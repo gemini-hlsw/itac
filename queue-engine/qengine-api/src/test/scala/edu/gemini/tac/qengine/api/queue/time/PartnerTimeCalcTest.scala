@@ -24,9 +24,9 @@ class PartnerTimeCalcTest extends PartnerTimeCalcTestBase {
 
   @Test def testBaseTime() {
     val b = base(north, Time.hours(100),  partners)
-    assertEquals(Time.hours(US.percentAt(north)), b(US))
+    assertEquals(Time.hours(US.percentDoubleAt(north)), b(US))
     assertEquals(Time.hours(0), b(CL)) // no CL at GN
-    assertEquals(Time.hours(UH.percentAt(north)), b(UH))
+    assertEquals(Time.hours(UH.percentDoubleAt(north)), b(UH))
   }
 
   @Test def testSimpleNet() {
@@ -36,8 +36,8 @@ class PartnerTimeCalcTest extends PartnerTimeCalcTestBase {
     val r = PartnerTime(partners, US -> Time.hours(20))
     val n = net(b, partners, c, r)
 
-    assertEquals(US.percentAt(north) - 5.0 - 20.0, n(US).toHours.value, delta) // 5 classical, 20 rollover
-    assertEquals(AR.percentAt(north), n(AR).toHours.value, delta) // no adjustments
+    assertEquals(US.percentDoubleAt(north) - 5.0 - 20.0, n(US).toHours.value, delta) // 5 classical, 20 rollover
+    assertEquals(AR.percentDoubleAt(north), n(AR).toHours.value, delta) // no adjustments
   }
 
   @Test def testNoNegativeResult() {
@@ -48,6 +48,6 @@ class PartnerTimeCalcTest extends PartnerTimeCalcTestBase {
     val n = net(b, partners, c, r)
 
     assertEquals(Time.hours(0), n(US)) // not negative
-    assertEquals(AR.percentAt(north), n(AR).toHours.value, delta) // no adjustments
+    assertEquals(AR.percentDoubleAt(north), n(AR).toHours.value, delta) // no adjustments
   }
 }

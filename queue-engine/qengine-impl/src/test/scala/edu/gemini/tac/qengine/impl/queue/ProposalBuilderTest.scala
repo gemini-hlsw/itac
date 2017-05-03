@@ -187,19 +187,19 @@ class ProposalBuilderTest {
     assertEquals(Time.hours(10), qs1.usedTime(GS))
     assertEquals(Time.hours(20), qs1.usedTime(US))
     assertEquals(Time.ZeroHours, qs1.usedTime(AU))
-    assertEquals(Time.hours(GS.percentAt(site) - 10), qs1.remainingTime(GS))
-    assertEquals(Time.hours(US.percentAt(site) - 20), qs1.remainingTime(US))
-    assertEquals(Time.hours(AU.percentAt(site)), qs1.remainingTime(AU))
+    assertEquals(Time.hours(GS.percentDoubleAt(site) - 10), qs1.remainingTime(GS))
+    assertEquals(Time.hours(US.percentDoubleAt(site) - 20), qs1.remainingTime(US))
+    assertEquals(Time.hours(AU.percentDoubleAt(site)), qs1.remainingTime(AU))
 
     assertEquals(Time.hours(50), qs1.remainingTime(Guaranteed))
-    assertEquals(Time.hours(US.percentAt(site) * 0.8 - 20.0), qs1.remainingTime(Guaranteed, US))
-    assertEquals(Time.hours(GS.percentAt(site) * 0.8 - 10.0), qs1.remainingTime(Guaranteed, GS))
-    assertEquals(Time.hours(AU.percentAt(site) * 0.8), qs1.remainingTime(Guaranteed, AU))
+    assertEquals(Time.hours(US.percentDoubleAt(site) * 0.8 - 20.0), qs1.remainingTime(Guaranteed, US))
+    assertEquals(Time.hours(GS.percentDoubleAt(site) * 0.8 - 10.0), qs1.remainingTime(Guaranteed, GS))
+    assertEquals(Time.hours(AU.percentDoubleAt(site) * 0.8), qs1.remainingTime(Guaranteed, AU))
 
     assertEquals(Time.hours(20), qs1.remainingTime(PoorWeather))
-    assertEquals(Time.hours(US.percentAt(site) * 0.2), qs1.remainingTime(PoorWeather, US))
-    assertEquals(Time.hours(GS.percentAt(site) * 0.2), qs1.remainingTime(PoorWeather, GS))
-    assertEquals(Time.hours(AU.percentAt(site) * 0.2), qs1.remainingTime(PoorWeather, AU))
+    assertEquals(Time.hours(US.percentDoubleAt(site) * 0.2), qs1.remainingTime(PoorWeather, US))
+    assertEquals(Time.hours(GS.percentDoubleAt(site) * 0.2), qs1.remainingTime(PoorWeather, GS))
+    assertEquals(Time.hours(AU.percentDoubleAt(site) * 0.2), qs1.remainingTime(PoorWeather, AU))
   }
 
   @Test def testAddAllProposals() {

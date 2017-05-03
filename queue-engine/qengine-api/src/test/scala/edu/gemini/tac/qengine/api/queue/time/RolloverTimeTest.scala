@@ -32,7 +32,7 @@ class RolloverTimeTest extends PartnerTimeCalcTestBase {
     val pt = rollover(Site.north, rop, partners)
     assertEquals(pt.total.toHours.value, 100.0, Double.MinValue)
     partners.foreach {
-      p => assertEquals("Wrong time for " + p.id , pt(p).toHours.value, p.percentAt(Site.north), Double.MinValue)
+      p => assertEquals("Wrong time for " + p.id , pt(p).toHours.value, p.percentDoubleAt(Site.north), Double.MinValue)
     }
   }
 

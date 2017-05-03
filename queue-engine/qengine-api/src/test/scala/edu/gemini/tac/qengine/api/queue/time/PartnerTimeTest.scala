@@ -23,10 +23,10 @@ class PartnerTimeTest {
   }
 
   @Test def testCalc() {
-    val pt = PartnerTime.calc(partners, p => Time.hours(p.percentAt(site)))
+    val pt = PartnerTime.calc(partners, p => Time.hours(p.percentDoubleAt(site)))
 
-    assertEquals(Time.hours(US.percentAt(site)), pt(US))
-    partners.foreach(p => assertEquals(Time.hours(p.percentAt(site)), pt(p)))
+    assertEquals(Time.hours(US.percentDoubleAt(site)), pt(US))
+    partners.foreach(p => assertEquals(Time.hours(p.percentDoubleAt(site)), pt(p)))
   }
 
   @Test def testConstant() {
@@ -42,10 +42,10 @@ class PartnerTimeTest {
   @Test
   def distributeBasedOnPartnerPercentages(): Unit = {
     val pt = PartnerTime.distribute(Time.hours(100), site, partners)
-    assertEquals(Time.hours(US.percentAt(site)), pt(US))
-    assertEquals(Time.hours(BR.percentAt(site)), pt(BR))
+    assertEquals(Time.hours(US.percentDoubleAt(site)), pt(US))
+    assertEquals(Time.hours(BR.percentDoubleAt(site)), pt(BR))
     partners.foreach { p =>
-      val partnerPercentAtSite = p.percentAt(site)
+      val partnerPercentAtSite = p.percentDoubleAt(site)
       assertEquals("Failed for partner " + p.fullName, Time.hours(100) * Percent(partnerPercentAtSite), pt(p))
     }
   }
@@ -62,8 +62,8 @@ class PartnerTimeTest {
     val pt2 = PartnerTime.constant(Time.hours(1), partners)
     val pt3 = pt1 - pt2
 
-    assertEquals(Time.hours(US.percentAt(site) - 1.0), pt3(US))
-    assertEquals(Time.hours(BR.percentAt(site) - 1.0), pt3(BR))
+    assertEquals(Time.hours(US.percentDoubleAt(site) - 1.0), pt3(US))
+    assertEquals(Time.hours(BR.percentDoubleAt(site) - 1.0), pt3(BR))
 
   }
 
@@ -72,16 +72,16 @@ class PartnerTimeTest {
     val pt2 = PartnerTime.constant(Time.hours(1), partners)
     val pt3 = pt1 + pt2
 
-    assertEquals(Time.hours(US.percentAt(site) + 1.0), pt3(US))
-    assertEquals(Time.hours(BR.percentAt(site) + 1.0), pt3(BR))
+    assertEquals(Time.hours(US.percentDoubleAt(site) + 1.0), pt3(US))
+    assertEquals(Time.hours(BR.percentDoubleAt(site) + 1.0), pt3(BR))
   }
 
   @Test def multiplyByPercentAcrossPartners(): Unit = {
     val pt1 = PartnerTime.distribute(Time.hours(100), site, partners)
     val pt2 = pt1 * Percent(10)
 
-    assertEquals(Time.hours(US.percentAt(site) * 0.1), pt2(US))
-    assertEquals(Time.hours(BR.percentAt(site) * 0.1), pt2(BR))
+    assertEquals(Time.hours(US.percentDoubleAt(site) * 0.1), pt2(US))
+    assertEquals(Time.hours(BR.percentDoubleAt(site) * 0.1), pt2(BR))
   }
 
   @Test def totalTimeIsEqualToDistributedTime(): Unit = {
@@ -91,6 +91,6 @@ class PartnerTimeTest {
 
   @Test def distributesRolloverTimeEvenly(): Unit = {
     val pt = PartnerTime.distribute(Time.hours(100), site, partners)
-    pt.map.map(kv => assertEquals(Time.hours(kv._1.percentAt(site)), kv._2))
+    pt.map.map(kv => assertEquals(Time.hours(kv._1.percentDoubleAt(site)), kv._2))
   }
 }

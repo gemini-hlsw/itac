@@ -36,9 +36,9 @@ class PartnerSequenceTest {
     Site.values.foreach { site =>
       val first100 = new ProportionalPartnerSequence(partners, site).sequence.take(100).toList
       val counts = first100.groupBy(identity).mapValues(_.size)
-      val sumOfAllocations = partners.foldRight(0.0)(_.percentAt(site) + _)
+      val sumOfAllocations = partners.foldRight(0.0)(_.percentDoubleAt(site) + _)
       partners.foreach { p =>
-        val expected = p.percentAt(site) / sumOfAllocations
+        val expected = p.percentDoubleAt(site) / sumOfAllocations
         val achieved =
           counts.contains(p) match {
             case true => counts(p) / 100.0
