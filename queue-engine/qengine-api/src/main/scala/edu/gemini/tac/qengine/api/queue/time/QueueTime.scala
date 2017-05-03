@@ -13,8 +13,6 @@ import java.util.logging.{Logger, Level}
   * time and the size of the time quantum for each partner.
   */
 sealed trait QueueTime {
-  def site: Site
-
   def fullPartnerTime: PartnerTime
 
   def bandPercentages: QueueBandPercentages
@@ -69,11 +67,13 @@ sealed trait QueueTime {
       case _                  => QBand4
     }
 
+  protected def partnerPercent(p: Partner): Percent
+
   /** Size of time quantum as
     * (partner queue time * 300) / (total queue time * partner percentage share)
     */
   def quantum(p: Partner): Time = {
-    val fullQueueTimeForThisPartnerTimesOneHundred = full.toHours.value * p.percentAt(site)
+    val fullQueueTimeForThisPartnerTimesOneHundred = full.toHours.value * partnerPercent(p).doubleValue
     if (fullQueueTimeForThisPartnerTimesOneHundred == 0)
       Time.ZeroHours
     else {
@@ -183,12 +183,16 @@ final class DerivedQueueTime(val site: Site,
 
   override def apply(cat: Category, p: Partner): Time =
     fullPartnerTime(p) * bandPercentages(cat)
+
+  override def partnerPercent(p: Partner): Percent =
+    Percent(p.percentAt(site))
+
 }
 
 /** Implementation of `QueueTime` derived from overall partner allocation and
   * band percentages.
   */
-final class ExplicitQueueTime(val site: Site, categorizedTimes: Map[(Partner, QueueBand), Time], val partnerOverfillAllowance: Option[Percent]) extends QueueTime {
+final class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), Time], val partnerOverfillAllowance: Option[Percent]) extends QueueTime {
 
   val allPartners: List[Partner] =
     categorizedTimes.keys.map(_._1).toSet.toList
@@ -205,7 +209,7 @@ final class ExplicitQueueTime(val site: Site, categorizedTimes: Map[(Partner, Qu
 
   private def sum(filter: ((Partner, QueueBand)) => Boolean): Time =
     (Time.Zero/:categorizedTimes) { case (sum, (pb, t)) =>
-        sum + (if (filter(pb)) t else Time.Zero)
+      sum + (if (filter(pb)) t else Time.Zero)
     }
 
   override val fullPartnerTime: PartnerTime =
@@ -261,5 +265,14 @@ final class ExplicitQueueTime(val site: Site, categorizedTimes: Map[(Partner, Qu
 
   override def apply(cat: Category, p: Partner): Time =
     sum { case (p0, b) => p == p0 && b.categories(cat) }
+
+  private val percs: Map[Partner, Percent] = {
+    val (ps, ts) = partnerTimes.mapValues(_.ms).toList.unzip
+    ps.zip(Percent.relativePercentages(ts)).toMap.withDefaultValue(Percent.Zero)
+  }
+
+  override def partnerPercent(p: Partner): Percent =
+    percs(p)
+
 }
 
