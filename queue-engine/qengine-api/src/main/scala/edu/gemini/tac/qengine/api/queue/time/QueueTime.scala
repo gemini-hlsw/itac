@@ -33,7 +33,8 @@ sealed trait QueueTime {
   def band3End: Time
 
   /** The time amount at which Band 4 scheduling ends (an alias for {@link #full}). */
-  def band4End: Time
+  def band4End: Time =
+    full
 
   /** Calculates the PartnerTime for the given queue band. */
   def partnerTime(band: QueueBand): PartnerTime
@@ -160,9 +161,6 @@ final class DerivedQueueTime(val site: Site,
   override val band3End: Time =
     full * bandPercentages(Category.Guaranteed)
 
-  override def band4End: Time =
-    full
-
   override def partnerTime(band: QueueBand): PartnerTime =
     fullPartnerTime * bandPercentages(band)
 
@@ -195,7 +193,7 @@ final class DerivedQueueTime(val site: Site,
 final class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), Time], val partnerOverfillAllowance: Option[Percent]) extends QueueTime {
 
   val allPartners: List[Partner] =
-    categorizedTimes.keys.map(_._1).toSet.toList
+    categorizedTimes.keys.map(_._1).toList.distinct
 
   val bandTimes: Map[QueueBand, Time] =
     (Map.empty[QueueBand, Time].withDefaultValue(Time.Zero)/:categorizedTimes) { case (m,((_, b), t)) =>
@@ -215,15 +213,11 @@ final class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), Time],
   override val fullPartnerTime: PartnerTime =
     PartnerTime(allPartners, partnerTimes)
 
-  override val bandPercentages: QueueBandPercentages = {
-    val sum = bandTimes.values.map(_.ms).sum
-
-    def perc(b: QueueBand): Int =
-      math.floor((bandTimes(b).ms.toDouble / sum) * 100).toInt
-
-    if (sum == 0) QueueBandPercentages.Default
-    else          QueueBandPercentages(perc(QBand1), perc(QBand2), perc(QBand3))
-  }
+  override val bandPercentages: QueueBandPercentages =
+    Percent.relativePercentages(QueueBand.values.init.map(b => bandTimes(b).ms)) match {
+      case (b1 :: b2 :: b3 :: Nil) => QueueBandPercentages(b1, b2, b3)
+      case _                       => QueueBandPercentages.Default
+    }
 
   override val full: Time =
     sum(Function.const(true))
@@ -236,9 +230,6 @@ final class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), Time],
 
   override val band3End: Time =
     band2End + bandTimes(QBand3)
-
-  override def band4End: Time =
-    full
 
   private def bandFilteredPartnerTime(f: QueueBand => Boolean): PartnerTime = {
     val m = categorizedTimes.collect { case ((p, b), t) if f(b) => p -> t }.toMap

@@ -40,38 +40,43 @@ object Percent {
   def relativePercentages[T](ts: List[T], precision: Int = DefaultPrecision)(implicit num: Numeric[T]): List[Percent] = {
     require(precision >= 0)
 
-    val sum   = num.toDouble((num.zero/:ts) { num.plus })
+    val sum   = num.toDouble(ts.sum)
     val total = pow(10, 2 + precision).toInt
 
-    // Percentages expressed as raw Doubles
-    val percs = ts.map(t => num.toDouble(t)/sum * total)
+    def nonZeroPercents: List[Percent] = {
 
-    // List of percentages broken into triplets of
-    // (whole number: Int, fraction: Double [0, 1), index: Int)
-    val wholesFractionsIndices = percs.map(p => (p.toInt, p - p.toInt)).zipWithIndex.map {
-      case ((w, f), i) => (w, f, i)
+      // Percentages expressed as raw Doubles
+      val percs = ts.map(t => num.toDouble(t) / sum * total)
+
+      // List of percentages broken into triplets of
+      // (whole number: Int, fraction: Double [0, 1), index: Int)
+      val wholesFractionsIndices = percs.zipWithIndex.map {
+        case (p, i) => (p.toInt, p - p.toInt, i)
+      }
+
+      val sumOfWholes = wholesFractionsIndices.map(_._1).sum
+
+      // Count of values to round to the next highest whole number.
+      val roundingCount = total - sumOfWholes
+
+      // Sort by the fractional amount, decreasing.  That is, the largest
+      // fractions come first.  Discard the fractional amount afterwords.
+      val unscaledSorted = wholesFractionsIndices.sortBy(- _._2).map {
+        case (w, _, i) => (w, i)
+      }
+
+      // "round" is the list of unscaled values to be incremented (i.e., rounded
+      // up), "trunc" will be truncated (i.e., unchanged).
+      val (round, trunc) = unscaledSorted.splitAt(roundingCount)
+
+      // Round and then sort back to the original order.  These are the final
+      // unscaled values.
+      val normalized = (round.map { case (w, i) => (w + 1, i) } ++ trunc).sortBy(_._2).unzip._1
+
+      normalized.map(w => Percent(BigDecimal(w.toLong, precision, Mc)))
     }
 
-    val sumOfWholes = wholesFractionsIndices.map { case (w, _, _) => w }.sum
-
-    // Count of values to round to the next highest whole number.
-    val roundingCount = total - sumOfWholes
-
-    // Sort by the fractional amount, decreasing.  That is, the largest
-    // fractions come first.  Discard the fractional amount afterwords.
-    val unscaledSorted = wholesFractionsIndices.sortBy { case (_, f, _) => -f }.map {
-      case (w, _, i) => (w, i)
-    }
-
-    // "round" is the list of unscaled values to be incremented (i.e., rounded
-    // up), "trunc" will be truncated (i.e., unchanged).
-    val (round, trunc) = unscaledSorted.splitAt(roundingCount)
-
-    // Round and then sort back to the original order.  These are the final
-    // unscaled values.
-    val normalized = (round.map { case (w, i) => (w+1, i)} ++ trunc).sortBy(_._2).unzip._1
-
-    normalized.map(i => Percent(BigDecimal(i.toLong, precision, Mc)))
+    if (sum == 0.0) List.fill(ts.size)(Percent.Zero) else nonZeroPercents
   }
 }
 
