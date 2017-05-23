@@ -5,10 +5,7 @@ import edu.gemini.tac.persistence.Proposal;
 import edu.gemini.tac.persistence.emails.Email;
 import edu.gemini.tac.persistence.emails.Template;
 import edu.gemini.tac.persistence.joints.JointProposal;
-import edu.gemini.tac.persistence.phase1.Investigator;
-import edu.gemini.tac.persistence.phase1.Itac;
-import edu.gemini.tac.persistence.phase1.ItacAccept;
-import edu.gemini.tac.persistence.phase1.TimeAmount;
+import edu.gemini.tac.persistence.phase1.*;
 import edu.gemini.tac.persistence.phase1.proposal.PhaseIProposal;
 import edu.gemini.tac.persistence.phase1.submission.NgoSubmission;
 import edu.gemini.tac.persistence.phase1.submission.Submission;
@@ -32,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.*;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -459,7 +457,7 @@ public class EmailsHibernateService implements IEmailsService {
     // simple java bean used to pass variable values to velocity engine
     public class VariableValues {
         public static final String N_A = "N/A";
-        
+
         private String country = N_A;
         private String geminiComment = N_A;
         private String geminiContactEmail = N_A;
@@ -478,6 +476,9 @@ public class EmailsHibernateService implements IEmailsService {
         private String progTitle = N_A;
         private String progKey = N_A;
         private String queueBand = N_A;
+        private String totalTime = N_A;
+        private String progTime = N_A;
+        private String partnerTime = N_A;
         private String timeAwarded = N_A;
 
         public VariableValues(Proposal proposal, Banding banding, Submission ntacExtension, boolean successful) {
@@ -537,6 +538,27 @@ public class EmailsHibernateService implements IEmailsService {
             this.ntacRecommendedTime = time.toPrettyString();
             this.ntacRefNumber = ntacExtension.getReceipt().getReceiptId();
             this.ntacSupportEmail = ntacExtension.getAccept().getEmail();
+
+            // We'll match the total time to the time awarded and scale
+            // the program and partner time to fit
+            this.totalTime = this.timeAwarded;
+            if (successful) {
+                TimeAmount progTime = new TimeAmount(0, TimeUnit.HR);
+                TimeAmount partTime = new TimeAmount(0, TimeUnit.HR);
+                for (Observation o : proposal.getPhaseIProposal().getObservations()) {
+                    progTime = progTime.sum(o.getProgTime());
+                    partTime = partTime.sum(o.getPartTime());
+                }
+                // Total time for program and partner
+                TimeAmount sumTime = progTime.sum(partTime);
+                // Scale factor with respect to the awarded time
+                BigDecimal factor = itac.getAccept().getAward().getValueInHours().divide(sumTime.getValueInHours());
+                this.progTime = new TimeAmount(progTime.getValueInHours().multiply(factor), TimeUnit.HR).toPrettyString();
+                this.partnerTime = new TimeAmount(partTime.getValueInHours().multiply(factor), TimeUnit.HR).toPrettyString();
+            } else {
+                this.partnerTime = "0.0 " + ntacExtension.getRequest().getTime().getUnits();
+                this.progTime = "0.0 " + ntacExtension.getRequest().getTime().getUnits();
+            }
 
             // Merging of PIs: first names and last names will be concatenated separated by '/',
             // emails will be concatenated to a list separated by semi-colons
