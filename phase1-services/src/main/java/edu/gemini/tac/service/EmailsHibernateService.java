@@ -476,7 +476,6 @@ public class EmailsHibernateService implements IEmailsService {
         private String progTitle = N_A;
         private String progKey = N_A;
         private String queueBand = N_A;
-        private String totalTime = N_A;
         private String progTime = N_A;
         private String partnerTime = N_A;
         private String timeAwarded = N_A;
@@ -541,7 +540,6 @@ public class EmailsHibernateService implements IEmailsService {
 
             // We'll match the total time to the time awarded and scale
             // the program and partner time to fit
-            this.totalTime = this.timeAwarded;
             if (successful) {
                 TimeAmount progTime = new TimeAmount(0, TimeUnit.HR);
                 TimeAmount partTime = new TimeAmount(0, TimeUnit.HR);
