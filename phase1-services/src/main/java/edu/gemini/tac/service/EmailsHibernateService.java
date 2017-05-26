@@ -550,7 +550,8 @@ public class EmailsHibernateService implements IEmailsService {
                 // Total time for program and partner
                 TimeAmount sumTime = progTime.sum(partTime);
                 // Scale factor with respect to the awarded time
-                BigDecimal factor = itac.getAccept().getAward().getValueInHours().divide(sumTime.getValueInHours());
+                BigDecimal factor = itac.getAccept().getAward().getValueInHours().divide(sumTime.getValueInHours(), BigDecimal.ROUND_CEILING);
+                // Scale the prog and program time
                 this.progTime = new TimeAmount(progTime.getValueInHours().multiply(factor), TimeUnit.HR).toPrettyString();
                 this.partnerTime = new TimeAmount(partTime.getValueInHours().multiply(factor), TimeUnit.HR).toPrettyString();
             } else {
