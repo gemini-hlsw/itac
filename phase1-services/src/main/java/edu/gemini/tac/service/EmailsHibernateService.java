@@ -650,5 +650,13 @@ public class EmailsHibernateService implements IEmailsService {
         public String getTimeAwarded() {
             return timeAwarded;
         }
+
+        public String getProgramTime() {
+            return progTime;
+        }
+
+        public String getPartnerTime() {
+            return partnerTime;
+        }
     }
 }
