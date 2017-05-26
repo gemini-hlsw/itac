@@ -544,14 +544,9 @@ public class EmailsHibernateService implements IEmailsService {
 
             // Find the correct set of observations. Note that they return the active observations already
             List<Observation> bandObservations = null;
-            if (banding != null) {
-              if (banding.getBand() == ScienceBand.BAND_THREE) {
-                bandObservations = proposal.getPhaseIProposal().getBand3Observations();
-              } else {
-                bandObservations = proposal.getPhaseIProposal().getBand1Band2ActiveObservations();
-              }
+            if (banding != null && banding.getBand() == ScienceBand.BAND_THREE) {
+              bandObservations = proposal.getPhaseIProposal().getBand3Observations();
             } else {
-              // Let's assume it is classical
               bandObservations = proposal.getPhaseIProposal().getBand1Band2ActiveObservations();
             }
             if (successful) {
