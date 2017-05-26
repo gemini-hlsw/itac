@@ -544,8 +544,10 @@ public class EmailsHibernateService implements IEmailsService {
                 TimeAmount progTime = new TimeAmount(0, TimeUnit.HR);
                 TimeAmount partTime = new TimeAmount(0, TimeUnit.HR);
                 for (Observation o : proposal.getPhaseIProposal().getObservations()) {
-                    progTime = progTime.sum(o.getProgTime());
-                    partTime = partTime.sum(o.getPartTime());
+                    if (o.getActive()) {
+                      progTime = progTime.sum(o.getProgTime());
+                      partTime = partTime.sum(o.getPartTime());
+                    }
                 }
                 // Total time for program and partner
                 TimeAmount sumTime = progTime.sum(partTime);
