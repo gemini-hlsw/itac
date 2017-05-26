@@ -109,7 +109,7 @@ class ObservationIoTest {
           Some(conditions),
           Some(siderealTarget),
           im.Band.BAND_1_2,
-          Some(oneHour)
+          Some(\/.right(oneHour))
         )
       }
     }
@@ -123,7 +123,7 @@ class ObservationIoTest {
           None,
           Some(siderealTarget),
           im.Band.BAND_1_2,
-          Some(oneHour)
+          Some(\/.right(oneHour))
         )
       }
     }
@@ -137,7 +137,7 @@ class ObservationIoTest {
           Some(conditions),
           None,
           im.Band.BAND_1_2,
-          Some(oneHour)
+          Some(\/.right(oneHour))
         )
       }
     }
@@ -203,7 +203,7 @@ class ObservationIoTest {
         Some(conditions),
         Some(siderealTarget),
         im.Band.BAND_1_2,
-        Some(oneHour)
+        Some(\/.right(oneHour))
       )
       override def observations = List(observation, nifsObservation)
     }
@@ -229,7 +229,7 @@ class ObservationIoTest {
         Some(conditions),
         Some(siderealTarget),
         im.Band.BAND_3,
-        Some(oneHour)
+        Some(\/.right(oneHour))
       )
       override def observations = List(observation, b3Observation)
     }
@@ -253,7 +253,7 @@ class ObservationIoTest {
         Some(conditions),
         Some(siderealTarget),
         im.Band.BAND_1_2,
-        Some(twoHour)
+        Some(\/.right(twoHour))
       )
 
       private def b3Observation = im.Observation(
@@ -261,7 +261,7 @@ class ObservationIoTest {
         Some(conditions),
         Some(siderealTarget),
         im.Band.BAND_3,
-        Some(oneHour)
+        Some(\/.right(oneHour))
       )
 
       private def nifsObservation = im.Observation(
@@ -269,7 +269,7 @@ class ObservationIoTest {
         Some(conditions),
         Some(siderealTarget),
         im.Band.BAND_1_2,
-        Some(oneHour)
+        Some(\/.right(oneHour))
       )
 
       override def observations = List(observation, b3Observation, observation2, nifsObservation)

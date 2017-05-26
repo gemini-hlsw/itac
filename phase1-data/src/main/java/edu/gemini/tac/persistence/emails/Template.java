@@ -35,6 +35,8 @@ public abstract class Template {
                 { "@PROG_TITLE@",           "$values.progTitle"},
                 { "@PROG_KEY@",             "$values.progKey"},
                 { "@QUEUE_BAND@",           "$values.queueBand"},
+                { "@PROG_TIME@",            "$values.programTime"},
+                { "@PARTNER_TIME@",         "$values.partnerTime"},
                 { "@TIME_AWARDED@",         "$values.timeAwarded"}
         };
     }
