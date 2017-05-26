@@ -2,6 +2,7 @@ package edu.gemini.tac.service;
 
 import edu.gemini.spModel.gemini.obscomp.ProgIdHash;
 import edu.gemini.tac.persistence.Proposal;
+import edu.gemini.tac.persistence.queues.ScienceBand;
 import edu.gemini.tac.persistence.emails.Email;
 import edu.gemini.tac.persistence.emails.Template;
 import edu.gemini.tac.persistence.joints.JointProposal;
@@ -540,14 +541,25 @@ public class EmailsHibernateService implements IEmailsService {
 
             // We'll match the total time to the time awarded and scale
             // the program and partner time to fit
+
+            // Find the correct set of observations. Note that they return the active observations already
+            List<Observation> bandObservations = null;
+            if (banding != null) {
+              if (banding.getBand() == ScienceBand.BAND_THREE) {
+                bandObservations = proposal.getPhaseIProposal().getBand3Observations();
+              } else {
+                bandObservations = proposal.getPhaseIProposal().getBand1Band2ActiveObservations();
+              }
+            } else {
+              // Let's assume it is classical
+              bandObservations = proposal.getPhaseIProposal().getBand1Band2ActiveObservations();
+            }
             if (successful) {
                 TimeAmount progTime = new TimeAmount(0, TimeUnit.HR);
                 TimeAmount partTime = new TimeAmount(0, TimeUnit.HR);
-                for (Observation o : proposal.getPhaseIProposal().getObservations()) {
-                    if (o.getActive()) {
-                      progTime = progTime.sum(o.getProgTime());
-                      partTime = partTime.sum(o.getPartTime());
-                    }
+                for (Observation o : bandObservations) {
+                    progTime = progTime.sum(o.getProgTime());
+                    partTime = partTime.sum(o.getPartTime());
                 }
                 // Total time for program and partner
                 TimeAmount sumTime = progTime.sum(partTime);
