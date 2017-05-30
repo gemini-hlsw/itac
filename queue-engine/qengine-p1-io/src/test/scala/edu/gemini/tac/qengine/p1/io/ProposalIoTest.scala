@@ -147,7 +147,7 @@ class ProposalIoTest {
         Some(conditions),
         Some(siderealTarget),
         im.Band.BAND_1_2,
-        Some(\/.right(oneHour))
+        Some(oneHour)
       )
       override def observations = List(observation, nifsObservation)
     }

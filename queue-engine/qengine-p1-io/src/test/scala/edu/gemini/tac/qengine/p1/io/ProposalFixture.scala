@@ -37,7 +37,7 @@ class ProposalFixture {
     Some(conditions),
     Some(siderealTarget),
     im.Band.BAND_1_2,
-    Some(\/.right(oneHour))
+    Some(oneHour)
   )
   def observations   = List(observation)
 
