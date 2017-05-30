@@ -39,7 +39,7 @@
     <repositories>
         <repository>
             <id>Gemini Development</id>
-            <url>http://sbfswgosxdev-mp1.cl.gemini.edu:8081/artifactory/libs-release-local</url>
+            <url>https://github.com/gemini-hlsw/maven-repo/raw/master/releases</url>
         </repository>
         <repository>
             <id>central</id>

@@ -4,4 +4,5 @@ target
 .settings
 **/*.iml
 **/*.ipr
-/itac-web/bin/
+itac-web/bin/
+.idea/
