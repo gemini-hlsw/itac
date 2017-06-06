@@ -544,7 +544,7 @@ public class EmailsHibernateService implements IEmailsService {
 
             // Find the correct set of observations. Note that they return the active observations already
             List<Observation> bandObservations = null;
-            if (banding != null && banding.getBand() == ScienceBand.BAND_THREE) {
+            if (banding != null && banding.getBand().equals(ScienceBand.BAND_THREE)) {
               bandObservations = proposal.getPhaseIProposal().getBand3Observations();
             } else {
               bandObservations = proposal.getPhaseIProposal().getBand1Band2ActiveObservations();
@@ -559,10 +559,10 @@ public class EmailsHibernateService implements IEmailsService {
                 // Total time for program and partner
                 TimeAmount sumTime = progTime.sum(partTime);
                 // Scale factor with respect to the awarded time
-                BigDecimal factor = itac.getAccept().getAward().getValueInHours().divide(sumTime.getValueInHours(), BigDecimal.ROUND_CEILING);
+                double ratio = progTime.getValueInHours().doubleValue() / sumTime.getValueInHours().doubleValue();
                 // Scale the prog and program time
-                this.progTime = new TimeAmount(progTime.getValueInHours().multiply(factor), TimeUnit.HR).toPrettyString();
-                this.partnerTime = new TimeAmount(partTime.getValueInHours().multiply(factor), TimeUnit.HR).toPrettyString();
+                this.progTime = TimeAmount.fromMillis(itac.getAccept().getAward().getDoubleValueInMillis() * ratio).toPrettyString();
+                this.partnerTime = TimeAmount.fromMillis(itac.getAccept().getAward().getDoubleValueInMillis() * (1.0 - ratio)).toPrettyString();
             } else {
                 this.partnerTime = "0.0 " + ntacExtension.getRequest().getTime().getUnits();
                 this.progTime = "0.0 " + ntacExtension.getRequest().getTime().getUnits();
@@ -572,6 +572,7 @@ public class EmailsHibernateService implements IEmailsService {
             // emails will be concatenated to a list separated by semi-colons
             this.piMail = pi.getEmail();
             this.piName = pi.getFirstName() + " " + pi.getLastName();
+
             if (doc.getTitle() != null) {
                 this.progTitle = doc.getTitle();
             }

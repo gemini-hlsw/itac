@@ -18,6 +18,8 @@ public class TimeAmount implements Comparable {
     protected TimeUnit units;
     private static final double EQUALS_TOLERANCE = 0.00001d;
 
+    private static final double HOURS_TO_MILLIS = 60 * 60 * 10000;
+
     public TimeAmount(final BigDecimal value, final TimeUnit units) {
         this.value = value;
         this.units = units;
@@ -29,6 +31,10 @@ public class TimeAmount implements Comparable {
 
     public TimeAmount(final double value, final TimeUnit units) {
         this(new BigDecimal(value), units);
+    }
+
+    public static TimeAmount fromMillis(double value) {
+        return new TimeAmount(value / HOURS_TO_MILLIS, TimeUnit.HR);
     }
 
     public TimeAmount(final edu.gemini.model.p1.mutable.TimeAmount timeAmount) {
@@ -135,6 +141,10 @@ public class TimeAmount implements Comparable {
 
     public double getDoubleValueInHours() {
         return convertTo(TimeUnit.HR).getDoubleValue();
+    }
+
+    public double getDoubleValueInMillis() {
+        return convertTo(TimeUnit.HR).getDoubleValue() * HOURS_TO_MILLIS;
     }
 
     @Override
