@@ -7,6 +7,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.math.BigDecimal;
+import java.time.Duration;
 
 @Embeddable
 public class TimeAmount implements Comparable {
@@ -18,7 +19,7 @@ public class TimeAmount implements Comparable {
     protected TimeUnit units;
     private static final double EQUALS_TOLERANCE = 0.00001d;
 
-    private static final double HOURS_TO_MILLIS = 60 * 60 * 10000;
+    private static final double HOURS_TO_MILLIS = Duration.ofHours(1).toMillis();
 
     public TimeAmount(final BigDecimal value, final TimeUnit units) {
         this.value = value;
