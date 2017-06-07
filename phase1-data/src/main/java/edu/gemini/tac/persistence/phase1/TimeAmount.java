@@ -7,6 +7,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.math.BigDecimal;
+import java.time.Duration;
 
 @Embeddable
 public class TimeAmount implements Comparable {
@@ -17,6 +18,8 @@ public class TimeAmount implements Comparable {
     @Column(name = "time_amount_unit", nullable = false)
     protected TimeUnit units;
     private static final double EQUALS_TOLERANCE = 0.00001d;
+
+    private static final double HOURS_TO_MILLIS = Duration.ofHours(1).toMillis();
 
     public TimeAmount(final BigDecimal value, final TimeUnit units) {
         this.value = value;
@@ -29,6 +32,10 @@ public class TimeAmount implements Comparable {
 
     public TimeAmount(final double value, final TimeUnit units) {
         this(new BigDecimal(value), units);
+    }
+
+    public static TimeAmount fromMillis(double value) {
+        return new TimeAmount(value / HOURS_TO_MILLIS, TimeUnit.HR);
     }
 
     public TimeAmount(final edu.gemini.model.p1.mutable.TimeAmount timeAmount) {
@@ -135,6 +142,10 @@ public class TimeAmount implements Comparable {
 
     public double getDoubleValueInHours() {
         return convertTo(TimeUnit.HR).getDoubleValue();
+    }
+
+    public double getDoubleValueInMillis() {
+        return convertTo(TimeUnit.HR).getDoubleValue() * HOURS_TO_MILLIS;
     }
 
     @Override
