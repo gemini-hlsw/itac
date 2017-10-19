@@ -127,7 +127,7 @@ class QueueTimeExtractorTest{
     assertEquals(US.percentDoubleAt(Site.north), m(US).toHours.value, 0.000001)
     assertEquals(BR.percentDoubleAt(Site.north), m(BR).toHours.value, 0.000001)
     partners.foreach {
-      p => assertEquals("Wrong percentage for " + p.id , p.percentAt(Site.north), m(p).toHours.value, Double.MinValue)
+      p => assertEquals("Wrong percentage for " + p.id , p.percentDoubleAt(Site.north), m(p).toHours.value, Double.MinValue)
     }
 
     assertEquals(q.getBand1Cutoff.intValue, a.bandPercentages.toOption.get.band1.doubleValue, Double.MinPositiveValue)
