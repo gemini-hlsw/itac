@@ -43,10 +43,10 @@ class QueueTimeTest {
     timeEquals(0, qtime.quantum(AR))
     timeEquals(0, qtime.partnerQuanta(AR))
 
-    timeEquals((100 * 300) / (120 * US.percentAt(site)), qtime.quantum(US))
+    timeEquals((100 * 300) / (120 * US.percentDoubleAt(site)), qtime.quantum(US))
 
     // BR = (20 * 300) / (120 * 5)
-    timeEquals((20 * 300) / (120 * BR.percentAt(site)), qtime.quantum(BR))
+    timeEquals((20 * 300) / (120 * BR.percentDoubleAt(site)), qtime.quantum(BR))
   }
 
   private def verifyTimes(lst: List[Time], f: QueueBand => Time) {

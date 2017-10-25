@@ -19,7 +19,7 @@ class FinalProposalQueueTest {
 
   val delta     = 0.000001
   val site      = Site.south
-  val queueTime = new QueueTime(site, PartnerTime.distribute(Time.hours(100), site, partners))
+  val queueTime = QueueTime(site, PartnerTime.distribute(Time.hours(100), site, partners))
 
   private def mkProp(partner: Partner, propTimeHours: Int, id: String): CoreProposal = {
     val ntac = Ntac(partner, id, 0, Time.hours(propTimeHours))
@@ -51,7 +51,7 @@ class FinalProposalQueueTest {
     assertEquals(Nil, queue.zipWithPosition)
     assertTrue(queue.positionOf(mkProp(GS, 1, "GS-1")).isEmpty)
 
-    verifyTime(US.percentAt(site), queue.remainingTime(US))
+    verifyTime(US.percentDoubleAt(site), queue.remainingTime(US))
   }
 
   @Test def testSingleProposal() {
@@ -75,8 +75,8 @@ class FinalProposalQueueTest {
     assertEquals(Some(expectedPos), queue.positionOf(gs1))
 
     verifyTime(99.0, queue.remainingTime)
-    verifyTime(GS.percentAt(site) - 1, queue.remainingTime(GS))
-    verifyTime(US.percentAt(site), queue.remainingTime(US))
+    verifyTime(GS.percentDoubleAt(site) - 1, queue.remainingTime(GS))
+    verifyTime(US.percentDoubleAt(site), queue.remainingTime(US))
     verifyTime(queueTime(Category.B1_2).toHours.value - 1, queue.remainingTime(Category.B1_2))
     verifyTime(queueTime(Category.Guaranteed).toHours.value - 1, queue.remainingTime(Category.Guaranteed))
   }
@@ -113,8 +113,8 @@ class FinalProposalQueueTest {
     assertEquals(Some(gsPos), queue.positionOf(gs3))
 
     verifyTime(92.0, queue.remainingTime)
-    verifyTime(GS.percentAt(site) - 3, queue.remainingTime(GS))
-    verifyTime(US.percentAt(site) - 4, queue.remainingTime(US))
+    verifyTime(GS.percentDoubleAt(site) - 3, queue.remainingTime(GS))
+    verifyTime(US.percentDoubleAt(site) - 4, queue.remainingTime(US))
     verifyTime(queueTime(Category.B1_2).toHours.value - 1, queue.remainingTime(Category.B1_2)) // 1 hr band 1,2
     verifyTime(queueTime(Category.Guaranteed).toHours.value - 4, queue.remainingTime(Category.Guaranteed)) // 4 hrs band 1,2,3
   }
@@ -154,10 +154,10 @@ class FinalProposalQueueTest {
     assertEquals(Some(gsPos), queue.positionOf(gs4))
 
     verifyTime(90.0, queue.remainingTime)
-    verifyTime(AU.percentAt(site) - 1.0, queue.remainingTime(AU))
-    verifyTime(CA.percentAt(site) - 1.0, queue.remainingTime(CA))
-    verifyTime(GS.percentAt(site) - 4.0, queue.remainingTime(GS))
-    verifyTime(US.percentAt(site) - 4.0, queue.remainingTime(US))
+    verifyTime(AU.percentDoubleAt(site) - 1.0, queue.remainingTime(AU))
+    verifyTime(CA.percentDoubleAt(site) - 1.0, queue.remainingTime(CA))
+    verifyTime(GS.percentDoubleAt(site) - 4.0, queue.remainingTime(GS))
+    verifyTime(US.percentDoubleAt(site) - 4.0, queue.remainingTime(US))
     verifyTime(queueTime(Category.B1_2).toHours.value - 2.0, queue.remainingTime(Category.B1_2))
     verifyTime(queueTime(Category.Guaranteed).toHours.value - 10.0, queue.remainingTime(Category.Guaranteed))
   }

@@ -30,7 +30,7 @@ object Default {
   val Band2Percent = Percent(30)
   val Band3Percent = Percent(20)
 
-  val BandPercentages = QueueBandPercentages()
+  val BandPercentages = QueueBandPercentages.Default
 
   val WvTimeRestriction  = TimeRestriction.wv(Percent(50), WV50)
   val LgsTimeRestriction = TimeRestriction.lgs(Time.hours(200))

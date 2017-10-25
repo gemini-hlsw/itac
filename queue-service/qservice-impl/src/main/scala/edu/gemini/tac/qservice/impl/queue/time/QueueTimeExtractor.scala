@@ -182,6 +182,6 @@ class QueueTimeExtractor(queue: PsQueue, partners: List[Partner], rop: RolloverR
       ptc <- partnerTimeCalc
       p   <- bandPercentages
       of  <- overfillFactor
-    } yield new QueueTime(ctx.getSite, ptc.net, p, Some(of))
+    } yield QueueTime(ctx.getSite, ptc.net, p, Some(of))
 }
 

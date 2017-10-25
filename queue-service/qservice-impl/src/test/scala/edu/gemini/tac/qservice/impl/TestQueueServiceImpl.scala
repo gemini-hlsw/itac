@@ -137,7 +137,7 @@ class TestQueueServiceImpl {
 
     partners.values foreach { p =>
       val pc = avail(partners.psPartnerFor(p))
-      assertEquals(p.percentAt(Site.north), pc.getCharge.getDoubleValue, 0.000001)
+      assertEquals(p.percentDoubleAt(Site.north), pc.getCharge.getDoubleValue, 0.000001)
     }
 
     // Check that there is no classical time

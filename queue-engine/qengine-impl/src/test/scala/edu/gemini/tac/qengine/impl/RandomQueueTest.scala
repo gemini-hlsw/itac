@@ -20,7 +20,7 @@ class RandomQueueTest {
   private def randomTime(max: Int): Time = Time.hours(max * rand.nextDouble)
 
   private def queueTime: QueueTime =
-    QueueTime(site, partners.map(p => (p, Time.hours(1000) * Percent(p.percentAt(site)))).toMap, partners)
+    QueueTime(site, partners.map(p => (p, Time.hours(1000) * Percent(p.percentDoubleAt(site)))).toMap, partners)
 
   // Ra Bins for GN-A
   private def raLimits: RaBinGroup[Time] =

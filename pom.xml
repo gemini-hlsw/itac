@@ -446,6 +446,16 @@
                 <artifactId>scalaz-core_2.11</artifactId>
                 <version>7.2.2</version>
             </dependency>
+	    <dependency>
+                <groupId>org.scalatest</groupId>
+                <artifactId>scalatest_2.11</artifactId>
+                <version>3.0.1</version>
+	    </dependency>
+	    <dependency>
+                <groupId>org.scalacheck</groupId>
+                <artifactId>scalacheck_2.11</artifactId>
+                <version>1.13.4</version>
+	    </dependency>
             <dependency>
                 <groupId>gemini-nocs</groupId>
                 <artifactId>jsky-coords</artifactId>

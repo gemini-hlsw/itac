@@ -85,7 +85,7 @@ object PartnerTime {
    */
   def distribute(total: Time, site: Site, partners: List[Partner]): PartnerTime = {
     val timeByPartner = partners.map { p =>
-      p -> Time.hours(total.toHours.value * p.percentAt(site) / 100.0)
+      p -> Time.hours(total.toHours.value * p.percentDoubleAt(site) / 100.0)
     }.toMap
     LOGGER.log(Level.DEBUG, "PartnerTime.distribute: " + timeByPartner)
     new PartnerTime(partners, timeByPartner)

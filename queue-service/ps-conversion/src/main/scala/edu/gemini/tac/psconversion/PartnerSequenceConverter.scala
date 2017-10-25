@@ -42,7 +42,7 @@ object PartnerSequenceConverter {
         else BadData(s"Initial pick $p not included in partner list: ${allPartners.mkString(", ")}").left[Option[Partner]]
       }
 
-    def highestPerc: Partner = allPartners.maxBy(_.percentAt(site))
+    def highestPerc: Partner = allPartners.maxBy(_.percentDoubleAt(site))
 
     for {
       _    <- if (allPartners.size == 0) BadData("No partners have been defined").left else ().right
