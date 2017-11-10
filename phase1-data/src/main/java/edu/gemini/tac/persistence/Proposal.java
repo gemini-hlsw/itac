@@ -17,14 +17,12 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.LazyInitializationException;
 import org.hibernate.Session;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.management.RuntimeErrorException;
 import javax.persistence.*;
 import java.io.File;
 import java.math.BigDecimal;
@@ -693,7 +691,7 @@ public class Proposal extends BaseProposalElement implements Comparable<Proposal
     /**
      * Is proposal eligible for band 3 scheduling?
      *
-     * @return true if the proposal is eligble for band 3 scheduling.
+     * @return true if the proposal is eligible for band 3 scheduling.
      */
     public boolean isBand3() {
         return getPhaseIProposal().isBand3();

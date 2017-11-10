@@ -681,8 +681,11 @@ public class Queue {
         Comparator piNameComparator = new PINameComparator(pINamesSortedAscending);
         Map<ScienceBand, Map<String, Banding>> pids = new HashMap<ScienceBand, Map<String, Banding>>();
 
-        int queueCounter = 0;
         int lpCounter = 0;
+        int band1Counter = 100;
+        int band2Counter = 200;
+        int band3Counter = 300;
+        int band4Counter = 400;
         for (ScienceBand band : ScienceBand.byProgramIdOrder()) {
             Map<String, Banding> byProgramId = new HashMap<String, Banding>();
             pids.put(band, byProgramId);
@@ -694,8 +697,14 @@ public class Queue {
                     String programId;
                     if (banding.getProposal().isLargeProgram()) {
                         programId = banding.getProposal().createProgramId(++lpCounter);
+                    } else if (banding.getBand().getRank() == 1) {
+                        programId = banding.getProposal().createProgramId(++band1Counter);
+                    } else if (banding.getBand().getRank() == 2) {
+                        programId = banding.getProposal().createProgramId(++band2Counter);
+                    } else if (banding.getBand().getRank() == 3) {
+                        programId = banding.getProposal().createProgramId(++band3Counter);
                     } else {
-                        programId = banding.getProposal().createProgramId(++queueCounter);
+                        programId = banding.getProposal().createProgramId(++band4Counter);
                     }
                     banding.setProgramId(programId);
                     byProgramId.put(programId, banding);
