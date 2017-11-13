@@ -698,12 +698,24 @@ public class Queue {
                     if (banding.getProposal().isLargeProgram()) {
                         programId = banding.getProposal().createProgramId(++lpCounter);
                     } else if (banding.getBand().getRank() == 1) {
+                        if (band1Counter == 199) {
+                            throw new java.lang.Error("Band 1 program count reached its maximum");
+                        }
                         programId = banding.getProposal().createProgramId(++band1Counter);
                     } else if (banding.getBand().getRank() == 2) {
+                        if (band2Counter == 299) {
+                            throw new java.lang.Error("Band 2 program count reached its maximum");
+                        }
                         programId = banding.getProposal().createProgramId(++band2Counter);
                     } else if (banding.getBand().getRank() == 3) {
+                        if (band3Counter == 399) {
+                            throw new java.lang.Error("Band 3 program count reached its maximum");
+                        }
                         programId = banding.getProposal().createProgramId(++band3Counter);
                     } else {
+                        if (band4Counter == 499) {
+                            throw new java.lang.Error("Band 4 program count reached its maximum");
+                        }
                         programId = banding.getProposal().createProgramId(++band4Counter);
                     }
                     banding.setProgramId(programId);
