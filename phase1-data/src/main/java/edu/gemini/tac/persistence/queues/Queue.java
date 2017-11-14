@@ -682,6 +682,13 @@ public class Queue {
         Map<ScienceBand, Map<String, Banding>> pids = new HashMap<ScienceBand, Map<String, Banding>>();
 
         int lpCounter = 0;
+
+        // If these ID counters ever crash, a quickfix would to increment them. See:
+        //
+        // http://jira.gemini.edu:8080/browse/REL-3274
+        // https://github.com/gemini-hlsw/itac/pull/10
+        // https://github.com/gemini-hlsw/itac/pull/13
+
         int band1Counter = 100;
         int band2Counter = 200;
         int band3Counter = 300;
