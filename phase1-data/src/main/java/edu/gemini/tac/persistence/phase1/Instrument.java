@@ -24,8 +24,8 @@ public enum Instrument {
     DSSI_GS("Dssi Gemini South", Site.SOUTH),
     TEXES_GN("Texes Gemini North", Site.NORTH),
     TEXES_GS("Texes Gemini South", Site.SOUTH),
-    VISITORGS("Visitor Gemini North", Site.SOUTH),
-    VISITORGN("Visitor Gemini South", Site.NORTH);
+    VISITORGS("Visitor Gemini South", Site.SOUTH),
+    VISITORGN("Visitor Gemini North", Site.NORTH);
 
     private final String displayName;
     private ExchangePartner exchangePartner = null;
