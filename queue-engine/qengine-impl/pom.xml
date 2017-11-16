@@ -14,7 +14,7 @@
     <parent>
         <groupId>edu.gemini.tac</groupId>
         <artifactId>queue-engine</artifactId>
-        <version>2017.2.1-SNAPSHOT</version>
+        <version>2018.1.1</version>
     </parent>
 
     <packaging>jar</packaging>
@@ -29,27 +29,27 @@
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-ctx</artifactId>
-            <version>2017.2.1-SNAPSHOT</version>
+            <version>2018.1.1</version>
         </dependency>
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-util</artifactId>
-            <version>2017.2.1-SNAPSHOT</version>
+            <version>2018.1.1</version>
         </dependency>
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-p1</artifactId>
-            <version>2017.2.1-SNAPSHOT</version>
+            <version>2018.1.1</version>
         </dependency>
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-api</artifactId>
-            <version>2017.2.1-SNAPSHOT</version>
+            <version>2018.1.1</version>
         </dependency>
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-log</artifactId>
-            <version>2017.2.1-SNAPSHOT</version>
+            <version>2018.1.1</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>

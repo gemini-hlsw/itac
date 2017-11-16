@@ -14,7 +14,7 @@
     <parent>
         <groupId>edu.gemini.tac</groupId>
         <artifactId>queue-service</artifactId>
-        <version>2017.2.1-SNAPSHOT</version>
+        <version>2018.1.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -24,12 +24,12 @@
         <dependency>
             <groupId>edu.gemini</groupId>
             <artifactId>phase1-data</artifactId>
-            <version>2017.2.1-SNAPSHOT</version>
+            <version>2018.1.1</version>
         </dependency>
         <dependency>
             <groupId>edu.gemini</groupId>
             <artifactId>phase1-services</artifactId>
-            <version>2017.2.1-SNAPSHOT</version>
+            <version>2018.1.1</version>
         </dependency>
     </dependencies>
 

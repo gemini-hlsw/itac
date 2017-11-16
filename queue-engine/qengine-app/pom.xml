@@ -15,7 +15,7 @@
     <parent>
         <artifactId>queue-engine</artifactId>
         <groupId>edu.gemini.tac</groupId>
-        <version>2017.2.1-SNAPSHOT</version>
+        <version>2018.1.1</version>
     </parent>
 
     <packaging>jar</packaging>
@@ -30,42 +30,42 @@
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-util</artifactId>
-            <version>2017.2.1-SNAPSHOT</version>
+            <version>2018.1.1</version>
         </dependency>
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-p1</artifactId>
-            <version>2017.2.1-SNAPSHOT</version>
+            <version>2018.1.1</version>
         </dependency>
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-p1-io</artifactId>
-            <version>2017.2.1-SNAPSHOT</version>
+            <version>2018.1.1</version>
         </dependency>
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-api</artifactId>
-            <version>2017.2.1-SNAPSHOT</version>
+            <version>2018.1.1</version>
         </dependency>
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-impl</artifactId>
-            <version>2017.2.1-SNAPSHOT</version>
+            <version>2018.1.1</version>
         </dependency>
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-log</artifactId>
-            <version>2017.2.1-SNAPSHOT</version>
+            <version>2018.1.1</version>
         </dependency>
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-skycalc</artifactId>
-            <version>2017.2.1-SNAPSHOT</version>
+            <version>2018.1.1</version>
         </dependency>
         <dependency>
             <groupId>edu.gemini</groupId>
             <artifactId>phase1-services</artifactId>
-            <version>2017.2.1-SNAPSHOT</version>
+            <version>2018.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.specs2</groupId>
