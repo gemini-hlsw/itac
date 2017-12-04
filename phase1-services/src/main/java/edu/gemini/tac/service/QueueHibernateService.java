@@ -593,7 +593,7 @@ public class QueueHibernateService implements IQueueService {
         session.update(queue);
 
         // step 3: generate program ids
-        queue.programIds(queue.getCommittee().getSemester().getName().equals("A") ? false : true, session);
+        queue.programIds(true, session);
 
         // step 2: set band information in itac extension
         updateFinalizedProposals(queue);
