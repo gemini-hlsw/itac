@@ -593,7 +593,12 @@ public class QueueHibernateService implements IQueueService {
         session.update(queue);
 
         // step 3: generate program ids
-        queue.programIds(queue.getCommittee().getSemester().getName().equals("A") ? false : true, session);
+        // "We sort each band in PI alphabetical order to remove any trace of relative ranking within bands.
+        // Some of the partners thought that the QC or observer may be biased towards higher (smaller) numbers, which
+        // could favor PIs with last names beginning with A for example. To address that concern we alternated the sort
+        // so that one semester it was A, B, C... and the other Z, Y, X..."
+        // Sandy Leggett -- 2017-12-5
+        queue.programIds(queue.getCommittee().getSemester().getName().equals("B"), session);
 
         // step 2: set band information in itac extension
         updateFinalizedProposals(queue);
