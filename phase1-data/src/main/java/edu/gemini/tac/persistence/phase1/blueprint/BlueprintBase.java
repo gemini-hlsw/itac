@@ -6,6 +6,7 @@ import edu.gemini.tac.persistence.IValidateable;
 import edu.gemini.tac.persistence.Site;
 import edu.gemini.tac.persistence.phase1.Instrument;
 import edu.gemini.tac.persistence.phase1.Observation;
+import edu.gemini.tac.persistence.phase1.blueprint.alopeke.AlopekeBlueprint;
 import edu.gemini.tac.persistence.phase1.blueprint.gmoss.GmosSBlueprintLongSlit;
 import edu.gemini.tac.persistence.phase1.blueprint.dssi.DssiBlueprint;
 import edu.gemini.tac.persistence.phase1.blueprint.visitor.VisitorGNBlueprint;
@@ -97,6 +98,9 @@ import java.util.Set;
         @NamedQuery(name = "BlueprintBase.resourcesDssiBlueprint",
                 query = "from DssiBlueprint b where b in (:blueprints)"
         ),
+        @NamedQuery(name = "BlueprintBase.resourcesAlopekeBlueprint",
+                query = "from AlopekeBlueprint b where b in (:blueprints)"
+        ),
         @NamedQuery(name = "BlueprintBase.resourcesGpiBlueprint",
                 query = "from GpiBlueprint b where b in (:blueprints)"
         ),
@@ -137,6 +141,7 @@ abstract public class BlueprintBase implements IValidateable, Serializable {
         "BlueprintBase.resourcesGpiBlueprint",
         "BlueprintBase.resourcesPhoenixBlueprint",
         "BlueprintBase.resourcesDssiBlueprint",
+        "BlueprintBase.resourcesAlopekeBlueprint",
         "BlueprintBase.resourcesTexesBlueprint",
         "BlueprintBase.resourcesVisitorGSBlueprint",
         "BlueprintBase.resourcesVisitorGNBlueprint",
@@ -271,6 +276,8 @@ abstract public class BlueprintBase implements IValidateable, Serializable {
             return convertPhoenixBlueprint((PhoenixBlueprintChoice) blueprintChoice);
         } else if (blueprintChoice instanceof DssiBlueprintChoice) {
             return convertDssiBlueprint((DssiBlueprintChoice) blueprintChoice);
+        } else if (blueprintChoice instanceof AlopekeBlueprintChoice) {
+            return convertAlopekeBlueprint((AlopekeBlueprintChoice) blueprintChoice);
         } else if (blueprintChoice instanceof TexesBlueprintChoice) {
             return convertTexesBlueprint((TexesBlueprintChoice) blueprintChoice);
         } else if (blueprintChoice instanceof VisitorBlueprintChoice) {
@@ -415,6 +422,14 @@ abstract public class BlueprintBase implements IValidateable, Serializable {
     private static BlueprintBase convertDssiBlueprint(DssiBlueprintChoice choice) {
         if (choice.getDssi() != null) {
             return new DssiBlueprint(choice.getDssi());
+        } else {
+            throw new IllegalArgumentException(NO_FACTORY_FOR + choice.toString());
+        }
+    }
+
+    private static BlueprintBase convertAlopekeBlueprint(AlopekeBlueprintChoice choice) {
+        if (choice.getAlopeke() != null) {
+            return new AlopekeBlueprint(choice.getAlopeke());
         } else {
             throw new IllegalArgumentException(NO_FACTORY_FOR + choice.toString());
         }
