@@ -22,6 +22,7 @@ public enum Instrument {
     GPI("GPI", Site.SOUTH),
     DSSI_GN("Dssi Gemini North", Site.NORTH),
     DSSI_GS("Dssi Gemini South", Site.SOUTH),
+    ALOPEKE("Alopeke", Site.NORTH),
     TEXES_GN("Texes Gemini North", Site.NORTH),
     TEXES_GS("Texes Gemini South", Site.SOUTH),
     VISITORGS("Visitor Gemini South", Site.SOUTH),
