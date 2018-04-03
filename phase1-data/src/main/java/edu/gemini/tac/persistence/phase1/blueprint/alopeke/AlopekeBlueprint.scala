@@ -17,6 +17,8 @@ class AlopekeBlueprint(b: edu.gemini.model.p1.mutable.AlopekeBlueprint) extends 
 
   def this() = this(new edu.gemini.model.p1.mutable.AlopekeBlueprint())
 
+  override def getDisplay = name
+
   override def getDisplayAdaptiveOptics = BlueprintBase.DISPLAY_NOT_APPLICABLE
 
   override def getDisplayCamera = BlueprintBase.DISPLAY_NOT_APPLICABLE
