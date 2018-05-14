@@ -135,6 +135,13 @@ public abstract class Template {
         return velocityTemplate;
     }
 
+    public String getVelocityTemplate(String template) {
+        if (velocityTemplate == null) {
+            velocityTemplate = translateGeminiSpeakToVelocityTalk(template);
+        }
+        return velocityTemplate;
+    }
+
     public String getDescription() {
         return description;
     }

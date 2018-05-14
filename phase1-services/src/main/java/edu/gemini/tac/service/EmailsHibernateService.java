@@ -417,7 +417,7 @@ public class EmailsHibernateService implements IEmailsService {
         email.setBanding(banding);
         email.setProposal(proposal);
         email.setAddress(address);
-        email.setSubject(template.getSubject());
+        email.setSubject(fillCustomTemplate(template, template.getSubject(), values));
         email.setContent(fillTemplate(template, values));
         email.setDescription(template.getDescription());
         if (ccRecipients != null)
@@ -439,9 +439,14 @@ public class EmailsHibernateService implements IEmailsService {
         return templatesMap;
     }
 
-    private String fillTemplate(Template template, VariableValues values) {
+    private String fillCustomTemplate(Template template, String ctemplate, VariableValues values) {
         Writer writer = new StringWriter(5000);
-        Reader reader = new StringReader(template.getVelocityTemplate());
+        Reader reader;
+        if (ctemplate != null) {
+            reader = new StringReader(template.getVelocityTemplate(ctemplate));
+        } else {
+            reader = new StringReader(template.getVelocityTemplate());
+        }
 
         VelocityContext context = new VelocityContext();
         context.put("values", values);
@@ -453,6 +458,10 @@ public class EmailsHibernateService implements IEmailsService {
         }
 
         return writer.toString();
+    }
+
+    private String fillTemplate(Template template, VariableValues values) {
+        return fillCustomTemplate(template, null, values);
     }
 
     // simple java bean used to pass variable values to velocity engine
