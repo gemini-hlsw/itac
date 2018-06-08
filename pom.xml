@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>edu.gemini.tac</groupId>
     <artifactId>tacUmbrella</artifactId>
-    <version>2018.2.0</version>
+    <version>2018.2.1</version>
     <name>TAC umbrella project</name>
     <url>http://maven.apache.org</url>
     <packaging>pom</packaging>
