@@ -129,17 +129,11 @@ public abstract class Template {
     }
 
     public String getVelocityTemplate() {
-        if (velocityTemplate == null) {
-            velocityTemplate = translateGeminiSpeakToVelocityTalk(geminiTemplate);
-        }
-        return velocityTemplate;
+	    return translateGeminiSpeakToVelocityTalk(geminiTemplate);
     }
 
     public String getVelocityTemplate(String template) {
-        if (velocityTemplate == null) {
-            velocityTemplate = translateGeminiSpeakToVelocityTalk(template);
-        }
-        return velocityTemplate;
+	    return translateGeminiSpeakToVelocityTalk(template);
     }
 
     public String getDescription() {
