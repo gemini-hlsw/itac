@@ -58,7 +58,7 @@ function setFilters() {
 
     var excludeTags = [],
             locations = ["NORTH", "SOUTH"],
-            partners = [ "US", "CA", "CL", "AU", "BR", "AR", "UH", "LP", "Subaru", "Keck", "GeminiStaff"],
+            partners = [ "US", "CA", "CL", "AU", "BR", "AR", "UH", "KR", "LP", "Subaru", "Keck", "GeminiStaff"],
             toos = ["rapidToO", "standardToO"],
             modes = [ "Queue", "Classical"],
             exchanges = ["G4SK", "KS4G"],
