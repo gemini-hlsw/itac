@@ -104,7 +104,7 @@ import java.util.Set;
         ),
         @NamedQuery(name = "BlueprintBase.resourceZorroBlueprint",
                 query = "from ZorroBlueprint b where b in (:blueprnts)"
-        )
+        ),
         @NamedQuery(name = "BlueprintBase.resourcesGpiBlueprint",
                 query = "from GpiBlueprint b where b in (:blueprints)"
         ),
@@ -444,7 +444,7 @@ abstract public class BlueprintBase implements IValidateable, Serializable {
 
     private static BlueprintBase convertZorroBlueprint(ZorroBlueprintChoice choice) {
         if (choice.getZorro() != null) {
-            return new ZorroBlueprint((choice.getZorro());
+            return new ZorroBlueprint(choice.getZorro());
         } else {
             throw new IllegalArgumentException(NO_FACTORY_FOR + choice.toString());
         }
