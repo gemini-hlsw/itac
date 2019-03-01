@@ -39,6 +39,7 @@ class AlopekeBlueprint(b: edu.gemini.model.p1.mutable.AlopekeBlueprint) extends 
       mBlueprint.setId(getBlueprintId)
       mBlueprint.setName(getName)
       mBlueprint.setMode(mode)
+      mBlueprint.setVisitor(true)
 
       new BlueprintPair(choice, mBlueprint)
     }
