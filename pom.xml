@@ -212,9 +212,9 @@
                 <itac.log.destination>/tmp</itac.log.destination>
 
                 <!-- services -->
-                <itac.skeletonService.url.north>http://gnodbtest2.hi.gemini.edu:13000/skeleton
+                <itac.skeletonService.url.north>http://gnodbtest.hi.gemini.edu:13000/skeleton
                 </itac.skeletonService.url.north>
-                <itac.skeletonService.url.south>http://gsodbtest2.cl.gemini.edu:13000/skeleton
+                <itac.skeletonService.url.south>http://gsodbtest.cl.gemini.edu:13000/skeleton
                 </itac.skeletonService.url.south>
                 <itac.rolloverURL.gs>http://gsodb.cl.gemini.edu:8442/rollover</itac.rolloverURL.gs>
                 <itac.rolloverURL.gn>http://gnodb.hi.gemini.edu:8442/rollover</itac.rolloverURL.gn>
