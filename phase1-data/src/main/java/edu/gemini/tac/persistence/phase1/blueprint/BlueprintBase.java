@@ -102,8 +102,8 @@ import java.util.Set;
         @NamedQuery(name = "BlueprintBase.resourcesAlopekeBlueprint",
                 query = "from AlopekeBlueprint b where b in (:blueprints)"
         ),
-        @NamedQuery(name = "BlueprintBase.resourceZorroBlueprint",
-                query = "from ZorroBlueprint b where b in (:blueprnts)"
+        @NamedQuery(name = "BlueprintBase.resourcesZorroBlueprint",
+                query = "from ZorroBlueprint b where b in (:blueprints)"
         ),
         @NamedQuery(name = "BlueprintBase.resourcesGpiBlueprint",
                 query = "from GpiBlueprint b where b in (:blueprints)"
