@@ -33,6 +33,7 @@ object ObservationIo {
       val imSite = p1Obs.blueprint.map {
         case d: im.DssiBlueprint       => d.site
         case a: im.AlopekeBlueprint    => a.site
+        case z: im.ZorroBlueprint      => z.site
         case t: im.TexesBlueprint      => t.site
         case p: im.PhoenixBlueprint    => p.site
         case v: im.VisitorBlueprint    => v.site

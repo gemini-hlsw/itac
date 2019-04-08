@@ -1,21 +1,21 @@
-package edu.gemini.tac.persistence.phase1.blueprint.alopeke
+package edu.gemini.tac.persistence.phase1.blueprint.zorro
 
 import javax.persistence._
 
-import edu.gemini.model.p1.mutable.AlopekeMode
+import edu.gemini.model.p1.mutable.ZorroMode
 
 import scala.collection.JavaConverters._
 import edu.gemini.tac.persistence.phase1.blueprint.{BlueprintBase, BlueprintPair}
 import edu.gemini.tac.persistence.phase1.Instrument
 
 @Entity
-@DiscriminatorValue("AlopekeBlueprint")
-class AlopekeBlueprint(b: edu.gemini.model.p1.mutable.AlopekeBlueprint) extends BlueprintBase(b.getId, b.getName, Instrument.ALOPEKE) {
+@DiscriminatorValue("ZorroBlueprint")
+class ZorroBlueprint(b: edu.gemini.model.p1.mutable.ZorroBlueprint) extends BlueprintBase(b.getId, b.getName, Instrument.ZORRO) {
   @Enumerated(EnumType.STRING)
   @Column(name = "visitor_site")
-  val mode: AlopekeMode = b.getMode
+  val mode: ZorroMode = b.getMode
 
-  def this() = this(new edu.gemini.model.p1.mutable.AlopekeBlueprint())
+  def this() = this(new edu.gemini.model.p1.mutable.ZorroBlueprint())
 
   override def getDisplay = name
 
@@ -32,19 +32,19 @@ class AlopekeBlueprint(b: edu.gemini.model.p1.mutable.AlopekeBlueprint) extends 
   override def getDisplayOther = BlueprintBase.DISPLAY_NOT_APPLICABLE
 
   override def toMutable:BlueprintPair = {
-      val choice = new edu.gemini.model.p1.mutable.AlopekeBlueprintChoice
-      val mBlueprint = new edu.gemini.model.p1.mutable.AlopekeBlueprint
-      choice.setAlopeke(mBlueprint)
+    val choice = new edu.gemini.model.p1.mutable.ZorroBlueprintChoice
+    val mBlueprint = new edu.gemini.model.p1.mutable.ZorroBlueprint
+    choice.setZorro(mBlueprint)
 
-      mBlueprint.setId(getBlueprintId)
-      mBlueprint.setName(getName)
-      mBlueprint.setMode(mode)
-      mBlueprint.setVisitor(true)
+    mBlueprint.setId(getBlueprintId)
+    mBlueprint.setName(getName)
+    mBlueprint.setMode(mode)
+    mBlueprint.setVisitor(true)
 
-      new BlueprintPair(choice, mBlueprint)
-    }
+    new BlueprintPair(choice, mBlueprint)
+  }
 
-  override def getComplementaryInstrumentBlueprint = throw new RuntimeException("Switching sites has no meaning for Alopeke blueprints.")
+  override def getComplementaryInstrumentBlueprint = throw new RuntimeException("Switching sites has no meaning for Zorro blueprints.")
 
   override def getResourcesByCategory = Map[String, java.util.Set[String]]("mode" -> Set[String](mode.value()).asJava).asJava
 

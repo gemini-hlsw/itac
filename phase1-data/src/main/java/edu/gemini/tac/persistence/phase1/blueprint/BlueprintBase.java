@@ -7,6 +7,7 @@ import edu.gemini.tac.persistence.Site;
 import edu.gemini.tac.persistence.phase1.Instrument;
 import edu.gemini.tac.persistence.phase1.Observation;
 import edu.gemini.tac.persistence.phase1.blueprint.alopeke.AlopekeBlueprint;
+import edu.gemini.tac.persistence.phase1.blueprint.zorro.ZorroBlueprint;
 import edu.gemini.tac.persistence.phase1.blueprint.gmoss.GmosSBlueprintLongSlit;
 import edu.gemini.tac.persistence.phase1.blueprint.dssi.DssiBlueprint;
 import edu.gemini.tac.persistence.phase1.blueprint.visitor.VisitorGNBlueprint;
@@ -101,6 +102,9 @@ import java.util.Set;
         @NamedQuery(name = "BlueprintBase.resourcesAlopekeBlueprint",
                 query = "from AlopekeBlueprint b where b in (:blueprints)"
         ),
+        @NamedQuery(name = "BlueprintBase.resourcesZorroBlueprint",
+                query = "from ZorroBlueprint b where b in (:blueprints)"
+        ),
         @NamedQuery(name = "BlueprintBase.resourcesGpiBlueprint",
                 query = "from GpiBlueprint b where b in (:blueprints)"
         ),
@@ -142,6 +146,7 @@ abstract public class BlueprintBase implements IValidateable, Serializable {
         "BlueprintBase.resourcesPhoenixBlueprint",
         "BlueprintBase.resourcesDssiBlueprint",
         "BlueprintBase.resourcesAlopekeBlueprint",
+        "BlueprintBase.resourcesZorroBlueprint",
         "BlueprintBase.resourcesTexesBlueprint",
         "BlueprintBase.resourcesVisitorGSBlueprint",
         "BlueprintBase.resourcesVisitorGNBlueprint",
@@ -278,6 +283,8 @@ abstract public class BlueprintBase implements IValidateable, Serializable {
             return convertDssiBlueprint((DssiBlueprintChoice) blueprintChoice);
         } else if (blueprintChoice instanceof AlopekeBlueprintChoice) {
             return convertAlopekeBlueprint((AlopekeBlueprintChoice) blueprintChoice);
+        } else if (blueprintChoice instanceof ZorroBlueprintChoice) {
+            return convertZorroBlueprint((ZorroBlueprintChoice) blueprintChoice);
         } else if (blueprintChoice instanceof TexesBlueprintChoice) {
             return convertTexesBlueprint((TexesBlueprintChoice) blueprintChoice);
         } else if (blueprintChoice instanceof VisitorBlueprintChoice) {
@@ -434,6 +441,14 @@ abstract public class BlueprintBase implements IValidateable, Serializable {
             throw new IllegalArgumentException(NO_FACTORY_FOR + choice.toString());
         }
     }
+
+    private static BlueprintBase convertZorroBlueprint(ZorroBlueprintChoice choice) {
+        if (choice.getZorro() != null) {
+            return new ZorroBlueprint(choice.getZorro());
+        } else {
+            throw new IllegalArgumentException(NO_FACTORY_FOR + choice.toString());
+        }
+     }
 
     private static BlueprintBase convertVisitorBlueprint(VisitorBlueprintChoice choice) {
         if (choice.getVisitor() != null) {
