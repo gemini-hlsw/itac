@@ -56,7 +56,13 @@ public class RolloverObservation extends AbstractRolloverObservation
         this.setObservationTime(new TimeAmount((Element) el.getElementsByTagName("time").item(0)));
         this.setSiteQuality(new Condition((Element) el.getElementsByTagName("conditions").item(0)));
         this.setTarget(new SiderealTarget((Element) el.getElementsByTagName("target").item(0)));
-        this.setPartner(partnerMap.get(el.getElementsByTagName("partner").item(0).getTextContent()));
+        String partnerName = el.getElementsByTagName("partner").item(0).getTextContent();
+        // Sorry for this. the odb uses Republic of Korea while ITAC uses Korea
+        // I'm too coward to change the name in ITAC so this is the next worse option
+        if (partnerName.equalsIgnoreCase("Republic of Korea")) {
+          partnerName = "Korea";
+        }
+        this.setPartner(partnerMap.get(partnerName));
         this.setCreatedTimestamp(new Date());
     }
 }
