@@ -21,6 +21,7 @@ object ProposalChecker extends api.ProposalChecker {
 
   val checkList = List[CheckFunction](
     Band3ConditionsCheck,
+    Band3RequestedTime,
     Band3MinimumTimeCheck,
     ClassicalTimeRequestCheck,
     ConditionsCheck,

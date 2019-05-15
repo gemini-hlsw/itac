@@ -27,13 +27,13 @@ object Band3MinimumTimeCheck extends StatelessProposalCheckFunction {
 
   private def hrs(t: TimeAmount): Double = t.convertTo(TimeUnit.HR).getValue.doubleValue()
 
-  def nonPositiveMinimumMessage(t: TimeAmount) =
+  def nonPositiveMinimumMessage(t: TimeAmount): String =
     "Band 3 time (%.2f hrs) must be more than 0 hours.".format(hrs(t))
 
   def nonPositiveMinimumIssue(p: Proposal, t: TimeAmount): api.ProposalIssue =
     error(this, p, nonPositiveMinimumMessage(t), ProposalIssueCategory.TimeAllocation)
 
-  def minimumMoreThanRecommendedMessage(b3: TimeAmount, rec: TimeAmount) =
+  def minimumMoreThanRecommendedMessage(b3: TimeAmount, rec: TimeAmount): String =
     "Band 3 time (%.2f hrs) must be less than or equal to total recommended time (%.2f hrs).".format(hrs(b3), hrs(rec))
 
   def minimumMoreThanRecommendedIssue(p: Proposal, b3: TimeAmount, rec: TimeAmount): api.ProposalIssue =
@@ -56,14 +56,16 @@ object Band3MinimumTimeCheck extends StatelessProposalCheckFunction {
 
   def apply(p: Proposal): Set[api.ProposalIssue] =
     if (p.isBand3 && !p.isJointComponent) {
-      //I think this is always true, but leaving in old default path for safety
-      val band3Time = p.getPhaseIProposal.isInstanceOf[QueueProposal] match {
-        case true => p.getPhaseIProposal.asInstanceOf[QueueProposal].getBand3Request.getMinTime
-        case false => p.getTotalTimeForBand(Band.BAND_3)
+      // Try to safely determine the band 3 time
+      val band3Time = p.getPhaseIProposal match {
+        case q: QueueProposal => Option(q.getBand3Request).map(_.getMinTime)
+        case _ => Some(p.getTotalTimeForBand(Band.BAND_3))
       }
-      val recommended = p.getTotalRecommendedTime
-      val issue = checkIssues(p, band3Time, recommended)
-      if (issue.isDefined) Set(issue.get) else noIssues
+      band3Time.map { b3t =>
+        val recommended = p.getTotalRecommendedTime
+        val issue = checkIssues(p, b3t, recommended)
+        if (issue.isDefined) Set(issue.get) else noIssues
+      }.getOrElse(noIssues) // strictly this is an error but there is another for that case
     } else {
       noIssues
     }
