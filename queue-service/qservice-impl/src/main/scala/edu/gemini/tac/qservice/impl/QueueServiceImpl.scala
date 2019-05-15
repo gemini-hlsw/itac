@@ -66,7 +66,7 @@ private class QueueServiceImpl(val queue: PsQueue, val comService: PsCommitteeSe
     pl  <- new ProposalLoader(ctx, par).load(ps.asScala.toList)
   } yield pl
 
-  val proposals = for {
+  val proposals: PsError \/ List[Proposal] = for {
     pr <- proposalResults
   } yield (List.empty[Proposal]/:pr) { (lst,r) =>
     r match {

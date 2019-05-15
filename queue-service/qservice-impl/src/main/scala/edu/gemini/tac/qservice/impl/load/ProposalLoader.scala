@@ -47,7 +47,10 @@ object ProposalLoader {
     (for {
       p1 <- nullSafePersistence("phase 1 proposal not set") { p.getPhaseIProposal }
       m  <- nullSafePersistence("could not convert to mutable proposal") { HibernateToMutableConverter.toMutable(p1) }
-    } yield im.Proposal(m)).leftMap(psErrorMessage(_).wrapNel).validation
+    } yield {
+      val p = im.Proposal(m)
+      p.copy(observations = p.nonEmptyObservations)
+    }).leftMap(psErrorMessage(_).wrapNel).validation
   }
 
   // A result of loading a single persistence proposal.  It pairs the original

@@ -1,6 +1,7 @@
 package edu.gemini.tac.psconversion
 
 import edu.gemini.model.p1.immutable.{Proposal => P1Proposal}
+import edu.gemini.model.p1.{mutable => p1mutable}
 
 import edu.gemini.tac.persistence.{Proposal => PsProposal}
 
@@ -33,10 +34,15 @@ class P1ModelConverter(partners: List[Partner]) {
       HibernateToMutableConverter.toMutable(ps.getPhaseIProposal)
     }
 
+    def cleanProposal(m: p1mutable.Proposal): P1Proposal = {
+      val p1 = P1Proposal(m)
+      p1.copy(observations = p1.nonEmptyObservations)
+    }
+
     // Go back to the safe immutable model and extract the qengine proposal
     // information from that.
     mutable.flatMap { mut =>
-      io.read(P1Proposal(mut), when, idGen).disjunction.leftMap(l => BadData(l.list.toList.mkString("\n")))
+      io.read(cleanProposal(mut), when, idGen).disjunction.leftMap(l => BadData(l.list.toList.mkString("\n")))
     }
   }
 
