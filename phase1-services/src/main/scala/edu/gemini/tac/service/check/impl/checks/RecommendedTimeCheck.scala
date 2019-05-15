@@ -25,7 +25,6 @@ object RecommendedTimeCheck extends StatelessProposalCheckFunction {
     QUEUE     -> queueMargin
   )
 
-
   def noRequestedTimeMessage = "PI requested time  not specified."
   def noRequestedTime(p: Proposal) = ProposalIssue.error(this, p, noRequestedTimeMessage, ProposalIssueCategory.TimeAllocation)
 
@@ -35,12 +34,12 @@ object RecommendedTimeCheck extends StatelessProposalCheckFunction {
   def negativeRecommendedTimeMessage = "Partner recommended time cannot be negative."
   def negativeRecommendedTime(p: Proposal) = ProposalIssue.error(this, p, negativeRecommendedTimeMessage, ProposalIssueCategory.TimeAllocation)
 
-  def lowRecommendedTimeMessage(rec: TimeAmount, req: TimeAmount) =
+  def lowRecommendedTimeMessage(rec: TimeAmount, req: TimeAmount): String =
     "Sum of partner recommended time (%.2f %s) less than total PI minimum request (%.2f %s).".format(rec.getValue, rec.getUnits.value(), req.getValue, req.getUnits.value())
   def lowRecommendedTime(p: Proposal, rec: TimeAmount, req: TimeAmount) =
     ProposalIssue.warning(this, p, lowRecommendedTimeMessage(rec, req), ProposalIssueCategory.TimeAllocation)
 
-  def tooMuchTimeMessage(rec: TimeAmount) =
+  def tooMuchTimeMessage(rec: TimeAmount): String =
     "Proposal is allocated a large amount of time: '%s' hours".format(rec.convertTo(TimeUnit.HR))
   def tooMuchTime(p: Proposal, rec: TimeAmount) =
     ProposalIssue.warning(this, p, tooMuchTimeMessage(rec), ProposalIssueCategory.TimeAllocation)
@@ -55,8 +54,8 @@ object RecommendedTimeCheck extends StatelessProposalCheckFunction {
     private def augmentedRecommended(p: Proposal): TimeAmount = {
       recommended + marginMap({
         p.getPhaseIProposal match {
-          case qp : QueueProposal => QUEUE
-          case cp : ClassicalProposal => CLASSICAL
+          case _: QueueProposal => QUEUE
+          case _: ClassicalProposal => CLASSICAL
           case _ => QUEUE
         }
       })

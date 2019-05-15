@@ -16,7 +16,7 @@ object ClassicalTimeRequestCheck extends StatelessProposalCheckFunction {
 
   val e = 0.000001
 
-  def notMultipleOfTenMessage(hrs: Double ) =
+  def notMultipleOfTenMessage(hrs: Double): String =
     "Classical proposal requested %.2f hours.".format(hrs)
   def notMultipleOfTen(p: Proposal, hrs: Double): Set[api.ProposalIssue] =
     singleWarning(p, notMultipleOfTenMessage(hrs), ProposalIssueCategory.TimeAllocation)
@@ -32,7 +32,7 @@ object ClassicalTimeRequestCheck extends StatelessProposalCheckFunction {
   def nonNightsIssues(p: Proposal, units: TimeUnit): Set[api.ProposalIssue] =
     p.totalRequestedTime map { t =>
       val hrs    = t.convertTo(TimeUnit.HR)
-      val intHrs = hrs.getValue.toBigInteger().intValue()
+      val intHrs = hrs.getValue.toBigInteger.intValue()
 
       if ((math.abs(hrs.getValue.doubleValue() - intHrs ) < e) && (intHrs % 10 == 0))
         noIssues
@@ -43,7 +43,7 @@ object ClassicalTimeRequestCheck extends StatelessProposalCheckFunction {
   def classicalIssues(p: Proposal): Set[api.ProposalIssue] =
     (for {
       units <- requestedTimeUnits(p)
-      if (units != TimeUnit.NIGHT)
+      if units != TimeUnit.NIGHT
     } yield nonNightsIssues(p, units)) getOrElse noIssues
 
   def apply(p: Proposal): Set[api.ProposalIssue] =
