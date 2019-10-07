@@ -119,7 +119,7 @@ class ProposalMigratorTest {
     proposal\"common"\"targetCatalog"\"target" filter (t => (t\"@type" text) equals "science") map (t => (t\"@id" text, toTarget(t, isToo(proposal)))) toMap
 
   def toTarget (t: Node, isToo: Boolean): Target = {
-    val name = t\"targetName" text
+    val name = (t\"targetName" text)
     if (isToo) {
       ProposalBuilder.createTooTarget(name)           // for too targets we don't care about the actual coordinates (they're always 0 in the old model)
     } else if ((t\"nonSidSystem" length) > 0) {

@@ -3,4 +3,4 @@ script:
   - mvn -U clean install -DskipTests -B
   - mvn test -B --projects itac-configuration,itac-web,queue-engine,queue-service
 jdk:
-  - oraclejdk8
+  - openjdk8
