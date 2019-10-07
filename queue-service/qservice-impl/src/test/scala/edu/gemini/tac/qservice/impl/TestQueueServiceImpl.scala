@@ -223,7 +223,7 @@ class TestQueueServiceImpl {
       create()
     // GS -- skip.  Will make au1 be skipped on a dec bin violation.
     val psGS = new QueueProposalBuilder().
-      setPartner(ProposalBuilder.dummyPartnerGS).
+      setPartner(ProposalBuilder.dummyPartnerUS).
       setAccept(new TimeAmount(100, TimeUnit.HR), new TimeAmount(100, TimeUnit.HR), 1).
       addObservation("0:0:0.0", "90:0:0.0", new TimeAmount(1, TimeUnit.HR)).
       create()

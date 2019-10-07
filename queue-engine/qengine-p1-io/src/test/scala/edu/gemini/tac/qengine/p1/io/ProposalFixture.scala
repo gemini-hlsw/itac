@@ -16,13 +16,13 @@ class ProposalFixture {
   def semester      = im.Semester(2014, im.SemesterOption.A)
   def title         = "Test Proposal"
   def abs           = "My test proposal abstract"
-  def tacCategory   = Some(im.TacCategory.GALACTIC)
+  def tacCategory   = Some(im.TacCategory.STARS_AND_STELLAR_EVOLUTION)
   def keywords      = List(m.Keyword.BLUE_STRAGGLERS)
 
   def piStatus      = im.InvestigatorStatus.PH_D
   def piAddress     = im.InstitutionAddress("Bovine University")
   val piUuid        = UUID.randomUUID()
-  def pi            = im.PrincipalInvestigator(piUuid, "Biff", "Henderson", Nil, "bhenderson@bovine.edu", piStatus, piAddress)
+  def pi            = im.PrincipalInvestigator(piUuid, "Biff", "Henderson", Nil, "bhenderson@bovine.edu", piStatus, im.InvestigatorGender.NONE_SELECTED, piAddress)
   def investigators = im.Investigators(pi, Nil)
 
   def siderealCoords = Coordinates(RightAscension.fromAngle(Angle.parseHMS("10:11:12").getOrElse(Angle.zero)), Declination.fromAngle(Angle.parseDMS("-20:30:40").getOrElse(Angle.zero)).getOrElse(Declination.zero))
