@@ -69,7 +69,7 @@ public abstract class ProposalBuilder {
     public static final Partner dummyPartnerBR      = createPartner("BR", "Brazil", true);
     public static final Partner dummyPartnerCA      = createPartner("CA", "Canada", true);
     public static final Partner dummyPartnerCL      = createPartner("CL", "Chile", true);
-    public static final Partner dummyPartnerGS      = createPartner("GS", "GeminiStaff", false);
+    public static final Partner dummyPartnerKR      = createPartner("KR", "Korea", true);
     public static final Partner dummyPartnerUH      = createPartner("UH", "UH", false);
     public static final Partner dummyPartnerUS      = createPartner("US", "USA", true);
     public static final Partner dummyPartnerSubaru  = createPartner("SUBARU", "Subaru", false);
@@ -82,7 +82,7 @@ public abstract class ProposalBuilder {
             dummyPartnerBR,
             dummyPartnerCA,
             dummyPartnerCL,
-            dummyPartnerGS,
+            dummyPartnerKR,
             dummyPartnerKeck,
             dummyPartnerSubaru,
             dummyPartnerUH,
@@ -145,11 +145,11 @@ public abstract class ProposalBuilder {
     protected SubmissionReceipt receipt = null;
     protected SubmissionAccept accept = null;
     protected SubmissionRequest request = null;
-    protected SubmissionRequest band3Request = null;
+    private SubmissionRequest band3Request = null;
     protected Itac itac = null;
-    protected String programId = null;
-    protected Map<Partner, SubmissionRequest> requests = new HashMap<Partner, SubmissionRequest>();
-    protected Set<Keyword> keywords = new HashSet<Keyword>();
+    private String programId = null;
+    protected Map<Partner, SubmissionRequest> requests = new HashMap<>();
+    protected Set<Keyword> keywords = new HashSet<>();
 
     protected ProposalBuilder(PhaseIProposal phaseIProposal) {
         // set some defaults for observation creation
@@ -158,9 +158,9 @@ public abstract class ProposalBuilder {
         this.currentBand = defaultBand;
         this.currentProposalCnt = proposalCnt++;
 
-        this.blueprints = new HashMap<BlueprintBase, BlueprintBase>();
-        this.conditions = new HashMap<Condition, Condition>();
-        this.targets = new HashMap<Target, Target>();
+        this.blueprints = new HashMap<>();
+        this.conditions = new HashMap<>();
+        this.targets = new HashMap<>();
 
         // -- setup phase 1 proposal
         this.phaseIProposal = phaseIProposal;
@@ -169,7 +169,7 @@ public abstract class ProposalBuilder {
         this.phaseIProposal.setSubmissionsKey(UUID.randomUUID().toString());
         this.phaseIProposal.setProposalAbstract("abstract");
         this.phaseIProposal.setSchemaVersion("1.0.0");
-        this.phaseIProposal.setTacCategory(TacCategory.EXTRAGALACTIC);
+        this.phaseIProposal.setTacCategory(TacCategory.GALAXY_EVOLUTION);
         this.phaseIProposal.setMeta(createMeta());
 
         // -- setup proposal
@@ -242,7 +242,7 @@ public abstract class ProposalBuilder {
      */
     // add parameters and make this method public if needed
     private static BlueprintBase createGmosNImaging() {
-        List<GmosNFilter> filters = new ArrayList<GmosNFilter>();
+        List<GmosNFilter> filters = new ArrayList<>();
         filters.add(GmosNFilter.g_G0301);
         GmosNBlueprintImaging bp = new GmosNBlueprintImaging();
         bp.setName("GMOS-N Imaging");
@@ -386,7 +386,7 @@ public abstract class ProposalBuilder {
         EphemerisElement e2 = new EphemerisElement();
         e2.setCoordinates(c);
         e2.setValidAt(date);
-        List<EphemerisElement> ephemerisElements = new ArrayList<EphemerisElement>();
+        List<EphemerisElement> ephemerisElements = new ArrayList<>();
         ephemerisElements.add(e1);
         ephemerisElements.add(e2);
         NonsiderealTarget t = new NonsiderealTarget();
@@ -970,7 +970,7 @@ public abstract class ProposalBuilder {
             m.setSystem(MagnitudeSystem.VEGA);
             m.setValue(new BigDecimal(10));
             m.setTarget(copy);
-            Set<Magnitude> magnitudeSet = new HashSet<Magnitude>();
+            Set<Magnitude> magnitudeSet = new HashSet<>();
             magnitudeSet.add(m);
 
             instance = copy;
@@ -991,7 +991,7 @@ public abstract class ProposalBuilder {
             EphemerisElement e2 = new EphemerisElement();
             e2.setCoordinates(c2);
             e2.setValidAt(orig.getEphemeris().get(1).getValidAt());
-            List<EphemerisElement> ephemerisElements = new ArrayList<EphemerisElement>();
+            List<EphemerisElement> ephemerisElements = new ArrayList<>();
             ephemerisElements.add(e1);
             ephemerisElements.add(e2);
             copy.setEphemeris(ephemerisElements);
@@ -1023,7 +1023,7 @@ public abstract class ProposalBuilder {
      * @return
      */
     private Investigators createInvestigators() {
-        Set<String> phoneNumbers = new HashSet<String>();
+        Set<String> phoneNumbers = new HashSet<>();
         phoneNumbers.add("888 999-7565");
         InstitutionAddress address = new InstitutionAddress();
         address.setInstitution("Gemini Observatory");

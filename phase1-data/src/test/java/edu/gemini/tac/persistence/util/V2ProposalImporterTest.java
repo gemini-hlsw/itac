@@ -94,7 +94,7 @@ public class V2ProposalImporterTest extends HibernateFixture {
                     "where p.id = :id").setLong("id", phaseIProposalId).uniqueResult();
 
             assertEquals("933b9bcb-db23-42dc-b178-3e37dfc8507f", proposal.getSubmissionsKey());
-            assertEquals(TacCategory.SOLAR_SYSTEM, proposal.getTacCategory());
+            assertEquals(TacCategory.PLANETARY_SYSTEMS, proposal.getTacCategory());
             assertEquals("2013.2.1", proposal.getSchemaVersion());
 
             assertNotNull(proposal.getMeta());
@@ -248,7 +248,7 @@ public class V2ProposalImporterTest extends HibernateFixture {
                     "where p.id = :id").setLong("id", phaseIProposalId).uniqueResult();
 
             assertEquals("933b9bcb-db23-42dc-b178-3e37dfc8507e",proposal.getSubmissionsKey());
-            assertEquals(TacCategory.SOLAR_SYSTEM, proposal.getTacCategory());
+            assertEquals(TacCategory.PLANETARY_SYSTEMS, proposal.getTacCategory());
             assertEquals("2013.2.1", proposal.getSchemaVersion());
 
             assertNotNull(proposal.getMeta());

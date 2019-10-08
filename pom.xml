@@ -34,7 +34,7 @@
         <unitils.version>3.1</unitils.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
         <commons.httpclient.version>3.1</commons.httpclient.version>
-        <ocs.model.p1.version>2019102.1.0</ocs.model.p1.version>
+        <ocs.model.p1.version>2020001.1.0</ocs.model.p1.version>
     </properties>
     <repositories>
         <repository>
