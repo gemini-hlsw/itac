@@ -13,7 +13,7 @@
     <parent>
         <artifactId>queue-engine</artifactId>
         <groupId>edu.gemini.tac</groupId>
-        <version>2019.2.2</version>
+        <version>2020.1.1</version>
     </parent>
 
     <packaging>jar</packaging>
@@ -33,27 +33,27 @@
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-ctx</artifactId>
-            <version>2019.2.2</version>
+            <version>2020.1.1</version>
         </dependency>
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-util</artifactId>
-            <version>2019.2.2</version>
+            <version>2020.1.1</version>
         </dependency>
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-p1</artifactId>
-            <version>2019.2.2</version>
+            <version>2020.1.1</version>
         </dependency>
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-p2</artifactId>
-            <version>2019.2.2</version>
+            <version>2020.1.1</version>
         </dependency>
         <dependency>
             <groupId>edu.gemini.tac</groupId>
             <artifactId>qengine-log</artifactId>
-            <version>2019.2.2</version>
+            <version>2020.1.1</version>
         </dependency>
     </dependencies>
 

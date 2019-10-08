@@ -3,7 +3,7 @@
     <parent>
         <artifactId>tacUmbrella</artifactId>
         <groupId>edu.gemini.tac</groupId>
-        <version>2019.2.2</version>
+        <version>2020.1.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
