@@ -17,7 +17,7 @@
     <parent>
         <groupId>edu.gemini.tac</groupId>
         <artifactId>tacUmbrella</artifactId>
-        <version>2019.2.2</version>
+        <version>2020.1.1</version>
     </parent>
 
     <packaging>pom</packaging>
