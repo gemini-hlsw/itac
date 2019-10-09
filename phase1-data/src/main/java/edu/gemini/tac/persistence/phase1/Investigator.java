@@ -1,5 +1,6 @@
 package edu.gemini.tac.persistence.phase1;
 
+import edu.gemini.model.p1.mutable.InvestigatorGender;
 import edu.gemini.model.p1.mutable.InvestigatorStatus;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -57,6 +58,10 @@ abstract public class Investigator {
     @Column(name = "investigator_status")
     protected InvestigatorStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "investigator_gender")
+    protected InvestigatorGender gender;
+
     @Column(name = "email")
     protected String email;
 
@@ -69,9 +74,10 @@ abstract public class Investigator {
 
     public Investigator(){}
 
-    public Investigator(String firstName, String lastName, InvestigatorStatus status, String email, Set<String> phoneNumbers){
+    public Investigator(String firstName, String lastName, InvestigatorGender gender, InvestigatorStatus status, String email, Set<String> phoneNumbers){
         this.firstName = firstName;
         this.lastName = lastName;
+        this.gender = gender;
         this.status = status;
         this.email = email;
         this.phoneNumbers.addAll(phoneNumbers);
@@ -81,6 +87,7 @@ abstract public class Investigator {
         setFirstName(from.getFirstName());
         setLastName(from.getLastName());
         setStatus(from.getStatus());
+        setGender(from.getGender());
         setEmail(from.getEmail());
         phoneNumbers.clear();
         phoneNumbers.addAll(from.getPhoneNumbers());
@@ -112,6 +119,7 @@ abstract public class Investigator {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", status=" + status +
+                ", gender=" + gender +
                 ", email='" + email +
                 '}';
     }
@@ -130,6 +138,10 @@ abstract public class Investigator {
 
     public void setStatus(InvestigatorStatus status) {
         this.status = status;
+    }
+
+    public void setGender(InvestigatorGender gender) {
+        this.gender = gender;
     }
 
     public void setEmail(String email) {
@@ -160,6 +172,10 @@ abstract public class Investigator {
         return lastName;
     }
 
+    public InvestigatorGender getGender() {
+        return gender;
+    }
+
     public Long getId() {
         return id;
     }
@@ -187,6 +203,7 @@ abstract public class Investigator {
         mInvestigator.setId(investigatorId);
         mInvestigator.setLastName(getLastName());
         mInvestigator.setStatus(getStatus());
+        mInvestigator.setGender(getGender());
         mInvestigator.getPhone().addAll(getPhoneNumbers());
 
         return mInvestigator;

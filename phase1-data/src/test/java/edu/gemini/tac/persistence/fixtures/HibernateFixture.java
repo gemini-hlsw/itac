@@ -1,31 +1,15 @@
 package edu.gemini.tac.persistence.fixtures;
 
+import edu.gemini.model.p1.mutable.*;
 import edu.gemini.model.p1.mutable.Band;
-import edu.gemini.model.p1.mutable.MagnitudeBand;
-import edu.gemini.model.p1.mutable.MagnitudeSystem;
-import edu.gemini.model.p1.mutable.GuidingEvaluation;
-import edu.gemini.model.p1.mutable.TargetVisibility;
 import edu.gemini.model.p1.mutable.CoordinatesEpoch;
-import edu.gemini.model.p1.mutable.Guider;
-import edu.gemini.model.p1.mutable.NiriCamera;
-import edu.gemini.model.p1.mutable.NiriFilter;
-import edu.gemini.model.p1.mutable.GnirsPixelScale;
-import edu.gemini.model.p1.mutable.GnirsFilter;
-import edu.gemini.model.p1.mutable.GnirsCrossDisperser;
-import edu.gemini.model.p1.mutable.GnirsDisperser;
-import edu.gemini.model.p1.mutable.GnirsFpu;
-import edu.gemini.model.p1.mutable.InvestigatorStatus;
-import edu.gemini.model.p1.mutable.ExchangePartner;
-import edu.gemini.model.p1.mutable.CoordinatesEpoch;
-import edu.gemini.model.p1.mutable.Keyword;
-import edu.gemini.model.p1.mutable.TooOption;
-import edu.gemini.model.p1.mutable.TacCategory;
 import edu.gemini.shared.skycalc.Angle;
 import edu.gemini.shared.util.DateRange;
 import edu.gemini.tac.exchange.ProposalExporterImpl;
 import edu.gemini.tac.persistence.*;
 import edu.gemini.tac.persistence.Proposal;
 import edu.gemini.tac.persistence.Semester;
+import edu.gemini.tac.persistence.Site;
 import edu.gemini.tac.persistence.bin.BinConfiguration;
 import edu.gemini.tac.persistence.bin.DecBinSize;
 import edu.gemini.tac.persistence.bin.RABinSize;
@@ -169,10 +153,10 @@ public class HibernateFixture extends Fixture {
     protected List<Investigators> investigatorTeams;
     protected List<Meta> metas;
     protected List<PhaseIProposal> phaseIProposals;
-    protected List<ExchangeProposal> exchangeProposals = new ArrayList<ExchangeProposal>();
-    protected List<ClassicalProposal> classicalProposals = new ArrayList<ClassicalProposal>();
-    protected List<QueueProposal> queueProposals = new ArrayList<QueueProposal>();
-    protected List<LargeProgram> largePrograms = new ArrayList<LargeProgram>();
+    protected List<ExchangeProposal> exchangeProposals = new ArrayList<>();
+    protected List<ClassicalProposal> classicalProposals = new ArrayList<>();
+    protected List<QueueProposal> queueProposals = new ArrayList<>();
+    protected List<LargeProgram> largePrograms = new ArrayList<>();
 
     protected List<Partner> partners;
     protected List<Committee> committees;
@@ -193,8 +177,8 @@ public class HibernateFixture extends Fixture {
     protected List<RolloverSet> rolloverSets;
     protected List<RolloverReport> rolloverReports;
 
-    protected List<AuthorityRole> authorityRoles = new ArrayList<AuthorityRole>();
-    protected List<Person> people = new ArrayList<Person>();
+    protected List<AuthorityRole> authorityRoles = new ArrayList<>();
+    protected List<Person> people = new ArrayList<>();
     private List<ObservationMetaData> observationMetaDatas;
     private List<ObservationMetaData.GuidingEstimation> guidingEstimations;
 
@@ -206,8 +190,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initTimes() {
-        times = new ArrayList<TimeAmount>();
-//        times.add(new TimeAmount(1.0, TimeUnit.MIN));
+        times = new ArrayList<>();
         times.add(new TimeAmount(1.0, TimeUnit.HR));
         times.add(new TimeAmount(1.0, TimeUnit.NIGHT));
     }
@@ -218,7 +201,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initDegDegCoordinates() {
-        degDegCoordinates = new ArrayList<DegDegCoordinates>();
+        degDegCoordinates = new ArrayList<>();
         final DegDegCoordinates coordinates = new DegDegCoordinates();
         coordinates.setDec(BigDecimal.valueOf(1.23));
         coordinates.setRa(BigDecimal.valueOf(4.56));
@@ -234,7 +217,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initHmsDmsCoordinates() {
-        hmsDmsCoordinates = new ArrayList<HmsDmsCoordinates>();
+        hmsDmsCoordinates = new ArrayList<>();
         HmsDmsCoordinates coordinates = new HmsDmsCoordinates();
         coordinates.setDec("67:23:45");
         coordinates.setRa("12:12:34");
@@ -250,7 +233,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initMagnitudes() {
-        magnitudes = new ArrayList<Magnitude>();
+        magnitudes = new ArrayList<>();
         BigDecimal value = BigDecimal.valueOf(10.0);
         for (MagnitudeBand band : MagnitudeBand.values()) {
             for (MagnitudeSystem magnitudeSystem : MagnitudeSystem.values()) {
@@ -270,7 +253,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initProperMotions() {
-        properMotions = new ArrayList<ProperMotion>();
+        properMotions = new ArrayList<>();
         ProperMotion pm = new ProperMotion();
         pm.setDeltaDec(BigDecimal.valueOf(1.0));
         pm.setDeltaRA(BigDecimal.valueOf(1.0));
@@ -286,7 +269,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initEphemerisElements() {
-        ephemerisElements = new ArrayList<EphemerisElement>();
+        ephemerisElements = new ArrayList<>();
         Calendar cal = Calendar.getInstance();
         cal.set(2012, 10, 01);
         for (int d = 0; d < degDegCoordinates.size(); d++) {
@@ -324,8 +307,8 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initObservationMetaData() {
-        observationMetaDatas = new ArrayList<ObservationMetaData>();
-        guidingEstimations = new ArrayList<ObservationMetaData.GuidingEstimation>();
+        observationMetaDatas = new ArrayList<>();
+        guidingEstimations = new ArrayList<>();
 
         int i = 1;
         for (GuidingEvaluation ge : GuidingEvaluation.values()) {
@@ -340,7 +323,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initNonsiderealTargets() {
-        nonSiderealTargets = new ArrayList<NonsiderealTarget>();
+        nonSiderealTargets = new ArrayList<>();
         int count = 0;
 
         final Calendar calendar = Calendar.getInstance();
@@ -352,7 +335,7 @@ public class HibernateFixture extends Fixture {
         calendar.set(2013, 1, 1);
         EphemerisElement endOfSemester = makeEphemerisElement(calendar.getTime(), coordinates, brightness);
 
-        List<EphemerisElement> ees = new ArrayList<EphemerisElement>();
+        List<EphemerisElement> ees = new ArrayList<>();
         ees.add(startOfSemester);
         ees.add(endOfSemester);
 
@@ -378,7 +361,7 @@ public class HibernateFixture extends Fixture {
     protected NonsiderealTarget nonSiderealTargetCopy(int i) {
         NonsiderealTarget nt = nonSiderealTargets.get(i % nonSiderealTargets.size());
         final NonsiderealTarget nt2 = new NonsiderealTarget();
-        List<EphemerisElement> newEes = new ArrayList<EphemerisElement>();
+        List<EphemerisElement> newEes = new ArrayList<>();
         for (EphemerisElement ee : nt.getEphemeris()) {
             EphemerisElement newEE = new EphemerisElement(ee, nt2);
             newEes.add(newEE);
@@ -393,12 +376,12 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initSiderealTargets() {
-        siderealTargets = new ArrayList<SiderealTarget>();
+        siderealTargets = new ArrayList<>();
         int count = 0;
         for (CoordinatesEpoch ce : CoordinatesEpoch.values()) {
             for (int i = 0; i < magnitudes.size(); i++) {
                 Magnitude m = magnitudeCopy(i);
-                Set<Magnitude> ms = new HashSet<Magnitude>();
+                Set<Magnitude> ms = new HashSet<>();
                 ms.add(m);
                 for (int p = 0; p < properMotions.size(); p++) {
                     ProperMotion pm = properMotionCopy(p);
@@ -426,7 +409,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initGuidestars() {
-        guideStars = new ArrayList<GuideStar>();
+        guideStars = new ArrayList<>();
         for (Guider guider : Guider.values()) {
             GuideStar gs = new GuideStar();
             gs.setGuider(guider);
@@ -459,11 +442,11 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initBlueprints() {
-        blueprintBases = new ArrayList<BlueprintBase>();
+        blueprintBases = new ArrayList<>();
 
         int count = 0;
         for (NiriCamera r : NiriCamera.values()) {
-            List<NiriFilter> filters = new LinkedList<NiriFilter>();
+            List<NiriFilter> filters = new LinkedList<>();
             filters.add(NiriFilter.BBF_H);
             NiriBlueprint niriBlueprintImaging = new NiriBlueprint();
             niriBlueprintImaging.setCamera(r);
@@ -508,7 +491,7 @@ public class HibernateFixture extends Fixture {
 
     private void initItacAccepts() {
         Validate.isTrue(times != null);
-        itacAccepts = new ArrayList<ItacAccept>();
+        itacAccepts = new ArrayList<>();
         int count = 0;
         int subVariants = times.size();
         for (int i = 0; i < subVariants; i++) {
@@ -536,7 +519,7 @@ public class HibernateFixture extends Fixture {
 
     private void initSubmissionAccepts() {
         Validate.isTrue(times != null);
-        submissionAccepts = new ArrayList<edu.gemini.tac.persistence.phase1.submission.SubmissionAccept>();
+        submissionAccepts = new ArrayList<>();
         int count = 0;
         int subVariants = times.size();
         for (int t = 0; t < subVariants; t++) {
@@ -561,7 +544,7 @@ public class HibernateFixture extends Fixture {
     private static int receiptId = 0;
 
     private void initSubmissionReceipts() {
-        submissionReceipts = new ArrayList<edu.gemini.tac.persistence.phase1.submission.SubmissionReceipt>();
+        submissionReceipts = new ArrayList<>();
         edu.gemini.tac.persistence.phase1.submission.SubmissionReceipt sr = new edu.gemini.tac.persistence.phase1.submission.SubmissionReceipt();
         sr.setReceiptId("Receipt_" + receiptId++);
         final Calendar calendar = Calendar.getInstance();
@@ -578,7 +561,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initSubmissionRequests() {
-        submissionRequests = new ArrayList<edu.gemini.tac.persistence.phase1.submission.SubmissionRequest>();
+        submissionRequests = new ArrayList<>();
         for (int t = 0; t < times.size(); t++) {
             TimeAmount time = timeAmountCopy(t);
             for (int mt = 0; mt < times.size(); mt++) {
@@ -596,12 +579,12 @@ public class HibernateFixture extends Fixture {
 
     private void initCoInvestigators() {
         for (int i = 0; i < 4; i++) {
-            coInvestigators = new ArrayList<CoInvestigator>();
-            Set<String> pNumbers = new HashSet<String>();
+            coInvestigators = new ArrayList<>();
+            Set<String> pNumbers = new HashSet<>();
             pNumbers.add("808-555-1212");
             pNumbers.add("808-555-2121");
             for (InvestigatorStatus is : InvestigatorStatus.values()) {
-                coInvestigators.add(new CoInvestigator("First_" + i, "Last_" + i, is, i + "-" + is.value() + "@null.com", pNumbers, "Institution"));
+                coInvestigators.add(new CoInvestigator("First_" + i, "Last_" + i, InvestigatorGender.NONE_SELECTED, is, i + "-" + is.value() + "@null.com", pNumbers, "Institution"));
             }
         }
     }
@@ -613,7 +596,7 @@ public class HibernateFixture extends Fixture {
 
 
     private void initInstitutionAddresses() {
-        institutionAddresses = new ArrayList<InstitutionAddress>();
+        institutionAddresses = new ArrayList<>();
         final InstitutionAddress ia = new InstitutionAddress("Prestigious", "Address", "Country");
         institutionAddresses.add(ia);
     }
@@ -624,16 +607,16 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initPrincipalInvestigators() {
-        principalInvestigators = new ArrayList<PrincipalInvestigator>();
+        principalInvestigators = new ArrayList<>();
         int count = 0;
-        Set<String> pNumbers = new HashSet<String>();
+        Set<String> pNumbers = new HashSet<>();
         pNumbers.add("808-555-1212");
         pNumbers.add("808-555-2121");
 
         for (int j = 0; j < institutionAddresses.size(); j++) {
             InstitutionAddress ia = institutionAddressCopy(j);
             for (InvestigatorStatus is : InvestigatorStatus.values()) {
-                final PrincipalInvestigator principalInvestigator = new PrincipalInvestigator("First_" + count, "Last_" + count, is, count + "@null.com", pNumbers, ia);
+                final PrincipalInvestigator principalInvestigator = new PrincipalInvestigator("First_" + count, "Last_" + count, InvestigatorGender.NONE_SELECTED, is, count + "@null.com", pNumbers, ia);
                 principalInvestigators.add(principalInvestigator);
                 count++;
             }
@@ -646,7 +629,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initConditions() {
-        conditions = new ArrayList<Condition>();
+        conditions = new ArrayList<>();
         CloudCover[] cloudCovers = CloudCover.values();
         ImageQuality[] imageQualities = ImageQuality.values();
         SkyBackground[] skyBackgrounds = SkyBackground.values();
@@ -681,7 +664,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initExchangeSubmissions() {
-        exchangeSubmissions = new ArrayList<ExchangeSubmission>();
+        exchangeSubmissions = new ArrayList<>();
         int count = 0;
         for (ExchangePartner exchangePartner : ExchangePartner.values()) {
             Partner partner = null;
@@ -720,7 +703,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initLargeProgramSubmissions() {
-        largeProgramSubmissions = new ArrayList<LargeProgramSubmission>();
+        largeProgramSubmissions = new ArrayList<>();
 
         edu.gemini.tac.persistence.phase1.submission.SubmissionReceipt submissionReceipt = submissionReceiptCopy(0);
         edu.gemini.tac.persistence.phase1.submission.SubmissionRequest sr = submissioNRequestCopy(0);
@@ -745,8 +728,8 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initNgoSubmissions() {
-        List<NgoSubmission> tempSubmissions = new ArrayList<NgoSubmission>();
-        ngoSubmissions = new ArrayList<NgoSubmission>();
+        List<NgoSubmission> tempSubmissions = new ArrayList<>();
+        ngoSubmissions = new ArrayList<>();
         int count = 0;
         for (Partner partner : partners) {
             if (partner.isNgo()) {
@@ -784,7 +767,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initItacs() {
-        itacs = new ArrayList<Itac>();
+        itacs = new ArrayList<>();
         int count = 0;
         for (int i = 0; i < itacAccepts.size(); i++) {
             Itac itac = new Itac(null, true, "Comment_" + count, null);
@@ -802,7 +785,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initMetas() {
-        metas = new ArrayList<Meta>();
+        metas = new ArrayList<>();
         final Meta meta = new Meta();
         meta.setAttachment("Attachment_0");
         metas.add(meta);
@@ -814,7 +797,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initInvestigatorTeams() {
-        investigatorTeams = new ArrayList<Investigators>();
+        investigatorTeams = new ArrayList<>();
         for (int p = 0; p < principalInvestigators.size(); p++) {
             PrincipalInvestigator pi = principalInvestigator(p);
             for (int c = 0; c < coInvestigators.size(); c++) {
@@ -833,7 +816,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initObservations(int n) {
-        observations = new ArrayList<Observation>();
+        observations = new ArrayList<>();
 
         for (int i = 0; i < n; i++) {
             Observation observation = new Observation();
@@ -845,7 +828,7 @@ public class HibernateFixture extends Fixture {
             //Guidestar MUST have reference back to Observation
             guideStar.setObservation(observation);
 
-            Set<GuideStar> gss = new HashSet<GuideStar>();
+            Set<GuideStar> gss = new HashSet<>();
             BlueprintBase bb = blueprintCopy(i);
             gss.add(guideStar);
             Target t = siderealTargetCopy(i);
@@ -954,20 +937,20 @@ public class HibernateFixture extends Fixture {
     private static final int fQueue = 91;
 
     private void initPhaseIProposals(int count) {
-        phaseIProposals = new ArrayList<PhaseIProposal>();
+        phaseIProposals = new ArrayList<>();
 
         for (int i = 0; i < count; i++) {
             final int percentile = i % 100;
 
             Meta meta = metaCopy(i);
-            Set<Keyword> ks = new HashSet<Keyword>();
+            Set<Keyword> ks = new HashSet<>();
             ks.add(Keyword.values()[i % Keyword.values().length]);
             Investigators investigators = investigatorTeamCopy(i);
             Condition c = conditionCopy(i);
-            List<Condition> conditions = new ArrayList<Condition>();
+            List<Condition> conditions = new ArrayList<>();
             conditions.add(c);
             BlueprintBase bb = blueprintCopy(i);
-            List<BlueprintBase> bbs = new ArrayList<BlueprintBase>();
+            List<BlueprintBase> bbs = new ArrayList<>();
             bbs.add(bb);
 
             PhaseIProposal p = null;
@@ -1012,9 +995,9 @@ public class HibernateFixture extends Fixture {
             }
 
             Observation o = observationCopy(i, p);
-            Set<Observation> os = new HashSet<Observation>();
+            Set<Observation> os = new HashSet<>();
             os.add(o);
-            List<Target> targets = new ArrayList<Target>();
+            List<Target> targets = new ArrayList<>();
             targets.add(o.getTarget());
 
             p.setInvestigators(investigators);
@@ -1125,7 +1108,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initCommittees() {
-        committees = new ArrayList<Committee>();
+        committees = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
             Committee c = new Committee();
             c.setName("Test committee " + i);
@@ -1162,7 +1145,7 @@ public class HibernateFixture extends Fixture {
     }
 
     protected void initConditionBuckets() {
-        conditionBuckets = new ArrayList<ConditionBucket>();
+        conditionBuckets = new ArrayList<>();
         ConditionBucket bucket = new ConditionBucket();
         bucket.setName("Bucket-0");
         bucket.setAvailablePercentage(100);
@@ -1178,16 +1161,16 @@ public class HibernateFixture extends Fixture {
     }
 
     protected void initConditionSets() {
-        conditionSets = new ArrayList<ConditionSet>();
+        conditionSets = new ArrayList<>();
         ConditionSet cs = new ConditionSet();
         cs.setName("CS-0");
-        Set<ConditionBucket> constraints = new HashSet<ConditionBucket>();
+        Set<ConditionBucket> constraints = new HashSet<>();
         getConditionBucket(0);
         cs.setConditions(constraints);
     }
 
     protected void initPartnerSequences() {
-        partnerSequences = new ArrayList<PartnerSequence>();
+        partnerSequences = new ArrayList<>();
         PartnerSequence ps = new PartnerSequence();
         ps.setName("name");
 
@@ -1197,7 +1180,7 @@ public class HibernateFixture extends Fixture {
     }
 
     protected void initBinConfigurations() {
-        binConfigurations = new ArrayList<BinConfiguration>();
+        binConfigurations = new ArrayList<>();
         BinConfiguration b = new BinConfiguration();
         b.setName("Bin Configuration 1");
         b.setDecBinSize(decBin(0));
@@ -1212,7 +1195,7 @@ public class HibernateFixture extends Fixture {
     }
 
     protected void initShutdowns() {
-        shutdowns = new ArrayList<Shutdown>();
+        shutdowns = new ArrayList<>();
         DateTime start = new DateTime(2012, 3, 26, 12, 0, 0, 0);
         DateTime stop = start.plus(Period.days(1));
         DateRange dr = new DateRange(start.toDate(), stop.toDate());
@@ -1235,7 +1218,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initPeople() {
-        people = new ArrayList<Person>();
+        people = new ArrayList<>();
 
         final AuthorityRole userRole = roleForName("ROLE_USER_ADMIN");
         final AuthorityRole adminRole = roleForName("ROLE_ADMIN");
@@ -1362,7 +1345,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initProposals(int count) {
-        proposals = new ArrayList<Proposal>();
+        proposals = new ArrayList<>();
 
         for (int i = 0; i < count; i++) {
             Proposal p = new Proposal();
@@ -1372,7 +1355,7 @@ public class HibernateFixture extends Fixture {
             p.setPhaseIProposal(p1p);
             p1p.setParent(p);
             //p.setClassical(i % 2 == 0);
-            Set<ProposalIssue> iss = new HashSet<ProposalIssue>();
+            Set<ProposalIssue> iss = new HashSet<>();
             p.setIssues(iss);
             proposals.add(p);
 
@@ -1399,7 +1382,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initBandings() {
-        bandings = new ArrayList<Banding>();
+        bandings = new ArrayList<>();
         int count = 0;
         for (Proposal p : proposals) {
             // half of the propsals don't go into the queue
@@ -1447,7 +1430,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initQueues() {
-        queues = new ArrayList<Queue>();
+        queues = new ArrayList<>();
         Queue q = new Queue("Test Queue 0", committees.get(0));  // Queue on its own is useless, bind it to committee 0
         //Following values from QueueServiceTest -- if you change here, change there
         q.setTotalTimeAvailable(200);
@@ -1479,7 +1462,7 @@ public class HibernateFixture extends Fixture {
     private void initRolloverObservations() {
         // this is a bit dirty: use a target from one of the proposals to make sure it (and the proposal it
         // depends on) have been stored, otherwise the rollover will not work as expected
-        rolloverObservations = new ArrayList<RolloverObservation>();
+        rolloverObservations = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Proposal p = getProposal(i);
             RolloverObservation o = new RolloverObservation();
@@ -1511,12 +1494,12 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initRolloverSets() {
-        rolloverSets = new ArrayList<RolloverSet>();
+        rolloverSets = new ArrayList<>();
         for (int i = 0; i < 6; i++) {
             RolloverSet r = new RolloverSet();
             Site s = i % 2 == 0 ? getSiteForName("North") : getSiteForName("South");
             r.setSite(s);
-            Set<AbstractRolloverObservation> os = new HashSet<AbstractRolloverObservation>();
+            Set<AbstractRolloverObservation> os = new HashSet<>();
             int j = 0;
             while (os.size() < 10 && j < 100) {
                 RolloverObservation o = rolloverObservationCopy(j);
@@ -1534,12 +1517,12 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initRolloverReports() {
-        rolloverReports = new ArrayList<RolloverReport>();
+        rolloverReports = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
             RolloverReport r = new RolloverReport();
             Site s = i % 2 == 0 ? getSiteForName("North") : getSiteForName("South");
             r.setSite(s);
-            Set<AbstractRolloverObservation> os = new HashSet<AbstractRolloverObservation>();
+            Set<AbstractRolloverObservation> os = new HashSet<>();
             int j = 0;
             while (os.size() < 10 && j < 100) {
                 RolloverObservation o = rolloverObservationCopy(j);
@@ -1660,7 +1643,7 @@ public class HibernateFixture extends Fixture {
 
     protected JointProposal initJointProposals(int i) {
         //Note that this requires partners and committees to be saved (to have their IDs set, so that proposal.hashCode() does not throw
-        Set<Proposal> ps = new HashSet<Proposal>();
+        Set<Proposal> ps = new HashSet<>();
         Proposal primary = proposals.get(i % proposals.size());
         Proposal secondary = primary.duplicate();
         Session session = sessionFactory.openSession();
@@ -1885,7 +1868,7 @@ public class HibernateFixture extends Fixture {
     }
 
     private void initSites() {
-        sites = new ArrayList<Site>();
+        sites = new ArrayList<>();
         Site s = new Site("North");
         sites.add(s);
 
@@ -1960,7 +1943,7 @@ public class HibernateFixture extends Fixture {
 
     protected void saveSemesterCommitteesProposalsPeople() {
         //Remove empty partners
-        List<Partner> badPs = new ArrayList<Partner>();
+        List<Partner> badPs = new ArrayList<>();
         for (Partner p : partners) {
             if (p.getAbbreviation() == null) {
                 badPs.add(p);
@@ -2062,7 +2045,7 @@ public class HibernateFixture extends Fixture {
         return par.get(i % getPartners().size());
     }
 
-    private HashMap<String, Partner> partnersMap = new HashMap<String, Partner>();
+    private HashMap<String, Partner> partnersMap = new HashMap<>();
 
     protected Partner getPartner(String key) {
         if (partnersMap.size() == 0) {
@@ -2143,11 +2126,11 @@ public class HibernateFixture extends Fixture {
     }
 
 
-    protected Map<String, List<Proposal>> partnerProposals = new HashMap<String, List<Proposal>>();
+    protected Map<String, List<Proposal>> partnerProposals = new HashMap<>();
 
     protected void groupProposalsByPartner() {
         for (Partner p : getPartners()) {
-            partnerProposals.put(p.getAbbreviation(), new ArrayList<Proposal>());
+            partnerProposals.put(p.getAbbreviation(), new ArrayList<>());
         }
         for (Proposal p : getProposals()) {
             partnerProposals.get(p.getPartner().getAbbreviation()).add(p);

@@ -1,5 +1,6 @@
 package edu.gemini.tac.persistence.phase1;
 
+import edu.gemini.model.p1.mutable.InvestigatorGender;
 import edu.gemini.model.p1.mutable.InvestigatorStatus;
 
 import javax.persistence.*;
@@ -42,13 +43,14 @@ public class CoInvestigator extends Investigator
 
     public CoInvestigator(){}
 
-    public CoInvestigator(String firstName, String lastName, InvestigatorStatus status, String email, Set<String> phoneNumbers, String institution){
-        super(firstName, lastName, status, email, phoneNumbers);
+    public CoInvestigator(String firstName, String lastName, InvestigatorGender gender, InvestigatorStatus status, String email, Set<String> phoneNumbers, String institution){
+        super(firstName, lastName, gender, status, email, phoneNumbers);
         this.institution = institution;
     }
 
     public CoInvestigator(final edu.gemini.model.p1.mutable.CoInvestigator mInvestigator) {
         this(mInvestigator.getFirstName(), mInvestigator.getLastName(),
+                mInvestigator.getGender(),
                 mInvestigator.getStatus(), mInvestigator.getEmail(),
                 new HashSet<String>(mInvestigator.getPhone()), mInvestigator.getInstitution());
     }
