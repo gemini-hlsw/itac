@@ -112,6 +112,7 @@
                 <value>edu.gemini.tac.persistence.phase1.blueprint.alopeke.AlopekeBlueprint</value>
 
                 <value>edu.gemini.tac.persistence.phase1.blueprint.zorro.ZorroBlueprint</value>
+                <value>edu.gemini.tac.persistence.phase1.blueprint.igrins.IgrinsBlueprint</value>
 
                 <value>edu.gemini.tac.persistence.phase1.blueprint.texes.TexesBlueprint</value>
 

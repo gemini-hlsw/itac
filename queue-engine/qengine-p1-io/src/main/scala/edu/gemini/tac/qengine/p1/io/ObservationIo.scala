@@ -37,6 +37,7 @@ object ObservationIo {
         case t: im.TexesBlueprint      => t.site
         case p: im.PhoenixBlueprint    => p.site
         case v: im.VisitorBlueprint    => v.site
+        case i: im.IgrinsBlueprint     => i.site
         case g: im.GeminiBlueprintBase => g.instrument.site
         case _                         => im.Site.GN
       } | im.Site.GN

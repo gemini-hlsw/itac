@@ -105,6 +105,9 @@ import java.util.Set;
         @NamedQuery(name = "BlueprintBase.resourcesZorroBlueprint",
                 query = "from ZorroBlueprint b where b in (:blueprints)"
         ),
+        @NamedQuery(name = "BlueprintBase.resourcesIgrinsBlueprint",
+                query = "from IgrinsBlueprint b where b in (:blueprints)"
+        ),
         @NamedQuery(name = "BlueprintBase.resourcesGpiBlueprint",
                 query = "from GpiBlueprint b where b in (:blueprints)"
         ),
@@ -147,6 +150,7 @@ abstract public class BlueprintBase implements IValidateable, Serializable {
         "BlueprintBase.resourcesDssiBlueprint",
         "BlueprintBase.resourcesAlopekeBlueprint",
         "BlueprintBase.resourcesZorroBlueprint",
+        "BlueprintBase.resourcesIgrinsBlueprint",
         "BlueprintBase.resourcesTexesBlueprint",
         "BlueprintBase.resourcesVisitorGSBlueprint",
         "BlueprintBase.resourcesVisitorGNBlueprint",
@@ -285,6 +289,8 @@ abstract public class BlueprintBase implements IValidateable, Serializable {
             return convertAlopekeBlueprint((AlopekeBlueprintChoice) blueprintChoice);
         } else if (blueprintChoice instanceof ZorroBlueprintChoice) {
             return convertZorroBlueprint((ZorroBlueprintChoice) blueprintChoice);
+        } else if (blueprintChoice instanceof IgrinsBlueprintChoice) {
+            return convertIgrinsBlueprint((IgrinsBlueprintChoice) blueprintChoice);
         } else if (blueprintChoice instanceof TexesBlueprintChoice) {
             return convertTexesBlueprint((TexesBlueprintChoice) blueprintChoice);
         } else if (blueprintChoice instanceof VisitorBlueprintChoice) {
@@ -449,6 +455,14 @@ abstract public class BlueprintBase implements IValidateable, Serializable {
             throw new IllegalArgumentException(NO_FACTORY_FOR + choice.toString());
         }
      }
+
+    private static BlueprintBase convertIgrinsBlueprint(IgrinsBlueprintChoice choice) {
+        if (choice.getIgrins() != null) {
+            return new edu.gemini.tac.persistence.phase1.blueprint.igrins.IgrinsBlueprint(choice.getIgrins());
+        } else {
+            throw new IllegalArgumentException(NO_FACTORY_FOR + choice.toString());
+        }
+    }
 
     private static BlueprintBase convertVisitorBlueprint(VisitorBlueprintChoice choice) {
         if (choice.getVisitor() != null) {
