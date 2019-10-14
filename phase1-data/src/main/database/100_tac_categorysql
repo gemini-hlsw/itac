@@ -1,0 +1,5 @@
+UPDATE schema_version SET version = 100;
+
+update v2_phase_i_proposals set tac_category='GALAXY_EVOLUTION' where tac_category='EXTRAGALACTIC';
+update v2_phase_i_proposals set tac_category='STARS_AND_STELLAR_EVOLUTION' where tac_category='GALACTIC';
+update v2_phase_i_proposals set tac_category='PLANETARY_SYSTEMS' where tac_category='SOLAR_SYSTEM';
