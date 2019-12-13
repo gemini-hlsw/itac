@@ -203,7 +203,11 @@ abstract public class Investigator {
         mInvestigator.setId(investigatorId);
         mInvestigator.setLastName(getLastName());
         mInvestigator.setStatus(getStatus());
-        mInvestigator.setGender(getGender());
+        // Joints sometimes remove the gender breaking xml constructions and thus importing to the ODB
+        if (getGender() == null) {
+            mInvestigator.setGender(InvestigatorGender.NONE_SELECTED);
+        } else
+            mInvestigator.setGender(getGender());
         mInvestigator.getPhone().addAll(getPhoneNumbers());
 
         return mInvestigator;
