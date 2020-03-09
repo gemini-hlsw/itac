@@ -1,0 +1,63 @@
+## $ntacRefNumber : $semester Gemini NGO Notification
+******************************************
+$country ACCEPTED JOINT EXCHANGE PROPOSAL
+$ntacRefNumber
+******************************************
+
+Program Title: $progTitle
+Principal Investigator: $piName
+Principal Investigator e-mail: $piMail
+Gemini Program ID: $progId
+Time Awarded: $timeAwarded
+Program Time Awarded: $programTime
+Partner Calibration Time Awarded: $partnerTime
+
+This proposal was awarded time on a non-Gemini telescope through
+the Gemini Time Allocation process.  The PI will be contacted by the
+observatory being used with further instructions for preparing Phase II
+information.
+
+This proposal was submitted as a joint program with the following
+components forwarded to ITAC by the National TACs:
+
+$jointInfo
+
+The principal investigator for this program
+
+$piName
+
+will be the single point of contact for Phase II preparation
+and other queries.  If you want to change the primary contact,
+e.g., to a co-I, please e-mail Marie Lemoine-Busserolle (mbussero@gemini.edu)
+with copies to the Gemini North and South Heads of Science Operations
+(anitta@gemini.edu, rrutten@gemini.edu) and your National Gemini Office.
+However, there can be only one point of contact for the program.  This
+program will be executed as a single entity.  The combined allocated
+time for this program is $timeAwarded.  The total allocated time
+is the sum of the following partner contributions:
+
+$jointTimeContribs
+
+ITAC FEEDBACK
+-------------
+The primary evaluation of proposals for scientific merit and technical
+feasibility is conducted by the National Time Allocation Committees (NTACs),
+that feedback is provided under the Partner information section below.  Any
+additional comments from the International Time Allocation Committee (ITAC)
+are given here:
+
+
+$itacComments
+
+$geminiComment
+
+
+Partner/National TAC information
+--------------------------------
+Partner reference number: $ntacRefNumber
+Partner Ranking: $ntacRanking
+Partner recommended time: $ntacRecommendedTime
+Partner comments (if any):
+$ntacComment
+
+********************************************************************

@@ -8,3 +8,4 @@ target
 **/*.ipr
 itac-web/bin/
 .idea/
+.metals/

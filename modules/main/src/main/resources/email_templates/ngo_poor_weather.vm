@@ -1,0 +1,39 @@
+## $progId : $semester Gemini NGO Notification
+*********************************************
+$country ACCEPTED POOR WEATHER QUEUE PROGRAM
+$ntacRefNumber
+*********************************************
+
+Program Title: $progTitle
+Principal Investigator: $piName
+Principal Investigator e-mail: $piMail
+Gemini Program ID: $progId
+Time Awarded: $timeAwarded
+Program Time Awarded: $programTime
+Partner Calibration Time Awarded: $partnerTime
+Scientific Ranking Band: $queueBand
+
+This program was allocated time in the Gemini "Poor Weather Queue". This is shown as Band 4 in the Observing Tool.
+
+Poor Weather Queue programs are executed under poor but usable conditions when nothing in the regular science queue can be done.  There is no implicit or explicit guarantee that data will be taken.  Time spent on programs in the poor weather queue is not charged to the PI or the partner.
+
+The PI, $piName, will receive a notification email from Gemini with instructions for retrieving the "Phase II skeleton" and completing the Phase II definitions. The Primary and Additional Support Contact information for this program will be included in that email. THE DEADLINE FOR COMPLETING THE PHASE II IS JANUARY 17 2020.
+
+ITAC FEEDBACK
+-------------
+The primary evaluation of proposals for scientific merit and technical feasibility is conducted by the National Time Allocation Committees (NTACs), that feedback is provided under the Partner information section below.  Any additional comments from the International Time Allocation Committee (ITAC) are given here:
+
+$itacComments
+
+$geminiComment
+
+
+Partner/National TAC information
+--------------------------------
+Partner reference number: $ntacRefNumber
+Partner Ranking: $ntacRanking
+Partner recommended time: $ntacRecommendedTime
+Partner comments (if any):
+$ntacComment
+
+********************************************************************

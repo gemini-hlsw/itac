@@ -1,0 +1,42 @@
+## $ntacRefNumber : $semester Gemini NGO Notification
+************************************
+$country ACCEPTED EXCHANGE PROPOSAL
+$ntacRefNumber
+************************************
+
+Program Title: $progTitle
+Principal Investigator: $piName
+Principal Investigator e-mail: $piMail
+Gemini Program ID: $progId
+Time Awarded: $timeAwarded
+Program Time Awarded: $programTime
+Partner Calibration Time Awarded: $partnerTime
+
+This program has been awarded time on a non-Gemini telescope through
+the Gemini Time Allocation process.  The PI will be contacted by the
+observatory being used with further instructions for preparing Phase II
+information.
+
+ITAC FEEDBACK
+-------------
+The primary evaluation of proposals for scientific merit and technical
+feasibility is conducted by the National Time Allocation Committees (NTACs),
+that feedback is provided under the Partner information section below.  Any
+additional comments from the International Time Allocation Committee (ITAC)
+are given here:
+
+
+$itacComments
+
+$geminiComment
+
+
+Partner/National TAC information
+--------------------------------
+Partner reference number: $ntacRefNumber
+Partner Ranking: $ntacRanking
+Partner recommended time: $ntacRecommendedTime
+Partner comments (if any):
+$ntacComment
+
+********************************************************************
