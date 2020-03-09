@@ -1,12 +1,18 @@
+/*
+ * Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+ * For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
+ */
+
 package edu.gemini.qengine.skycalc;
 
-import edu.gemini.shared.skycalc.Night;
-import edu.gemini.shared.skycalc.SiteDesc;
-import edu.gemini.shared.skycalc.TwilightBoundType;
-import edu.gemini.shared.skycalc.TwilightBoundedNight;
+import edu.gemini.skycalc.Night;
+
+import edu.gemini.skycalc.TwilightBoundType;
+import edu.gemini.skycalc.TwilightBoundedNight;
 import edu.gemini.skycalc.Interval;
 import edu.gemini.skycalc.Union;
-import edu.gemini.tac.qengine.ctx.Site;
+import edu.gemini.spModel.core.Semester;
+import edu.gemini.spModel.core.Site;
 
 import java.util.*;
 
@@ -17,9 +23,9 @@ import java.util.*;
  */
 public class NightInterval extends Interval implements Night {
 
-    private final SiteDesc site;
+    private final edu.gemini.spModel.core.Site site;
 
-    public NightInterval(SiteDesc site, long start, long end) {
+    public NightInterval(edu.gemini.spModel.core.Site site, long start, long end) {
         super(start, end);
         this.site = site;
     }
@@ -30,7 +36,7 @@ public class NightInterval extends Interval implements Night {
     }
 
     @Override
-    public SiteDesc getSite() { return site; }
+    public edu.gemini.spModel.core.Site getSite() { return site; }
 
     @Override
     public long getStartTime() { return getStart(); }

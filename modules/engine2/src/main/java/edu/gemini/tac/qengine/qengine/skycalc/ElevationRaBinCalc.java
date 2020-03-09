@@ -1,14 +1,19 @@
+/*
+ * Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+ * For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
+ */
+
 //
 // $
 //
 
 package edu.gemini.qengine.skycalc;
 
-import edu.gemini.tac.qengine.ctx.Semester;
-import edu.gemini.tac.qengine.ctx.Site;
-import edu.gemini.shared.skycalc.Angle;
-import edu.gemini.shared.skycalc.Night;
-import edu.gemini.shared.skycalc.SiteDesc;
+import edu.gemini.spModel.core.Semester;
+import edu.gemini.spModel.core.Site;
+import edu.gemini.skycalc.Angle;
+import edu.gemini.skycalc.Night;
+
 import edu.gemini.skycalc.ElevationConstraintSolver;
 import edu.gemini.skycalc.Interval;
 import edu.gemini.skycalc.Solver;
@@ -53,9 +58,9 @@ public final class ElevationRaBinCalc implements RaBinCalc {
 
     public ElevationConfig getConfig() { return conf; }
 
-    private static List<WorldCoords> getTargets(SiteDesc site, RaBinSize size) {
+    private static List<WorldCoords> getTargets(edu.gemini.spModel.core.Site site, RaBinSize size) {
         List<Angle> lst = size.genRas();
-        double dec = site.getLatitude();  // Use a target overhead for the site
+        double dec = site.latitude;  // Use a target overhead for the site
 
         // lst.map(a => new WorldCoords(a.toDegrees.getMagnitude, dec))
         List<WorldCoords> res = new ArrayList<WorldCoords>();
@@ -65,7 +70,7 @@ public final class ElevationRaBinCalc implements RaBinCalc {
         return res;
     }
 
-    private List<Solver> getSolvers(SiteDesc site, RaBinSize size) {
+    private List<Solver> getSolvers(edu.gemini.spModel.core.Site site, RaBinSize size) {
         List<WorldCoords> targets = getTargets(site, size);
         List<Solver> res = new ArrayList<Solver>();
 
@@ -78,13 +83,12 @@ public final class ElevationRaBinCalc implements RaBinCalc {
 
     @Override
     public List<Hours> calc(Site site, Date start, Date end, RaBinSize size) {
-        SiteDesc siteDesc = SiteDescLookup.get(site);
         int binCount = size.getBinCount();
 
         long[] totals  = new long[binCount];
         long binSizeMs = size.getSize() * 60 * 1000; // ms
 
-        List<Solver> solvers = getSolvers(siteDesc, size);
+        List<Solver> solvers = getSolvers(site, size);
 
         Iterator<Night> it = new NightIterator(site, start, end, conf.getBounds());
         while (it.hasNext()) {

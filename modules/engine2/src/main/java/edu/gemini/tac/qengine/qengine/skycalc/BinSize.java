@@ -1,10 +1,15 @@
+/*
+ * Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+ * For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
+ */
+
 //
 // $
 //
 
 package edu.gemini.qengine.skycalc;
 
-import edu.gemini.shared.skycalc.Angle;
+import edu.gemini.skycalc.Angle;
 
 import java.util.ArrayList;
 import java.util.List;

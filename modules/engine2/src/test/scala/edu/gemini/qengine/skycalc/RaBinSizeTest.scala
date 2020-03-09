@@ -4,7 +4,7 @@ import org.junit._
 import Assert._
 
 import scala.collection.JavaConversions._
-import edu.gemini.shared.skycalc.Angle
+import edu.gemini.skycalc.Angle
 import jsky.coords.WorldCoords
 
 class RaBinSizeTest {
@@ -71,13 +71,16 @@ class RaBinSizeTest {
     val ra = new Angle(12, Angle.Unit.HOURS)
     val wc = sz.genTargets(ra).toList
 
-    val expected = (-80 to 80 by 20).map(dec => new WorldCoords(ra.toDegrees.getMagnitude, dec.toDouble))
+    val expected =
+      (-80 to 80 by 20).map(dec => new WorldCoords(ra.toDegrees.getMagnitude, dec.toDouble))
 
-    expected.zip(wc).foreach(tup => {
-      val exp = tup._1
-      val act = tup._2
-      assertEquals(180.0, act.getRaDeg, 0.000001)
-      assertEquals(exp.getDecDeg, act.getDecDeg, 0.000001)
-    })
+    expected
+      .zip(wc)
+      .foreach(tup => {
+        val exp = tup._1
+        val act = tup._2
+        assertEquals(180.0, act.getRaDeg, 0.000001)
+        assertEquals(exp.getDecDeg, act.getDecDeg, 0.000001)
+      })
   }
 }

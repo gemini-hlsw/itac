@@ -27,8 +27,6 @@ class DecBinSizeTest {
       }
     }
   }
-
-
   @Test def testOddSize() {
     try {
       new DecBinSize(37)
@@ -48,7 +46,7 @@ class DecBinSizeTest {
     assertEquals(18, s10.getBinCount)
 
     val s20 = new DecBinSize(20)
-    assertEquals( 9, s20.getBinCount)
+    assertEquals(9, s20.getBinCount)
   }
 
   @Test def testGenDecs() {

@@ -1,18 +1,22 @@
+/*
+ * Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+ * For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
+ */
+
 //
 // $
 //
 
 package edu.gemini.qengine.skycalc;
 
-import edu.gemini.shared.skycalc.Angle;
-import edu.gemini.shared.skycalc.Night;
-import edu.gemini.shared.skycalc.SiteDesc;
+import edu.gemini.skycalc.Angle;
+import edu.gemini.skycalc.Night;
+
 import edu.gemini.skycalc.ElevationConstraintSolver;
 import edu.gemini.skycalc.Interval;
 import edu.gemini.skycalc.Solver;
 import edu.gemini.skycalc.Union;
-import edu.gemini.tac.qengine.ctx.Semester;
-import edu.gemini.tac.qengine.ctx.Site;
+import edu.gemini.spModel.core.Site;
 import jsky.coords.WorldCoords;
 
 import java.util.*;
@@ -39,7 +43,7 @@ public class ElevationDecBinCalc implements DecBinCalc {
 
     public ElevationConfig getConfig() { return conf; }
 
-    private List<Solver> getSolvers(SiteDesc site, List<WorldCoords> targets) {
+    private List<Solver> getSolvers(Site site, List<WorldCoords> targets) {
         List<Solver> res = new ArrayList<Solver>();
 
         // targets.map(t => ElevationConstraintSolver.forAirmass(site, t, minAirmass, maxAirmass))
@@ -51,15 +55,14 @@ public class ElevationDecBinCalc implements DecBinCalc {
 
     // Gets the index of the bin that corresponds to the site.  All percentage
     // calculations are relative to this bin.
-    private static int getSiteIndex(SiteDesc site, DecBinSize size) {
-        return ((int) Math.floor(site.getLatitude() + 90.0)) / size.getSize();
+    private static int getSiteIndex(edu.gemini.spModel.core.Site site, DecBinSize size) {
+        return ((int) Math.floor(site.latitude + 90.0)) / size.getSize();
     }
 
     @Override
     public List<Percent> calc(Site site, Date start, Date end, DecBinSize size, Angle ra) {
-        SiteDesc siteDesc = SiteDescLookup.get(site);
         List<WorldCoords> targets = size.genTargets(ra);
-        List<Solver>      solvers = getSolvers(siteDesc, targets);
+        List<Solver>      solvers = getSolvers(site, targets);
 
         long[] totals = new long[size.getBinCount()];
 
@@ -80,7 +83,7 @@ public class ElevationDecBinCalc implements DecBinCalc {
 
         // Take as the max the value that corresponds to the dec overhead for
         // the site.
-        long max = totals[getSiteIndex(siteDesc, size)];
+        long max = totals[getSiteIndex(site, size)];
 //        for (long cur : totals) max = (cur > max) ? cur : max;
 
         List<Percent> res = new ArrayList<Percent>(size.getBinCount());

@@ -1,9 +1,9 @@
 package edu.gemini.qengine.skycalc
 
-import edu.gemini.tac.qengine.ctx.{Semester, Site}
+import edu.gemini.spModel.core.{Semester, Site}
 
 import collection.JavaConverters._
-import edu.gemini.shared.skycalc.{TwilightBoundType, Angle}
+import edu.gemini.skycalc.Angle
 
 /**
  * Writes out a CSV table with the RA/Dec bin sizes.
@@ -25,18 +25,18 @@ object CsvTable {
   def table(site: Site, semester: Semester) {
 
     val hList = hrs(site, semester)
-    val buf = Array.ofDim[Double](9, 24)
+    val buf   = Array.ofDim[Double](9, 24)
 
     val percList = for {
       (hr, ra) <- hList.zipWithIndex
-    } yield percs(site, semester, new Angle(ra + 0.5, Angle.Unit.HOURS)) map {
-        perc => hr.getHours * perc.getAmount/100.0
-      }
+    } yield percs(site, semester, new Angle(ra + 0.5, Angle.Unit.HOURS)) map { perc =>
+      hr.getHours * perc.getAmount / 100.0
+    }
 
-    for(col <- 0 to 23; row <- 0 to 8) { buf(row)(col) = percList(col)(row) }
+    for (col <- 0 to 23; row <- 0 to 8) { buf(row)(col) = percList(col)(row) }
 
     val hdr1 = hList.zipWithIndex map {
-      case (hrs, index) => "%d".format(index)
+      case (_, index) => "%d".format(index)
     }
     val hdr2 = hList.zipWithIndex map {
       case (hrs, index) => "%.1f".format(hrs.getHours)
@@ -48,15 +48,15 @@ object CsvTable {
       } yield "%5.1f".format(buf(row)(col))).toList
 
     val rows = for {
-      row <- 8 to 0 by -1
-      dec2 = 90 + (row-8)*20
+      row  <- 8 to 0 by -1
+      dec2 = 90 + (row - 8) * 20
       dec1 = dec2 - 20
-    } yield "(%d to %d)".format(dec1,dec2) :: rowData(row)
+    } yield "(%d to %d)".format(dec1, dec2) :: rowData(row)
 
     println(("" :: hdr1).mkString(","))
     println(("" :: hdr2).mkString(","))
-    rows foreach {
-      row => println(row.mkString(","))
+    rows foreach { row =>
+      println(row.mkString(","))
     }
   }
 
@@ -74,8 +74,6 @@ object CsvTable {
         }
       }
     }
-
-
 //    table(Site.north, Semester.parse("2011A"))
 
     /*
@@ -104,7 +102,7 @@ object CsvTable {
     hrs.zipWithIndex foreach {
       case (hr, i) => println("%d %.2f".format(i, hr.getHours))
     }
-    */
+     */
 
 //    val c = new ElevationDecBinCalc(new ElevationConfig())
 //    val percs = c.calc(Site.north, Semester.parse("2011A"), new DecBinSize(20), new Angle(14.5, Angle.Unit.HOURS), null)

@@ -1,13 +1,18 @@
+/*
+ * Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+ * For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
+ */
+
 //
 // $
 //
 
 package edu.gemini.qengine.skycalc;
 
-import edu.gemini.tac.qengine.ctx.Semester;
-import edu.gemini.tac.qengine.ctx.Site;
+import edu.gemini.spModel.core.Semester;
+import edu.gemini.spModel.core.Site;
 
-import edu.gemini.shared.skycalc.*;
+import edu.gemini.skycalc.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,7 +46,6 @@ public final class ExcelRaBinCalc implements RaBinCalc {
 
     @Override
     public List<Hours> calc(Site site, Date start, Date end, RaBinSize size) {
-        SiteDesc siteDesc = SiteDescLookup.get(site);
         int binCount = size.getBinCount();
 
         long[] totals   = new long[binCount];
@@ -50,7 +54,7 @@ public final class ExcelRaBinCalc implements RaBinCalc {
 
         // Skycalc lst algorithm expects a west longitude (hence -1 is
         // multiplied) expressed in hours, not degrees (hence, divide by 15).
-        double longit = -1 * siteDesc.getLongitude() / 15.0;
+        double longit = -1 * site.longitude / 15.0;
 
         List<Angle> ras = size.genRas();
 
@@ -61,11 +65,11 @@ public final class ExcelRaBinCalc implements RaBinCalc {
             long startTime = night.getStartTime();
             long endTime   = night.getEndTime();
 
-            JulianDate jdStart = new JulianDate(new Date(startTime));
-            JulianDate jdEnd   = new JulianDate(new Date(endTime));
+            JulianDate jdStart = new JulianDate(startTime);
+            JulianDate jdEnd   = new JulianDate(endTime);
 
-            double eve  = Skycalc.lst(jdStart, longit);
-            double morn = Skycalc.lst(jdEnd,   longit);
+            double eve  = ImprovedSkyCalc.lst(jdStart, longit);
+            double morn = ImprovedSkyCalc.lst(jdEnd,   longit);
 
             for (int bin=0; bin<size.getBinCount(); ++bin) {
                 double ra = ras.get(bin).toHours().getMagnitude();
@@ -85,9 +89,9 @@ public final class ExcelRaBinCalc implements RaBinCalc {
     }
 
     public static void main(String[] args) throws Exception {
-        RaBinSize    sz = new RaBinSize(60);
-        Site       site = Site.north;
-        Semester    sem = Semester.parse("2011A");
+        RaBinSize    sz = new RaBinSize(3 * 60);
+        Site       site = Site.GS;
+        Semester    sem = Semester.parse("2020A");
         Date      start = sem.getStartDate(site);
         Date        end = sem.getEndDate(site);
         List<Hours> hrs = (new ExcelRaBinCalc()).calc(site, start, end, sz);

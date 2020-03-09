@@ -1,18 +1,23 @@
+/*
+ * Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+ * For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
+ */
+
 //
 // $
 //
 
 package edu.gemini.qengine.skycalc;
 
-import edu.gemini.shared.skycalc.Night;
-import edu.gemini.shared.skycalc.SiteDesc;
-import edu.gemini.shared.skycalc.TwilightBoundType;
-import edu.gemini.shared.skycalc.TwilightBoundedNight;
+import edu.gemini.skycalc.Night;
+
+import edu.gemini.skycalc.TwilightBoundType;
+import edu.gemini.skycalc.TwilightBoundedNight;
 
 import edu.gemini.skycalc.Interval;
 import edu.gemini.skycalc.Union;
-import edu.gemini.tac.qengine.ctx.Semester;
-import edu.gemini.tac.qengine.ctx.Site;
+import edu.gemini.spModel.core.Semester;
+import edu.gemini.spModel.core.Site;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -27,7 +32,7 @@ public final class NightIterator implements Iterator<Night> {
     private Night cur;
     private final long end;
     private final TwilightBoundType type;
-    private final SiteDesc siteDesc;
+    private final Site siteDesc;
 
     /**
      * An iterator over all the nights in the semester using nautical twilight
@@ -63,22 +68,22 @@ public final class NightIterator implements Iterator<Night> {
         this(site, start, end, DEFAULT);
     }
 
-    /**
-     * An iterator over all the nights that fall within the given start and end
-     * dates.
-     *
-     * @param site determines the site to which the night times apply
-     * @param start start date from which iteration begins
-     * @param end end date at which iteration stops
-     * @param type definition of twilight
-     */
-    public NightIterator(Site site, Date start, Date end, TwilightBoundType type) {
-        this(SiteDescLookup.get(site), start, end, type);
-    }
+    // /**
+    //  * An iterator over all the nights that fall within the given start and end
+    //  * dates.
+    //  *
+    //  * @param site determines the site to which the night times apply
+    //  * @param start start date from which iteration begins
+    //  * @param end end date at which iteration stops
+    //  * @param type definition of twilight
+    //  */
+    // public NightIterator(Site site, Date start, Date end, TwilightBoundType type) {
+    //     this(SiteLookup.get(site), start, end, type);
+    // }
 
-    public NightIterator(SiteDesc site, Date start, Date end) {
-        this(site, start, end, DEFAULT);
-    }
+    // public NightIterator(Site site, Date start, Date end) {
+    //     this(site, start, end, DEFAULT);
+    // }
 
     /**
      * An iterator over all the nights that fall within the given start and end
@@ -88,7 +93,7 @@ public final class NightIterator implements Iterator<Night> {
      * @param start start date from which iteration begins
      * @param end end date at which iteration stops
      */
-    public NightIterator(SiteDesc site, Date start, Date end, TwilightBoundType type) {
+    public NightIterator(Site site, Date start, Date end, TwilightBoundType type) {
         this.end      = end.getTime();
         this.type     = type;
         this.siteDesc = site;
@@ -98,7 +103,7 @@ public final class NightIterator implements Iterator<Night> {
 
     // Determines the bounds of the first night boxed by at most the given
     // start and end times.
-    private static Night firstNight(SiteDesc site, long s, long e, TwilightBoundType type) {
+    private static Night firstNight(Site site, long s, long e, TwilightBoundType type) {
         if (e <= s) return null;
 
         // Adjust s and e to the start and end of the first night.
@@ -113,7 +118,7 @@ public final class NightIterator implements Iterator<Night> {
     // but that's okay because the TwilightBoundedNight will figure out the
     // real start time for the night.
     private long nextNightStartTime() {
-        Calendar cal = new GregorianCalendar(siteDesc.getTimeZone());
+        Calendar cal = new GregorianCalendar(siteDesc.timezone());
         cal.setTimeInMillis(cur.getStartTime());
         cal.add(Calendar.DAY_OF_MONTH, 1);
         return cal.getTimeInMillis();

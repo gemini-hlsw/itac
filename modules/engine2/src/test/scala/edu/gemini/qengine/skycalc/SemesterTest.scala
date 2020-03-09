@@ -3,33 +3,33 @@ package edu.gemini.qengine.skycalc
 import org.junit._
 import Assert._
 
-import edu.gemini.tac.qengine.ctx.Semester
-import edu.gemini.tac.qengine.ctx.Site
+import edu.gemini.spModel.core.Semester
+import edu.gemini.spModel.core.Site
 
 import Semester.Half._
 import java.util.{GregorianCalendar, Calendar}
-import edu.gemini.shared.skycalc.{Night, TwilightBoundedNight, TwilightBoundType}
+import edu.gemini.skycalc.{Night, TwilightBoundedNight, TwilightBoundType}
 
 class SemesterTest {
 
   private def mkCal: Calendar = {
-    val cal = new GregorianCalendar(Site.south.timeZone)
+    val cal = new GregorianCalendar(Site.GS.timezone)
     cal.set(Calendar.MILLISECOND, 0)
     cal
   }
 
   private def verifyNight(expected: Night, actual: Night) {
     assertEquals(expected.getStartTime, actual.getStartTime)
-    assertEquals(expected.getEndTime,   actual.getEndTime)
-    assertEquals(expected.getSite,      actual.getSite)
+    assertEquals(expected.getEndTime, actual.getEndTime)
+    assertEquals(expected.getSite, actual.getSite)
   }
 
   @Test def testNightIterator() {
     val sem = new Semester(2010, B)
 
     val nautical = TwilightBoundType.NAUTICAL
-    val cp       = SiteDescLookup.get(Site.south);
-    val it       = new NightIterator(Site.south, sem)
+    val cp       = Site.GS
+    val it       = new NightIterator(Site.GS, sem)
 
     assertTrue(it.hasNext)
     val firstNight = it.next;
@@ -46,7 +46,7 @@ class SemesterTest {
       lastNight = it.next
     }
 
-    val endTime = sem.getEndDate(Site.south).getTime
+    val endTime = sem.getEndDate(Site.GS).getTime
     val cEnd    = mkCal
     cEnd.setTimeInMillis(endTime)
     cEnd.add(Calendar.DAY_OF_MONTH, -1)

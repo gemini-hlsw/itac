@@ -1,14 +1,19 @@
+/*
+ * Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+ * For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
+ */
+
 package edu.gemini.qengine.skycalc;
 
-import edu.gemini.shared.skycalc.Coordinates;
-import edu.gemini.shared.skycalc.Night;
-import edu.gemini.shared.skycalc.SiteDesc;
-import edu.gemini.shared.skycalc.TwilightBoundedNight;
+import edu.gemini.skycalc.Coordinates;
+import edu.gemini.skycalc.Night;
+
+import edu.gemini.skycalc.TwilightBoundedNight;
 import edu.gemini.skycalc.ElevationConstraintSolver;
 import edu.gemini.skycalc.Interval;
 import edu.gemini.skycalc.Union;
-import edu.gemini.tac.qengine.ctx.Semester;
-import edu.gemini.tac.qengine.ctx.Site;
+import edu.gemini.spModel.core.Semester;
+import edu.gemini.spModel.core.Site;
 
 import java.beans.Visibility;
 import java.util.Date;
@@ -47,11 +52,10 @@ public final class VisibilityCalc {
      * date range.
      */
     public Hours hours(Coordinates target) {
-        SiteDesc siteDesc = SiteDescLookup.get(site);
         WorldCoords wc    = new WorldCoords(target.getRa().toDegrees().getMagnitude(),
                                             target.getDec().toDegrees().getMagnitude());
         ElevationConstraintSolver solver;
-        solver = ElevationConstraintSolver.forAirmass(siteDesc, wc, conf.getMinAirmass(), conf.getMaxAirmass());
+        solver = ElevationConstraintSolver.forAirmass(site, wc, conf.getMinAirmass(), conf.getMaxAirmass());
 
         NightIterator itr = new NightIterator(site, start, end, conf.getBounds());
 
@@ -67,7 +71,6 @@ public final class VisibilityCalc {
      * Gets the total dark time over the period of the visibility calculator.
      */
     public Hours darkTime() {
-        SiteDesc siteDesc = SiteDescLookup.get(site);
         NightIterator itr = new NightIterator(site, start, end, conf.getBounds());
 
         long ms = 0;

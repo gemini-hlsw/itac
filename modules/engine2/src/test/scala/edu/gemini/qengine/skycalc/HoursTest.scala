@@ -7,6 +7,6 @@ class HoursTest {
 
   @Test def testFromMillisec() {
     val expected = new Hours(42.0)
-    assertEquals(new Hours(42), Hours.fromMillisec(42l * 60 * 60 * 1000))
+    assertEquals(new Hours(42), Hours.fromMillisec(42L * 60 * 60 * 1000))
   }
 }

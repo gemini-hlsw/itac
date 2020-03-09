@@ -2,15 +2,15 @@ package edu.gemini.qengine.skycalc
 
 import org.junit._
 import Assert._
-import edu.gemini.tac.qengine.ctx.Site
+import edu.gemini.spModel.core.Site
 import java.util.{Date, Calendar, GregorianCalendar}
-import edu.gemini.shared.skycalc.{Night, TwilightBoundType, TwilightBoundedNight}
+import edu.gemini.skycalc.{Night, TwilightBoundType, TwilightBoundedNight}
 
 class NightIteratorTest {
-  val site = Site.south
+  val site = Site.GS
 
   def mkCal(year: Int, month: Int, day: Int, hr: Int): Calendar = {
-    val cal = new GregorianCalendar(site.timeZone)
+    val cal = new GregorianCalendar(site.timezone)
     cal.set(year, month, day, hr, 0, 0)
     cal.set(Calendar.MILLISECOND, 0)
     cal
@@ -34,7 +34,7 @@ class NightIteratorTest {
 
   @Test def testTrimOne() {
     val cal0 = mkCal(2011, Calendar.JANUARY, 1, 23) // 11 PM, Jan 1
-    val cal1 = mkCal(2011, Calendar.JANUARY, 2,  0) // 12 AM, Jan 2
+    val cal1 = mkCal(2011, Calendar.JANUARY, 2, 0)  // 12 AM, Jan 2
 
     val ni  = new NightIterator(site, cal0.getTime, cal1.getTime)
     val lst = ni.toList
@@ -46,7 +46,7 @@ class NightIteratorTest {
   }
 
   private def wholeNight(d: Date): Night =
-    new TwilightBoundedNight(TwilightBoundType.NAUTICAL, d.getTime, SiteDescLookup.get(site))
+    new TwilightBoundedNight(TwilightBoundType.NAUTICAL, d.getTime, site)
 
   @Test def testTrimTwo() {
     val cal1 = mkCal(2011, Calendar.JANUARY, 1, 23) // 11 PM, Jan 1
@@ -56,17 +56,17 @@ class NightIteratorTest {
     val lst = ni.toList
     assertEquals(2, lst.size)
 
-    val jan1 = wholeNight(cal1.getTime)  // Night of Jan 1
-    val jan2 = wholeNight(cal2.getTime)  // Night of Jan 2
+    val jan1 = wholeNight(cal1.getTime) // Night of Jan 1
+    val jan2 = wholeNight(cal2.getTime) // Night of Jan 2
 
     // Just the one hour that is in the interval.
     val n1 = lst.get(0)
     val n2 = lst.get(1)
 
-    assertEquals(cal1.getTimeInMillis,   n1.getStartTime) // Starts at 11 PM Jan 1
-    assertEquals(jan1.getEndTime,        n1.getEndTime)   // Ends at twilight dawn Jan 2
-    assertEquals(jan2.getStartTime,      n2.getStartTime) // Starts at dusk Jan 2
-    assertEquals(cal2.getTimeInMillis,   n2.getEndTime)   // Ends at 11 PM, Jan 2
+    assertEquals(cal1.getTimeInMillis, n1.getStartTime) // Starts at 11 PM Jan 1
+    assertEquals(jan1.getEndTime, n1.getEndTime)        // Ends at twilight dawn Jan 2
+    assertEquals(jan2.getStartTime, n2.getStartTime)    // Starts at dusk Jan 2
+    assertEquals(cal2.getTimeInMillis, n2.getEndTime)   // Ends at 11 PM, Jan 2
   }
 
   @Test def testTrimDaylight() {
@@ -77,13 +77,13 @@ class NightIteratorTest {
     val lst = ni.toList
     assertEquals(1, lst.size)
 
-    val jan1 = wholeNight(cal1.getTime)  // Night of Jan 1
+    val jan1 = wholeNight(cal1.getTime) // Night of Jan 1
 
     // Just the one hour that is in the interval.
     val n = lst.get(0)
 
     assertEquals(jan1.getStartTime, n.getStartTime)
-    assertEquals(jan1.getEndTime,   n.getEndTime)
+    assertEquals(jan1.getEndTime, n.getEndTime)
   }
 
   @Test def testTrimSecondDayDaylight() {
@@ -95,16 +95,16 @@ class NightIteratorTest {
     val lst = ni.toList
     assertEquals(2, lst.size)
 
-    val jan1 = wholeNight(cal1.getTime)  // Night of Jan 1
-    val jan2 = wholeNight(cal2.getTime)  // Night of Jan 1
+    val jan1 = wholeNight(cal1.getTime) // Night of Jan 1
+    val jan2 = wholeNight(cal2.getTime) // Night of Jan 1
 
     // Just the one hour that is in the interval.
     val n1 = lst.get(0)
     val n2 = lst.get(1)
 
     assertEquals(jan1.getStartTime, n1.getStartTime)
-    assertEquals(jan1.getEndTime,   n1.getEndTime)
+    assertEquals(jan1.getEndTime, n1.getEndTime)
     assertEquals(jan2.getStartTime, n2.getStartTime)
-    assertEquals(jan2.getEndTime,   n2.getEndTime)
+    assertEquals(jan2.getEndTime, n2.getEndTime)
   }
 }
