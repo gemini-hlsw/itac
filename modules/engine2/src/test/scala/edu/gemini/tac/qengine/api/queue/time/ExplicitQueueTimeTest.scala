@@ -10,10 +10,8 @@ import org.scalatest._
 import org.scalatest.prop._
 import Matchers._
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
-class ExplicitQueueTimeTest extends PropSpec with Checkers with Arbitraries {
+class ExplicitQueueTimeTest extends PropSpec with org.scalatestplus.scalacheck.Checkers with Arbitraries {
   def sum(it: Iterable[Time]): Long =
     it.map(_.ms).sum
 
