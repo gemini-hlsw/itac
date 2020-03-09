@@ -9,3 +9,4 @@ target
 itac-web/bin/
 .idea/
 .metals/
+.bloop/

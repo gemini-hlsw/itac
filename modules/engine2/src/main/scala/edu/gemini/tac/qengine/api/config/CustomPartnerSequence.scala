@@ -2,7 +2,8 @@ package edu.gemini.tac.qengine.api.config
 
 import edu.gemini.tac.qengine.ctx.{Site, Partner}
 import xml.Elem
-import org.apache.log4j.{Logger, Level}
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 
 /**
@@ -20,7 +21,7 @@ class CustomPartnerSequence(val seq : List[Partner],
                             val name : String = "Custom Partner Sequence",
                             val maybeUseAfterFirstCycle : Option[PartnerSequence] = None,
                             val maybePartnerWithInitialPick : Option[Partner] = None) extends PartnerSequence {
-  private val LOGGER : Logger = Logger.getLogger(classOf[CustomPartnerSequence])
+  private val LOGGER : Logger = LoggerFactory.getLogger(classOf[CustomPartnerSequence])
   def sequence: Stream[Partner] = {
    val initialPick = maybePartnerWithInitialPick.getOrElse(seq.head)
    val ps = filter(site, seq)
@@ -49,9 +50,9 @@ class CustomPartnerSequence(val seq : List[Partner],
   // corresponding value and the tail is lazily evaluated when needed.
   private def infiniteSequence(s: List[Partner], i: Int): Stream[Partner] =  {
     if(i + 1 % 100 == 0){
-      LOGGER.log(Level.DEBUG, "PartnerSequence Cycle: " + i / 100)
+      LOGGER.debug("PartnerSequence Cycle: " + i / 100)
       if((i + 1)% 100000 == 0){
-        LOGGER.log(Level.ERROR, "Queue Engine failed to terminate after 100,000 partner picks")
+        LOGGER.error("Queue Engine failed to terminate after 100,000 partner picks")
         val cycle = infiniteSequence(s, 100).take(100).toList.toString()
         throw new RuntimeException("Queue Engine failed to terminate after 100,000 partner picks. Using partner sequence: " + cycle)
       }
