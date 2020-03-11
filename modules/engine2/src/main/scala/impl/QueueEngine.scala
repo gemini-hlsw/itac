@@ -8,7 +8,8 @@ import edu.gemini.tac.qengine.p1._
 import edu.gemini.tac.qengine.api.{BucketsAllocation, QueueCalc}
 import edu.gemini.tac.qengine.log.ProposalLog
 import edu.gemini.tac.qengine.api.queue.ProposalQueue
-import edu.gemini.tac.qengine.ctx.{Context, Partner, Site}
+import edu.gemini.tac.qengine.ctx.{Context, Partner}
+import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.api.config.{ConditionsCategory, QueueEngineConfig, SiteSemesterConfig}
 import edu.gemini.tac.qengine.p2.rollover.RolloverObservation
 

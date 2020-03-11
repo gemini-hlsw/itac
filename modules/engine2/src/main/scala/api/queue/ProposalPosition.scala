@@ -1,3 +1,6 @@
+// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
+
 package edu.gemini.tac.qengine.api.queue
 
 import edu.gemini.tac.qengine.util.Time
@@ -17,7 +20,13 @@ import time.QueueTime
  * start of the queue band in which this proposal falls.</li>
  * </ul>
  */
-case class ProposalPosition(index: Int, time: Time, band: QueueBand, bandIndex: Int, bandTime: Time) {
+case class ProposalPosition(
+  index: Int,
+  time: Time,
+  band: QueueBand,
+  bandIndex: Int,
+  bandTime: Time
+) {
 
   /**
    * Gets the position of the next proposal if the given proposal is the one
@@ -28,9 +37,13 @@ case class ProposalPosition(index: Int, time: Time, band: QueueBand, bandIndex: 
     next(prop.time, bandAt(time + prop.time))
 
   def next(propTime: Time, nextBand: QueueBand): ProposalPosition = {
-    val (i, t) = if (nextBand == band) (bandIndex+1, bandTime + propTime) else (0, Time.Zero)
-    ProposalPosition(index+1, time + propTime, nextBand, i, t)
+    val (i, t) = if (nextBand == band) (bandIndex + 1, bandTime + propTime) else (0, Time.Zero)
+    ProposalPosition(index + 1, time + propTime, nextBand, i, t)
   }
+
+  def programNumber: Int =
+    band.number * 100 + bandIndex
+
 }
 
 object ProposalPosition {

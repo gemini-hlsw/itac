@@ -7,11 +7,6 @@ import edu.gemini.tac.qengine.util.Time
  */
 trait CategorizedTime {
   def target: Target
-  def conditions: ObsConditions
+  def conditions: ObservingConditions
   def time: Time
-
-  def toXml = <CategorizedTime time = { time.toString }>
-    {target.toXml}
-    {conditions.toXml}
-    </CategorizedTime>
 }

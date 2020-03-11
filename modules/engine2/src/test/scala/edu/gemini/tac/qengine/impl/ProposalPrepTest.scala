@@ -6,20 +6,21 @@ import edu.gemini.tac.qengine.util.Time
 import edu.gemini.tac.qengine.p1._
 import edu.gemini.tac.qengine.p1.QueueBand.Category._
 import edu.gemini.tac.qengine.log.{RejectNotBand3, RejectNoTime, RejectNoObs, ProposalLog}
-import edu.gemini.tac.qengine.ctx.{Partner, Site}
+import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.spModel.core.Site
 
 class ProposalPrepTest {
   import edu.gemini.tac.qengine.ctx.TestPartners._
 
   val target: Target = Target(0.0, 0.0)
-  val conds: ObsConditions = ObsConditions.AnyConditions
+  val conds: ObservingConditions = ObservingConditions.AnyConditions
   val noneBand3: List[Observation] = List.empty
   val someBand3: List[Observation] = List(Observation(target, conds, Time.hours(1)))
   val noneObs: List[Observation] = Nil
   val someObs: List[Observation] = List(Observation(target, conds, Time.hours(1)))
 
   private def nonJoint(partner: Partner, id: String, time: Time = Time.hours(1), b3: List[Observation] = Nil, obsList: List[Observation] = Nil): CoreProposal =
-    CoreProposal(Ntac(partner, id, 0, time), site = Site.south, band3Observations = b3, obsList = obsList)
+    CoreProposal(Ntac(partner, id, 0, time), site = Site.GS, band3Observations = b3, obsList = obsList)
 
   @Test def testEmpty() {
     val pp = ProposalPrep(Nil)

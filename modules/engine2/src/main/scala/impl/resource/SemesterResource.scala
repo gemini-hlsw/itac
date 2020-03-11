@@ -5,7 +5,7 @@ import edu.gemini.tac.qengine.util.Time
 import edu.gemini.tac.qengine.log.{RejectOverAllocation, RejectMessage, RejectPartnerOverAllocation}
 import edu.gemini.tac.qengine.p1.QueueBand.Category.Guaranteed
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
-import edu.gemini.tac.qengine.p1.{ObsConditions, Target}
+import edu.gemini.tac.qengine.p1.{ObservingConditions, Target}
 import org.slf4j.LoggerFactory
 
 final class SemesterResource(
@@ -73,7 +73,7 @@ final class SemesterResource(
     }
   }
 
-  def reserveAvailable(time: Time, target: Target, conds: ObsConditions): (SemesterResource, Time) = {
+  def reserveAvailable(time: Time, target: Target, conds: ObservingConditions): (SemesterResource, Time) = {
     val (newRa, rem) = ra.reserveAvailable(time, target, conds)
     (new SemesterResource(newRa, this.time, band), rem)
   }

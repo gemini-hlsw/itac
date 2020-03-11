@@ -10,10 +10,11 @@ import edu.gemini.tac.qengine.p1.WaterVapor._
 import edu.gemini.tac.qengine.api.config._
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
 import edu.gemini.tac.qengine.api.queue.time.{PartnerTime, QueueTime}
-import edu.gemini.tac.qengine.ctx.{TestPartners, Semester, Site}
+import edu.gemini.tac.qengine.ctx.{TestPartners}
+import edu.gemini.spModel.core.{Semester, Site}
 
 object Fixture {
-  val site = Site.south
+  val site = Site.GS
   val semester = new Semester(2011, Semester.Half.A)
   val partners = TestPartners.All
 
@@ -27,7 +28,7 @@ object Fixture {
 
   // <=CC70 50%
   // >=CC80 50%
-  val condsBins = ConditionsBinGroup.percentBins(
+  val condsBins = ConditionsBinGroup.ofPercent(
     (ConditionsCategory(Le(CC70)), 50), (ConditionsCategory(Ge(CC80)), 50)
   )
 
@@ -49,24 +50,24 @@ object Fixture {
     new SemesterResource(raResGroup, timeResourceGroup(total), bandResource)
 
   // Falls in the first conditions bin (<=CC70)
-  val goodCC = ObsConditions(CC50, IQAny, SBAny, WVAny)
+  val goodCC = ObservingConditions(CC50, IQAny, SBAny, WVAny)
 
   // Falls in the second conditions bin (>=CC80)
-  val badCC  = ObsConditions(CC80, IQAny, SBAny, WVAny)
+  val badCC  = ObservingConditions(CC80, IQAny, SBAny, WVAny)
 
   def genQuanta(hrs: Double): PartnerTime = PartnerTime.constant(Time.hours(hrs), partners)
 
   // Makes a proposal with the given ntac info, and observations according
   // to the descriptions (target, conditions, time)
-  def mkProp(ntac: Ntac, obsDefs: (Target, ObsConditions, Time)*): CoreProposal =
+  def mkProp(ntac: Ntac, obsDefs: (Target, ObservingConditions, Time)*): CoreProposal =
     CoreProposal(ntac, site = site, obsList = obsDefs.map(tup => Observation(tup._1, tup._2, tup._3)).toList)
 
-  val emptyQueue = ProposalQueueBuilder(QueueTime(Site.north, PartnerTime.empty(partners).map, partners))
+  val emptyQueue = ProposalQueueBuilder(QueueTime(Site.GN, PartnerTime.empty(partners).map, partners))
   def evenQueue(hrs: Double): ProposalQueueBuilder =
     evenQueue(hrs, Some(QueueTime.DefaultPartnerOverfillAllowance))
 
   def evenQueue(hrs: Double, overfill: Option[Percent]): ProposalQueueBuilder = {
     val pt = PartnerTime(partners, partners.map(p => (p, Time.hours(hrs))): _*)
-    ProposalQueueBuilder(QueueTime(site, pt, QueueBandPercentages.Default, overfill))
+    ProposalQueueBuilder(QueueTime(site, pt, QueueBandPercentages(), overfill))
   }
 }

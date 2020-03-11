@@ -2,7 +2,8 @@ package edu.gemini.tac.qengine.impl.queue
 
 import edu.gemini.tac.qengine.api.queue.ProposalPosition
 import edu.gemini.tac.qengine.api.queue.time.{PartnerTime, QueueTime}
-import edu.gemini.tac.qengine.ctx.{Partner, Site}
+import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.p1._
 import edu.gemini.tac.qengine.p1.QueueBand._
 import edu.gemini.tac.qengine.p1.QueueBand.Category._
@@ -20,13 +21,13 @@ class ProposalBuilderTest {
   val partners = All
 
   // Need obsConds, but we don't use it for this test
-  private val obsConds = ObsConditions(CC50, IQ70, SB20, WV50)
+  private val obsConds = ObservingConditions(CC50, IQ70, SB20, WV50)
 
   private def mkProp(partner: Partner, propTimeHours: Int, id: String): CoreProposal = {
     val ntac = Ntac(partner, id, 0, Time.hours(propTimeHours))
 
     // Make a proposal with just no observations.  We won't be using them anyway.
-    CoreProposal(ntac, site = Site.south)
+    CoreProposal(ntac, site = Site.GS)
   }
 
   private def mkProp(propTimeHours: Int, id: String): CoreProposal =
@@ -36,14 +37,14 @@ class ProposalBuilderTest {
     val ntac = Ntac(GS, id, 0, Time.hours(propTimeHours))
     val b3 = Band3(obsConds)
 
-    CoreProposal(ntac, site = Site.south, band3Observations = List(mkObservation))
+    CoreProposal(ntac, site = Site.GS, band3Observations = List(mkObservation))
   }
 
   private def mkObservation: Observation = {
     val ra = Angle.angleDeg0
     val dec = Angle.angleDeg0
     val t = new Target(ra, dec)
-    val c = ObsConditions.AnyConditions
+    val c = ObservingConditions.AnyConditions
     new Observation(t, c, Time.hours(1))
   }
 
@@ -51,7 +52,7 @@ class ProposalBuilderTest {
     Map(QBand1 -> band1, QBand2 -> band2, QBand3 -> band3, QBand4 -> band4)
   }
 
-  private val qs = ProposalQueueBuilder(QueueTime(Site.south, Map(GS -> Time.hours(100)), partners))
+  private val qs = ProposalQueueBuilder(QueueTime(Site.GS, Map(GS -> Time.hours(100)), partners))
 
   // Expects a list of three times, one per queue band, which are matched
   // one after the other with the result of calling the function f
@@ -173,7 +174,7 @@ class ProposalBuilderTest {
   }
 
   @Test def testAddJointProposal() {
-    val site = Site.south
+    val site = Site.GS
     val qs = ProposalQueueBuilder(QueueTime(site, PartnerTime.distribute(Time.hours(100), site, partners)))
     val propGS = mkProp(10, "gs1")
     val propUS = mkProp(US, 20, "us1")

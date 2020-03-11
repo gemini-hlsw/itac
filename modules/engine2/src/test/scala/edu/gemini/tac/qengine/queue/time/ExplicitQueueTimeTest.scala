@@ -4,7 +4,8 @@ import edu.gemini.tac.qengine.util.{Percent, Time}
 import edu.gemini.tac.qengine.p1.QueueBand
 import edu.gemini.tac.qengine.p1.QueueBand._
 
-import edu.gemini.tac.qengine.ctx.{TestPartners, Partner, Site}
+import edu.gemini.tac.qengine.ctx.{TestPartners,Partner}
+import edu.gemini.spModel.core.Site
 
 import org.scalatest._
 import org.scalatest.prop._

@@ -16,32 +16,32 @@ import edu.gemini.tac.qengine.util.{Percent, Time}
 import edu.gemini.tac.qengine.impl.block.Block
 import edu.gemini.tac.qengine.api.queue.time.QueueTime
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
-import edu.gemini.tac.qengine.ctx.Site
+import edu.gemini.spModel.core.Site
 
 class ConditionsResourceTest {
   import edu.gemini.tac.qengine.ctx.TestPartners._
   val partners = All
 
-  private val bins = ConditionsBin.list(
+  private val bins = ConditionsBin.of(
       (Cat(Eq(CC50)),  Percent(25)),
       (Cat(Eq(CC70)),  Percent(25)),
       (Cat(Eq(CC80)),  Percent(25)),
       (Cat(Eq(CCAny)), Percent(25))
     )
 
-  private val binGrp = ConditionsBinGroup(bins)
+  private val binGrp = ConditionsBinGroup.of(bins)
   private val resGrp = ConditionsResourceGroup(Time.minutes(100), binGrp)
 
   private val ntac   = Ntac(GS, "x", 0, Time.minutes(100)) // not used
   private val target = Target(0,0)                               // not used
 
-  private def mkProp(obsConds: ObsConditions): CoreProposal = {
+  private def mkProp(obsConds: ObservingConditions): CoreProposal = {
     val obsList = List(Observation(target, obsConds, Time.minutes(10)))
-    CoreProposal(ntac, site = Site.south, obsList = obsList)
+    CoreProposal(ntac, site = Site.GS, obsList = obsList)
   }
 
-  private def mkConds(cc: CloudCover): ObsConditions =
-    ObsConditions(cc, IQ20, SB20, WV20)
+  private def mkConds(cc: CloudCover): ObservingConditions =
+    ObservingConditions(cc, IQ20, SB20, WV20)
 
   // Verify that the given remaining times match -- times must be specified
   // in order of CloudCover values.
@@ -54,7 +54,7 @@ class ConditionsResourceTest {
     }
   }
 
-  private def testSuccess(time: Time, cnds: ObsConditions, mins: Int*) {
+  private def testSuccess(time: Time, cnds: ObservingConditions, mins: Int*) {
     val (newResGrp, rem) = resGrp.reserveAvailable(time, cnds)
     assertEquals(Time.Zero, rem)
     verifyTimes(newResGrp, mins: _*)
@@ -123,12 +123,12 @@ class ConditionsResourceTest {
   @Test def testBand3ConditionsUsedinBand3() {
     // Create a proposal to fill the first two queue bands and put us into
     // band 3.
-    val q0 = ProposalQueueBuilder(QueueTime(Site.south, Map(GS -> Time.minutes(166)), partners))
+    val q0 = ProposalQueueBuilder(QueueTime(Site.GS, Map(GS -> Time.minutes(166)), partners))
     val q1 = q0 :+ mkProp(mkConds(CC50))
     assertEquals(QueueBand.QBand3, q1.band)
     val template : Observation = mkProp(mkConds(CC50)).obsList.head
     val templateConditions = template.conditions
-    val cs = ObsConditions(CloudCover.CC80, templateConditions.iq, templateConditions.sb, templateConditions.wv)
+    val cs = ObservingConditions(CloudCover.CC80, templateConditions.iq, templateConditions.sb, templateConditions.wv)
     val obs = template.copy(conditions=cs)
     assertEquals(Time.minutes(10), obs.time)
     val b3os = List(obs)

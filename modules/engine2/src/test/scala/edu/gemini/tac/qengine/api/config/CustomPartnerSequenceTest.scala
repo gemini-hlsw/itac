@@ -1,6 +1,7 @@
 package edu.gemini.tac.qengine.api.config
 
-import edu.gemini.tac.qengine.ctx.{Partner, Site}
+import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.spModel.core.Site
 import org.junit.Test
 import org.junit.Assert._
 
@@ -8,7 +9,7 @@ import org.junit.Assert._
 class CustomPartnerSequenceTest {
   @Test
   def doesAdhereToSequenceProportions(): Unit = {
-    val site = Site.north
+    val site = Site.GN
     val ps = List(
       Partner("A", "A", 42.0, Set(site)),
       Partner("B", "B", 32.0, Set(site)),
@@ -25,7 +26,7 @@ class CustomPartnerSequenceTest {
 
   @Test
   def switchToProportional(): Unit = {
-    val site = Site.north
+    val site = Site.GN
     val ps = List(
       Partner("A", "A", 80.0, Set(site)),
       Partner("B", "B", 10.0, Set(site)),
@@ -43,7 +44,7 @@ class CustomPartnerSequenceTest {
   @Test
   def parseCsvSuccess(): Unit = {
     val csv = "A, B,A, C,D,E, F"
-    val site = Site.north
+    val site = Site.GN
     val ps = List(
       Partner("A", "A", 80.0, Set(site)),
       Partner("B", "B", 10.0, Set(site)),
@@ -59,7 +60,7 @@ class CustomPartnerSequenceTest {
   @Test
   def parseCsvFailure(): Unit = {
     val csv = "A, B,G, C,D,G, F/H"
-    val site = Site.north
+    val site = Site.GN
     val ps = List(
       Partner("A", "A", 80.0, Set(site)),
       Partner("B", "B", 10.0, Set(site)),

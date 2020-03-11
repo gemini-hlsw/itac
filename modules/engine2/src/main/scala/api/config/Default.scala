@@ -1,8 +1,11 @@
+// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
+
 package edu.gemini.tac.qengine.api.config
 
 import edu.gemini.tac.qengine.api.config.{ConditionsCategory => Cat}
 import Cat._
-import edu.gemini.tac.qengine.p1.ObsConditions
+import edu.gemini.tac.qengine.p1.ObservingConditions
 import edu.gemini.tac.qengine.p1.CloudCover
 import edu.gemini.tac.qengine.p1.CloudCover._
 import edu.gemini.tac.qengine.p1.ImageQuality
@@ -14,23 +17,23 @@ import edu.gemini.tac.qengine.util.{Time, Percent}
 
 object Default {
 
-  val Conditions = ConditionsBinGroup.percentBins(
-    (Cat( Eq(CC50),      Eq(IQ20),  Le(SB50),      UnspecifiedWV, Some("1")),  4),
-    (Cat( Eq(CC50),      Eq(IQ20),  Ge(SB80),      UnspecifiedWV, Some("2")),  4),
-    (Cat( Ge(CC70),      Eq(IQ20),  UnspecifiedSB, UnspecifiedWV, Some("3")),  3),
-    (Cat( Eq(CC50),      Eq(IQ70),  Le(SB50),      UnspecifiedWV, Some("4")), 10),
-    (Cat( Eq(CC50),      Eq(IQ70),  Ge(SB80),      UnspecifiedWV, Some("5")), 10),
-    (Cat( Ge(CC70),      Eq(IQ70),  UnspecifiedSB, UnspecifiedWV, Some("6")), 10),
-    (Cat( Eq(CC50),      Eq(IQ85),  UnspecifiedSB, UnspecifiedWV, Some("7")), 15),
-    (Cat( Ge(CC70),      Eq(IQ85),  UnspecifiedSB, UnspecifiedWV, Some("8")), 20),
-    (Cat( UnspecifiedCC, Eq(IQAny), UnspecifiedSB, UnspecifiedWV, Some("9")), 40)
+  val Conditions = ConditionsBinGroup.ofPercent(
+    (Cat(Eq(CC50), Eq(IQ20), Le(SB50), UnspecifiedWV, Some("1")), 4),
+    (Cat(Eq(CC50), Eq(IQ20), Ge(SB80), UnspecifiedWV, Some("2")), 4),
+    (Cat(Ge(CC70), Eq(IQ20), UnspecifiedSB, UnspecifiedWV, Some("3")), 3),
+    (Cat(Eq(CC50), Eq(IQ70), Le(SB50), UnspecifiedWV, Some("4")), 10),
+    (Cat(Eq(CC50), Eq(IQ70), Ge(SB80), UnspecifiedWV, Some("5")), 10),
+    (Cat(Ge(CC70), Eq(IQ70), UnspecifiedSB, UnspecifiedWV, Some("6")), 10),
+    (Cat(Eq(CC50), Eq(IQ85), UnspecifiedSB, UnspecifiedWV, Some("7")), 15),
+    (Cat(Ge(CC70), Eq(IQ85), UnspecifiedSB, UnspecifiedWV, Some("8")), 20),
+    (Cat(UnspecifiedCC, Eq(IQAny), UnspecifiedSB, UnspecifiedWV, Some("9")), 40)
   )
 
   val Band1Percent = Percent(30)
   val Band2Percent = Percent(30)
   val Band3Percent = Percent(20)
 
-  val BandPercentages = QueueBandPercentages.Default
+  val BandPercentages = QueueBandPercentages()
 
   val WvTimeRestriction  = TimeRestriction.wv(Percent(50), WV50)
   val LgsTimeRestriction = TimeRestriction.lgs(Time.hours(200))
@@ -42,26 +45,28 @@ object Default {
 
   val RelativeTimeRestrictions = List(WvTimeRestriction)
   val AbsoluteTimeRestrictions = List(LgsTimeRestriction)
-  val BandRestrictions         = List(NotBand3Restriction, RapidTooBandRestriction, LgsBandRestriction, Iq20BandRestriction)
+  val BandRestrictions =
+    List(NotBand3Restriction, RapidTooBandRestriction, LgsBandRestriction, Iq20BandRestriction)
 
   def main(args: Array[String]) {
-    Conditions.searchPath.cats foreach { cat => println(cat) }
+    Conditions.searchPath.cats foreach { cat =>
+      println(cat)
+    }
 
-        println("\n\n")
+    println("\n\n")
 
     val ocList = for {
       iq <- ImageQuality.values
       cc <- CloudCover.values
       sb <- SkyBackground.values
-    } yield ObsConditions(cc, iq, sb, WVAny)
+    } yield ObservingConditions(cc, iq, sb, WVAny)
 
-    ocList foreach {
-      oc =>
-        val ocString   = "%s,%s,%s".format(oc.iq, oc.cc, oc.sb)
-        val searchPath = Conditions.searchPath(oc)
-        val pathStr    = searchPath.map(sp => sp.name.get)
+    ocList foreach { oc =>
+      val ocString   = "%s,%s,%s".format(oc.iq, oc.cc, oc.sb)
+      val searchPath = Conditions.searchPath(oc)
+      val pathStr    = searchPath.map(sp => sp.name.get)
 
-        println("%-17s : %s".format(ocString, pathStr.mkString(",")))
+      println("%-17s : %s".format(ocString, pathStr.mkString(",")))
     }
   }
 }

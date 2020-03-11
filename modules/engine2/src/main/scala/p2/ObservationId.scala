@@ -1,6 +1,6 @@
 package edu.gemini.tac.qengine.p2
 
-import edu.gemini.tac.qengine.ctx.{Semester, Site}
+import edu.gemini.spModel.core.{Semester, Site}
 import edu.gemini.tac.qengine.p1.Mode
 import edu.gemini.tac.qengine.util.CompoundOrdering
 

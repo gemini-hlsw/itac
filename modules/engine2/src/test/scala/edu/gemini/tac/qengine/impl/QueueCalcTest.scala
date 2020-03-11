@@ -18,7 +18,7 @@ class QueueCalcTest {
   private def remainingDecHours(qc: QueueCalcStage, t: Target): Double =
     qc.resource.ra.grp(t).remaining(t).toHours.value
 
-  private def remainingCondsHours(qc: QueueCalcStage, t: Target, c: ObsConditions): Double =
+  private def remainingCondsHours(qc: QueueCalcStage, t: Target, c: ObservingConditions): Double =
     qc.resource.ra.grp(t).remaining(c).toHours.value
 
 
@@ -106,17 +106,17 @@ class QueueCalcTest {
     // queue calc will stop before it gets there.
     val propGS1 = Fixture.mkProp(Ntac(GS, "GS1", 1, Time.hours(0.5)),
       (target23, Fixture.badCC, Time.hours(0.2))
-    ).copy(band3Observations = List(new Observation(target23, ObsConditions.AnyConditions, Time.hours(1))))
+    ).copy(band3Observations = List(new Observation(target23, ObservingConditions.AnyConditions, Time.hours(1))))
 
     // Create a proposal to take us past band 3.
     val propCA1 = Fixture.mkProp(Ntac(CA, "CA1", 1, Time.hours(qstate.queueTime.bandPercentages.band3 * hrs)),
       (target23, Fixture.badCC, Time.hours(0.2))
-    ).copy(band3Observations = List(new Observation(target23, ObsConditions.AnyConditions, Time.hours(1))))
+    ).copy(band3Observations = List(new Observation(target23, ObservingConditions.AnyConditions, Time.hours(1))))
 
     // Create a proposal that can't be scheduled because it goes in band 4.
     val propAU1 = Fixture.mkProp(Ntac(AU, "AU1", 1, Time.hours(0.2)),
       (target23, Fixture.badCC, Time.hours(0.2))
-    ).copy(band3Observations = List(new Observation(target23, ObsConditions.AnyConditions, Time.hours(1))))
+    ).copy(band3Observations = List(new Observation(target23, ObservingConditions.AnyConditions, Time.hours(1))))
 
     // Block iterator with a huge time quanta so that all of propUS1 can be
     // scheduled in one block.  We shouldn't get to GS.

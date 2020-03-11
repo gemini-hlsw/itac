@@ -2,7 +2,8 @@ package edu.gemini.tac.qengine.p1
 
 import edu.gemini.tac.qengine.util.Time
 import scala.annotation.tailrec
-import edu.gemini.tac.qengine.ctx.{Partner, Site}
+import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.spModel.core.Site
 
 /**
  * The Proposal trait defines the information associated with a proposal for the purpose

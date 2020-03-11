@@ -4,6 +4,7 @@ import org.junit._
 import Assert._
 import edu.gemini.tac.qengine.p1.WaterVapor.WV50
 import edu.gemini.tac.qengine.util.{Time, Percent}
+import scala.Ordering.Implicits._
 
 class RestrictionConfigTest {
   @Test def testMapCombine() {

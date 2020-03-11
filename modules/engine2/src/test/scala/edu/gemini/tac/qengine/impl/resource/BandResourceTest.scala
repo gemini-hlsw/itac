@@ -13,7 +13,8 @@ import edu.gemini.tac.qengine.util.{Percent, Time}
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
 import edu.gemini.tac.qengine.log.{ProposalLog, RejectBand}
 import edu.gemini.tac.qengine.p1._
-import edu.gemini.tac.qengine.ctx.{Partner, Site}
+import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.spModel.core.Site
 
 class BandResourceTest {
   import edu.gemini.tac.qengine.ctx.TestPartners._
@@ -23,25 +24,25 @@ class BandResourceTest {
   private val target = Target(0.0, 0.0) // not used
 
   private def conds(iq: ImageQuality, cc : CloudCover = CCAny) =
-    ObsConditions(cc, iq, SBAny, WVAny)
+    ObservingConditions(cc, iq, SBAny, WVAny)
 
   private def mkProp(time: Time): CoreProposal =
-    CoreProposal(ntac.copy(awardedTime = time), site = Site.south, obsList = List(Observation(target, conds(IQAny), time)))
+    CoreProposal(ntac.copy(awardedTime = time), site = Site.GS, obsList = List(Observation(target, conds(IQAny), time)))
 
   private def mkProp(iq: ImageQuality, b3IQ: Option[ImageQuality]): CoreProposal = {
     val b3 = List.empty
-    CoreProposal(ntac, site = Site.south, band3Observations = b3, obsList = List(Observation(target, conds(iq), Time.hours(10))))
+    CoreProposal(ntac, site = Site.GS, band3Observations = b3, obsList = List(Observation(target, conds(iq), Time.hours(10))))
   }
 
   private def mkProp(too: Too.Value): CoreProposal =
-    CoreProposal(ntac, site = Site.south, too = too, obsList = List(Observation(target, conds(IQAny), Time.hours(10))))
+    CoreProposal(ntac, site = Site.GS, too = too, obsList = List(Observation(target, conds(IQAny), Time.hours(10))))
 
   private def mkProp(lgs: Boolean): CoreProposal =
-    CoreProposal(ntac, site = Site.south, obsList = List(Observation(target, conds(IQAny), Time.hours(10), lgs)))
+    CoreProposal(ntac, site = Site.GS, obsList = List(Observation(target, conds(IQAny), Time.hours(10), lgs)))
 
   val br      = new BandResource(Default.BandRestrictions)
   val timeMap: Map[Partner,Time] = Map(US -> Time.hours(100))
-  val queue   = ProposalQueueBuilder(QueueTime(Site.south, timeMap, partners))
+  val queue   = ProposalQueueBuilder(QueueTime(Site.GS, timeMap, partners))
 
   // Band 1: ( 0, 30]
   // Band 2: (30, 60]
@@ -231,13 +232,13 @@ class BandResourceTest {
 
   @Test def testFilterNothing() {
     // Rapid TOO Band 1
-    val prop1 = CoreProposal(copyNtac("us1", 30), site = Site.south, too     = Too.rapid)
+    val prop1 = CoreProposal(copyNtac("us1", 30), site = Site.GS, too     = Too.rapid)
     // LGS Band 2
-    val prop2 = CoreProposal(copyNtac("us2", 15), site = Site.south, obsList = obsList(IQ70, lgs = true))
+    val prop2 = CoreProposal(copyNtac("us2", 15), site = Site.GS, obsList = obsList(IQ70, lgs = true))
     // IQ20 Band 2
-    val prop3 = CoreProposal(copyNtac("us3", 15), site = Site.south, obsList = obsList(IQ20, lgs = false))
+    val prop3 = CoreProposal(copyNtac("us3", 15), site = Site.GS, obsList = obsList(IQ20, lgs = false))
     // Nothing, Band 3
-    val prop4 = CoreProposal(copyNtac("us4", 40), site = Site.south, band3Observations   = obsList(ImageQuality.IQ70, lgs = false, CCAny))
+    val prop4 = CoreProposal(copyNtac("us4", 40), site = Site.GS, band3Observations   = obsList(ImageQuality.IQ70, lgs = false, CCAny))
 
     val q2 = queue ++ List(prop1, prop2, prop3, prop4)
 
@@ -249,15 +250,15 @@ class BandResourceTest {
 
   @Test def testFilter1() {
     // Rapid TOO Band 1
-    val prop1 = CoreProposal(copyNtac("us1", 30), site = Site.south, too     = Too.rapid)
+    val prop1 = CoreProposal(copyNtac("us1", 30), site = Site.GS, too     = Too.rapid)
     // Rapid TOO Band 2 -- will be removed
-    val propX = CoreProposal(copyNtac("usX",  1), site = Site.south, too     = Too.rapid)
+    val propX = CoreProposal(copyNtac("usX",  1), site = Site.GS, too     = Too.rapid)
     // LGS Band 2
-    val prop2 = CoreProposal(copyNtac("us2", 15), site = Site.south, obsList = obsList(IQ70, lgs = true))
+    val prop2 = CoreProposal(copyNtac("us2", 15), site = Site.GS, obsList = obsList(IQ70, lgs = true))
     // IQ20 Band 2
-    val prop3 = CoreProposal(copyNtac("us3", 15), site = Site.south, obsList = obsList(IQ20, lgs = false))
+    val prop3 = CoreProposal(copyNtac("us3", 15), site = Site.GS, obsList = obsList(IQ20, lgs = false))
     // Nothing, Band 3
-    val prop4 = CoreProposal(copyNtac("us4", 39), site = Site.south, band3Observations   = obsList(IQ70, lgs = false))
+    val prop4 = CoreProposal(copyNtac("us4", 39), site = Site.GS, band3Observations   = obsList(IQ70, lgs = false))
 
     val q2 = queue ++ List(prop1, propX, prop2, prop3, prop4)
 
@@ -275,18 +276,18 @@ class BandResourceTest {
 
   @Test def testFilterBand3ToBand2() {
     // Rapid TOO Band 1
-    val prop1 = CoreProposal(copyNtac("us1", 30), site = Site.south, too     = Too.rapid)
+    val prop1 = CoreProposal(copyNtac("us1", 30), site = Site.GS, too     = Too.rapid)
     // Rapid TOO Band 2 -- will be removed
-    val propX = CoreProposal(copyNtac("usX", 15), site = Site.south, too     = Too.rapid)
+    val propX = CoreProposal(copyNtac("usX", 15), site = Site.GS, too     = Too.rapid)
     // LGS Band 2
-    val prop2 = CoreProposal(copyNtac("us2", 15), site = Site.south, obsList = obsList(IQ70, lgs = true))
+    val prop2 = CoreProposal(copyNtac("us2", 15), site = Site.GS, obsList = obsList(IQ70, lgs = true))
 
     // IQ20 Band 3 -- but will be moved up 15 hours and back into band 2 when
     // propX is removed.
-    val prop3 = CoreProposal(copyNtac("us3", 15), site = Site.south, band3Observations = obsList(IQ20, lgs = false), obsList = obsList(IQ20, lgs = false))
+    val prop3 = CoreProposal(copyNtac("us3", 15), site = Site.GS, band3Observations = obsList(IQ20, lgs = false), obsList = obsList(IQ20, lgs = false))
 
     // Nothing, Band 3
-    val prop4 = CoreProposal(copyNtac("us4", 25), site = Site.south, band3Observations = obsList(IQ70, lgs = false))
+    val prop4 = CoreProposal(copyNtac("us4", 25), site = Site.GS, band3Observations = obsList(IQ70, lgs = false))
 
     val q2 = queue ++ List(prop1, propX, prop2, prop3, prop4)
 
@@ -308,17 +309,17 @@ class BandResourceTest {
 
   @Test def testFilterPushIntoBand3() {
     // Rapid TOO Band 1 Joint Part
-    val prop1 = CoreProposal(copyNtac("us1", 30), site = Site.south, too     = Too.rapid)
+    val prop1 = CoreProposal(copyNtac("us1", 30), site = Site.GS, too     = Too.rapid)
     val jpp1  = JointProposalPart("jpp", prop1)
 
     // Fill almost all of band 2
-    val prop2 = CoreProposal(copyNtac("us2", 29), site = Site.south, band3Observations = obsList(IQAny, lgs = false))
+    val prop2 = CoreProposal(copyNtac("us2", 29), site = Site.GS, band3Observations = obsList(IQAny, lgs = false))
 
     // Now, the last band 2 proposal, will be one that doesn't accept band 3.
-    val propX = CoreProposal(copyNtac("usX", 2), site = Site.south)
+    val propX = CoreProposal(copyNtac("usX", 2), site = Site.GS)
 
     // The remainder of the joint which also includes prop1
-    val prop3 = CoreProposal(copyNtac("us3", 15), site = Site.south, band3Observations = obsList(IQAny, lgs = false))
+    val prop3 = CoreProposal(copyNtac("us3", 15), site = Site.GS, band3Observations = obsList(IQAny, lgs = false))
     val jpp3  = JointProposalPart("jpp", prop3)
 
     val q2 = queue ++ List(jpp1, prop2, propX, jpp3)

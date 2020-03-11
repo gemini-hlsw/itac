@@ -1,6 +1,7 @@
 package edu.gemini.tac.qengine.api.config
 
-import edu.gemini.tac.qengine.ctx.{Site, Partner}
+import edu.gemini.spModel.core.Site
+import edu.gemini.tac.qengine.ctx.Partner
 import xml.Elem
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -12,18 +13,18 @@ class ProportionalPartnerSequence(seq: List[Partner], val site: Site, val initia
 
   private def filter(site: Site) = seq.filter(_.sites.contains(site))
 
-  private val gnseq = filter(Site.north)
-  private val gsseq = filter(Site.south)
+  private val gnseq = filter(Site.GN)
+  private val gsseq = filter(Site.GS)
 
   private def siteSeq(site: Site): List[Partner] =
     site match {
-      case Site.north => gnseq
-      case Site.south => gsseq
+      case Site.GN => gnseq
+      case Site.GS => gsseq
     }
 
   //Confirm OK initial pick
   if (!siteSeq(site).contains(initialPick)) {
-    throw new IllegalArgumentException("Incompatible PartnerSequence for Site %s starting with Partner %s".format(site.displayValue(), initialPick.fullName))
+    throw new IllegalArgumentException("Incompatible PartnerSequence for Site %s starting with Partner %s".format(site.displayName, initialPick.fullName))
   }
 
   /**

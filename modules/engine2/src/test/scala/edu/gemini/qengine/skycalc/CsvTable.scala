@@ -74,7 +74,7 @@ object CsvTable {
         }
       }
     }
-//    table(Site.north, Semester.parse("2011A"))
+//    table(Site.GN, Semester.parse("2011A"))
 
     /*
     val airmassList = List(1.7, 1.8, 1.9, 2.0, 2.1, 2.15, 2.2, 2.3, 2.4, 2.5)
@@ -91,24 +91,24 @@ object CsvTable {
           dec1 = dec2 - 20
         } yield "(%3d, %3d)".format(dec1,dec2)
 
-        val ps = calc.calc(Site.north, Semester.parse("2011A"), new DecBinSize(20), new Angle(14.5, Angle.Unit.HOURS)).asScala.toList
+        val ps = calc.calc(Site.GN, Semester.parse("2011A"), new DecBinSize(20), new Angle(14.5, Angle.Unit.HOURS)).asScala.toList
         labels.zip(ps.reverse) foreach {
           case (label, p) => println("%12s %3d".format(label, p.getAmount.round))
         }
     }
 
     val raCalc = new ExcelRaBinCalc()
-    val hrs    = raCalc.calc(Site.north, Semester.parse("2011A"), new RaBinSize(60)).asScala.toList
+    val hrs    = raCalc.calc(Site.GN, Semester.parse("2011A"), new RaBinSize(60)).asScala.toList
     hrs.zipWithIndex foreach {
       case (hr, i) => println("%d %.2f".format(i, hr.getHours))
     }
      */
 
 //    val c = new ElevationDecBinCalc(new ElevationConfig())
-//    val percs = c.calc(Site.north, Semester.parse("2011A"), new DecBinSize(20), new Angle(14.5, Angle.Unit.HOURS), null)
+//    val percs = c.calc(Site.GN, Semester.parse("2011A"), new DecBinSize(20), new Angle(14.5, Angle.Unit.HOURS), null)
 //    println(percs.asScala.mkString(", "))
 
-//    val calc = RaDecBinCalc.calc(Site.north, Semester.parse("2011A"), new RaBinSize(60), new DecBinSize(20))
+//    val calc = RaDecBinCalc.calc(Site.GN, Semester.parse("2011A"), new RaBinSize(60), new DecBinSize(20))
 //    println(calc.getDecPercentages.asScala.mkString(", "))
   }
 }

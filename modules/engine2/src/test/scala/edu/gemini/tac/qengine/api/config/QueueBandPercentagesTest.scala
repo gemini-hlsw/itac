@@ -19,7 +19,7 @@ class QueueBandPercentagesTest {
   }
 
   @Test def testDefault() {
-    verify(QueueBandPercentages.Default, 30, 30, 20)
+    verify(QueueBandPercentages(), 30, 30, 20)
   }
 
   @Test def testNonDefault() {
@@ -67,7 +67,7 @@ class QueueBandPercentagesTest {
   }
 
   @Test def testToString() {
-    val percs0 = QueueBandPercentages.Default
+    val percs0 = QueueBandPercentages()
     assertEquals("(B1=30%, B2=30%, B3=20%)", percs0.toString)
 
     val percs1 = QueueBandPercentages(10, 20, 40)

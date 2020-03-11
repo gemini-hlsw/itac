@@ -5,10 +5,11 @@ import Assert._
 import edu.gemini.tac.qengine.util.Time
 import edu.gemini.tac.qengine.p1.QueueBand
 import edu.gemini.tac.qengine.p1.QueueBand._
-import edu.gemini.tac.qengine.ctx.{TestPartners, Partner, Site}
+import edu.gemini.tac.qengine.ctx.{TestPartners,Partner}
+import edu.gemini.spModel.core.Site
 
 class QueueTimeTest {
-  private val site = Site.north
+  private val site = Site.GN
   import TestPartners._
 
   val partners = All

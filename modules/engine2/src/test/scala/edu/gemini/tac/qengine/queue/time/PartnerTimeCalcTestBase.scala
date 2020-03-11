@@ -3,7 +3,8 @@ package edu.gemini.tac.qengine.api.queue.time
 import org.junit._
 import Assert._
 import edu.gemini.tac.qengine.util.Time
-import edu.gemini.tac.qengine.ctx.{Site,Partner}
+import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.p1.{CoreProposal, Mode, Ntac}
 
 /**

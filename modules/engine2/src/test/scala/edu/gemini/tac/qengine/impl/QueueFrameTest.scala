@@ -19,7 +19,7 @@ class QueueFrameTest {
   private def remainingDecHours(f: QueueFrame, t: Target): Double =
     f.res.ra.grp(t).remaining(t).toHours.value
 
-  private def remainingCondsHours(f: QueueFrame, t: Target, c: ObsConditions): Double =
+  private def remainingCondsHours(f: QueueFrame, t: Target, c: ObservingConditions): Double =
     f.res.ra.grp(t).remaining(c).toHours.value
 
   private def semesterRes(queue: ProposalQueue) =
@@ -336,7 +336,7 @@ class QueueFrameTest {
     val target20 = Target(15.0 * 20, 0.0) // 20 hrs, 0 deg
 
     // LGS observation with good WV
-    val conds = ObsConditions(CloudCover.CCAny, ImageQuality.IQAny, SkyBackground.SBAny, WaterVapor.WV20)
+    val conds = ObservingConditions(CloudCover.CCAny, ImageQuality.IQAny, SkyBackground.SBAny, WaterVapor.WV20)
     val obs20 = Observation(target20, conds, Time.hours(10), true)
 
     val propUS1 = Fixture.mkProp(Ntac(US, "US1", 1, Time.hours(0.5))).copy(
@@ -368,7 +368,7 @@ class QueueFrameTest {
     val qstate = Fixture.evenQueue(10.0) // 10 hrs per partner
     val target20 = Target(15.0 * 20, 0.0) // 20 hrs, 0 deg
 
-    val conds = ObsConditions(CloudCover.CCAny, ImageQuality.IQAny, SkyBackground.SBAny, WaterVapor.WV20)
+    val conds = ObservingConditions(CloudCover.CCAny, ImageQuality.IQAny, SkyBackground.SBAny, WaterVapor.WV20)
 
     // 30 minute proposal
     val obs20 = Observation(target20, conds, Time.hours(10))
@@ -396,7 +396,7 @@ class QueueFrameTest {
     val target20 = Target(15.0 * 20, 0.0) // 20 hrs, 0 deg
 
     // 30 minute proposal
-    val obslgs = Observation(target20, ObsConditions.AnyConditions, Time.hours(10), true) // LGS
+    val obslgs = Observation(target20, ObservingConditions.AnyConditions, Time.hours(10), true) // LGS
     val propUS1 = Fixture.mkProp(Ntac(US, "US1", 1, Time.hours(0.5))).copy(
       obsList = List(obslgs)
     )

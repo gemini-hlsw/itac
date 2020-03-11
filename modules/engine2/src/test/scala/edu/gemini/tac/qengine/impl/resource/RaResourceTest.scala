@@ -19,7 +19,7 @@ class RaResourceTest {
 
   private val ntac = Ntac(GS, "x", 0, Time.Zero)
 
-  private def mkProp(target: Target, conds: ObsConditions): Proposal =
+  private def mkProp(target: Target, conds: ObservingConditions): Proposal =
     Fixture.mkProp(ntac,  (target, conds, Time.Zero))
 
   private def verifyReserve(raRes: RaResource) {
@@ -252,7 +252,7 @@ class RaResourceTest {
     assertTrue(Fixture.raResGroup.grp(target).isFull(target, goodCC))
   }
 
-  private case class TestCatTime(target: Target, conditions: ObsConditions, time: Time) extends CategorizedTime
+  private case class TestCatTime(target: Target, conditions: ObservingConditions, time: Time) extends CategorizedTime
 
 //  private val cat1 = TestCatTime(Target( 0.0, 0.0), badCC, Time.hours(10))
 //  private val cat2 = TestCatTime(Target(15.0, 0.0), badCC, Time.hours(10))

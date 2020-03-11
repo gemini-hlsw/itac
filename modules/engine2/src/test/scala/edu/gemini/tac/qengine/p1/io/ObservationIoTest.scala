@@ -2,7 +2,7 @@ package edu.gemini.tac.qengine.p1.io
 
 import edu.gemini.model.p1.{immutable => im}
 import edu.gemini.model.p1.{mutable => m}
-import edu.gemini.tac.qengine.ctx.Site
+import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.p1._
 import edu.gemini.tac.qengine.p1.io.ObservationIo.GroupedObservations
 import edu.gemini.tac.qengine.p1.QueueBand.Category.{B1_2, B3}
@@ -188,7 +188,7 @@ class ObservationIoTest {
 
   @Test def readOneObservation(): Unit = {
     ObservationIo.readAllAndGroup((new ProposalFixture).proposal, when) match {
-      case Success(NonEmptyList((Site.south, B1_2, NonEmptyList(obs, _)), _)) => // ok
+      case Success(NonEmptyList((Site.GS, B1_2, NonEmptyList(obs, _)), _)) => // ok
       case _ => fail("Expected a single GS Band1/2 observation")
     }
   }
@@ -211,8 +211,8 @@ class ObservationIoTest {
     ObservationIo.readAllAndGroup(p.proposal, when) match {
       case Success(nel) =>
         val m = mapObsGroups(nel)
-        val os1 = m((Site.south, B1_2))
-        val os2 = m((Site.north, B1_2))
+        val os1 = m((Site.GS, B1_2))
+        val os2 = m((Site.GN, B1_2))
         assertEquals(2, m.size)
         assertEquals(false, os1.head.lgs)
         assertEquals(true,  os2.head.lgs)
@@ -237,8 +237,8 @@ class ObservationIoTest {
     ObservationIo.readAllAndGroup(p.proposal, when) match {
       case Success(nel) =>
         val m = mapObsGroups(nel)
-        val os1 = m((Site.south, B1_2))
-        val os2 = m((Site.south, B3))
+        val os1 = m((Site.GS, B1_2))
+        val os2 = m((Site.GS, B3))
         assertEquals(2, m.size)
         assertEquals(1, os1.size)
         assertEquals(1, os2.size)
@@ -278,9 +278,9 @@ class ObservationIoTest {
     ObservationIo.readAllAndGroup(p.proposal, when) match {
       case Success(nel) =>
         val m = mapObsGroups(nel)
-        val os1 = m((Site.south, B1_2))
-        val os2 = m((Site.south, B3))
-        val os3 = m((Site.north, B1_2))
+        val os1 = m((Site.GS, B1_2))
+        val os2 = m((Site.GS, B3))
+        val os3 = m((Site.GN, B1_2))
         assertEquals(3, m.size)
         assertEquals(2, os1.size)
         assertEquals(1, os2.size)

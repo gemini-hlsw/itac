@@ -1,7 +1,8 @@
 package edu.gemini.tac.qengine.api.config
 
 import edu.gemini.tac.qengine.util.{Percent, Time}
-import edu.gemini.tac.qengine.ctx.{Context, Semester, Site}
+import edu.gemini.spModel.core.{Semester, Site}
+import edu.gemini.tac.qengine.ctx.Context
 
 // TODO:
 // The RaBinGroup[Time] limits and DecBinGroup[Percent] can be calculated given

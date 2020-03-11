@@ -4,7 +4,8 @@ import org.junit._
 import Assert._
 import edu.gemini.tac.qengine.p1._
 import edu.gemini.tac.qengine.util.Time
-import edu.gemini.tac.qengine.ctx.{Partner, Site}
+import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.spModel.core.Site
 
 // This test is @Ignore so there is no attempt to run it by itself.  It is run
 // via the two subclasses, EagerMergeTest and LazyMergeTest.
@@ -23,7 +24,7 @@ import edu.gemini.tac.qengine.ctx.{Partner, Site}
 
   protected def core(partner: Partner, hrs: Double): CoreProposal = {
     val ntac = Ntac(partner, "x", 0, Time.hours(hrs))
-    CoreProposal(ntac, site = Site.south)
+    CoreProposal(ntac, site = Site.GS)
   }
 
   protected def masterPart(jointId: String, partner: Partner, hrs: Double): JointProposalPart =

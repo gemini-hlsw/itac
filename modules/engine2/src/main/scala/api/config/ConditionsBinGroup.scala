@@ -1,54 +1,66 @@
+// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
+
 package edu.gemini.tac.qengine.api.config
 
-import edu.gemini.tac.qengine.api.config.{ConditionsCategory => Cat}
-import edu.gemini.tac.qengine.p1.ObsConditions
+import edu.gemini.tac.qengine.p1.ObservingConditions
 import edu.gemini.tac.qengine.util.Percent
 
-object ConditionsBinGroup {
-  def apply[T](bins: Seq[ConditionsBin[T]]): ConditionsBinGroup[T] = {
-    // here we would sort and validate the sequence
-    val map  = bins.map(bin => (bin.cat, bin.binValue)).toMap
-    val path = Cat.SearchPath(bins)
-    new ConditionsBinGroup(map, path)
-  }
+/**
+ * A mapping from conditions categories to values `A`, along with a search path that allows
+ * observing conditions to be matched with categories with a preferred precedence.
+ */
+final case class ConditionsBinGroup[A](
+  bins:       Map[ConditionsCategory, A],
+  searchPath: ConditionsCategory.SearchPath
+) {
 
-  def percentBins(bins: (Cat, Double)*): ConditionsBinGroup[Percent] =
-    apply(ConditionsBin.percentBins(bins: _*))
-}
-
-class ConditionsBinGroup[T] private (val bins: Map[Cat, T], val searchPath: Cat.SearchPath) {
-
-  def updated(that: Seq[ConditionsBin[T]]): ConditionsBinGroup[T] =
+  def updated(that: Seq[ConditionsBin[A]]): ConditionsBinGroup[A] =
     updated(that.map(bin => (bin.cat, bin.binValue)))
 
-  def updated(that: TraversableOnce[(Cat, T)]): ConditionsBinGroup[T] = {
-    require((true/:that)((res, tup) => res && bins.get(tup._1).isDefined), "Cannot handle unknown categories.")
-    new ConditionsBinGroup[T](bins ++ that, searchPath)
+  def updated(that: TraversableOnce[(ConditionsCategory, A)]): ConditionsBinGroup[A] = {
+    require(
+      that.foldLeft(true)((res, tup) => res && bins.get(tup._1).isDefined),
+      "Cannot handle unknown categories."
+    )
+    new ConditionsBinGroup[A](bins ++ that, searchPath)
   }
 
-  def updated(oc: ObsConditions, newValue: T): ConditionsBinGroup[T] =
+  def updated(oc: ObservingConditions, newValue: A): ConditionsBinGroup[A] =
     updated(category(oc), newValue)
 
-  def updated(c: Cat, newValue: T): ConditionsBinGroup[T] = {
-    require(bins.get(c).isDefined, "Cannot handle unknown categories: "+ c.toString)
-    new ConditionsBinGroup[T](bins.updated(c, newValue), searchPath)
+  def updated(c: ConditionsCategory, newValue: A): ConditionsBinGroup[A] = {
+    require(bins.get(c).isDefined, "Cannot handle unknown categories: " + c.toString)
+    new ConditionsBinGroup[A](bins.updated(c, newValue), searchPath)
   }
 
-  def apply(c: Cat): T = bins(c)
+  def apply(c: ConditionsCategory): A =
+    bins.get(c).getOrElse(sys.error(s"ConditionsBinGroup: no mapping for $c"))
 
-  def map[U](f: T => U): ConditionsBinGroup[U] =
-    new ConditionsBinGroup[U](bins.mapValues(f(_)), searchPath)
+  def map[B](f: A => B): ConditionsBinGroup[B] =
+    new ConditionsBinGroup[B](bins.mapValues(f(_)), searchPath)
 
-  def category(oc: ObsConditions): ConditionsCategory = searchPath.category(oc)
+  def category(oc: ObservingConditions): ConditionsCategory = searchPath.category(oc)
 
   /**
    * Gets the ordered list of ConditionsBin associated with the category into
    * which the given observing conditions fall.
    */
-  def searchBins(oc: ObsConditions): List[ConditionsBin[T]] =
+  def searchBins(oc: ObservingConditions): List[ConditionsBin[A]] =
     searchPath(oc).map(cat => ConditionsBin(cat, bins(cat)))
 
-  def toXML = <ConditionsBinGroup>
-    <!-- complexity -->
-    </ConditionsBinGroup>
+}
+
+object ConditionsBinGroup {
+
+  def of[A](bins: Seq[ConditionsBin[A]]): ConditionsBinGroup[A] = {
+    // here we would sort and validate the sequence
+    val map  = bins.map(bin => (bin.cat, bin.binValue)).toMap
+    val path = ConditionsCategory.SearchPath(bins.map(_.cat).toList)
+    new ConditionsBinGroup(map, path)
+  }
+
+  def ofPercent(bins: (ConditionsCategory, Double)*): ConditionsBinGroup[Percent] =
+    of(ConditionsBin.ofPercent(bins: _*))
+
 }

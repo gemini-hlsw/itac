@@ -9,7 +9,7 @@ import edu.gemini.tac.qengine.p1.ImageQuality._
 import edu.gemini.tac.qengine.p1.SkyBackground._
 import edu.gemini.tac.qengine.p1.WaterVapor._
 import edu.gemini.tac.qengine.util.Percent
-import edu.gemini.tac.qengine.p1.ObsConditions
+import edu.gemini.tac.qengine.p1.ObservingConditions
 
 class ConditionsBinGroupTest {
   val cat0 = ConditionsCategory(Eq(CC50))
@@ -20,12 +20,12 @@ class ConditionsBinGroupTest {
   val bin1 = ConditionsBin(cat1, Percent(20))
   val bin2 = ConditionsBin(cat2, Percent(30))
   val bin3 = ConditionsBin(cat3, Percent(40))
-  val oc0  = ObsConditions(CC50,  IQ20, SB20, WV20)
-  val oc1  = ObsConditions(CC70,  IQ20, SB20, WV20)
-  val oc2  = ObsConditions(CC80,  IQ20, SB20, WV20)
-  val oc3  = ObsConditions(CCAny, IQ20, SB20, WV20)
+  val oc0  = ObservingConditions(CC50,  IQ20, SB20, WV20)
+  val oc1  = ObservingConditions(CC70,  IQ20, SB20, WV20)
+  val oc2  = ObservingConditions(CC80,  IQ20, SB20, WV20)
+  val oc3  = ObservingConditions(CCAny, IQ20, SB20, WV20)
 
-  val grp = ConditionsBinGroup(List(bin0, bin1, bin2, bin3))
+  val grp = ConditionsBinGroup.of(List(bin0, bin1, bin2, bin3))
 
   def validatePath(grp: ConditionsBinGroup[_]) {
     assertEquals(List(cat0), grp.searchPath(oc0))

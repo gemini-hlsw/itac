@@ -7,7 +7,7 @@ import m.CloudCover._
 import m.ImageQuality._
 import m.SkyBackground._
 import m.WaterVapor._
-import edu.gemini.tac.qengine.ctx.Site
+import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.p1._
 import edu.gemini.tac.qengine.util.Time
 
@@ -41,7 +41,7 @@ object ObservationIo {
         case g: im.GeminiBlueprintBase => g.instrument.site
         case _                         => im.Site.GN
       } | im.Site.GN
-      if (imSite == im.Site.GN) Site.north else Site.south
+      if (imSite == im.Site.GN) Site.GN else Site.GS
     }
 
     // Get the p1 observations QueueBand.Category (Band 3 or Band 1/2).
@@ -84,11 +84,11 @@ object ObservationIo {
     Target(c.ra.toAngle.toDegrees, c.dec.toDegrees, ~Option(t.name))
   }
 
-  private def conditions(o: im.Observation): ValidationNel[String, ObsConditions] = {
-    o.condition.map(conditions).fold(MISSING_CONDITIONS.failureNel[ObsConditions]) { _.successNel[String] }
+  private def conditions(o: im.Observation): ValidationNel[String, ObservingConditions] = {
+    o.condition.map(conditions).fold(MISSING_CONDITIONS.failureNel[ObservingConditions]) { _.successNel[String] }
   }
 
-  def conditions(c: im.Condition): ObsConditions = {
+  def conditions(c: im.Condition): ObservingConditions = {
     val cc = c.cc match {
       case `cc50`  => CloudCover.CC50
       case `cc70`  => CloudCover.CC70
@@ -117,7 +117,7 @@ object ObservationIo {
       case `wv100` => WaterVapor.WVAny
     }
 
-    ObsConditions(cc, iq, sb, wv)
+    ObservingConditions(cc, iq, sb, wv)
   }
 
   def time(o: im.Observation): ValidationNel[String, Time] =

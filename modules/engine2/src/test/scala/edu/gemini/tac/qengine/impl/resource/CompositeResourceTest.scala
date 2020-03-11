@@ -8,7 +8,7 @@ import org.junit._
 import Assert._
 import edu.gemini.tac.qengine.util.{BoundedTime, Time}
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
-import edu.gemini.tac.qengine.ctx.Site
+import edu.gemini.spModel.core.Site
 
 class CompositeResourceTest {
   import edu.gemini.tac.qengine.ctx.TestPartners._
@@ -39,8 +39,8 @@ class CompositeResourceTest {
 
   private val ntac   = Ntac(US, "x", 0, Time.hours(10))
   private val target = Target(0.0, 0.0) // not used
-  private val conds  = ObsConditions.AnyConditions
-  private val prop   = CoreProposal(ntac, site = Site.south, obsList = List(Observation(target, conds, Time.hours(10))))
+  private val conds  = ObservingConditions.AnyConditions
+  private val prop   = CoreProposal(ntac, site = Site.GS, obsList = List(Observation(target, conds, Time.hours(10))))
 
   @Test def testReserve() {
     val btr1 = new BoundedTimeReservation1(BoundedTime(Time.hours(1)))

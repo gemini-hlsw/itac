@@ -1,6 +1,6 @@
 package edu.gemini.tac.qengine.api.queue.time
 
-import edu.gemini.tac.qengine.ctx.Site
+import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.util.Time
 import edu.gemini.tac.qengine.p1.{Mode, Proposal}
 import edu.gemini.tac.qengine.ctx.Partner

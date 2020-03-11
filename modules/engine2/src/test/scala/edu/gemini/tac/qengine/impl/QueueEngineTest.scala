@@ -1,6 +1,7 @@
 package edu.gemini.tac.qengine.impl
 
-import edu.gemini.tac.qengine.ctx.{Semester, Site, Partner}
+import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.spModel.core.{Site, Semester}
 import edu.gemini.tac.qengine.api.config.{DecBinGroup, RaBinGroup, SiteSemesterConfig, QueueEngineConfig, ProportionalPartnerSequence}
 import edu.gemini.tac.qengine.api.queue.time.{PartnerTime, QueueTime}
 import org.junit.{Assert, Test}
@@ -8,6 +9,7 @@ import resource.RaResource
 import edu.gemini.tac.qengine.p1._
 import util.Random
 import edu.gemini.tac.qengine.util.{Angle, Percent, Time}
+import edu.gemini.tac.qengine.p2.rollover.RolloverReport
 
 /**
  * Higher-level tests. These are intended to exercise the Queue Engine with a large number of pseudo-random proposals.
@@ -107,13 +109,13 @@ class QueueEngineTest {
     new Angle(mag, Angle.Deg)
   }
 
-  def randomCondition(maybeCC: Option[CloudCover] = None): ObsConditions = {
+  def randomCondition(maybeCC: Option[CloudCover] = None): ObservingConditions = {
     val cc = maybeCC.getOrElse(CloudCover.values.apply(random.nextInt(4)))
     val iq = ImageQuality.values.apply(random.nextInt(4))
     val sb = SkyBackground.values.apply(random.nextInt(4))
     val wv = WaterVapor.values.apply(random.nextInt(4))
 
-    new ObsConditions(cc, iq, sb, wv)
+    new ObservingConditions(cc, iq, sb, wv)
   }
 
   def randomTime: Time = {
@@ -127,8 +129,8 @@ class QueueEngineTest {
   def randomSite(p: Partner): Site =
     if (p.sites.size == 1) p.sites.iterator.next()
     else random.nextBoolean() match {
-      case true => Site.north
-      case false => Site.south
+      case true => Site.GN
+      case false => Site.GS
     }
 
   def randomPartner: Partner = partners(random.nextInt(partners.size))
@@ -146,34 +148,34 @@ class QueueEngineTest {
 
   def queueEngineConfig(site: Site, semester: Semester = semester, initialPick: Partner = initialPick): QueueEngineConfig = {
     val binConfig = new SiteSemesterConfig(site, semester, raBinGroup, decBinGroup, List.empty)
-    QueueEngineConfig(partners, binConfig, new ProportionalPartnerSequence(partners, site, initialPick))
+    QueueEngineConfig(partners, binConfig, new ProportionalPartnerSequence(partners, site, initialPick), RolloverReport.empty)
   }
 
   def tinyPs: List[CoreProposal] = {
     val t = new Target(randomRA, randomDec, None)
-    val tinyO = Observation(t, ObsConditions.AnyConditions, Time.minutes(10), lgs = false)
+    val tinyO = Observation(t, ObservingConditions.AnyConditions, Time.minutes(10), lgs = false)
     val tinyOs = List(tinyO)
 
-    val s0 = coreProposal("S0", GS, 1, 0.25, Site.south, tinyOs, b3s = List.empty)
-    val n0 = coreProposal("N0", GS, 1, 0.25, Site.north, tinyOs, b3s = List.empty)
-    val s1 = coreProposal("S1", GS, 1, 0.25, Site.south, tinyOs, b3s = List.empty, mode = Mode.Classical)
+    val s0 = coreProposal("S0", GS, 1, 0.25, Site.GS, tinyOs, b3s = List.empty)
+    val n0 = coreProposal("N0", GS, 1, 0.25, Site.GN, tinyOs, b3s = List.empty)
+    val s1 = coreProposal("S1", GS, 1, 0.25, Site.GS, tinyOs, b3s = List.empty, mode = Mode.Classical)
     List(s0, n0, s1)
   }
 
   def psWithBothB1B2AndB3Os : List[CoreProposal] = {
     val t = new Target(randomRA, randomDec, None)
-    val tinyO = Observation(t, ObsConditions.AnyConditions, Time.minutes(10), lgs = false)
+    val tinyO = Observation(t, ObservingConditions.AnyConditions, Time.minutes(10), lgs = false)
     val tinyOs = List(tinyO)
 
-    val s0 = coreProposal("S0", GS, 1, 0.15, Site.south, tinyOs, b3s = tinyOs)
-    val n0 = coreProposal("N0", GS, 1, 0.15, Site.north, tinyOs, b3s = tinyOs)
-    val s1 = coreProposal("S1", GS, 1, 0.15, Site.south, tinyOs, b3s = tinyOs, mode = Mode.Classical)
+    val s0 = coreProposal("S0", GS, 1, 0.15, Site.GS, tinyOs, b3s = tinyOs)
+    val n0 = coreProposal("N0", GS, 1, 0.15, Site.GN, tinyOs, b3s = tinyOs)
+    val s1 = coreProposal("S1", GS, 1, 0.15, Site.GS, tinyOs, b3s = tinyOs, mode = Mode.Classical)
     List(s0, n0, s1)
   }
 
   @Test
   def filterProposals(): Unit = {
-    val config = queueEngineConfig(Site.south)
+    val config = queueEngineConfig(Site.GS)
     val ps = tinyPs
     val (filtered, _) = QueueEngine.filterProposalsAndInitializeBins(ps, config)
     Assert.assertEquals(1, filtered.size)
@@ -183,7 +185,7 @@ class QueueEngineTest {
   @Test
   def initializeBins(): Unit = {
     val ps = tinyPs
-    val config = queueEngineConfig(Site.south)
+    val config = queueEngineConfig(Site.GS)
 
     val (_, resourceGroup) = QueueEngine.filterProposalsAndInitializeBins(ps, config)
     val binGroup = resourceGroup.grp
@@ -200,11 +202,11 @@ class QueueEngineTest {
   def calculateBands1And2(): Unit =
     Range(1, 5).foreach { i =>
       val initialPs = randomProposals(100)
-      val config = queueEngineConfig(Site.south)
+      val config = queueEngineConfig(Site.GS)
       val (ps, bins) = QueueEngine.filterProposalsAndInitializeBins(initialPs, config)
       //Deterministic seed means random always has same result (I hope)
       Assert.assertEquals(51, ps.size)
-      val stage = QueueEngine.fillBands1And2(ps, queueTime(Site.south), config, bins)
+      val stage = QueueEngine.fillBands1And2(ps, queueTime(Site.GS), config, bins)
 
       val logs = stage.log.toList
       //Assert.assertEquals(31, logs.size)
@@ -221,8 +223,8 @@ class QueueEngineTest {
     Range(1, 2).foreach {
       i =>
         val initialPs = randomProposals(1000)
-        val config = queueEngineConfig(Site.south)
-        val q = QueueEngine.calc(initialPs, queueTime(Site.south), config, partners)
+        val config = queueEngineConfig(Site.GS)
+        val q = QueueEngine.calc(initialPs, queueTime(Site.GS), config, partners)
         /*
        Not true if B3 rejected from B1/B2 and then accepted
        validateInRankOrder(queue)
@@ -241,8 +243,8 @@ class QueueEngineTest {
   @Test
   def band3ProposalsAreNotCounted(): Unit = {
     val initialPs = tinyPs
-    val config = queueEngineConfig(Site.south)
-    val q = QueueEngine.calc(initialPs, queueTime(Site.south), config, partners)
+    val config = queueEngineConfig(Site.GS)
+    val q = QueueEngine.calc(initialPs, queueTime(Site.GS), config, partners)
     val queue = q.queue.toList
     Assert.assertEquals(1, queue.size)
     val proposalMinutes = tinyPs.head.obsList.map(o => o.time.toMinutes.value).sum
@@ -254,8 +256,8 @@ class QueueEngineTest {
   @Test
   def band12NotRejectedDueToB3(): Unit = {
     val initialPs = psWithBothB1B2AndB3Os
-    val config = queueEngineConfig(Site.south)
-        val q = QueueEngine.calc(initialPs, queueTime(Site.south), config, partners)
+    val config = queueEngineConfig(Site.GS)
+        val q = QueueEngine.calc(initialPs, queueTime(Site.GS), config, partners)
         val queue = q.queue.toList
         Assert.assertEquals(1, queue.size)
         val proposalMinutes = tinyPs.head.obsList.map(o => o.time.toMinutes.value).sum

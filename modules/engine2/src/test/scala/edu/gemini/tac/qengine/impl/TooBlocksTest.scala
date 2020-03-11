@@ -4,16 +4,17 @@ import block.Block
 import org.junit._
 import Assert._
 import edu.gemini.tac.qengine.util.Time
-import edu.gemini.tac.qengine.p1.{ObsConditions, Target, Ntac}
+import edu.gemini.tac.qengine.p1.{ObservingConditions, Target, Ntac}
 import edu.gemini.tac.qengine.api.config.SiteSemesterConfig
 import resource.{RaResourceGroup, Fixture}
-import edu.gemini.tac.qengine.ctx.{Partner, Semester, Site}
+import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.spModel.core.{Site,Semester}
 
 class TooBlocksTest {
   import edu.gemini.tac.qengine.ctx.TestPartners._
   val partners = All
 
-  val site     = Site.south
+  val site     = Site.GS
   val semester = new Semester(2011, Semester.Half.A)
 
   val target = Target(0.0, 0.0) // not used for ToO observations
@@ -28,7 +29,7 @@ class TooBlocksTest {
 
     val hrs12 = Time.hours(12.0)
     val ntac  = Ntac(US, "US1", 1, hrs12)
-    val prop  = Fixture.mkProp(ntac, (target, ObsConditions.AnyConditions, hrs12))
+    val prop  = Fixture.mkProp(ntac, (target, ObservingConditions.AnyConditions, hrs12))
 
     // One big block with a 12 hour ToO observation.  (I know, that would never
     // happen in real life.)
@@ -46,7 +47,7 @@ class TooBlocksTest {
   @Test def testFullBlock() {
     val hrs23 = Time.hours(23.0)
     val ntac  = Ntac(US, "US1", 1, hrs23)
-    val prop  = Fixture.mkProp(ntac, (target, ObsConditions.AnyConditions, hrs23))
+    val prop  = Fixture.mkProp(ntac, (target, ObservingConditions.AnyConditions, hrs23))
 
     // One big block with a 23 hour ToO observation.  (I know, that would never
     // happen in real life.)
@@ -69,7 +70,7 @@ class TooBlocksTest {
   @Test def testSmallBlocks() {
     val hrs = Time.hours(66.0)
     val ntac  = Ntac(US, "US1", 1, hrs)
-    val prop  = Fixture.mkProp(ntac, (target, ObsConditions.AnyConditions, hrs))
+    val prop  = Fixture.mkProp(ntac, (target, ObservingConditions.AnyConditions, hrs))
 
     // One big block with a 69 hour ToO observation.  (I know, that would never
     // happen in real life.)
@@ -98,7 +99,7 @@ class TooBlocksTest {
   @Test def testMax() {
     val hrs = Time.hours(276.0) // (0 + 1 + 2 + ... 23) = (23*24/2)
     val ntac  = Ntac(US, "US1", 1, hrs)
-    val prop  = Fixture.mkProp(ntac, (target, ObsConditions.AnyConditions, hrs))
+    val prop  = Fixture.mkProp(ntac, (target, ObservingConditions.AnyConditions, hrs))
 
     // One big block with a 276 hour ToO observation.  (I know, that would never
     // happen in real life.)
@@ -117,7 +118,7 @@ class TooBlocksTest {
   @Test def testNone() {
     val hrs = Time.hours(277.0) // (0 + 1 + 2 + ... 23) + 1 = (23*24/2) + 1
     val ntac  = Ntac(US, "US1", 1, hrs)
-    val prop  = Fixture.mkProp(ntac, (target, ObsConditions.AnyConditions, hrs))
+    val prop  = Fixture.mkProp(ntac, (target, ObservingConditions.AnyConditions, hrs))
 
     // One big block with a 277 hour ToO observation.  (I know, that would never
     // happen in real life.)

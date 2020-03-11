@@ -24,7 +24,7 @@ class ConditionsBinTest {
     val cat0 = ConditionsCategory(Eq(CC50))
     val cat1 = ConditionsCategory(Eq(CC70))
 
-    val l = ConditionsBin.list((cat0, Percent(10)), (cat1, Percent(20)))
+    val l = ConditionsBin.of((cat0, Percent(10)), (cat1, Percent(20)))
     assertEquals(10, l.head.binValue.doubleValue, Double.MinPositiveValue)
     assertEquals(20, l.last.binValue.doubleValue, Double.MinPositiveValue)
     assertEquals(cat0, l.head.cat)

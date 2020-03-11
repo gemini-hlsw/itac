@@ -4,7 +4,8 @@ import org.junit._
 import Assert._
 import edu.gemini.tac.qengine.util.Time
 import edu.gemini.tac.qengine.p1._
-import edu.gemini.tac.qengine.ctx.{Partner, Site}
+import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.spModel.core.Site
 
 class PoorWeatherCalcTest {
   import edu.gemini.tac.qengine.ctx.TestPartners._
@@ -16,7 +17,7 @@ class PoorWeatherCalcTest {
     Ntac(partner, ref, 0, Time.hours(1.0))
 
   private def core(partner: Partner, ref: String, poorWeather: Boolean): CoreProposal =
-    CoreProposal(ntac(partner, ref), site = Site.south, isPoorWeather = poorWeather)
+    CoreProposal(ntac(partner, ref), site = Site.GS, isPoorWeather = poorWeather)
 
   @Test def testEmpty() {
     assertEquals(Nil, PoorWeatherCalc(Nil))

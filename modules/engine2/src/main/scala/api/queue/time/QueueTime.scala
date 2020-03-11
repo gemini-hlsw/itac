@@ -2,7 +2,8 @@ package edu.gemini.tac.qengine.api.queue.time
 
 
 import edu.gemini.tac.qengine.api.config.QueueBandPercentages
-import edu.gemini.tac.qengine.ctx.{Partner, Site}
+import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.p1.QueueBand
 import edu.gemini.tac.qengine.p1.QueueBand._
 import edu.gemini.tac.qengine.util.{Percent, Time}
@@ -133,7 +134,7 @@ object QueueTime {
     apply(s, PartnerTime(partners, m))
 
   def apply(s: Site, pt: PartnerTime): QueueTime =
-    apply(s, pt, QueueBandPercentages.Default, Some(QueueTime.DefaultPartnerOverfillAllowance))
+    apply(s, pt, QueueBandPercentages(), Some(QueueTime.DefaultPartnerOverfillAllowance))
 
   def apply(s: Site, pt: PartnerTime, bp: QueueBandPercentages, poa: Option[Percent]): QueueTime =
     new DerivedQueueTime(s, pt, bp, poa)
@@ -216,7 +217,7 @@ final class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), Time],
   override val bandPercentages: QueueBandPercentages =
     Percent.relativePercentages(QueueBand.values.init.map(b => bandTimes(b).ms)) match {
       case (b1 :: b2 :: b3 :: Nil) => QueueBandPercentages(b1, b2, b3)
-      case _                       => QueueBandPercentages.Default
+      case _                       => QueueBandPercentages()
     }
 
   override val full: Time =

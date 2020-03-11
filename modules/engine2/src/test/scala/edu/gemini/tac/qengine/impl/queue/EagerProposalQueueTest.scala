@@ -12,7 +12,7 @@ import WaterVapor.WV50
 import edu.gemini.tac.qengine.api.config.QueueBandPercentages
 import edu.gemini.tac.qengine.api.queue.ProposalPosition
 import edu.gemini.tac.qengine.api.queue.time.{PartnerTime, QueueTime}
-import edu.gemini.tac.qengine.ctx.Site
+import edu.gemini.spModel.core.Site
 
 /**
  * ProposalQueue tests focused on testing joint proposal merge features and
@@ -23,13 +23,13 @@ class EagerProposalQueueTest {
   val partners = All
 
   // Need obsConds, but we don't use it for this test
-  private val obsConds = ObsConditions(CC50, IQ70, SB20, WV50)
+  private val obsConds = ObservingConditions(CC50, IQ70, SB20, WV50)
 
   private def mkProp(propTimeHours: Int, ref: String): CoreProposal = {
     val ntac = Ntac(GS, ref, 0, Time.hours(propTimeHours))
 
     // Make a proposal with just no observations.  We won't be using them anyway.
-    CoreProposal(ntac, site = Site.south)
+    CoreProposal(ntac, site = Site.GS)
   }
 
   private def masterPart(propTimeHours: Int, ref: String, jointId: String): JointProposalPart = {
@@ -39,7 +39,7 @@ class EagerProposalQueueTest {
   private def otherPart(propTimeHours: Int, ref: String, mp: JointProposalPart): JointProposalPart =
     JointProposalPart(mp.jointIdValue, mp.core.copy(ntac = Ntac(GS, ref, 0, Time.hours(propTimeHours))))
 
-  private val qs = ProposalQueueBuilder(QueueTime(Site.south, PartnerTime(partners, GS -> Time.hours(100)), QueueBandPercentages(30, 30, 40), Some(QueueTime.DefaultPartnerOverfillAllowance)), EagerMergeStrategy)
+  private val qs = ProposalQueueBuilder(QueueTime(Site.GS, PartnerTime(partners, GS -> Time.hours(100)), QueueBandPercentages(30, 30, 40), Some(QueueTime.DefaultPartnerOverfillAllowance)), EagerMergeStrategy)
   private val qtime = qs.queueTime
 
   @Test def testPromotePart() {

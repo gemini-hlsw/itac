@@ -4,6 +4,7 @@ import edu.gemini.tac.qengine.p1.{QueueBand, Observation, Proposal}
 import edu.gemini.tac.qengine.p1.WaterVapor
 import edu.gemini.tac.qengine.p1.WaterVapor.WV50
 import edu.gemini.tac.qengine.util.{Percent, Time}
+import scala.Ordering.Implicits._
 
 /**
  * TimeRestriction associates a name, a value, and a predicate.  The value

@@ -7,13 +7,15 @@ import edu.gemini.tac.qengine.api.config._
 import edu.gemini.tac.qengine.api.queue.time.QueueTime
 import edu.gemini.tac.qengine.p1.QueueBand.Category.Guaranteed
 import edu.gemini.tac.qengine.util.{Angle, Percent, Time}
-import edu.gemini.tac.qengine.ctx.{Partner, Semester, Site}
+import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.spModel.core.{Semester,Site}
+import edu.gemini.tac.qengine.p2.rollover.RolloverReport
 
 class RandomQueueTest {
   import edu.gemini.tac.qengine.ctx.TestPartners._
   val partners = All
 
-  val site     = Site.north
+  val site     = Site.GN
   val semester = new Semester(2011, Semester.Half.A)
   val rand     = new Random(42)
 
@@ -38,8 +40,8 @@ class RandomQueueTest {
 
   private def gnABinConfig: SiteSemesterConfig = new SiteSemesterConfig(site, semester, raLimits, decBins, List.empty)
 
-  private def randomConditions: ObsConditions =
-    ObsConditions(
+  private def randomConditions: ObservingConditions =
+    ObservingConditions(
       CloudCover.values(rand.nextInt(CloudCover.values.size)),
       ImageQuality.values(rand.nextInt(ImageQuality.values.size)),
       SkyBackground.values(rand.nextInt(SkyBackground.values.size)),
@@ -81,7 +83,7 @@ class RandomQueueTest {
     val binConf = gnABinConfig
     val props   = randomProposals
     val partnerSequence = new ProportionalPartnerSequence(partners, binConf.site)
-    val conf    = QueueEngineConfig(partners, binConf, partnerSequence)
+    val conf    = QueueEngineConfig(partners, binConf, partnerSequence, RolloverReport.empty)
 
     val startTime  = System.currentTimeMillis
     val calc       = QueueEngine(props, queueTime, conf, partners)

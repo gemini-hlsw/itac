@@ -45,7 +45,7 @@ class SemesterResourceTest {
 
   private val ntac = Ntac(GS, "x", 0, Time.hours(1.0))
 
-  private def mkProp(target: Target, conds: ObsConditions): Proposal =
+  private def mkProp(target: Target, conds: ObservingConditions): Proposal =
     Fixture.mkProp(ntac,  (target, conds, Time.hours(1.0)))
 
 

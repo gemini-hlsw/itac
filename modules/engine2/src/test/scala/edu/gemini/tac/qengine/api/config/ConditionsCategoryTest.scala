@@ -13,7 +13,7 @@ import org.junit._
 import Assert._
 
 class ConditionsCategoryTest {
-  private val oc = ObsConditions(CC70, IQ20, SB20, WV20)
+  private val oc = ObservingConditions(CC70, IQ20, SB20, WV20)
 
   @Test def testEq() {
     val matches = CloudCover.values.map(x => Cat(ccSpec=Eq(x)).matches(oc))
@@ -33,22 +33,22 @@ class ConditionsCategoryTest {
   @Test def testMultiple() {
     val cat = Cat(Eq(CC70), Eq(IQ20))
     assertTrue(cat.matches(oc))
-    assertFalse(cat.matches(ObsConditions(CC50, IQ20, SB20, WV20)))
-    assertFalse(cat.matches(ObsConditions(CC70, IQ70, SB20, WV20)))
+    assertFalse(cat.matches(ObservingConditions(CC50, IQ20, SB20, WV20)))
+    assertFalse(cat.matches(ObservingConditions(CC70, IQ70, SB20, WV20)))
   }
 
   @Test def testAll() {
     val cat = Cat(Eq(CC70), Eq(IQ20), Eq(SB20), Eq(WV20))
     assertTrue(cat.matches(oc))
-    assertFalse(cat.matches(ObsConditions(CC70, IQ20, SB50, WV20)))
-    assertFalse(cat.matches(ObsConditions(CC70, IQ20, SB20, WV50)))
+    assertFalse(cat.matches(ObservingConditions(CC70, IQ20, SB50, WV20)))
+    assertFalse(cat.matches(ObservingConditions(CC70, IQ20, SB20, WV50)))
   }
 
   @Test def testUnspecified() {
     val cat = Cat()
     assertTrue(cat.matches(oc))
-    assertTrue(cat.matches(ObsConditions(CC70, IQ20, SB50, WV20)))
-    assertTrue(cat.matches(ObsConditions(CC70, IQ20, SB20, WV50)))
+    assertTrue(cat.matches(ObservingConditions(CC70, IQ20, SB50, WV20)))
+    assertTrue(cat.matches(ObservingConditions(CC70, IQ20, SB20, WV50)))
   }
 
   @Test def testCanObserveEq() {
@@ -76,7 +76,7 @@ class ConditionsCategoryTest {
     val cat2 = Cat(Eq(CC50), Eq(IQ20), Ge(SB80))
     val cat3 = Cat(Ge(CC70), Eq(IQ20))
 
-    val oc = ObsConditions(CC80, IQ20, SB50)
+    val oc = ObservingConditions(CC80, IQ20, SB50)
 
     assertTrue(cat3.canObserve(oc))
     assertFalse(cat2.canObserve(oc))

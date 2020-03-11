@@ -1,6 +1,6 @@
 package edu.gemini.tac.qengine.api.config
 
-import edu.gemini.tac.qengine.ctx.{Semester, Site}
+import edu.gemini.spModel.core.{Semester, Site}
 import edu.gemini.tac.qengine.util.{Percent, Time}
 
 import org.junit._
@@ -8,7 +8,7 @@ import org.junit._
 class SiteSemesterConfigTest {
   // these aren't really relevant for the test cases, but required to
   // construct the SiteSemesterConfig
-  val site     = Site.north
+  val site     = Site.GN
   val semester = new Semester(2011, Semester.Half.A)
 
   @Test def testPassSingleDecBinPercentageRequirement() {

@@ -2,7 +2,8 @@ package edu.gemini.tac.qengine.impl.queue
 
 import edu.gemini.tac.qengine.api.queue.ProposalPosition
 import edu.gemini.tac.qengine.api.queue.time.{PartnerTime, QueueTime}
-import edu.gemini.tac.qengine.ctx.{Partner, Site}
+import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.p1.QueueBand._
 import edu.gemini.tac.qengine.p1._
 import edu.gemini.tac.qengine.util.Time
@@ -18,7 +19,7 @@ class FinalProposalQueueTest {
   val partners = All
 
   val delta     = 0.000001
-  val site      = Site.south
+  val site      = Site.GS
   val queueTime = QueueTime(site, PartnerTime.distribute(Time.hours(100), site, partners))
 
   private def mkProp(partner: Partner, propTimeHours: Int, id: String): CoreProposal = {

@@ -1,6 +1,7 @@
 package edu.gemini.tac.qengine.api.config
 
-import edu.gemini.tac.qengine.ctx.{Site, Partner}
+import edu.gemini.spModel.core.Site
+import edu.gemini.tac.qengine.ctx.Partner
 import xml.Elem
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

@@ -2,7 +2,8 @@ package edu.gemini.tac.qengine.p1.io
 
 import edu.gemini.model.p1.{immutable => im}
 import edu.gemini.model.p1.{mutable => m}
-import edu.gemini.tac.qengine.ctx.{TestPartners, Site}
+import edu.gemini.tac.qengine.ctx.TestPartners
+import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.p1._
 
 import org.junit._
@@ -98,7 +99,7 @@ class ProposalIoTest {
         assertEquals(Too.none, prop.too)
         assertEquals(Nil, prop.band3Observations)
         assertEquals(1, prop.obsList.size)
-        assertEquals(Site.south, prop.site)
+        assertEquals(Site.GS, prop.site)
         assertEquals(TestPartners.AU, prop.ntac.partner)
         assertEquals(Time.hours(1.0), prop.ntac.awardedTime)
       case _ => fail()
@@ -155,7 +156,7 @@ class ProposalIoTest {
     propIo.read(p.proposal, when, idGen) match {
       case Success((NonEmptyList(prop0, prop1), gen2)) =>
         assertEquals(1, gen2.next.count)
-        assertEquals(Set(Site.north, Site.south), Set(prop0.site, prop1.headOption.get.site))
+        assertEquals(Set(Site.GN, Site.GS), Set(prop0.site, prop1.headOption.get.site))
       case _ => fail()
     }
   }

@@ -12,7 +12,8 @@ import edu.gemini.tac.qengine.p1.WaterVapor
 import edu.gemini.tac.qengine.p1.WaterVapor._
 import edu.gemini.tac.qengine.impl.block.Block
 import edu.gemini.tac.qengine.log.RejectRestrictedBin
-import edu.gemini.tac.qengine.ctx.Site
+import edu.gemini.spModel.core.Site
+import scala.Ordering.Implicits._
 
 class TimeResourceTest {
   import edu.gemini.tac.qengine.ctx.TestPartners._
@@ -21,7 +22,7 @@ class TimeResourceTest {
   private val ntac   = Ntac(US, "x", 0, Time.hours(10))
   private val target = Target(0.0, 0.0) // not used
   private def conds(wv: WaterVapor) =
-    ObsConditions(CCAny, IQAny, SBAny, wv)
+    ObservingConditions(CCAny, IQAny, SBAny, wv)
 
   private val bin = TimeRestriction("WV", Percent(10)) {
     (_, obs, _) => obs.conditions.wv <= WV50
@@ -31,7 +32,7 @@ class TimeResourceTest {
   private val res60min = TimeResource(bin, Time.hours(10))
 
   private def mkProp(wv: WaterVapor): Proposal =
-    CoreProposal(ntac, site = Site.south, obsList = List(Observation(target, conds(wv), Time.hours(10))))
+    CoreProposal(ntac, site = Site.GS, obsList = List(Observation(target, conds(wv), Time.hours(10))))
 
   @Test def testReserveNoMatch() {
     val prop = mkProp(WV80)

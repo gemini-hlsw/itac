@@ -1,8 +1,9 @@
 package edu.gemini.tac.qengine.api.queue.time
 
 import edu.gemini.tac.qengine.api.queue.time.PartnerTimeCalc._
-import edu.gemini.tac.qengine.ctx.{TestPartners, Site}
-import edu.gemini.tac.qengine.ctx.Site.north
+import edu.gemini.tac.qengine.ctx.TestPartners
+import edu.gemini.spModel.core.Site
+import edu.gemini.spModel.core.Site.{ GN => north }
 import edu.gemini.tac.qengine.p1.Mode
 import edu.gemini.tac.qengine.util.Time
 
@@ -42,7 +43,7 @@ class PartnerTimeCalcTest extends PartnerTimeCalcTestBase {
 
   @Test def testNoNegativeResult() {
     val us = mkProp(US, "us-1", Time.hours(60), north, Mode.Classical)
-    val b = base(Site.north, Time.hours(100), partners)
+    val b = base(Site.GN, Time.hours(100), partners)
     val c = classical(north, List(us), partners)
     val r = PartnerTime(partners, US -> Time.hours(30))
     val n = net(b, partners, c, r)

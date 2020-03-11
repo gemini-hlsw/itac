@@ -58,7 +58,7 @@ class RaResourceGroup(val grp: RaBinGroup[RaResource]) extends Resource {
    * Reserves up-to the given amount of time, returning an updated
    * RaResourceGroup and any time left over that could not be reserved.
    */
-  def reserveAvailable(time: Time, target: Target, conds: ObsConditions): (RaResourceGroup, Time) = {
+  def reserveAvailable(time: Time, target: Target, conds: ObservingConditions): (RaResourceGroup, Time) = {
     val (bin, rem) = grp(target.ra).reserveAvailable(time, target, conds)
     (new RaResourceGroup(grp.updated(target.ra, bin)), rem)
   }

@@ -1,7 +1,8 @@
 package edu.gemini.tac.qengine.api.queue.time
 
 import edu.gemini.tac.qengine.util.{Percent, Time}
-import edu.gemini.tac.qengine.ctx.{Partner, Site}
+import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.spModel.core.Site
 import org.slf4j.LoggerFactory
 
 /**

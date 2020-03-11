@@ -1,13 +1,14 @@
 package edu.gemini.tac.qengine.api.queue.time
 
-import edu.gemini.tac.qengine.ctx.{TestPartners, Site}
+import edu.gemini.tac.qengine.ctx.TestPartners
+import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.util.{Percent, Time}
 
 import org.junit._
 import Assert._
 
 class PartnerTimeTest {
-  private val site = Site.north
+  private val site = Site.GN
 
   import TestPartners._
   val partners = All
