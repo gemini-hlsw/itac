@@ -108,7 +108,7 @@ trait BlockIterator {
 
   private def advancePartner(s: Seq[Partner], blockIteratorByPartner: IMap, remaining: Set[Partner] = BlockIterator.validpartners(allPartners, quantaMap)): BlockIterator = {
     if (remaining.isEmpty || s.isEmpty){
-      //QueueCalculationLog.logger.log(Level.INFO, "BlockIterator.empty()")
+      //QueueCalculationLog.logger.log(Level.trace, "BlockIterator.empty()")
       LOGGER.debug(<Event source="BlockIterator" event="Empty"/>.toString())
       new BlockIterator.Empty(allPartners)
     } else {
@@ -127,7 +127,7 @@ trait BlockIterator {
             </Event>.toString)
           }
         }
-        //QueueCalculationLog.logger.log(Level.INFO, (<Event source="BlockIterator" event="advancePartner">{s.head.fullName}</Event>).toString)
+        //QueueCalculationLog.logger.log(Level.trace, (<Event source="BlockIterator" event="advancePartner">{s.head.fullName}</Event>).toString)
         advancePartner(moreSeq, blockIteratorByPartner, remaining - s.head)
       }
     }
@@ -160,7 +160,7 @@ object BlockIterator {
 
     def mkIterator(s: Seq[Partner], t: Time, m: IMap) = {
       LoggerFactory.getLogger(this.getClass).debug("BlockIterator: " + seq.head + " remTime " + remTime)
-      //QueueCalculationLog.logger.log(Level.INFO, (<Event source="BlockIterator" event="mkIterator">{s.head.fullName}</Event>).toString)
+      //QueueCalculationLog.logger.log(Level.trace, (<Event source="BlockIterator" event="mkIterator">{s.head.fullName}</Event>).toString)
       new BlockIteratorImpl(allPartners, quantaMap, s, t, m)
     }
   }

@@ -46,7 +46,7 @@ lazy val engine2 = project
 
 lazy val main = project
   .in(file("modules/main"))
-  .dependsOn(engine)
+  .dependsOn(engine2)
   .enablePlugins(AutomateHeaderPlugin)
   .settings(
     name := "itc-cli-main",

@@ -1,3 +1,6 @@
+// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
+
 package edu.gemini.tac.qengine.p1
 
 import edu.gemini.tac.qengine.util.Time
@@ -15,7 +18,7 @@ sealed trait Proposal {
   def mode: Mode
   def too: Too.Value
   def obsList: List[Observation]
-  def band3Observations : List[Observation]
+  def band3Observations: List[Observation]
   def isPoorWeather: Boolean
   def piName: Option[String]
 
@@ -61,9 +64,17 @@ sealed trait Proposal {
   def containsId(that: Proposal.Id): Boolean = id == that
 
   def toXML =
-    <Proposal id={ id.toString }>
-      <PI>{ piName }</PI>
+    <Proposal id={id.toString}>
+      <PI>{piName}</PI>
     </Proposal>
+
+  // these aren't required by the engine but are needed for generating emails
+  // easiest solution is to just add them here
+  def isJointComponent: Boolean = false
+  def piEmail: Option[String]
+
+  def p1proposal: Option[edu.gemini.model.p1.immutable.Proposal]
+
 }
 
 /**
@@ -74,12 +85,14 @@ sealed trait Proposal {
 case class CoreProposal(
   ntac: Ntac,
   site: Site,
-  mode: Mode                 = Mode.Queue,
-  too: Too.Value             = Too.none,
+  mode: Mode = Mode.Queue,
+  too: Too.Value = Too.none,
   obsList: List[Observation] = Nil,
-  band3Observations : List[Observation] = Nil,
-  isPoorWeather: Boolean     = false,
-  piName: Option[String]     = None
+  band3Observations: List[Observation] = Nil,
+  isPoorWeather: Boolean = false,
+  piName: Option[String] = None,
+  piEmail: Option[String] = None,
+  p1proposal: Option[edu.gemini.model.p1.immutable.Proposal] = None
 ) extends Proposal {
   def core: CoreProposal = this
 }
@@ -88,15 +101,17 @@ case class CoreProposal(
  * Base class for Proposal implementations that delegate the implementation of
  * the abstract Proposal functions to another Proposal instance.
  */
-abstract class DelegatingProposal(coreProposal: Proposal) extends Proposal {
-  def ntac: Ntac                            = coreProposal.ntac
-  def site: Site                            = coreProposal.site
-  def mode: Mode                            = coreProposal.mode
-  def too: Too.Value                        = coreProposal.too
-  def obsList: List[Observation]            = coreProposal.obsList
-  def band3Observations : List[Observation] = coreProposal.band3Observations
-  def isPoorWeather: Boolean                = coreProposal.isPoorWeather
-  def piName: Option[String]                = coreProposal.piName
+sealed abstract class DelegatingProposal(coreProposal: Proposal) extends Proposal {
+  def ntac: Ntac                           = coreProposal.ntac
+  def site: Site                           = coreProposal.site
+  def mode: Mode                           = coreProposal.mode
+  def too: Too.Value                       = coreProposal.too
+  def obsList: List[Observation]           = coreProposal.obsList
+  def band3Observations: List[Observation] = coreProposal.band3Observations
+  def isPoorWeather: Boolean               = coreProposal.isPoorWeather
+  def piName: Option[String]               = coreProposal.piName
+  def piEmail: Option[String]              = coreProposal.piEmail
+  def p1proposal: Option[edu.gemini.model.p1.immutable.Proposal] = coreProposal.p1proposal
 }
 
 /**
@@ -108,6 +123,7 @@ case class JointProposalPart(
   core: CoreProposal
 ) extends DelegatingProposal(core) {
   override def jointId = Some(jointIdValue)
+  override def isJointComponent: Boolean = true
 
   /**
    * Tests whether the given JointProposalPart is mergeable with this one
@@ -120,6 +136,8 @@ case class JointProposalPart(
    * Creates a JointProposal containing only this part.
    */
   def toJoint: JointProposal = JointProposal(jointIdValue, core, List(core.ntac))
+
+
 }
 
 object JointProposalPart {
@@ -131,12 +149,14 @@ object JointProposalPart {
  * A JointProposal is a collection of proposals sharing the same joint id,
  * observations, resources, etc.  Each has its own Ntac information.
  */
-case class JointProposal(jointIdValue: String, core: CoreProposal, ntacs: List[Ntac]) extends DelegatingProposal(core) {
+case class JointProposal(jointIdValue: String, core: CoreProposal, ntacs: List[Ntac])
+    extends DelegatingProposal(core) {
 
   // Joint proposal's "NTAC" information doesn't really make sense, except for
   // combining the awarded times.  Using the master for everything except the
   // time and the id which must be unique.
-  override val ntac    = Ntac(core.ntac.partner, jointIdValue, core.ntac.ranking, Ntac.awardedTimeSum(ntacs))
+  override val ntac =
+    Ntac(core.ntac.partner, jointIdValue, core.ntac.ranking, Ntac.awardedTimeSum(ntacs))
 
   override def jointId = Some(jointIdValue)
 
@@ -148,7 +168,7 @@ case class JointProposal(jointIdValue: String, core: CoreProposal, ntacs: List[N
 
   override def containsId(that: Proposal.Id) =
     super.containsId(that) ||
-    ntacs.exists(n => (that.partner == n.partner) && (that.reference == n.reference))
+      ntacs.exists(n => (that.partner == n.partner) && (that.reference == n.reference))
 }
 
 object JointProposal {
@@ -212,9 +232,9 @@ object Proposal {
   @tailrec
   private def expandJoints(rem: List[Proposal], out: List[Proposal]): List[Proposal] =
     rem match {
-      case Nil => out.reverse
+      case Nil                           => out.reverse
       case (head: JointProposal) :: tail => expandJoints(tail, head.toParts.reverse ::: out)
-      case head :: tail => expandJoints(tail, head :: out)
+      case head :: tail                  => expandJoints(tail, head :: out)
     }
 
   /**
@@ -229,5 +249,5 @@ object Proposal {
   /**
    * Sums the awarded time for the proposals in the given
    */
-  def sumTimes(lst: Traversable[Proposal]): Time = (Time.ZeroHours/:lst)(_ + _.time)
+  def sumTimes(lst: Traversable[Proposal]): Time = lst.foldLeft(Time.ZeroHours)(_ + _.time)
 }

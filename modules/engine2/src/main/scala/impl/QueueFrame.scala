@@ -35,7 +35,7 @@ final class QueueFrame(val queue: ProposalQueueBuilder, val iter: BlockIterator,
       val prop     = block.prop
       val partner  = prop.id.partner
       val newQueue = queue :+ prop
-      applicationLogger.info("accept(): " + block.toString)
+      applicationLogger.trace("accept(): " + block.toString)
       (newQueue, Some(AcceptMessage(prop, newQueue.bounds(partner), newQueue.bounds)))
     } else
       // More blocks for this proposal so we can't accept it yet.
@@ -45,7 +45,7 @@ final class QueueFrame(val queue: ProposalQueueBuilder, val iter: BlockIterator,
     val msg = "Block of time " + block.time.toHours + " proposed for Proposal[" +block.prop.id + "] w observation time=" + block.obs.time.toHours.toString + "" +
       " Proposal Awarded [" + block.prop.ntac.awardedTime.toHours.toString + "] by " + block.prop.ntac.partner.id + "]"
     LOGGER.debug(msg)
-    //applicationLogger.log(Level.INFO, "next():" + block.toString);
+    //applicationLogger.log(Level.trace, "next():" + block.toString);
   }
 
   def next(activeList : Proposal=>List[Observation]): RejectMessage Either Next = {
@@ -65,7 +65,7 @@ final class QueueFrame(val queue: ProposalQueueBuilder, val iter: BlockIterator,
     val finishedBand = ! this.queue.band.isIn(cat)
     if (noMoreQueueFrames || finishedBand){
       LOGGER.debug("QueueCalcStage.emptyOrOtherCategory leaving band %s caused by No more time blocks for current partner (%s) or finished band (%s)".format(cat, noMoreQueueFrames, finishedBand))
-      applicationLogger.info("emptyOrOtherCategory == true")
+      applicationLogger.trace("emptyOrOtherCategory == true")
       true
     }else{
       false

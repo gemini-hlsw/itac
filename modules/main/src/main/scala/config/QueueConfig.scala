@@ -25,21 +25,21 @@ final case class QueueConfig(
     import edu.gemini.tac.qengine.util.Time
     import edu.gemini.tac.qengine.ctx.{ Partner => ItacPartner }
     import edu.gemini.tac.qengine.api.queue.time.{ QueueTime => ItacQueueTime }
-    import edu.gemini.tac.qengine.api.queue.time.{ PartnerTimes => ItacPartnerTime }
+    import edu.gemini.tac.qengine.api.queue.time.{ PartnerTime => ItacPartnerTime }
 
     def fullPartnerTime(allPartners: List[ItacPartner]): ItacPartnerTime =
       // PartnerTime.distribute(Time.hours(totalHours), site, allPartners)
     {
       val pt = ItacPartnerTime(
         allPartners,
-        allPartners.fproduct(p => Time.hours(totalHours * p.percentAt(site) / 100.0)).toMap
+        allPartners.fproduct(p => Time.hours(totalHours * p.percentAt(site).doubleValue / 100.0)).toMap
       )
       // println(s">> fullPartnerTime: $pt")
       pt
     }
 
     def queueTime(allPartners: List[ItacPartner]): ItacQueueTime =
-      new ItacQueueTime(
+      ItacQueueTime(
         site,
         fullPartnerTime(allPartners),
         bands.engine.queueBandPercentages,

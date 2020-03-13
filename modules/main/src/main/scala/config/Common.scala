@@ -50,12 +50,12 @@ final case class Common(
         Shutdown(site, date(ldr.start), date(ldr.end))
       }
 
-      lazy val conditionsBins: ConditionsBinGroup[Percent] =
-        ConditionsBinGroup.of(Common.this.conditionsBins)
-
-    }
+    lazy val conditionsBins: ConditionsBinGroup[Percent] =
+      ConditionsBinGroup.of(Common.this.conditionsBins)
 
   }
+
+}
 
 object Common {
   import Partner._ // need higher-priority implicit for sequence

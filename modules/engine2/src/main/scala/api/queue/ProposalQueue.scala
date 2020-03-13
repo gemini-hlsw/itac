@@ -5,6 +5,7 @@ import edu.gemini.tac.qengine.p1.QueueBand.Category
 import edu.gemini.tac.qengine.api.queue.time.QueueTime
 import edu.gemini.tac.qengine.util.{BoundedTime, Time}
 import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.spModel.core.ProgramId
 
 /**
  * ProposalQueue is used to track the current state of the queue, including the
@@ -139,6 +140,12 @@ trait ProposalQueue {
    * the merged joint.  Returns None if the proposal is not found in the queue.
    */
   def positionOf(prop: Proposal): Option[ProposalPosition]
+
+  def programId(p: Proposal): Option[ProgramId] =
+    positionOf(p).map(_.programNumber).map { num =>
+      val str = s"${p.site.abbreviation}-${p.p1proposal.get.semester.display}-${p.mode.programId}-$num"
+      ProgramId.parse(str) // sorry
+    }
 
   /**
    * Gets a partner time distribution fairness evaluation for the queue

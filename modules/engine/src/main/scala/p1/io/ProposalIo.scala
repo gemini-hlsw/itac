@@ -12,8 +12,8 @@ import scalaz._
 import Scalaz._
 
 /**
- * Immutable Phase1 proposal
- */
+  * Immutable Phase1 proposal
+  */
 object ProposalIo {
   def mode(p: im.Proposal): Mode =
     p.proposalClass match {
@@ -50,18 +50,18 @@ class ProposalIo(partners: Map[String, Partner]) {
   val ntacIo = new NtacIo(partners)
 
   /**
-   * Extracts Queue Engine proposal information from the immutable proposal.
-   * May return multiple queue engine proposals since they must be split by
-   * site.
-   */
+    * Extracts Queue Engine proposal information from the immutable proposal.
+    * May return multiple queue engine proposals since they must be split by
+    * site.
+    */
   def read(
-    p: im.Proposal,
-    when: Long,
-    jointIdGen: JointIdGen
+      p: im.Proposal,
+      when: Long,
+      jointIdGen: JointIdGen
   ): ValidationNel[String, (NonEmptyList[Proposal], JointIdGen)] = {
 
     def read(
-      obsGroups: ObservationIo.GroupedObservations
+        obsGroups: ObservationIo.GroupedObservations
     )(ntacs: NonEmptyList[Ntac]): (NonEmptyList[Proposal], JointIdGen) = {
       // Discover which sites are used in the observations.
       val sites = obsGroups.map(_._1).list.toList.distinct
@@ -71,18 +71,32 @@ class ProposalIo(partners: Map[String, Partner]) {
         case ((propList, gen), site) =>
           // Get the list of observations associated with the given band category (if any).
           def bandList(cat: QueueBand.Category): List[Observation] =
-            ~obsGroups.list.find { case (s, b, _) => s == site && b == cat }.map(_._3.list.toList)
+            ~obsGroups.list
+              .find { case (s, b, _) => s == site && b == cat }
+              .map(_._3.list.toList)
 
           // Make the corresponding CoreProposal
           val ntac = ntacs.head
-          val b12  = bandList(QueueBand.Category.B1_2)
-          val b3   = bandList(QueueBand.Category.B3)
-          val core = CoreProposal(ntac, site, mode(p), too(p), b12, b3, ntac.poorWeather, piName(p), piEmail(p), Some(p))
+          val b12 = bandList(QueueBand.Category.B1_2)
+          val b3 = bandList(QueueBand.Category.B3)
+          val core = CoreProposal(
+            ntac,
+            site,
+            mode(p),
+            too(p),
+            b12,
+            b3,
+            ntac.poorWeather,
+            piName(p),
+            piEmail(p),
+            Some(p)
+          )
 
           // If there are more ntacs, it is a Joint, otherwise just this core.
           val (prop, newGen) = ntacs.tail.toList match {
             case Nil => (core, gen)
-            case _   => (JointProposal(gen.toString, core, ntacs.list.toList), gen.next)
+            case _ =>
+              (JointProposal(gen.toString, core, ntacs.list.toList), gen.next)
           }
           (prop :: propList, newGen)
       }

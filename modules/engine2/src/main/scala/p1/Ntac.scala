@@ -5,7 +5,7 @@ import edu.gemini.tac.qengine.p1.Ntac.Rank
 import edu.gemini.tac.qengine.ctx.{Share, Partner}
 
 
-case class Ntac(partner: Partner, reference: String, ranking: Rank, awardedTime: Time, poorWeather: Boolean = false, lead: Option[String] = None) extends Ordered[Ntac] {
+case class Ntac(partner: Partner, reference: String, ranking: Rank, awardedTime: Time, poorWeather: Boolean = false, lead: Option[String] = None,  comment: Option[String] = None) extends Ordered[Ntac] {
   require(awardedTime.ms >= 0, "Awarded time must be non-negative, not " + awardedTime.ms)
 
   def compare(that: Ntac): Int = Ntac.MasterOrdering.compare(this, that)

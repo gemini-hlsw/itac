@@ -6,6 +6,5 @@ import xml.Elem
 
 trait PartnerSequence{
   def sequence: Stream[Partner]
-  def configuration: Elem
 }
 

@@ -24,17 +24,31 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
 
   case class RaAllocation(name: String, boundedTime: BoundedTime)
   case class BucketsAllocationImpl(raBins: List[RaResource]) extends BucketsAllocation {
-    val hPerBin = 24 / raBins.length
+
+    sealed trait Row extends Product with Serializable
+    case class RaRow(h: String, r: Double, l: Double) extends Row
+    case class ConditionsRow(t: ConditionsCategory, r: Double, l: Double) extends Row
+
+    val hPerBin  = 24 / raBins.length
     val binHours = 0 until 24 by 24 / raBins.length
-    val raRanges = binHours.map(h => s"$h-${h+hPerBin} h")
-    val report = raRanges.zip(raBins).map {
+    val raRanges = binHours.map(h => s"$h-${h + hPerBin} h")
+    val report = raRanges.zip(raBins).toList.map {
       case (h, b) =>
-        val ra = (h, math.round(b.remaining.toMinutes.value) / 60.0, math.round(b.limit.toMinutes.value) / 60.0)
+        val ra = RaRow(
+          h,
+          math.round(b.remaining.toMinutes.value) / 60.0,
+          math.round(b.limit.toMinutes.value) / 60.0
+        )
         val conds = b.condsRes.bins.bins.toList.sortBy(_._1.name).map {
-          case (c, t) => "Conditions" -> (c, math.round(t.remaining.toMinutes.value) / 60.0, math.round(t.limit.toMinutes.value) / 60.0)
+          case (c, t) =>
+            ConditionsRow(
+              c,
+              math.round(t.remaining.toMinutes.value) / 60.0,
+              math.round(t.limit.toMinutes.value) / 60.0
+            )
         }
         //s"$ra\n${conds.mkString("\n")}"
-        ("RA" -> ra) :: conds
+        ra :: conds
     }
 
     override def toString = {
@@ -48,23 +62,29 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
         <tr><th colspan="4">RA/Conditions Bins (remaining/limit)</th></tr>
         <tr><td><b>Bin type</b></td><td><b>Remaining</b></td><td><b>Limit</b></td></tr>
         {
-          report.flatten.collect {
-            case ("RA", (h: String, r: Double, l: Double)) =>
-              <tr border="2px">
+        report.flatten.collect {
+          case RaRow(h: String, r: Double, l: Double) =>
+            <tr border="2px">
                 <td style="text-align:right">RA: {h}</td>
                 <td style="text-align:right">{f"$r%1.2f"} hrs</td>
                 <td style="text-align:right">{f"$l%1.2f"} hrs</td>
               </tr>
-            case ("Conditions", (t: ConditionsCategory, r: Double, l: Double)) =>
-              <tr>
+          case ConditionsRow(t: ConditionsCategory, r: Double, l: Double) =>
+            <tr>
                 <td style="text-align:right">Conditions: {t}</td>
                 <td style="text-align:right">{f"$r%1.2f"} hrs</td>
                 <td style="text-align:right">{f"$l%1.2f"} hrs</td>
               </tr>
-          }
         }
+      }
       </table>
     }.toString
+
+    val raTablesANSI: String =
+      report.flatten.map {
+        case RaRow(h, r, l)         => f"${Console.BOLD}RA: $h%-78s   $r%6.2f  $l%6.2f${Console.RESET}"
+        case ConditionsRow(t, r, l) => f"Conditions: $t%-70s   $r%6.2f  $l%6.2f "
+      } .mkString("\n")
 
   }
 
