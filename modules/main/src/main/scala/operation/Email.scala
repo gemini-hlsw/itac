@@ -25,12 +25,13 @@ import edu.gemini.spModel.core.Semester
 import org.apache.velocity.app.VelocityEngine
 import edu.gemini.tac.qengine.api.QueueEngine
 import edu.gemini.tac.qengine.api.queue.ProposalQueue
-import edu.gemini.model.p1.immutable.TimeAmount
-import edu.gemini.tac.qengine.p1.QueueBand.QBand1
-import edu.gemini.tac.qengine.p1.QueueBand.QBand2
-import edu.gemini.tac.qengine.p1.QueueBand.QBand3
-import edu.gemini.tac.qengine.p1.QueueBand.QBand4
-import edu.gemini.model.p1.immutable.Band
+// import edu.gemini.model.p1.immutable.TimeAmount
+// import edu.gemini.tac.qengine.p1.QueueBand.QBand1
+// import edu.gemini.tac.qengine.p1.QueueBand.QBand2
+// import edu.gemini.tac.qengine.p1.QueueBand.QBand3
+// import edu.gemini.tac.qengine.p1.QueueBand.QBand4
+// import edu.gemini.model.p1.immutable.Band
+import edu.gemini.util.security.auth.ProgIdHash
 
 /**
  * @see Velocity documentation https://velocity.apache.org/engine/2.2/developer-guide.html
@@ -114,7 +115,9 @@ object Email {
         for {
           s  <- ws.commonConfig.map(_.semester)
           t  <- ws.readEmailTemplate(EmailTemplateRef.PiSuccessful)
-          ps  = velocityBindings(p, s, pq)
+          h  <- ws.progIdHash
+          ps  = velocityBindings(p, s, pq, h)
+          _  <- Sync[F].delay(ps.foreach(println))
           tit = merge(velocity, t.name, t.titleTemplate, ps)
           _  <- Sync[F].delay(println(tit))
           bod = merge(velocity, t.name, t.bodyTemplate, ps)
@@ -164,45 +167,36 @@ object Email {
        * not, before attempting a dereference.
        * @see strict reference mode https://velocity.apache.org/engine/1.7/user-guide.html#strict-reference-mode
        */
-      def velocityBindings(p: Proposal, s: Semester, q: ProposalQueue): Map[String, AnyRef] = {
+      def velocityBindings(p: Proposal, s: Semester, q: ProposalQueue, pih: ProgIdHash): Map[String, AnyRef] = {
 
-        println(s"==> ${p.id.reference} - ${q.programId(p).map(_.toString).orEmpty}")
+        // println(s"==> ${p.id.reference} - ${q.programId(p).map(_.toString).orEmpty}")
 
         var mut = scala.collection.mutable.Map.empty[String, AnyRef]
         mut = mut // defeat bogus unused warning
 
         // bindings that are always present
-        mut += "country"             -> p.ntac.partner.fullName
 
-        // What's the difference?
-        mut += "ntacRecommendedTime" -> p.ntac.awardedTime.toHours.toString
-        mut += "timeAwarded"         -> p.ntac.awardedTime.toHours.toString
-
-        mut += "ntacRefNumber"       -> p.ntac.reference
-        mut += "ntacRanking"         -> p.ntac.ranking.format
         mut += "semester"            -> s.toString
 
-        val (partTime, progTime) =
-          p.p1proposal.get.observations.foldLeft((TimeAmount.empty, TimeAmount.empty)) { case ((pa, pr), o) =>
-            val inBand: Boolean =
-              q.positionOf(p).get.band match {
-                case QBand1 | QBand2 => o.band == Band.BAND_1_2
-                case QBand3 | QBand4 => o.band == Band.BAND_3
-              }
-            if (o.enabled && inBand) {
-              val ts = o.calculatedTimes.get
-              (pa |+| ts.partTime, pr |+| ts.progTime)
-            } else (pa, pr)
-          }
+        // val (partTime, progTime) =
+        //   p.p1proposal.get.observations.foldLeft((TimeAmount.empty, TimeAmount.empty)) { case ((pa, pr), o) =>
+        //     val inBand: Boolean =
+        //       q.positionOf(p).get.band match {
+        //         case QBand1 | QBand2 => o.band == Band.BAND_1_2
+        //         case QBand3 | QBand4 => o.band == Band.BAND_3
+        //       }
+        //     if (o.enabled && inBand) {
+        //       val ts = o.calculatedTimes.get
+        //       (pa |+| ts.partTime, pr |+| ts.progTime)
+        //     } else (pa, pr)
+        //   }
 
-        println(s"Awarded time is ${p.ntac.awardedTime.toHours.toString}, progTime is ${progTime.toHours.format()}, partTime is ${partTime.toHours.format()}")
+        // println(s"Awarded time is ${p.ntac.awardedTime.toHours.toString}, progTime is ${progTime.toHours.format()}, partTime is ${partTime.toHours.format()}")
 
         // bindings that may be missing
-        p.ntac.comment.foreach(v => mut += "ntacComment"  -> v)
         p.piEmail     .foreach(v => mut += "piMail"       -> v)
         p.piName      .foreach(v => mut += "piName"       -> v)
         p.p1proposal  .foreach(p => mut += "progTitle"    -> p.title)
-        q.programId(p).foreach(v => mut += "progId"       -> v)
 
 
         // Not implemented yet
@@ -215,6 +209,138 @@ object Email {
         // mut += "progKey"             -> null
         // mut += "queueBand"           -> null
 
+
+
+        // ok we should probably get rid of the bindings above because they may differ from what
+        // the old system was doing
+
+
+
+        //     // proposals that made it that far must have an itac part, accepted ones must have an accept part
+        //     Validate.notNull(proposal.getPhaseIProposal());
+        //     Validate.notNull(proposal.getItac());
+
+        //     // get some of the important objects
+        //     PhaseIProposal doc = proposal.getPhaseIProposal();
+        //     Itac itac = proposal.getItac();
+        val itac = p.p1proposal.get.proposalClass.itac
+        //     Investigator pi = doc.getInvestigators().getPi();
+        //     Submission partnerSubmission = doc.getPrimary();
+
+        //     this.geminiComment = itac.getGeminiComment() != null ? itac.getGeminiComment() : "";
+        //??? no gemini comment
+        //     this.itacComments =  itac.getComment() != null ? itac.getComment() : "";
+        itac.flatMap(_.comment).foreach(v => mut += "itacComment" -> v)
+
+        //     if (itac.getRejected() || itac.getAccept() == null) {
+        //         // either rejected or no accept part yet: set empty values
+        //         this.progId = "";
+        //         this.progKey = "";
+        //         this.geminiContactEmail = "";
+        //         this.timeAwarded = "";
+        //     } else {
+        //         this.progId = itac.getAccept().getProgramId();
+        q.programId(p).foreach(v => mut += "progId"       -> v)
+        //         this.progKey = ProgIdHash.pass(this.progId);
+        q.programId(p).foreach(v => mut += "progKey"       -> pih.pass(v.toString))
+        //         this.geminiContactEmail = itac.getAccept().getContact();
+        itac.flatMap(_.decision.flatMap(_.toOption)).flatMap(_.contact).foreach(v => mut += "geminiContactEmail" -> v)
+        //         this.timeAwarded = itac.getAccept().getAward().toPrettyString();
+        itac.flatMap(_.decision.flatMap(_.toOption)).map(_.award).foreach(v => mut += "timeAwarded" -> v.toHours)
+        if (!mut.contains("timeAwarded")) {
+          println(Console.GREEN + p.ntac.awardedTime + " ... " + itac.isDefined + " ... " + itac.flatMap(_.decision) + Console.RESET)
+        } else {
+          println(s"${Console.BLUE}~~~ ${mut("timeAwarded")} =? ${p.ntac.awardedTime} ${Console.RESET}")
+        }
+        //     }
+
+        //     if (!successful) {
+        //         // ITAC-70: use original partner time, the partner time might have been edited by ITAC to "optimize" queue
+        //         this.timeAwarded = "0.0 " + ntacExtension.getRequest().getTime().getUnits();
+        //     }
+
+        //     if (proposal.isJoint()) {
+        //         StringBuffer info = new StringBuffer();
+        //         StringBuffer time = new StringBuffer();
+        //         for(Submission submission : doc.getSubmissions()){
+        //             NgoSubmission ngoSubmission = (NgoSubmission) submission;
+        //             info.append(ngoSubmission.getPartner().getName());
+        //             info.append(" ");
+        //             info.append(ngoSubmission.getReceipt().getReceiptId());
+        //             info.append(" ");
+        //             info.append(ngoSubmission.getPartner().getNgoFeedbackEmail()); //TODO: Confirm -- not sure
+        //             info.append("\n");
+        //             time.append(ngoSubmission.getPartner().getName() + ": " + ngoSubmission.getAccept().getRecommend().toPrettyString());
+        //             time.append("\n");
+        //         }
+        //         this.jointInfo = info.toString();
+        //         this.jointTimeContribs = time.toString();
+        //     }
+
+        //     // ITAC-70 & ITAC-583: use original recommended time, the awarded time might have been edited by ITAC to optimize queue
+        //     TimeAmount time = ntacExtension.getAccept().getRecommend();
+        //     this.country = ntacExtension.getPartner().getName();
+        mut += "country"             -> p.ntac.partner.fullName
+        //     this.ntacComment = ntacExtension.getComment() != null ? ntacExtension.getComment() : "";
+        mut += "ntacComment"         -> p.ntac.comment.orEmpty
+        //     this.ntacRanking = ntacExtension.getAccept().getRanking().toString();
+        mut += "ntacRanking"         -> p.ntac.ranking
+        //     this.ntacRecommendedTime = time.toPrettyString();
+        mut += "ntacRecommendedTime" -> p.ntac.awardedTime.toHours.toString
+        //     this.ntacRefNumber = ntacExtension.getReceipt().getReceiptId();
+        mut += "ntacRefNumber"       -> p.ntac.reference
+        //     this.ntacSupportEmail = ntacExtension.getAccept().getEmail();
+        // ???
+        //     // We'll match the total time to the time awarded and scale
+        //     // the program and partner time to fit
+
+        //     // Find the correct set of observations. Note that they return the active observations already
+        //     List<Observation> bandObservations = null;
+        //     if (banding != null && banding.getBand().equals(ScienceBand.BAND_THREE)) {
+        //       bandObservations = proposal.getPhaseIProposal().getBand3Observations();
+        //     } else {
+        //       bandObservations = proposal.getPhaseIProposal().getBand1Band2ActiveObservations();
+        //     }
+        //     if (successful) {
+        //         TimeAmount progTime = new TimeAmount(0, TimeUnit.HR);
+        //         TimeAmount partTime = new TimeAmount(0, TimeUnit.HR);
+        //         for (Observation o : bandObservations) {
+        //             progTime = progTime.sum(o.getProgTime());
+        //             partTime = partTime.sum(o.getPartTime());
+        //         }
+        //         // Total time for program and partner
+        //         TimeAmount sumTime = progTime.sum(partTime);
+        //         // Scale factor with respect to the awarded time
+        //         double ratio = progTime.getValueInHours().doubleValue() / sumTime.getValueInHours().doubleValue();
+        //         // Scale the prog and program time
+        //         this.progTime = TimeAmount.fromMillis(itac.getAccept().getAward().getDoubleValueInMillis() * ratio).toPrettyString();
+        //         this.partnerTime = TimeAmount.fromMillis(itac.getAccept().getAward().getDoubleValueInMillis() * (1.0 - ratio)).toPrettyString();
+        //     } else {
+        //         this.partnerTime = "0.0 " + ntacExtension.getRequest().getTime().getUnits();
+        //         this.progTime = "0.0 " + ntacExtension.getRequest().getTime().getUnits();
+        //     }
+
+        //     // Merging of PIs: first names and last names will be concatenated separated by '/',
+        //     // emails will be concatenated to a list separated by semi-colons
+        //     this.piMail = pi.getEmail();
+        //     this.piName = pi.getFirstName() + " " + pi.getLastName();
+        val pi = p.p1proposal.get.investigators.pi
+        mut += "piMail"       -> s"${pi.firstName} ${pi.lastName}"
+        mut += "piName"       -> pi.email
+
+        //     if (doc.getTitle() != null) {
+        //         this.progTitle = doc.getTitle();
+        //     }
+        p.p1proposal  .foreach(p => mut += "progTitle"    -> p.title)
+
+        //     if (banding != null) {
+        //         this.queueBand = banding.getBand().getDescription();
+        //     } else if (proposal.isClassical()) {
+        //         this.queueBand = "classical";
+        //     } else {
+        //         this.queueBand = N_A;
+        //     }
+
         // Done
         mut.toMap
 
@@ -223,3 +349,5 @@ object Email {
     }
 
 }
+
+

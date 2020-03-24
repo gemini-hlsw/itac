@@ -61,7 +61,7 @@ object Main extends CommandIOApp(
       Blocker[IO].use { b =>
         for {
           _  <- IO(System.setProperty("edu.gemini.model.p1.schemaVersion", "2020.1.1")) // how do we figure out what to do here?
-          _  <- log.debug(s"main: workspace directory is $cwd.")
+          _  <- log.debug(s"main: workspace directory is ${cwd.toAbsolutePath}")
           c  <- Workspace[IO](cwd, commonConfig, log, force).flatMap(cmd.run(_, log, b)).handleErrorWith {
                   case ItacException(msg) => log.error(msg).as(ExitCode.Error)
                   case NonFatal(e)        => log.error(e)(e.getMessage).as(ExitCode.Error)
@@ -81,7 +81,7 @@ trait MainOpts { this: CommandIOApp =>
       short = "d",
       long  = "dir",
       help  = "Workspace directory. Default is current directory."
-    ) .withDefault(Paths.get(System.getProperty("user.dir")))
+    ) .withDefault(Paths.get("."))
 
   lazy val commonConfig: Opts[Path] =
     Opts.option[Path](

@@ -29,6 +29,7 @@ import java.time.ZonedDateTime
 import java.time.ZoneId
 import cats.effect.Resource
 import java.nio.file.StandardCopyOption
+import edu.gemini.util.security.auth.ProgIdHash
 
 /** Interface for some Workspace operations. */
 trait Workspace[F[_]] {
@@ -75,6 +76,8 @@ trait Workspace[F[_]] {
   def readRolloverReport(path: Path): F[RolloverReport]
   def writeText(path: Path, text: String): F[Path]
 
+  def progIdHash: F[ProgIdHash]
+
 }
 
 object Workspace {
@@ -109,14 +112,14 @@ object Workspace {
     )
 
   def apply[F[_]: Sync: Parallel](dir: Path, cc: Path, log: Logger[F], force: Boolean): F[Workspace[F]] =
-    ItacException(s"Workspace directory not found: $dir").raiseError[F, Workspace[F]].unlessA(dir.toFile.isDirectory) *>
+    ItacException(s"Workspace directory not found: ${dir}").raiseError[F, Workspace[F]].unlessA(dir.toFile.getAbsoluteFile.isDirectory) *>
     Ref[F].of(Map.empty[Path, String]).map { cache =>
       new Workspace[F] {
 
         def cwd = dir.pure[F]
 
         def isEmpty: F[Boolean] =
-          Sync[F].delay(Option(dir.toFile.listFiles).foldMap(_.toList).isEmpty)
+          Sync[F].delay(Option(dir.toFile.getAbsoluteFile.listFiles).foldMap(_.toList).isEmpty)
 
         def readText(path: Path): F[String] =
           cache.get.flatMap { map =>
@@ -163,7 +166,7 @@ object Workspace {
           Resource.make(Sync[F].delay(getClass.getResourceAsStream(name)))(is => Sync[F].delay(is.close()))
             .use { is =>
               val p = dir.resolve(path)
-              Sync[F].delay(p.toFile.isFile).flatMap {
+              Sync[F].delay(p.toFile.getAbsoluteFile.isFile).flatMap {
                 case false | `force` => log.info(s"Writing: $p") *>
                   Sync[F].delay(Files.copy(is, p, StandardCopyOption.REPLACE_EXISTING)).as(p)
                 case true  => Sync[F].raiseError(ItacException(s"File exists: $p"))
@@ -175,7 +178,7 @@ object Workspace {
 
         def writeText(path: Path, text: String): F[Path] = {
           val p = dir.resolve(path)
-          Sync[F].delay(p.toFile.isFile).flatMap {
+          Sync[F].delay(p.toFile.getAbsoluteFile.isFile).flatMap {
             case false | `force` => log.info(s"Writing: $p") *>
               Sync[F].delay(Files.write(dir.resolve(path), text.getBytes("UTF-8")))
             case true  => Sync[F].raiseError(ItacException(s"File exists: $p"))
@@ -204,7 +207,7 @@ object Workspace {
 
         def mkdirs(path: Path): F[Path] = {
           val p = dir.resolve(path)
-          Sync[F].delay(p.toFile.isDirectory) flatMap {
+          Sync[F].delay(p.toFile.getAbsoluteFile.isDirectory) flatMap {
             case true  => log.debug(s"Already exists: $path").as(p)
             case false => log.info(s"Creating folder: $path") *>
               Sync[F].delay(Files.createDirectories(dir.resolve(path)))
@@ -229,7 +232,7 @@ object Workspace {
             pas   = conf.engine.partners.map { p => (p.id, p) } .toMap
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.info(s"Reading proposals from $p")
-            ps   <- ProposalLoader[F](pas, when).loadMany(p.toFile)
+            ps   <- ProposalLoader[F](pas, when).loadMany(p.toFile.getAbsoluteFile)
             _    <- ps.traverse { case (f, Left(es)) => log.warn(s"$f: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
             psʹ   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
             _    <- log.info(s"Read ${ps.length} proposals.")
@@ -243,6 +246,9 @@ object Workspace {
             p   = Paths.get(n)
             _  <- mkdirs(p)
           } yield p
+
+        def progIdHash: F[ProgIdHash] =
+          new ProgIdHash("x").pure[F]
 
       }
     }

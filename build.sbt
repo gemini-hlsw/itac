@@ -32,6 +32,7 @@ lazy val engine2 = project
       "edu.gemini.ocs"          %% "edu-gemini-model-p1"         % "2020001.1.0",
       "edu.gemini.ocs"          %% "edu-gemini-shared-skyobject" % "2019101.1.4",
       "edu.gemini.ocs"          %% "edu-gemini-util-skycalc"     % "2019101.1.4",
+      "edu.gemini.ocs"          %% "edu-gemini-util-security"    % "2019101.1.4",
       "org.scala-lang.modules"  %% "scala-xml"                   % "2.0.0-M1",
       "org.slf4j"                % "slf4j-api"                   % "1.7.28",
       "com.novocode"             % "junit-interface"             % "0.11"    % "test",
