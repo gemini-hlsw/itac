@@ -18,7 +18,7 @@ final case class QueueConfig(
   bands:      BandPercentages,
   overfill:   Option[Percent],
   raBinSize:  RaBinSize,
-  decBinSize: DecBinSize,
+  decBinSize: DecBinSize
 ) {
 
   object engine {

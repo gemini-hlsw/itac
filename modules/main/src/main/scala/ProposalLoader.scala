@@ -20,6 +20,8 @@ import scalaz.Failure
 import scalaz.Success
 import scala.xml.XML
 import java.io.StringReader
+import io.chrisdavenport.log4cats.Logger
+import itac.config.Edit
 
 trait ProposalLoader[F[_]] {
 
@@ -35,7 +37,7 @@ object ProposalLoader {
   // shows up in published library code, at which point most of this goes away and we can deletage
   // to edu.gemini.model.p1.immutable.ProposalIO
 
-  private val context: JAXBContext = {
+  val context: JAXBContext = {
     val factory        = new M.ObjectFactory
     val contextPackage = factory.getClass.getName.reverse.dropWhile(_ != '.').drop(1).reverse
     JAXBContext.newInstance(contextPackage, getClass.getClassLoader)
@@ -46,12 +48,17 @@ object ProposalLoader {
 
   def apply[F[_]: Sync: Parallel](
     partners: Map[String, Partner],
-    when: Long
+    when: Long,
+    edits: Map[String, Edit],
+    logger: Logger[F]
   ): ProposalLoader[F] =
     new ProposalLoader[F] {
 
       // Should we do upconversion? Unclear. Delete once we answer this.
       val UpConvert = false
+
+      val editor: Editor[F] =
+        new Editor[F](edits, logger)
 
       // this does upconversion .. is it necessary?
       def loadPhase1(f:File): F[I.Proposal] =
@@ -69,11 +76,13 @@ object ProposalLoader {
         } .map { p =>
           // see https://github.com/gemini-hlsw/itac/pull/29 :-(
           p.copy(observations = p.nonEmptyObservations)
+        } .flatMap { p =>
+          editor.applyEdits(f, p)
         }
 
       def loadManyPhase1(dir: File): F[List[(File, I.Proposal)]] =
         Sync[F].delay(Option(dir.listFiles)).flatMap {
-          case Some(arr) => arr.filter(_.getName().endsWith(".xml")).sortBy(_.getAbsolutePath).toList.parTraverse(f => loadPhase1(f).tupleLeft(f))
+          case Some(arr) => arr.filter(_.getName().endsWith(".xml")).sortBy(_.getAbsolutePath).toList.traverse(f => loadPhase1(f).tupleLeft(f)) // TODO: parTraverse
           case None      => Sync[F].raiseError(new RuntimeException(s"Not a directory: $dir"))
         }
 

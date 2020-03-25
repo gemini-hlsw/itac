@@ -18,6 +18,7 @@ import io.circe.syntax._
 import io.circe.yaml.parser
 import itac.codec.rolloverreport._
 import itac.config.Common
+import itac.config.Edit
 import itac.config.QueueConfig
 import java.nio.file.Files
 import java.nio.file.NoSuchFileException
@@ -84,6 +85,7 @@ object Workspace {
 
   val EmailTemplateDir = Paths.get("email_templates")
   val ProposalDir      = Paths.get("proposals")
+  val EditsFile        = Paths.get("edits.yaml")
 
   val WorkspaceDirs: List[Path] =
     List(EmailTemplateDir, ProposalDir)
@@ -232,7 +234,8 @@ object Workspace {
             pas   = conf.engine.partners.map { p => (p.id, p) } .toMap
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.info(s"Reading proposals from $p")
-            ps   <- ProposalLoader[F](pas, when).loadMany(p.toFile.getAbsoluteFile)
+            es   <- readData[Map[String, Edit]](EditsFile)
+            ps   <- ProposalLoader[F](pas, when, es, log).loadMany(p.toFile.getAbsoluteFile)
             _    <- ps.traverse { case (f, Left(es)) => log.warn(s"$f: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
             psʹ   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
             _    <- log.info(s"Read ${ps.length} proposals.")
