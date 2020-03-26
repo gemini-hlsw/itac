@@ -72,7 +72,8 @@ object ObservationIo {
   }
 
   def read(o: im.Observation, when: Long): ValidationNel[String, Observation] =
-    lgs(o) <*> (time(o) <*> (conditions(o) <*> (target(o, when) map (Observation.apply _).curried)))
+    (target(o, when) |@| conditions(o) |@| time(o) |@| lgs(o))(Observation(o, _, _, _, _))
+    // lgs(o) <*> (time(o) <*> (conditions(o) <*> (target(o, when) map (Observation.apply _).curried)))
 
   val tooCoords = Coordinates.zero
 
