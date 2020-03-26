@@ -1,19 +1,11 @@
 package itac.config
 
-import edu.gemini.model.p1.immutable.ClassicalProposalClass
-import edu.gemini.model.p1.immutable.ExchangeProposalClass
-import edu.gemini.model.p1.immutable.FastTurnaroundProgramClass
-import edu.gemini.model.p1.immutable.LargeProgramClass
-import edu.gemini.model.p1.immutable.Proposal
-import edu.gemini.model.p1.immutable.ProposalClass
-import edu.gemini.model.p1.immutable.QueueProposalClass
-import edu.gemini.model.p1.immutable.SpecialProposalClass
-import edu.gemini.model.p1.immutable.SubaruIntensiveProgramClass
+import edu.gemini.model.p1.immutable._
 import io.circe._
 import io.circe.generic.semiauto._
-import scalaz.{ Lens, State }
-import edu.gemini.model.p1.immutable.Itac
+import scalaz.{ Lens, State } // because we're composing with existing lenses in the p1 model
 
+/** We apply a multi-part edit to each proposal as it's loaded from disk. */
 case class Edit(
   itacComment: Option[String]
 ) extends (Proposal => Proposal) {
