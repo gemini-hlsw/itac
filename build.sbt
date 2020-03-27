@@ -6,24 +6,6 @@ inThisBuild(Seq(
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
 ))
 
-lazy val engine = project
-  .in(file("modules/engine"))
-  .settings(
-    name := "itc-cli-engine",
-    libraryDependencies ++= Seq(
-      "edu.gemini.ocs"          %% "edu-gemini-model-p1"         % "2020001.1.0",
-      "edu.gemini.ocs"          %% "edu-gemini-shared-skyobject" % "2019101.1.4",
-      "edu.gemini.ocs"          %% "edu-gemini-util-skycalc"     % "2019101.1.4",
-      "org.scala-lang.modules"  %% "scala-xml"                   % "2.0.0-M1",
-      "org.slf4j"                % "slf4j-api"                   % "1.7.28",
-      "com.novocode"             % "junit-interface"             % "0.11"    % "test",
-      "junit"                    % "junit"                       % "4.12"    % "test",
-      "org.mockito"              % "mockito-all"                 % "1.10.19" % "test",
-    ),
-    Test / scalacOptions := Nil, // don't worry about warnings in tests right now
-  )
-
-
 lazy val engine2 = project
   .in(file("modules/engine2"))
   .settings(

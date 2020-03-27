@@ -39,11 +39,11 @@ object Queue {
 
             val pids = log.proposalIds // proposals that were considered
 
-            println(s"${Console.BOLD}The following proposals were not considered due to site, mode, or lack of awarded time or observations.${Console.RESET}")
-            ps.filterNot(p => pids.contains(p.id)).foreach { p =>
-              println(f"- ${p.id.reference} (${p.site.abbreviation}, ${p.mode.programId}%2s, ${p.ntac.awardedTime.toHours.value}%4.1fh ${p.ntac.partner.id}, ${p.obsList.length}%3d obs)")
-            }
-            println()
+            // println(s"${Console.BOLD}The following proposals were not considered due to site, mode, or lack of awarded time or observations.${Console.RESET}")
+            // ps.filterNot(p => pids.contains(p.id)).foreach { p =>
+            //   println(f"- ${p.id.reference} (${p.site.abbreviation}, ${p.mode.programId}%2s, ${p.ntac.awardedTime.toHours.value}%4.1fh ${p.ntac.partner.id}, ${p.obsList.length}%3d obs)")
+            // }
+            // println()
 
             QueueBand.Category.values.foreach { qc =>
               println(s"${Console.BOLD}The following proposals were rejected for $qc.${Console.RESET}")
