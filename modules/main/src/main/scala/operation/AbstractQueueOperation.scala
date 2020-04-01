@@ -18,6 +18,20 @@ import edu.gemini.tac.qengine.util.Percent
 import edu.gemini.tac.qservice.impl.shutdown.ShutdownCalc
 import edu.gemini.tac.qengine.api.QueueCalc
 import edu.gemini.tac.qengine.p1.Proposal
+import edu.gemini.tac.qengine.api.queue.ProposalQueue
+// import edu.gemini.tac.qengine.p1.CoreProposal
+// import edu.gemini.tac.qengine.p1.JointProposal
+// import edu.gemini.tac.qengine.p1.JointProposalPart
+import edu.gemini.model.p1.immutable.{ Proposal => P1Proposal }
+import edu.gemini.model.p1.immutable.ItacAccept
+import edu.gemini.model.p1.immutable.Itac
+import edu.gemini.model.p1.immutable.ItacReject
+import edu.gemini.model.p1.immutable.TimeAmount
+import edu.gemini.model.p1.immutable.`package`.TimeUnit
+import itac.config.Edit.lenses._
+import edu.gemini.tac.qengine.p1.CoreProposal
+import edu.gemini.tac.qengine.p1.JointProposal
+import edu.gemini.tac.qengine.p1.JointProposalPart
 
 abstract class AbstractQueueOperation[F[_]](
   qe:             QueueEngine,
@@ -29,10 +43,14 @@ abstract class AbstractQueueOperation[F[_]](
     implicit ev: FlatMap[F]
   ): F[(List[Proposal], QueueCalc)] =
     for {
+
+      // Load the things we need
       cc <- ws.commonConfig
       qc <- ws.queueConfig(siteConfig)
       rr <- ws.readRolloverReport(rolloverReport.getOrElse(s"${qc.site.abbreviation.toLowerCase}-rollovers.yaml"))
       ps <- ws.proposals
+
+      // Compute the queue
       partners  = cc.engine.partners
       queueCalc = qe.calc(
         proposals = ps,
@@ -56,7 +74,56 @@ abstract class AbstractQueueOperation[F[_]](
           )
         ),
       )
-    } yield (ps, queueCalc)
+
+      // Now we need to set the Itac information for each proposal's associated p1Proposal.
+      psʹ = ps.map(addOrUpdateItacNode(_, queueCalc.queue))
+
+    } yield (psʹ, queueCalc)
+
+  // Given a Proposal and a ProposalQueue, update the Proposal's p1proposal's Itac element, or add
+  // one if not present.
+  def addOrUpdateItacNode(p: Proposal, q: ProposalQueue): Proposal = {
+
+    // P1Proposal, which should always be present
+    val p1 = p.p1proposal.getOrElse(sys.error(s"No p1 proposal associated with ${p.id.reference}"))
+
+    // Our decision, based on presence of a queue position.
+    val decision: Either[ItacReject, ItacAccept] =
+      (q.programId(p), q.positionOf(p)).tupled match {
+        case Some((pid, pos)) => Right(ItacAccept(
+          programId = pid.toString,
+          contact   = None,                                              // TODO
+          email     = None,                                              // TODO
+          band      = pos.band.number,
+          award     = new TimeAmount(p.time.toHours.value, TimeUnit.HR),
+          rollover  = false                                              // TODO
+        ))
+        case None             => Left(ItacReject)
+        case _                => sys.error("unpossible")
+      }
+
+    // New ITAC node
+    val itac  = p1.proposalClass.itac.getOrElse(Itac(None, None, None))
+    val itacʹ = itac.copy(
+      decision     = Some(decision),
+      ngoAuthority = None // TODO
+    )
+
+    // New P1Proposal
+    val p1ʹ= P1Proposal.itac.set(p1, Some(itacʹ))
+
+    // New Proposal
+    val pʹ = p match {
+      case cp: CoreProposal      => cp.copy(p1proposal = Some(p1ʹ))
+      case jp: JointProposal     => jp.copy(core = jp.core.copy(p1proposal = Some(p1ʹ)))
+      case pp: JointProposalPart => pp.copy(core = pp.core.copy(p1proposal = Some(p1ʹ)))
+    }
+
+    // Done
+    pʹ
+
+  }
+
 
   // These methods were lifted from the ITAC web application.
 

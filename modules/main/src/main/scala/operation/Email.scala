@@ -3,6 +3,7 @@
 
 package itac.operation
 
+import cats._
 import cats.implicits._
 import itac.config.QueueConfig
 import edu.gemini.tac.qengine.p1.Proposal
@@ -25,18 +26,26 @@ import edu.gemini.spModel.core.Semester
 import org.apache.velocity.app.VelocityEngine
 import edu.gemini.tac.qengine.api.QueueEngine
 import edu.gemini.tac.qengine.api.queue.ProposalQueue
-// import edu.gemini.model.p1.immutable.TimeAmount
-// import edu.gemini.tac.qengine.p1.QueueBand.QBand1
-// import edu.gemini.tac.qengine.p1.QueueBand.QBand2
-// import edu.gemini.tac.qengine.p1.QueueBand.QBand3
-// import edu.gemini.tac.qengine.p1.QueueBand.QBand4
-// import edu.gemini.model.p1.immutable.Band
 import edu.gemini.util.security.auth.ProgIdHash
+import edu.gemini.model.p1.immutable.TimeAmount
+import edu.gemini.tac.qengine.util.Time
 
 /**
  * @see Velocity documentation https://velocity.apache.org/engine/2.2/developer-guide.html
  */
 object Email {
+
+  // We have this instance in scalaz but we need the cats one here
+  implicit val m: Monoid[TimeAmount] =
+    new Monoid[TimeAmount] {
+      def combine(x: TimeAmount, y: TimeAmount): TimeAmount = x |+| y
+      def empty: TimeAmount = TimeAmount.empty
+    }
+
+  implicit class TimeOps(self: Time) {
+    def toPrettyString: String =
+      f"${self.value}%.2f ${self.unit}%s"
+  }
 
   // This one's easiest if we uncurry everything.
   def apply[F[_]: Sync: Parallel](
@@ -175,45 +184,11 @@ object Email {
         mut = mut // defeat bogus unused warning
 
         // bindings that are always present
+        mut += "semester" -> s.toString
 
-        mut += "semester"            -> s.toString
-
-        // val (partTime, progTime) =
-        //   p.p1proposal.get.observations.foldLeft((TimeAmount.empty, TimeAmount.empty)) { case ((pa, pr), o) =>
-        //     val inBand: Boolean =
-        //       q.positionOf(p).get.band match {
-        //         case QBand1 | QBand2 => o.band == Band.BAND_1_2
-        //         case QBand3 | QBand4 => o.band == Band.BAND_3
-        //       }
-        //     if (o.enabled && inBand) {
-        //       val ts = o.calculatedTimes.get
-        //       (pa |+| ts.partTime, pr |+| ts.progTime)
-        //     } else (pa, pr)
-        //   }
-
-        // println(s"Awarded time is ${p.ntac.awardedTime.toHours.toString}, progTime is ${progTime.toHours.format()}, partTime is ${partTime.toHours.format()}")
-
-        // bindings that may be missing
         p.piEmail     .foreach(v => mut += "piMail"       -> v)
         p.piName      .foreach(v => mut += "piName"       -> v)
         p.p1proposal  .foreach(p => mut += "progTitle"    -> p.title)
-
-
-        // Not implemented yet
-        // mut += "geminiComment"       -> null
-        // mut += "geminiContactEmail"  -> null
-        // mut += "geminiId"            -> null
-        // mut += "jointInfo"           -> null
-        // mut += "jointTimeContribs"   -> null
-        // mut += "ntacSupportEmail"    -> null // need to add to Partner based on c
-        // mut += "progKey"             -> null
-        // mut += "queueBand"           -> null
-
-
-
-        // ok we should probably get rid of the bindings above because they may differ from what
-        // the old system was doing
-
 
 
         //     // proposals that made it that far must have an itac part, accepted ones must have an accept part
@@ -240,24 +215,20 @@ object Email {
         //         this.timeAwarded = "";
         //     } else {
         //         this.progId = itac.getAccept().getProgramId();
-        q.programId(p).foreach(v => mut += "progId"       -> v)
+        q.programId(p).foreach(v => mut += "progId" -> v)
         //         this.progKey = ProgIdHash.pass(this.progId);
-        q.programId(p).foreach(v => mut += "progKey"       -> pih.pass(v.toString))
+        q.programId(p).foreach(v => mut += "progKey" -> pih.pass(v.toString))
         //         this.geminiContactEmail = itac.getAccept().getContact();
         itac.flatMap(_.decision.flatMap(_.toOption)).flatMap(_.contact).foreach(v => mut += "geminiContactEmail" -> v)
         //         this.timeAwarded = itac.getAccept().getAward().toPrettyString();
-        itac.flatMap(_.decision.flatMap(_.toOption)).map(_.award).foreach(v => mut += "timeAwarded" -> v.toHours)
-        if (!mut.contains("timeAwarded")) {
-          println(Console.GREEN + p.ntac.awardedTime + " ... " + itac.isDefined + " ... " + itac.flatMap(_.decision) + Console.RESET)
-        } else {
-          println(s"${Console.BLUE}~~~ ${mut("timeAwarded")} =? ${p.ntac.awardedTime} ${Console.RESET}")
-        }
+        itac.flatMap(_.decision.map(_.foldMap(_.award))).foreach(v => mut += "timeAwarded" -> v.toHours) // handles both accept and reject below
         //     }
 
         //     if (!successful) {
         //         // ITAC-70: use original partner time, the partner time might have been edited by ITAC to "optimize" queue
         //         this.timeAwarded = "0.0 " + ntacExtension.getRequest().getTime().getUnits();
         //     }
+        // ^^ handled above
 
         //     if (proposal.isJoint()) {
         //         StringBuffer info = new StringBuffer();
@@ -301,6 +272,9 @@ object Email {
         //     } else {
         //       bandObservations = proposal.getPhaseIProposal().getBand1Band2ActiveObservations();
         //     }
+        val bandObservations: List[edu.gemini.model.p1.immutable.Observation] =
+          q.positionOf(p).map { pos => p.obsListFor(pos.band).map(_.p1Observation) } .get
+
         //     if (successful) {
         //         TimeAmount progTime = new TimeAmount(0, TimeUnit.HR);
         //         TimeAmount partTime = new TimeAmount(0, TimeUnit.HR);
@@ -308,13 +282,25 @@ object Email {
         //             progTime = progTime.sum(o.getProgTime());
         //             partTime = partTime.sum(o.getPartTime());
         //         }
+        val (progTime, partTime): (TimeAmount, TimeAmount) =
+          bandObservations.foldMap(o => (o.progTime.orEmpty, o.partTime.orEmpty))
+
         //         // Total time for program and partner
         //         TimeAmount sumTime = progTime.sum(partTime);
+        val sumTime: TimeAmount =
+          progTime |+| partTime
+
         //         // Scale factor with respect to the awarded time
         //         double ratio = progTime.getValueInHours().doubleValue() / sumTime.getValueInHours().doubleValue();
+        val ratio: Double =
+          progTime.toNights.value / sumTime.toNights.value
+
         //         // Scale the prog and program time
         //         this.progTime = TimeAmount.fromMillis(itac.getAccept().getAward().getDoubleValueInMillis() * ratio).toPrettyString();
         //         this.partnerTime = TimeAmount.fromMillis(itac.getAccept().getAward().getDoubleValueInMillis() * (1.0 - ratio)).toPrettyString();
+        mut += "progTime" -> Time.millisecs((p.time.ms * ratio).toLong).toHours.toPrettyString
+        mut += "partTime" -> Time.millisecs((p.time.ms * (1.0 - ratio)).toLong).toHours.toPrettyString
+
         //     } else {
         //         this.partnerTime = "0.0 " + ntacExtension.getRequest().getTime().getUnits();
         //         this.progTime = "0.0 " + ntacExtension.getRequest().getTime().getUnits();
