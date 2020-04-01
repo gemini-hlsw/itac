@@ -27,7 +27,7 @@ final case class Common(
     val partnersMap: Map[Partner, ItacPartner] =
       Partner.all.map { p =>
         val cfg = Common.this.partners(p)
-        p -> ItacPartner(p.id, p.name, cfg.percent, cfg.sites.toSet)
+        p -> ItacPartner(p.id, p.name, cfg.percent, cfg.sites.toSet, cfg.email.value)
       } .toMap
 
     val partners: List[ItacPartner] =

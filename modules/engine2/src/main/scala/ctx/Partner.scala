@@ -24,7 +24,7 @@ import edu.gemini.spModel.core.Site
 /**
  * Phase 1 partner options.
  */
-case class Partner(id: String, fullName: String, share: Percent, sites: Set[Site]) {
+case class Partner(id: String, fullName: String, share: Percent, sites: Set[Site], email: String) {
   /**
    * Gets the partner's percentage share at the given site.
    */
@@ -51,8 +51,8 @@ case class Partner(id: String, fullName: String, share: Percent, sites: Set[Site
 object Partner {
   val LargeProgramId = "LP"
 
-  def apply(id: String, fullName: String, absPercent: Double, sites: Set[Site]): Partner =
-    Partner(id, fullName, Percent(absPercent), sites)
+  def apply(id: String, fullName: String, absPercent: Double, sites: Set[Site], email: String): Partner =
+    Partner(id, fullName, Percent(absPercent), sites, email)
 
   /**
    * Creates a map with entries for all Partners according to the value

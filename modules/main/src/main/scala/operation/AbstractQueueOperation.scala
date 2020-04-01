@@ -92,8 +92,8 @@ abstract class AbstractQueueOperation[F[_]](
       (q.programId(p), q.positionOf(p)).tupled match {
         case Some((pid, pos)) => Right(ItacAccept(
           programId = pid.toString,
-          contact   = None,                                              // TODO
-          email     = None,                                              // TODO
+          contact   = Some("Bob Dobbs"),                                              // TODO
+          email     = Some("bob@dobbs.com"),                                              // TODO
           band      = pos.band.number,
           award     = new TimeAmount(p.time.toHours.value, TimeUnit.HR),
           rollover  = false                                              // TODO

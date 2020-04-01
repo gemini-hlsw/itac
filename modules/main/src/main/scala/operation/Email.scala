@@ -29,6 +29,9 @@ import edu.gemini.tac.qengine.api.queue.ProposalQueue
 import edu.gemini.util.security.auth.ProgIdHash
 import edu.gemini.model.p1.immutable.TimeAmount
 import edu.gemini.tac.qengine.util.Time
+import edu.gemini.tac.qengine.p1.QueueBand.QBand1
+import edu.gemini.tac.qengine.p1.QueueBand.QBand2
+import edu.gemini.tac.qengine.p1.Mode
 
 /**
  * @see Velocity documentation https://velocity.apache.org/engine/2.2/developer-guide.html
@@ -190,7 +193,6 @@ object Email {
         p.piName      .foreach(v => mut += "piName"       -> v)
         p.p1proposal  .foreach(p => mut += "progTitle"    -> p.title)
 
-
         //     // proposals that made it that far must have an itac part, accepted ones must have an accept part
         //     Validate.notNull(proposal.getPhaseIProposal());
         //     Validate.notNull(proposal.getItac());
@@ -203,9 +205,9 @@ object Email {
         //     Submission partnerSubmission = doc.getPrimary();
 
         //     this.geminiComment = itac.getGeminiComment() != null ? itac.getGeminiComment() : "";
-        //??? no gemini comment
+        mut += "geminiComment" -> "" // TODO
         //     this.itacComments =  itac.getComment() != null ? itac.getComment() : "";
-        itac.flatMap(_.comment).foreach(v => mut += "itacComment" -> v)
+        itac.map(_.comment.orEmpty).foreach(v => mut += "itacComments" -> v)
 
         //     if (itac.getRejected() || itac.getAccept() == null) {
         //         // either rejected or no accept part yet: set empty values
@@ -221,7 +223,7 @@ object Email {
         //         this.geminiContactEmail = itac.getAccept().getContact();
         itac.flatMap(_.decision.flatMap(_.toOption)).flatMap(_.contact).foreach(v => mut += "geminiContactEmail" -> v)
         //         this.timeAwarded = itac.getAccept().getAward().toPrettyString();
-        itac.flatMap(_.decision.map(_.foldMap(_.award))).foreach(v => mut += "timeAwarded" -> v.toHours) // handles both accept and reject below
+        itac.flatMap(_.decision.map(_.foldMap(_.award))).foreach(v => mut += "timeAwarded" -> v.toHours.format()) // handles both accept and reject below
         //     }
 
         //     if (!successful) {
@@ -261,7 +263,7 @@ object Email {
         //     this.ntacRefNumber = ntacExtension.getReceipt().getReceiptId();
         mut += "ntacRefNumber"       -> p.ntac.reference
         //     this.ntacSupportEmail = ntacExtension.getAccept().getEmail();
-        // ???
+        mut += "ntacSupportEmail"    -> p.ntac.partner.email
         //     // We'll match the total time to the time awarded and scale
         //     // the program and partner time to fit
 
@@ -298,8 +300,8 @@ object Email {
         //         // Scale the prog and program time
         //         this.progTime = TimeAmount.fromMillis(itac.getAccept().getAward().getDoubleValueInMillis() * ratio).toPrettyString();
         //         this.partnerTime = TimeAmount.fromMillis(itac.getAccept().getAward().getDoubleValueInMillis() * (1.0 - ratio)).toPrettyString();
-        mut += "progTime" -> Time.millisecs((p.time.ms * ratio).toLong).toHours.toPrettyString
-        mut += "partTime" -> Time.millisecs((p.time.ms * (1.0 - ratio)).toLong).toHours.toPrettyString
+        mut += "programTime" -> Time.millisecs((p.time.ms * ratio).toLong).toHours.toPrettyString
+        mut += "partnerTime" -> Time.millisecs((p.time.ms * (1.0 - ratio)).toLong).toHours.toPrettyString
 
         //     } else {
         //         this.partnerTime = "0.0 " + ntacExtension.getRequest().getTime().getUnits();
@@ -326,6 +328,19 @@ object Email {
         //     } else {
         //         this.queueBand = N_A;
         //     }
+        p.mode match {
+          case Mode.Queue        => q.positionOf(p).foreach(pos => mut += "queueBand" -> s"Band ${pos.band.number}")
+          case Mode.Classical    => mut += "queueBand" -> "classical"
+          case Mode.LargeProgram => mut += "queueBand" -> "N/A"
+        }
+
+        val eavesdroppingLink: String =
+          q.positionOf(p).map(_.band) match {
+            case Some(QBand1 | QBand2) => "<link>" // TODO
+            case _                     => "N/A"
+          }
+
+        mut += "eavesdroppingLink" -> eavesdroppingLink
 
         // Done
         mut.toMap
