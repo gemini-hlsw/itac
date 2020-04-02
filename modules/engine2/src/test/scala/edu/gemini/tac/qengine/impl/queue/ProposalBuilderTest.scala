@@ -45,7 +45,7 @@ class ProposalBuilderTest {
     val dec = Angle.angleDeg0
     val t = new Target(ra, dec)
     val c = ObservingConditions.AnyConditions
-    new Observation(t, c, Time.hours(1))
+    new Observation(null, t, c, Time.hours(1))
   }
 
   private def mkBandedQueue(band1: List[Proposal], band2: List[Proposal], band3: List[Proposal], band4: List[Proposal]): Map[QueueBand, List[Proposal]] = {

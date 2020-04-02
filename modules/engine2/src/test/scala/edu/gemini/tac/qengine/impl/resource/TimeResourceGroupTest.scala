@@ -40,7 +40,7 @@ class TimeResourceGroupTest {
   private val grp = new TimeResourceGroup(lst)
 
   private def mkProp(wv: WaterVapor, lgs: Boolean): Proposal =
-    CoreProposal(ntac, site = Site.GS, obsList = List(Observation(target, conds(wv), Time.hours(10), lgs)))
+    CoreProposal(ntac, site = Site.GS, obsList = List(Observation(null, target, conds(wv), Time.hours(10), lgs)))
 
   @Test def testReserveWv() {
     val prop  = mkProp(WV20, lgs = false)  // matches WV limit, not LGS limit

@@ -60,7 +60,7 @@ object Fixture {
   // Makes a proposal with the given ntac info, and observations according
   // to the descriptions (target, conditions, time)
   def mkProp(ntac: Ntac, obsDefs: (Target, ObservingConditions, Time)*): CoreProposal =
-    CoreProposal(ntac, site = site, obsList = obsDefs.map(tup => Observation(tup._1, tup._2, tup._3)).toList)
+    CoreProposal(ntac, site = site, obsList = obsDefs.map(tup => Observation(null, tup._1, tup._2, tup._3)).toList)
 
   val emptyQueue = ProposalQueueBuilder(QueueTime(Site.GN, PartnerTime.empty(partners).map, partners))
   def evenQueue(hrs: Double): ProposalQueueBuilder =

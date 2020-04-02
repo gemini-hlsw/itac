@@ -40,7 +40,7 @@ class CompositeResourceTest {
   private val ntac   = Ntac(US, "x", 0, Time.hours(10))
   private val target = Target(0.0, 0.0) // not used
   private val conds  = ObservingConditions.AnyConditions
-  private val prop   = CoreProposal(ntac, site = Site.GS, obsList = List(Observation(target, conds, Time.hours(10))))
+  private val prop   = CoreProposal(ntac, site = Site.GS, obsList = List(Observation(null, target, conds, Time.hours(10))))
 
   @Test def testReserve() {
     val btr1 = new BoundedTimeReservation1(BoundedTime(Time.hours(1)))

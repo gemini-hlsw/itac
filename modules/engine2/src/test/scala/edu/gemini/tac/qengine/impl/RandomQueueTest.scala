@@ -58,7 +58,7 @@ class RandomQueueTest {
 
 
   private def randomObservation(raHour: Int, plusMinusMin: Double): Observation =
-    Observation(randomTarget(raHour, plusMinusMin), randomConditions, randomTime(1))
+    Observation(null, randomTarget(raHour, plusMinusMin), randomConditions, randomTime(1))
 
   private def randomObsList: List[Observation] = {
     val count  = rand.nextInt(10) + 1

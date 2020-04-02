@@ -31,7 +31,7 @@ class DecResourceTest {
   private val ntac = Ntac(GS, "x", 0, Time.Zero)
 
   private def mkProp(target: Target): CoreProposal =
-    CoreProposal(ntac, site = Site.GS, obsList = List(Observation(target, conds, Time.Zero)))
+    CoreProposal(ntac, site = Site.GS, obsList = List(Observation(null, target, conds, Time.Zero)))
 
   @Test def testNormalReserveWithRemainingTime() {
     val prop   = mkProp(target0)

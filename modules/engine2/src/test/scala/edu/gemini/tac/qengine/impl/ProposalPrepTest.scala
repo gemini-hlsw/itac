@@ -15,9 +15,9 @@ class ProposalPrepTest {
   val target: Target = Target(0.0, 0.0)
   val conds: ObservingConditions = ObservingConditions.AnyConditions
   val noneBand3: List[Observation] = List.empty
-  val someBand3: List[Observation] = List(Observation(target, conds, Time.hours(1)))
+  val someBand3: List[Observation] = List(Observation(null, target, conds, Time.hours(1)))
   val noneObs: List[Observation] = Nil
-  val someObs: List[Observation] = List(Observation(target, conds, Time.hours(1)))
+  val someObs: List[Observation] = List(Observation(null, target, conds, Time.hours(1)))
 
   private def nonJoint(partner: Partner, id: String, time: Time = Time.hours(1), b3: List[Observation] = Nil, obsList: List[Observation] = Nil): CoreProposal =
     CoreProposal(Ntac(partner, id, 0, time), site = Site.GS, band3Observations = b3, obsList = obsList)

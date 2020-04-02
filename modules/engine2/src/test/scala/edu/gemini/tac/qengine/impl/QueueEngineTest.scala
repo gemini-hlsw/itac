@@ -96,7 +96,7 @@ class QueueEngineTest {
     val c = randomCondition(cc)
     val time = randomTime
     val lgs = random.nextBoolean()
-    new Observation(t, c, time, lgs)
+    new Observation(null, t, c, time, lgs)
   }
 
   def randomRA: Angle = {
@@ -153,7 +153,7 @@ class QueueEngineTest {
 
   def tinyPs: List[CoreProposal] = {
     val t = new Target(randomRA, randomDec, None)
-    val tinyO = Observation(t, ObservingConditions.AnyConditions, Time.minutes(10), lgs = false)
+    val tinyO = Observation(null, t, ObservingConditions.AnyConditions, Time.minutes(10), lgs = false)
     val tinyOs = List(tinyO)
 
     val s0 = coreProposal("S0", GS, 1, 0.25, Site.GS, tinyOs, b3s = List.empty)
@@ -164,7 +164,7 @@ class QueueEngineTest {
 
   def psWithBothB1B2AndB3Os : List[CoreProposal] = {
     val t = new Target(randomRA, randomDec, None)
-    val tinyO = Observation(t, ObservingConditions.AnyConditions, Time.minutes(10), lgs = false)
+    val tinyO = Observation(null, t, ObservingConditions.AnyConditions, Time.minutes(10), lgs = false)
     val tinyOs = List(tinyO)
 
     val s0 = coreProposal("S0", GS, 1, 0.15, Site.GS, tinyOs, b3s = tinyOs)

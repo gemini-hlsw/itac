@@ -86,7 +86,7 @@ class NtacIoTest {
     val p = new ProposalFixture {
       override def queueSubs: Either[List[im.NgoSubmission], im.ExchangeSubmission] = Right(sub)
     }
-    val SUBARU = Partner("SUBARU", "Subaru", 1.0, Set(Site.GN))
+    val SUBARU = Partner("SUBARU", "Subaru", 1.0, Set(Site.GN), "e@mail")
     val io = new NtacIo(TestPartners.AllMap + ("SUBARU" -> SUBARU))
     io.read(p.proposal) match {
       case Success(NonEmptyList(ntac, _)) =>
@@ -109,7 +109,7 @@ class NtacIoTest {
     val p = new ProposalFixture {
       override def proposalClass = lpClass
     }
-    val LP = Partner("LP", "Large Program", 1.0, Set(Site.GN))
+    val LP = Partner("LP", "Large Program", 1.0, Set(Site.GN), "e@mail")
     val io = new NtacIo(TestPartners.AllMap + ("LP" -> LP))
     io.read(p.proposal) match {
       case Success(NonEmptyList(ntac, _)) =>

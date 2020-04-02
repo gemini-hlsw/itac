@@ -11,9 +11,9 @@ class CustomPartnerSequenceTest {
   def doesAdhereToSequenceProportions(): Unit = {
     val site = Site.GN
     val ps = List(
-      Partner("A", "A", 42.0, Set(site)),
-      Partner("B", "B", 32.0, Set(site)),
-      Partner("C", "C", 26.0, Set(site))
+      Partner("A", "A", 42.0, Set(site), "e@mail"),
+      Partner("B", "B", 32.0, Set(site), "e@mail"),
+      Partner("C", "C", 26.0, Set(site), "e@mail")
     )
     val cps = new CustomPartnerSequence(ps, site)
     val results = cps.sequence.take(990).toList
@@ -28,9 +28,9 @@ class CustomPartnerSequenceTest {
   def switchToProportional(): Unit = {
     val site = Site.GN
     val ps = List(
-      Partner("A", "A", 80.0, Set(site)),
-      Partner("B", "B", 10.0, Set(site)),
-      Partner("C", "C", 10.0, Set(site))
+      Partner("A", "A", 80.0, Set(site), "e@mail"),
+      Partner("B", "B", 10.0, Set(site), "e@mail"),
+      Partner("C", "C", 10.0, Set(site), "e@mail")
     )
     val cps = new CustomPartnerSequence(ps, site, "foo", Some(new ProportionalPartnerSequence(ps, site)))
     val results = cps.sequence.take(10000).toList
@@ -46,12 +46,12 @@ class CustomPartnerSequenceTest {
     val csv = "A, B,A, C,D,E, F"
     val site = Site.GN
     val ps = List(
-      Partner("A", "A", 80.0, Set(site)),
-      Partner("B", "B", 10.0, Set(site)),
-      Partner("C", "C", 10.0, Set(site)),
-      Partner("D", "D", 10.0, Set(site)),
-      Partner("E", "E", 10.0, Set(site)),
-      Partner("F", "F", 10.0, Set(site))
+      Partner("A", "A", 80.0, Set(site), "e@mail"),
+      Partner("B", "B", 10.0, Set(site), "e@mail"),
+      Partner("C", "C", 10.0, Set(site), "e@mail"),
+      Partner("D", "D", 10.0, Set(site), "e@mail"),
+      Partner("E", "E", 10.0, Set(site), "e@mail"),
+      Partner("F", "F", 10.0, Set(site), "e@mail")
     )
     val parsed = CsvToPartnerSequenceParser.parse(csv, ps).right.get
     assertEquals(List("A", "B", "A", "C", "D", "E", "F"), parsed.map(_.id))
@@ -62,12 +62,12 @@ class CustomPartnerSequenceTest {
     val csv = "A, B,G, C,D,G, F/H"
     val site = Site.GN
     val ps = List(
-      Partner("A", "A", 80.0, Set(site)),
-      Partner("B", "B", 10.0, Set(site)),
-      Partner("C", "C", 10.0, Set(site)),
-      Partner("D", "D", 10.0, Set(site)),
-      Partner("E", "E", 10.0, Set(site)),
-      Partner("F", "F", 10.0, Set(site))
+      Partner("A", "A", 80.0, Set(site), "e@mail"),
+      Partner("B", "B", 10.0, Set(site), "e@mail"),
+      Partner("C", "C", 10.0, Set(site), "e@mail"),
+      Partner("D", "D", 10.0, Set(site), "e@mail"),
+      Partner("E", "E", 10.0, Set(site), "e@mail"),
+      Partner("F", "F", 10.0, Set(site), "e@mail")
     )
     val errors = CsvToPartnerSequenceParser.parse(csv, ps).left.get
     assertEquals(Set("G", "H"), errors)

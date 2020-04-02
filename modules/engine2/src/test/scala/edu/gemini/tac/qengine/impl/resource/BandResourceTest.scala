@@ -27,18 +27,18 @@ class BandResourceTest {
     ObservingConditions(cc, iq, SBAny, WVAny)
 
   private def mkProp(time: Time): CoreProposal =
-    CoreProposal(ntac.copy(awardedTime = time), site = Site.GS, obsList = List(Observation(target, conds(IQAny), time)))
+    CoreProposal(ntac.copy(awardedTime = time), site = Site.GS, obsList = List(Observation(null, target, conds(IQAny), time)))
 
   private def mkProp(iq: ImageQuality, b3IQ: Option[ImageQuality]): CoreProposal = {
     val b3 = List.empty
-    CoreProposal(ntac, site = Site.GS, band3Observations = b3, obsList = List(Observation(target, conds(iq), Time.hours(10))))
+    CoreProposal(ntac, site = Site.GS, band3Observations = b3, obsList = List(Observation(null, target, conds(iq), Time.hours(10))))
   }
 
   private def mkProp(too: Too.Value): CoreProposal =
-    CoreProposal(ntac, site = Site.GS, too = too, obsList = List(Observation(target, conds(IQAny), Time.hours(10))))
+    CoreProposal(ntac, site = Site.GS, too = too, obsList = List(Observation(null, target, conds(IQAny), Time.hours(10))))
 
   private def mkProp(lgs: Boolean): CoreProposal =
-    CoreProposal(ntac, site = Site.GS, obsList = List(Observation(target, conds(IQAny), Time.hours(10), lgs)))
+    CoreProposal(ntac, site = Site.GS, obsList = List(Observation(null, target, conds(IQAny), Time.hours(10), lgs)))
 
   val br      = new BandResource(Default.BandRestrictions)
   val timeMap: Map[Partner,Time] = Map(US -> Time.hours(100))
@@ -228,7 +228,7 @@ class BandResourceTest {
 
   private def copyNtac(ref: String, hrs: Int): Ntac = ntac.copy(reference=ref, awardedTime=Time.hours(hrs))
   private def obsList(iq: ImageQuality, lgs: Boolean, cc : CloudCover = CloudCover.CCAny) =
-    List(Observation(target, conds(iq, cc), Time.hours(10), lgs))
+    List(Observation(null, target, conds(iq, cc), Time.hours(10), lgs))
 
   @Test def testFilterNothing() {
     // Rapid TOO Band 1

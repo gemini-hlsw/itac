@@ -26,7 +26,7 @@ class TimeRestrictionTest {
   }
 
   private def mkProp(wv: WaterVapor): Proposal =
-    CoreProposal(ntac, site = Site.GS, obsList = List(Observation(target, conds(wv), Time.hours(10))))
+    CoreProposal(ntac, site = Site.GS, obsList = List(Observation(null, target, conds(wv), Time.hours(10))))
 
 
   @Test def testMatches() {

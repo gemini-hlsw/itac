@@ -32,7 +32,7 @@ class TimeResourceTest {
   private val res60min = TimeResource(bin, Time.hours(10))
 
   private def mkProp(wv: WaterVapor): Proposal =
-    CoreProposal(ntac, site = Site.GS, obsList = List(Observation(target, conds(wv), Time.hours(10))))
+    CoreProposal(ntac, site = Site.GS, obsList = List(Observation(null, target, conds(wv), Time.hours(10))))
 
   @Test def testReserveNoMatch() {
     val prop = mkProp(WV80)

@@ -36,7 +36,7 @@ class ConditionsResourceTest {
   private val target = Target(0,0)                               // not used
 
   private def mkProp(obsConds: ObservingConditions): CoreProposal = {
-    val obsList = List(Observation(target, obsConds, Time.minutes(10)))
+    val obsList = List(Observation(null, target, obsConds, Time.minutes(10)))
     CoreProposal(ntac, site = Site.GS, obsList = obsList)
   }
 

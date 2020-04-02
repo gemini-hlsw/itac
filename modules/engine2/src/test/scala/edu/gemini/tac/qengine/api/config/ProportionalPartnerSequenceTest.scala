@@ -11,9 +11,9 @@ class ProportionalPartnerSequenceTest {
   def doesAdhereToPortions(): Unit = {
     val site = Site.GN
     val ps = List(
-      Partner("A", "A", 42.0, Set(site)),
-      Partner("B", "B", 32.0, Set(site)),
-      Partner("C", "C", 26.0, Set(site))
+      Partner("A", "A", 42.0, Set(site), "e@mail"),
+      Partner("B", "B", 32.0, Set(site), "e@mail"),
+      Partner("C", "C", 26.0, Set(site), "e@mail")
     )
     val pps = new ProportionalPartnerSequence(ps, site)
     val results = pps.sequence.take(100).toList
@@ -27,10 +27,10 @@ class ProportionalPartnerSequenceTest {
   def doesFilterOutOtherSites(): Unit = {
     val site = Site.GN
     val ps = List(
-      Partner("A", "A", 42.0, Set(site)),
-      Partner("B", "B", 32.0, Set(site)),
-      Partner("C", "C", 26.0, Set(site, Site.GS)),
-      Partner("D", "D", 25.0, Set(Site.GS))
+      Partner("A", "A", 42.0, Set(site), "e@mail"),
+      Partner("B", "B", 32.0, Set(site), "e@mail"),
+      Partner("C", "C", 26.0, Set(site, Site.GS), "e@mail"),
+      Partner("D", "D", 25.0, Set(Site.GS), "e@mail")
     )
     val pps = new ProportionalPartnerSequence(ps, site)
     val results = pps.sequence.take(100).toList
@@ -45,11 +45,11 @@ class ProportionalPartnerSequenceTest {
   def doesCycleProperlyEvenIfSomePartnerHasZero(): Unit = {
     val site = Site.GN
     val ps = List(
-      Partner("A", "A", 42.0, Set(site)),
-      Partner("B", "B", 32.0, Set(site)),
-      Partner("C", "C", 26.0, Set(site, Site.GS)),
-      Partner("D", "D", 25.0, Set(Site.GS)),
-      Partner("E", "E",  0.0, Set(site))
+      Partner("A", "A", 42.0, Set(site), "e@mail"),
+      Partner("B", "B", 32.0, Set(site), "e@mail"),
+      Partner("C", "C", 26.0, Set(site, Site.GS), "e@mail"),
+      Partner("D", "D", 25.0, Set(Site.GS), "e@mail"),
+      Partner("E", "E",  0.0, Set(site), "e@mail")
     )
     val pps = new ProportionalPartnerSequence(ps, site)
     val results = pps.sequence.take(200).toList
@@ -62,10 +62,10 @@ class ProportionalPartnerSequenceTest {
   @Test
   def doesDriveTowardsProportionalityEvenIfFirstPartnerIsOverridden(): Unit = {
     val site = Site.GN
-    val c = Partner("C", "C", 25.0, Set(site))
+    val c = Partner("C", "C", 25.0, Set(site), "e@mail")
     val ps = List(
-      Partner("A", "A", 50.0, Set(site)),
-      Partner("B", "B", 25.0, Set(site)),
+      Partner("A", "A", 50.0, Set(site), "e@mail"),
+      Partner("B", "B", 25.0, Set(site), "e@mail"),
       c
     )
     val seqNoOverride = new ProportionalPartnerSequence(ps, site)

@@ -141,7 +141,7 @@ class SemesterResourceTest {
     // under the full queue time.
     val ntacBR = Ntac(BR, "br1", 0, Time.minutes(2.0))
     val obsDefs = (Target(359.0, 0.0), badCC, Time.hours(1.0))
-    val b3s = List(Observation(obsDefs._1, obsDefs._2, obsDefs._3))
+    val b3s = List(Observation(null, obsDefs._1, obsDefs._2, obsDefs._3))
     val small  = Fixture.mkProp(ntacBR, obsDefs).copy(band3Observations = b3s)
     val q3     = q2 :+ small
     assertEquals(QueueBand.QBand4, q3.band)
