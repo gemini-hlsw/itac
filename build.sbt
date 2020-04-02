@@ -1,4 +1,6 @@
 
+publish / skip := true
+
 inThisBuild(Seq(
   scalaVersion := "2.12.10",
   organization := "edu.gemini",

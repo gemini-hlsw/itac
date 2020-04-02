@@ -234,7 +234,7 @@ object Workspace {
             pas   = conf.engine.partners.map { p => (p.id, p) } .toMap
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.info(s"Reading proposals from $p")
-            es   <- readData[Map[String, Edit]](EditsFile)
+            es   <- readData[Edits](EditsFile).map(_.edits.getOrElse(Map.empty))
             ps   <- ProposalLoader[F](pas, when, es, log).loadMany(p.toFile.getAbsoluteFile)
             _    <- ps.traverse { case (f, Left(es)) => log.warn(s"$f: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
             psʹ   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
@@ -255,5 +255,11 @@ object Workspace {
 
       }
     }
+
+  // Wee wrapper class for edits … may move this out.
+  private case class Edits(edits: Option[Map[String, Edit]]) // allow for empty map
+  private object Edits {
+    implicit val DecoderEdits: Decoder[Edits] = io.circe.generic.semiauto.deriveDecoder
+  }
 
 }
