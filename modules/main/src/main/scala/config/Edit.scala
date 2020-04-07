@@ -10,6 +10,11 @@ import io.circe.generic.semiauto._
 import itac.ObservationDigest
 import scalaz.{ Lens, State }
 import itac.ItacException
+import edu.gemini.spModel.core.Coordinates
+import edu.gemini.spModel.core.RightAscension
+import edu.gemini.spModel.core.Angle
+import edu.gemini.spModel.core.Declination
+import java.util.UUID
 
 /** We apply a multi-part edit to each proposal as it's loaded from disk. */
 case class Edit(
@@ -40,8 +45,13 @@ case class Edit(
       // Replace or remove observations as specified by corresponding edits, if any.
       p.observations.flatMap { o =>
         obsEdits.get(ObservationDigest.digest(o)) match {
-          case Some(ObservationEdit.Disable) => Nil // others have already been removed
-          case None                          => List(o)
+          case Some(ObservationEdit.Disable)    => Nil // other disabled obs have already been removed
+          case Some(r: ObservationEdit.Replace) =>
+            // val dif = o.target.get.coords(0L).get.angularDistance(r.target.coords)
+            // println(s"DIFFERENCE IS $dif")
+            // Do we need to add this to the target list as well? Seems like we do.
+            List(o.copy(target = Some(r.target)))
+          case None                             => List(o)
         }
       }
 
@@ -96,11 +106,46 @@ sealed trait ObservationEdit
 object ObservationEdit {
 
   case object Disable extends ObservationEdit
+  case class  Replace(name: String, coords: Coordinates) extends ObservationEdit {
+    def target: SiderealTarget =
+      SiderealTarget(
+        uuid         = UUID.randomUUID,
+        name         = this.name,
+        coords       = this.coords,
+        epoch        = CoordinatesEpoch.J_2000,
+        properMotion = None,
+        magnitudes   = Nil
+      )
+  }
 
-  implicit val DecodeObservationEdit: Decoder[ObservationEdit] =
+  val DecoderReplace: Decoder[ObservationEdit] =
+    Decoder[String].emap { s =>
+      s.split("\\s+", 4) match {
+        case Array("Replace", hms, dms, name) =>
+
+          val r: Either[String, Replace] =
+            for {
+              ra  <- Angle.parseHMS(hms).leftMap(_.getMessage).toEither.map(RightAscension.fromAngle)
+              dec <- Angle.parseDMS(dms).leftMap(_.getMessage).toEither.flatMap(Declination.fromAngle(_).toRight("Invalid declination."))
+            } yield Replace(name, Coordinates(ra, dec))
+
+          r match {
+            case Right(r) => Right(r)
+            case Left(m) => Left(s"Invalid coordinates: $hms $dms -- $m")
+          }
+
+        case _ => Left(s"Not a valid target: $s\nExpected: Replace <hms> <dms> <name>")
+      }
+    }
+
+  val DecoderDisable: Decoder[ObservationEdit] =
     Decoder[String].map(_.toLowerCase).emap {
       case "disable" => Right(Disable)
       case s         => Left(s"Not a valid observation edit: $s")
     }
 
+  implicit val DecodeObservationEdit: Decoder[ObservationEdit] =
+    DecoderDisable or DecoderReplace
+
 }
+
