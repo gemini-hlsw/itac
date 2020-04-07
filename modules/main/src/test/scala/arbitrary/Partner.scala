@@ -17,7 +17,8 @@ trait PartnerArbitrary {
       fn <- arbitrary[String]
       sh <- arbitrary[Percent]
       ss <- arbitrary[Set[Site]]
-    } yield Partner(id, fn, sh, ss)
+      e  <- arbitrary[String]
+    } yield Partner(id, fn, sh, ss, e)
 
   implicit val ArbitraryPartner: Arbitrary[Partner] =
     Arbitrary(GenPartner)
