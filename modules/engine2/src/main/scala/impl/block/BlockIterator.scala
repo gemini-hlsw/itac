@@ -122,9 +122,9 @@ trait BlockIterator {
           case true => LOGGER.debug("End of sequence")
           case false => {
             val nextPartner = moreSeq.head
-            LOGGER.debug(<Event source="BlockIterator" event="advancePartner">
-              {nextPartner.fullName}
-            </Event>.toString)
+            // LOGGER.debug(<Event source="BlockIterator" event="advancePartner">
+            //   {nextPartner.fullName}
+            // </Event>.toString)
           }
         }
         //QueueCalculationLog.logger.log(Level.trace, (<Event source="BlockIterator" event="advancePartner">{s.head.fullName}</Event>).toString)

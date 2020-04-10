@@ -18,7 +18,7 @@ object RaResourceGroup {
  *
  * A resource that encapsulates RaBinGroup[RaResource] (n.b. RaResource contains a DecResourceGroup encapsulating a DecBinGroup)
  */
-class RaResourceGroup(val grp: RaBinGroup[RaResource]) extends Resource {
+case class RaResourceGroup(val grp: RaBinGroup[RaResource]) extends Resource {
   type T = RaResourceGroup
 
   def reserve(block: Block, queue: ProposalQueueBuilder): RejectMessage Either RaResourceGroup =

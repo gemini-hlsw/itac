@@ -7,11 +7,14 @@ import edu.gemini.tac.qengine.p1.QueueBand.Category.Guaranteed
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
 import edu.gemini.tac.qengine.p1.{ObservingConditions, Target}
 import org.slf4j.LoggerFactory
+import edu.gemini.tac.qengine.p1.QueueBand
 
-final class SemesterResource(
-        val ra: RaResourceGroup,
-        val time: TimeResourceGroup,
-        val band: BandResource) extends Resource {
+final case class SemesterResource(
+    ra:   RaResourceGroup,
+    time: TimeResourceGroup,
+    band: BandResource,
+    cat:  QueueBand.Category
+) extends Resource {
   private val LOGGER = LoggerFactory.getLogger(this.getClass)
   type T = SemesterResource
 
@@ -20,20 +23,22 @@ final class SemesterResource(
       newRa   <- ra.reserve(block, queue).right
       newTime <- time.reserve(block, queue).right
       newBand <- band.reserve(block, queue).right
-    } yield new SemesterResource(newRa, newTime, newBand)
+    } yield new SemesterResource(newRa, newTime, newBand, cat)
 
   // Determines whether the partner is already over allocated.
-  private def partnerAlreadyOverallocated(block: Block, queue: ProposalQueueBuilder): Boolean =
-    queue.remainingTime(Guaranteed, block.prop.ntac.partner) <= Time.Zero
+  private def partnerAlreadyOverallocated(block: Block, queue: ProposalQueueBuilder): Boolean = {
+    LOGGER.debug(f"Remaining time in $cat for ${block.prop.ntac.partner} is ${queue.remainingTime(cat, block.prop.ntac.partner).toHours.value}%5.1f")
+    queue.remainingTime(cat, block.prop.ntac.partner) <= Time.Zero
+  }
 
   // Determines whether including the indicated proposal will overallocate the
   // partner past the limit and allowance.
   private def partnerWouldBeOverallocated(block: Block, queue: ProposalQueueBuilder): Boolean =
     queue.queueTime.partnerOverfillAllowance exists { perc =>
       val partner   = block.prop.ntac.partner
-      val used      = queue.usedTime(Guaranteed, partner)
+      val used      = queue.usedTime(cat, partner)
       val allow     = queue.queueTime.fullPartnerTime(partner) * perc
-      val hardlimit = queue.queueTime(Guaranteed, partner) + allow
+      val hardlimit = queue.queueTime(cat, partner) + allow
       (used + block.prop.time) >= hardlimit
     }
 
@@ -46,7 +51,7 @@ final class SemesterResource(
   // that the total queue time.  In other words, the hard limit is the
   // full queue time.
   private def queueTooFull(block: Block, queue: ProposalQueueBuilder): Boolean =
-    (queue.remainingTime(Guaranteed) <= Time.Zero) || queue.remainingTime < block.prop.time
+    (queue.remainingTime(cat) <= Time.Zero) || queue.remainingTime < block.prop.time
 
   def reserve(block: Block, queue: ProposalQueueBuilder): RejectMessage Either SemesterResource = {
     // Check that we haven't over allocated this partner.  If so, rejected.
@@ -59,10 +64,10 @@ final class SemesterResource(
     if (block.isStart && partnerOverallocated(block, queue)) {
       val p = block.prop.ntac.partner
       LOGGER.debug("Rejected due to partner overallocation")
-      Left(RejectPartnerOverAllocation(block.prop, queue.bounds(Guaranteed, p), queue.bounds(p)))
+      Left(RejectPartnerOverAllocation(block.prop, queue.bounds(cat, p), queue.bounds(p)))
     } else if (queueTooFull(block, queue)) {
       LOGGER.debug("Rejected due to queue too full")
-      Left(RejectOverAllocation(block.prop, queue.remainingTime(Guaranteed), queue.remainingTime))
+      Left(RejectOverAllocation(block.prop, queue.remainingTime(cat), queue.remainingTime))
     }
     else {
       LOGGER.debug("Block OK")
@@ -75,7 +80,7 @@ final class SemesterResource(
 
   def reserveAvailable(time: Time, target: Target, conds: ObservingConditions): (SemesterResource, Time) = {
     val (newRa, rem) = ra.reserveAvailable(time, target, conds)
-    (new SemesterResource(newRa, this.time, band), rem)
+    (new SemesterResource(newRa, this.time, band, cat), rem)
   }
 
   def toXML = <SemesterResource>

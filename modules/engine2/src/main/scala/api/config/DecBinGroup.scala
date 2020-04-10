@@ -40,7 +40,7 @@ object DecBinGroup {
  * A collection of DecBins, which must be listed in order by DecRange and must
  * abut.
  */
-class DecBinGroup[T] private (val bins: IndexedSeq[DecBin[T]]) {
+case class DecBinGroup[T] private (val bins: IndexedSeq[DecBin[T]]) {
 
   private def updated(i: Int, bin: DecBin[T], f: T => Option[T]): Option[DecBinGroup[T]] = {
     f(bin.binValue).map(bv => new DecBinGroup(bins.updated(i, new DecBin(bin.range, bv))))

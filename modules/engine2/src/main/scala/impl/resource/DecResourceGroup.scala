@@ -20,7 +20,7 @@ object DecResourceGroup {
  * A time reservation used to keep up with the time used at various dec
  * ranges.
  */
-final class DecResourceGroup(val bins: DecBinGroup[BoundedTime]) extends Resource {
+final case class DecResourceGroup(val bins: DecBinGroup[BoundedTime]) extends Resource {
   type T = DecResourceGroup
 
   private def lookup(dec: Angle, f: BoundedTime => Time): Time =

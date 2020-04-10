@@ -26,8 +26,6 @@ final case class QueueConfig(
   hours:      Map[Partner, BandTimes]
 ) {
 
-  println(s"*** hours = $hours")
-
   object engine {
 
     def fullPartnerTime(allPartners: List[ItacPartner]): ItacPartnerTime =
@@ -53,12 +51,15 @@ final case class QueueConfig(
 
       val categorizedTimes: Map[(ItacPartner, QueueBand), Time] =
         hours.toList.flatMap { case (p, BandTimes(b1, b2, b3)) =>
-          val pʹ = allPartners.find(_.id == p.id).getOrElse(sys.error(s"No matching itac partner for config partner: ${p.id}"))
-          List(
-            (pʹ, QueueBand.QBand1) -> b1,
-            (pʹ, QueueBand.QBand2) -> b2,
-            (pʹ, QueueBand.QBand3) -> b3,
-          )
+          allPartners.find(_.id == p.id) match {
+            case None => Nil
+            case Some(pʹ) =>
+              List(
+                (pʹ, QueueBand.QBand1) -> b1,
+                (pʹ, QueueBand.QBand2) -> b2,
+                (pʹ, QueueBand.QBand3) -> b3,
+              )
+          }
         } .toMap
 
       new ExplicitQueueTime(categorizedTimes, overfill)

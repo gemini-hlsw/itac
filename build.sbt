@@ -24,7 +24,7 @@ lazy val engine2 = project
       "org.mockito"              % "mockito-all"                 % "1.10.19" % "test",
       "org.scalacheck"          %% "scalacheck"                  % "1.14.1"  % "test",
       "org.scalatest"           %% "scalatest"                   % "3.1.1"   % "test",
-      "org.scalatestplus" %% "scalacheck-1-14" % "3.1.1.1"
+      "org.scalatestplus" %% "scalacheck-1-14" % "3.1.1.1" % "test"
      ),
     scalacOptions := Nil, // don't worry about warnings in tests right now
   )

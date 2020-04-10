@@ -64,7 +64,7 @@ final class QueueFrame(val queue: ProposalQueueBuilder, val iter: BlockIterator,
     val noMoreQueueFrames = ! this.hasNext
     val finishedBand = ! this.queue.band.isIn(cat)
     if (noMoreQueueFrames || finishedBand){
-      LOGGER.debug("QueueCalcStage.emptyOrOtherCategory leaving band %s caused by No more time blocks for current partner (%s) or finished band (%s)".format(cat, noMoreQueueFrames, finishedBand))
+      LOGGER.info("QueueCalcStage.emptyOrOtherCategory leaving band %s caused by No more time blocks for current partner (%s) or finished band (%s)".format(cat, noMoreQueueFrames, finishedBand))
       applicationLogger.trace("emptyOrOtherCategory == true")
       true
     }else{

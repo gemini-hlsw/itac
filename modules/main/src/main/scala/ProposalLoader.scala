@@ -39,8 +39,8 @@ object ProposalLoader {
 
   val context: JAXBContext = {
     val factory        = new M.ObjectFactory
-    val contextPackage = factory.getClass.getName.reverse.dropWhile(_ != '.').drop(1).reverse
-    JAXBContext.newInstance(contextPackage, getClass.getClassLoader)
+    // val contextPackage = factory.getClass.getName.reverse.dropWhile(_ != '.').drop(1).reverse
+    JAXBContext.newInstance(factory.createProposal().getClass()) //contextPackage, getClass.getClassLoader)
   }
 
   private val ctor: Constructor[I.Proposal] =
