@@ -45,7 +45,9 @@ object Queue {
             // }
             // println()
 
-            QueueBand.Category.values.foreach { qc =>
+            println(s"\n\n${Console.BOLD}Queue Report for ${queueCalc.context.site.abbreviation}-${queueCalc.context.semester}${Console.RESET}\n")
+
+            List(QueueBand.Category.B1_2, QueueBand.Category.B3).foreach { qc =>
               println(s"${Console.BOLD}The following proposals were rejected for $qc.${Console.RESET}")
               pids.foreach { pid =>
                 val p = ps.find(_.id == pid).get
@@ -64,7 +66,7 @@ object Queue {
               println()
             }
 
-            println(s"${Console.BOLD}RA/Conditions Bucket Allocations:${Console.RESET}")
+            println(s"${Console.BOLD}RA/Conditions Bucket Allocations:                                                      Used   Avail${Console.RESET}")
             println(queueCalc.bucketsAllocation.raTablesANSI)
             println()
 
@@ -82,6 +84,49 @@ object Queue {
               }
               println(Console.RESET)
             }
+
+            // // Ok let's recategorize the results.
+            // val b12 = queueCalc.queue.bandedQueue(QueueBand.QBand1) ++
+            //           queueCalc.queue.bandedQueue(QueueBand.QBand2)
+
+            // val b3  = queueCalc.queue.bandedQueue(QueueBand.QBand3)
+            // // val b4  = queueCalc.queue.bandedQueue(QueueBand.QBand4)
+
+            // val pt = queueCalc.queue.queueTime
+
+            // cc.engine.partners.foreach { pa =>
+            //   println(s"---- ${pa.fullName}")
+
+            //   def band(t: Time): Int = {
+            //     val b1 = pt(QueueBand.QBand1, pa).percent(105)
+            //     val b2 = pt(QueueBand.QBand2, pa).percent(105)
+            //     // val b3 = pt(QueueBand.QBand3, pa)
+            //     if (t <= b1) 1 else if (t <= (b1 + b2)) 2 else 3
+            //   }
+
+            //   println(f"${pt(QueueBand.QBand1, pa).toHours.value}%5.1f ${pt(QueueBand.QBand2, pa).toHours.value}%5.1f ${pt(QueueBand.QBand3, pa).toHours.value}%5.1f")
+
+            //   def color(t: Time): String =
+            //     band(t) match {
+            //       case 1 => Console.YELLOW
+            //       case 2 => Console.GREEN
+            //       case 3 => Console.BLUE
+            //       case 4 => Console.RED
+            //     }
+
+            //   val t = b12.filter(_.ntac.partner == pa).foldLeft(Time.Zero) { (t, p) =>
+            //     val tʹ = t + p.time
+            //     println(f"• ${color(tʹ)}${p.id.reference}%-20s${Console.RESET} ${tʹ.toHours.value}%5.1f should be ${band(tʹ)} ~ is ${queueCalc.queue.positionOf(p).get.band.number}")
+            //     tʹ
+            //   }
+
+            //   b3.filter(_.ntac.partner == pa).foldLeft(t) { (t, p) =>
+            //     val tʹ = t + p.time
+            //     println(f"• ${color(tʹ)}${p.id.reference}%-20s${Console.RESET} ${tʹ.toHours.value}%5.1f should be ${band(tʹ)} ~ is ${queueCalc.queue.positionOf(p).get.band.number}")
+            //     tʹ
+            //   }
+
+            // }
 
             ExitCode.Success
 

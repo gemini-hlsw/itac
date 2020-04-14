@@ -18,9 +18,12 @@ import edu.gemini.tac.qengine.api.queue.time.{PartnerTime, QueueTime}
 import java.util.logging.{Level, Logger}
 
 import edu.gemini.tac.qengine.util.BoundedTime
+import org.slf4j.LoggerFactory
+import edu.gemini.tac.qengine.util.Time
+import scalaz._, Scalaz._
 
 object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
-  private val Log = Logger.getLogger(this.getClass.getName)
+  private val Log = LoggerFactory.getLogger("edu.gemini.itac")
 
   case class RaAllocation(name: String, boundedTime: BoundedTime)
   case class BucketsAllocationImpl(raBins: List[RaResource]) extends BucketsAllocation {
@@ -118,7 +121,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
    * Filters out proposals from the other site. Initializes bins using that list. *Then* removes non-queue proposals.
    * Note that this means that the RaResourceGroup returned is initialized from non-queue and queue proposals
    */
-  def filterProposalsAndInitializeBins(proposals: List[Proposal], config: QueueEngineConfig): (List[Proposal], RaResourceGroup) = {
+  private def filterProposalsAndInitializeBins(proposals: List[Proposal], config: QueueEngineConfig): (List[Proposal], RaResourceGroup) = {
     // Remove any proposals for the opposite site w/o polluting the log.
     val siteProps = proposals.filter(_.site == config.binConfig.site)
 
@@ -130,54 +133,116 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
     (siteProps.filter(_.mode.schedule), bins)
   }
 
-  def fillBands1And2(orderedProposals : List[Proposal], queueTime : QueueTime, config : QueueEngineConfig, bins : RaResourceGroup ) : QueueCalcStage = {
-    val proposalPrep = ProposalPrep(orderedProposals)
-    QueueCalcStage(QueueCalcStage.Params(proposalPrep, queueTime, config, bins))
-  }
-
-  def fillBand3(partners: List[Partner], initialPrep : ProposalPrep, clean : QueueCalcStage, partiallyFilled: QueueCalcStage, config : QueueEngineConfig, partnerQuanta: PartnerTime) : QueueCalcStage = {
-    val band3ProposalCandidates = initialPrep.remove(clean.queue.toList).band3(partiallyFilled.log)
-    val params = QueueCalcStage.Params(partners, band3ProposalCandidates, config, partiallyFilled, clean, partnerQuanta)
-    QueueCalcStage(params)
-  }
-
-    //Remove all proposals previously scheduled in Bands 1-3.
-  def unscheduledPoorWeatherProposals(initialPrep : ProposalPrep,  stageWithBands123 : QueueCalcStage) : List[Proposal] =
-    PoorWeatherCalc(initialPrep.remove(stageWithBands123.queue.toList).propList)
-
-  def buildFinalQueue(stageWithBands123 : QueueCalcStage, band4 : List[Proposal], queueTime : QueueTime) : ProposalQueue = {
-    val bandMap    = stageWithBands123.queue.bandedQueue.updated(QueueBand.QBand4, band4)
-    new FinalProposalQueue(queueTime, bandMap)
+  /** Log the time availability and usage for a stage. */
+  def show(config: QueueEngineConfig, s: QueueCalcStage): Unit = {
+    Log.info(s"${Console.GREEN}-----------------------------------${Console.RESET}")
+    Log.info(s"${Console.GREEN}Partner       Band 1/2       Band 3${Console.RESET}")
+    config.partners.foreach { p =>
+      val q   = s.queue
+      val t0  = q.queueTime(p).toHours.value
+      val b12Aval = q.queueTime(QueueBand.Category.B1_2, p).toHours.value
+      val b12Used = q.usedTime(QueueBand.Category.B1_2, p).toHours.value
+      val b3Aval = q.queueTime(QueueBand.Category.B3, p).toHours.value
+      val b3Used = q.usedTime(QueueBand.Category.B3, p).toHours.value
+      Log.info(f"${p.id}%-10s $b12Used%5.1f/$b12Aval%5.1f  $b3Used%5.1f/$b3Aval%5.1f")
+    }
+    Log.info(s"${Console.GREEN}-----------------------------------${Console.RESET}")
   }
 
   def calc(proposals: List[Proposal], queueTime: QueueTime, config: QueueEngineConfig, partners : List[Partner]): QueueCalc = {
-    val (validQueueProps, bins) = filterProposalsAndInitializeBins(proposals, config)
 
-    //We need to reuse this initial calculation for Bands 3 & 4
-    val initialPrep = ProposalPrep(validQueueProps)
+    // (helper) run and log a queue calculation stage, using our local config.
+    def stage(params: QueueCalcStage.Params): QueueCalcStage = {
+      val stage = QueueCalcStage(params)
+      show(config, stage)
+      stage
+    }
 
-    // Run a queue calc stage for bands 1 and 2.  This will result in the
-    // preliminary definition of bands 1 and 2, but will contain resource
-    // reservations that were partially filled with band1/2 conditions.
-    val partiallyFilled = fillBands1And2(validQueueProps, queueTime, config, bins)
+    // Identify the valid proposals and discard the others.
+    val (validProposals, bins) = filterProposalsAndInitializeBins(proposals, config)
+    val initialCandidates = ProposalPrep(validProposals)
 
-    // Re-execute the band 1 and 2 stage, using only the proposals that we know
-    // will be included.  This will prevent the partial reservation of resources
-    val stageWithBands12 = fillBands1And2(partiallyFilled.queue.toList, queueTime, config, bins)
+    // Run a queue calc stage for bands 1 and 2. This is the same way it used to work, but we're
+    // only doing it once because we're not re-using the iterator.
+    val stageWithBands12 = {
+      val candidates = initialCandidates
+      val params = QueueCalcStage.Params.band12(
+        grouped = candidates.group,
+        log     = candidates.log,
+        qtime   = queueTime,
+        config  = config,
+        bins    = bins
+      )
+      stage(params)
+    }
 
-    // Prepare proposals for the band 3 phase.  Remove all that were previously
-    // queued in bands 1 and 2, get rid of those that cannot be scheduled in
-    // band 3.  Keep the log from the first pass and add to it.
-    val stageWithBands123 = fillBand3(partners, initialPrep, stageWithBands12, partiallyFilled, config, queueTime.partnerQuanta)
+    // Now add the band 3 programs. We do this by pretending the used time in bands 1/2 is all the
+    // time we had in those bands, which is kind of an ugly hack but it works. Everything goes into
+    // band 3, up to partner time limits.
+    val stageWithBands123 = {
+      val candidates = initialCandidates.remove(stageWithBands12.queue.toList).band3(stageWithBands12.log)
+      val params = QueueCalcStage.Params.band3(
+        config       = config,
+        grouped      = candidates.group,
+        phase12bins  = stageWithBands12.resource,
+        phase12log   = stageWithBands12.log,
+        phase12queue = stageWithBands12.queue,
+      )
+      val s = stage(params)
+      s
+    }
 
-    // Figure out the poor weather proposals and return the result.
-    val band4 = unscheduledPoorWeatherProposals(initialPrep, stageWithBands123)
+    // Construct our final queue, which requires a bit of rejiggering.
+    val finalQueue = {
 
-    // Complement the band 1,2,3 map with poor weather proposals and create
-    // a final queue with it.
-    val finalQueue = buildFinalQueue(stageWithBands123, band4, queueTime)
+      // The band 1/2 boundary is wrong using the old strategy so we'll regroup them. First collect
+      // the band 1/2 programs IN ORDER.
+      val band12proposals: List[Proposal] =
+        stageWithBands123.queue.bandedQueue.get(QueueBand.QBand1).orZero ++
+        stageWithBands123.queue.bandedQueue.get(QueueBand.QBand2).orZero
 
-    Log.log(Level.FINE, "Filtered %d to %d".format(proposals.size, validQueueProps.size))
-    new QueueCalcImpl(config.binConfig.context, finalQueue, stageWithBands123.log, BucketsAllocationImpl(stageWithBands123.resource.ra.grp.bins.toList))
+      // Now re-group bands 1 and 2 using partner-specific time buckets
+      val band12map: Map[QueueBand, List[Proposal]] =
+        config.partners.foldMap { pa =>
+
+          // Within a given partner we can map used time to band
+          def band(t: Time): QueueBand = {
+            val b1 = queueTime(QueueBand.QBand1, pa).percent(105)
+            val b2 = queueTime(QueueBand.QBand2, pa).percent(105)
+            if (t <= b1) QueueBand.QBand1 else if (t <= (b1 + b2)) QueueBand.QBand2 else QueueBand.QBand3
+          }
+
+          // Go through all the proposals for this partner adding each to its band, based on the
+          // accumulated used time. This is why they need to be in order above.
+          band12proposals
+            .filter(_.ntac.partner == pa)
+            .foldLeft((Time.Zero, Map.empty[QueueBand, List[Proposal]])) { case ((t, m), p) =>
+              val tʹ = t + p.time
+              (tʹ, m |+| Map(band(tʹ) -> List(p)))
+          } ._2
+
+        }
+
+      // Band4 is a simple calculation
+      val band4 = PoorWeatherCalc(initialCandidates.remove(stageWithBands123.queue.toList).propList)
+
+      // Ok so *replace* bands 1/2 and then add band 4 then [deterministically] scramble the proposals
+      // within each band since at this point they're all created equal.
+      val bandedQueueʹ  = stageWithBands123.queue.bandedQueue ++ band12map
+      val bandedQueueʹʹ = bandedQueueʹ + (QueueBand.QBand4 -> band4)
+      val bandedQueueʹʹʹ = bandedQueueʹʹ.map { case (k, v) => (k, v.sortBy(_.piName.reverse)) }
+      new FinalProposalQueue(queueTime, bandedQueueʹʹʹ)
+
+    }
+
+    // And we're done.
+    new QueueCalcImpl(
+      context           = config.binConfig.context,
+      queue             = finalQueue,
+      proposalLog       = stageWithBands123.log,
+      bucketsAllocation = BucketsAllocationImpl(stageWithBands123.resource.ra.grp.bins.toList)
+    )
+
   }
+
 }

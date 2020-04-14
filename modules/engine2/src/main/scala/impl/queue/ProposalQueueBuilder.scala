@@ -23,7 +23,7 @@ object ProposalQueueBuilder {
   /**
    * Definition data that doesn't change as proposals are added to the queue.
    */
-  final class Config(val queueTime: QueueTime, val strategy: MergeStrategy)
+  final case class Config(val queueTime: QueueTime, val strategy: MergeStrategy)
 
   /**
    * Factory for ProposalQueue implementations.  QueueTime is required, but the
@@ -50,8 +50,8 @@ class ProposalQueueBuilder(
   override def usedTime(c: Category): Time =
     if (c == Category.Guaranteed) usedGuaranteed.total else super.usedTime(c)
 
-  def copy(ug: PartnerTime, u: Time, proposals: List[Proposal]): ProposalQueueBuilder =
-    new ProposalQueueBuilder(partners, config, ug, u, proposals)
+  def copy(ug: PartnerTime = usedGuaranteed, u: Time = usedTime, proposals: List[Proposal] = proposals, queueTime: QueueTime = queueTime): ProposalQueueBuilder =
+    new ProposalQueueBuilder(partners, config.copy(queueTime = queueTime), ug, u, proposals)
 
   private def addGuaranteedTimeFor(prop: Proposal): PartnerTime =
     prop match {

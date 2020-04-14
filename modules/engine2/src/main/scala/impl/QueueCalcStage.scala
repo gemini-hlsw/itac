@@ -13,15 +13,29 @@ import edu.gemini.tac.qengine.util.BoundedTime
 import edu.gemini.tac.qengine.api.queue.time.{PartnerTime, QueueTime}
 import edu.gemini.tac.qengine.ctx.Partner
 import java.util.logging.{Level, Logger}
+import edu.gemini.tac.qengine.util.Time
+import edu.gemini.tac.qengine.api.queue.time.ExplicitQueueTime
+import edu.gemini.tac.qengine.api.config.QueueBandPercentages
+import edu.gemini.tac.qengine.util.Percent
+import edu.gemini.tac.qengine.p1.QueueBand.QBand1
+import edu.gemini.tac.qengine.p1.QueueBand.QBand2
+import edu.gemini.tac.qengine.p1.QueueBand.QBand3
+import edu.gemini.tac.qengine.p1.QueueBand.QBand4
+import edu.gemini.tac.qengine.p1.QueueBand.Category.B1_2
+import edu.gemini.tac.qengine.p1.QueueBand.Category.B3
+import edu.gemini.tac.qengine.p1.QueueBand.Category.Guaranteed
+import edu.gemini.tac.qengine.p1.QueueBand.Category.PoorWeather
+import org.slf4j.LoggerFactory
 
 object QueueCalcStage {
   type Result = (QueueFrame, ProposalLog)
 
-  private val Log = Logger.getLogger(this.getClass.getName)
+  private val Log = LoggerFactory.getLogger("edu.gemini.itac")
 
   object Params {
+
     //Sets parameters for Band1 and 2
-    def apply(props: ProposalPrep, qtime: QueueTime, config: QueueEngineConfig, bins: RaResourceGroup) = {
+    def band12(grouped: Map[Partner, List[Proposal]], log: ProposalLog, qtime: QueueTime, config: QueueEngineConfig, bins: RaResourceGroup) = {
       // Calculate for the full time category (bands 1 and 2)
       val cat = Category.B1_2
 
@@ -30,7 +44,7 @@ object QueueCalcStage {
 
       // Create a new block iterator that will step through the proposals
       // according to partner sequence and time quantum
-      val iter = BlockIterator(config.partners, qtime.partnerQuanta, config.partnerSeq.sequence, props.group, _.obsList)
+      val iter = BlockIterator(config.partners, qtime.partnerQuanta, config.partnerSeq.sequence, grouped, _.obsList)
 
       // Create the initial restricted bins.  Percent bins are mapped to a
       // percentage of guaranteed queue time, and time bins set their own bound.
@@ -39,41 +53,54 @@ object QueueCalcStage {
         time => BoundedTime(time))
       val time = new TimeResourceGroup(rbins.map(new TimeResource(_)))
       val band = new BandResource(config.restrictedBinConfig.bandRestrictions)
-      val semRes = new SemesterResource(bins, time, band)
-      Log.log(Level.FINE, semRes.toXML.toString())
+      val semRes = new SemesterResource(bins, time, band, Category.B1_2)
+      Log.trace( semRes.toXML.toString())
 
-      new Params(cat, queue, iter, _.obsList, semRes, props.log)
+      new Params(cat, queue, iter, _.obsList, semRes, log)
     }
 
-    //This is the Band3 Constructor. Uses info from the passed-in queue calc stage.
-    def apply(partners: List[Partner],  props: ProposalPrep, config: QueueEngineConfig, pass1: QueueCalcStage, clean: QueueCalcStage, partnerQuanta : PartnerTime) = {
-      // Use the clean queue state that was previously calculated as the starting
-      // point.
-      val queue = clean.queue
 
-      // Put all in Band 3
-      val cat = Category.B3
-
-      // Use the bins from the clean calculation.  We will be adding on to
-      // them as we go, but the previous proposals are still in the queue and
-      // still need to be tracked.
-      val semRes = clean.resource
-
-      // Create a new block iterator that starts where we left off with the
-      // partner sequence, using the new band 3 proposal pool.
-      val prevIter = pass1.iter
-      /*
-      However! There is the possibility that the previous iterator is now empty (i.e., B1/B2 calculation
-      accepted or rejected every proposal). If that's true, we want to reset the block iterator, since
-      we *may* have some proposals that are schedulable in B3 (i.e., rejected in B1/B2 due to conditions)
-       */
-      val iter =
-        prevIter.quantaMap == PartnerTime.empty(partners) match {
-          case false => BlockIterator(partners, prevIter.quantaMap, prevIter.seq, props.group, _.band3Observations)
-          case true => BlockIterator(partners, partnerQuanta, config.partnerSeq.sequence, props.group, _.band3Observations)
+    def band3(phase12queue: ProposalQueueBuilder, grouped: Map[Partner, List[Proposal]], phase12log: ProposalLog, config: QueueEngineConfig, phase12bins: SemesterResource) = {
+      // ok so now we want to set the band 1/2 cutoffs to be whatever the used time is.
+      val hackedQueueTime: QueueTime =
+        new QueueTime {
+          val delegate = phase12queue.queueTime
+          def fullPartnerTime: PartnerTime = delegate.fullPartnerTime
+          def bandPercentages: QueueBandPercentages = delegate.bandPercentages
+          def partnerOverfillAllowance: Option[Percent] = delegate.partnerOverfillAllowance
+          def full: Time = delegate.full
+          def band1End: Time = phase12queue.usedTime(QueueBand.QBand1)
+          def band2End: Time = phase12queue.usedTime(Category.B1_2)
+          def band3End: Time = delegate.band3End
+          def partnerTime(band: QueueBand): PartnerTime = ???
+          def partnerTime(cat: Category): PartnerTime = ???
+          def partnerPercent(p: Partner): Percent = ???
+          def apply(band: QueueBand): Time =
+            band match {
+              case QBand1 | QBand2 => phase12queue.usedTime(band)
+              case QBand3 | QBand4 => delegate(band)
+            }
+          def apply(cat: Category): Time =
+            cat match {
+              case B1_2        => phase12queue.usedTime(B1_2)
+              case B3          => delegate(B3)
+              case Guaranteed  => phase12queue.usedTime(B1_2) + delegate(cat)
+              case PoorWeather => delegate(PoorWeather)
+            }
+          def apply(band: QueueBand, p: Partner): Time = ???
+          def apply(cat: Category, p: Partner): Time =
+            cat match {
+              case B1_2        => phase12queue.usedTime(B1_2, p)
+              case B3          => delegate(B3, p)
+              case Guaranteed  => phase12queue.usedTime(B1_2, p) + delegate(cat, p)
+              case PoorWeather => delegate(PoorWeather, p)
+            }
         }
-      new Params(cat, queue, iter, _.band3Observations, semRes, props.log)
+      val hackedQueue = phase12queue.copy(queueTime = hackedQueueTime)
+      val iter = BlockIterator(config.partners, phase12queue.queueTime.partnerQuanta, config.partnerSeq.sequence, grouped, _.band3Observations)
+      new Params(Category.B3, hackedQueue, iter, _.obsList, phase12bins.copy(cat = Category.B3), phase12log)
     }
+
   }
 
   class Params(val cat: QueueBand.Category,
@@ -104,9 +131,9 @@ object QueueCalcStage {
   //
   @tailrec private def compute(cat: Category, stack: List[QueueFrame], log: ProposalLog, activeList : Proposal=>List[Observation]): Result = {
     val stackHead = stack.head
-    Log.log(Level.FINE, stackHead.toXML.toString())
+    Log.trace( stackHead.toXML.toString())
     if (stackHead.emptyOrOtherCategory(cat)) {
-      Log.log(Level.FINE, "Stack is empty [" + ! stackHead.hasNext + "] or in other category [Expected : " + cat + " Actual: " + stackHead.queue.band + "]")
+      Log.trace( "Stack is empty [" + ! stackHead.hasNext + "] or in other category [Expected : " + cat + " Actual: " + stackHead.queue.band + "]")
       (stackHead, log.updated(stackHead.iter.remPropList, cat, RejectCategoryOverAllocation(_, cat)))
     } else stackHead.next(activeList) match {
       case Left(msg) => //Error, so roll back (and recurse)
@@ -131,6 +158,7 @@ object QueueCalcStage {
    */
   def apply(p: Params): QueueCalcStage = {
     val queueFrameHead = List(new QueueFrame(p.queue, p.iter, p.res))
+    Log.info(s"Constructing a QueueCalcStage with cat=${p.cat}")
     val result = compute(p.cat, queueFrameHead, p.log, p.activeList)
     new QueueCalcStage(p.cat, result)
   }

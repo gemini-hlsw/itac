@@ -142,7 +142,7 @@ object Workspace {
           readText(EmailTemplateDir.resolve(template.filename)).map { text =>
             new EmailTemplate {
               def name          = template.filename + " "
-              def titleTemplate = text.lines.next.drop(2).trim
+              def titleTemplate = text.linesIterator.next.drop(2).trim
               def bodyTemplate  = text
             }
           }

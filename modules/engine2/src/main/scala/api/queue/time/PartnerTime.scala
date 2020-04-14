@@ -55,7 +55,7 @@ class PartnerTime private(val partners: List[Partner], val map: Map[Partner, Tim
 }
 
 object PartnerTime {
-  val LOGGER = LoggerFactory.getLogger(classOf[PartnerTime])
+  val LOGGER = LoggerFactory.getLogger("edu.gemini.itac")
 
   /**
    * Creates a PartnerTime object using the given partial function to map from

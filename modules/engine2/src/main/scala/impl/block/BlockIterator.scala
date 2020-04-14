@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory
  * time quanta.
  */
 trait BlockIterator {
-  private val LOGGER : Logger = LoggerFactory.getLogger(this.getClass)
+  private val LOGGER : Logger = LoggerFactory.getLogger("edu.gemini.itac")
 
   val allPartners: List[Partner]
 
@@ -122,9 +122,9 @@ trait BlockIterator {
           case true => LOGGER.debug("End of sequence")
           case false => {
             val nextPartner = moreSeq.head
-            LOGGER.debug(<Event source="BlockIterator" event="advancePartner">
-              {nextPartner.fullName}
-            </Event>.toString)
+            // LOGGER.debug(<Event source="BlockIterator" event="advancePartner">
+            //   {nextPartner.fullName}
+            // </Event>.toString)
           }
         }
         //QueueCalculationLog.logger.log(Level.trace, (<Event source="BlockIterator" event="advancePartner">{s.head.fullName}</Event>).toString)
@@ -159,7 +159,7 @@ object BlockIterator {
           val iterMap: IMap) extends BlockIterator {
 
     def mkIterator(s: Seq[Partner], t: Time, m: IMap) = {
-      LoggerFactory.getLogger(this.getClass).debug("BlockIterator: " + seq.head + " remTime " + remTime)
+      LoggerFactory.getLogger("edu.gemini.itac").debug("BlockIterator: " + seq.head + " remTime " + remTime)
       //QueueCalculationLog.logger.log(Level.trace, (<Event source="BlockIterator" event="mkIterator">{s.head.fullName}</Event>).toString)
       new BlockIteratorImpl(allPartners, quantaMap, s, t, m)
     }

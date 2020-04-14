@@ -21,7 +21,7 @@ object RaResource {
  *
  * Used as the parameterized type to RaResourceGroup
  */
-final class RaResource(val absBounds: BoundedTime, val decRes: DecResourceGroup, val condsRes: ConditionsResourceGroup) extends Resource {
+final case class RaResource(val absBounds: BoundedTime, val decRes: DecResourceGroup, val condsRes: ConditionsResourceGroup) extends Resource {
   type T = RaResource
 
   // There is an absolute time limit for the RA, but the time limit for a

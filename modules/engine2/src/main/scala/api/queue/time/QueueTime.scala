@@ -13,7 +13,7 @@ import java.util.logging.{Logger, Level}
 /** Record of queue times for each partner.  Provides access to the total queue
   * time and the size of the time quantum for each partner.
   */
-sealed trait QueueTime {
+trait QueueTime {
   def fullPartnerTime: PartnerTime
 
   def bandPercentages: QueueBandPercentages
@@ -123,7 +123,7 @@ sealed trait QueueTime {
 
 
 object QueueTime {
-  private val Log = Logger.getLogger(this.getClass.getName)
+  private val Log = Logger.getLogger("edu.gemini.itac")
 
   /** Number of hours in each "cycle" of 100 Partner countries. */
   val CycleTimeConstant = 300
@@ -191,7 +191,7 @@ final class DerivedQueueTime(val site: Site,
 /** Implementation of `QueueTime` derived from overall partner allocation and
   * band percentages.
   */
-final class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), Time], val partnerOverfillAllowance: Option[Percent]) extends QueueTime {
+final case class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), Time], val partnerOverfillAllowance: Option[Percent]) extends QueueTime {
 
   val allPartners: List[Partner] =
     categorizedTimes.keys.map(_._1).toList.distinct

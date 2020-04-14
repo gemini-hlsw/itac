@@ -122,6 +122,9 @@ trait ProposalLog {
    */
   protected def mkProposalLog(l: List[Entry]): ProposalLog
 
+  def |+|(other: ProposalLog): ProposalLog =
+    mkProposalLog(log ++ other.log)
+
   def toXML =
     <ProposalLog>
       { log.reverse.map(_.msg.toXML) }

@@ -45,7 +45,7 @@ import RaBinGroup._
 /**
  * An RaBinGroup is a parametrized collection indexed by RA angle.
  */
-class RaBinGroup[T ] private (val bins: IndexedSeq[T]) {
+case class RaBinGroup[T ] private (val bins: IndexedSeq[T]) {
   require((TotalMin % bins.length) == 0)
 
   /** Size of each bin in minutes. */
