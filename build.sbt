@@ -3,10 +3,9 @@ publish / skip := true
 
 inThisBuild(Seq(
   scalaVersion := "2.12.10",
-  organization := "edu.gemini",
   resolvers    += "Gemini Repository" at "https://github.com/gemini-hlsw/maven-repo/raw/master/releases",
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
-))
+) ++ gspPublishSettings)
 
 lazy val engine = project
   .in(file("modules/engine"))
@@ -24,7 +23,7 @@ lazy val engine = project
       "org.mockito"              % "mockito-all"                 % "1.10.19" % "test",
       "org.scalacheck"          %% "scalacheck"                  % "1.14.1"  % "test",
       "org.scalatest"           %% "scalatest"                   % "3.1.1"   % "test",
-      "org.scalatestplus" %% "scalacheck-1-14" % "3.1.1.1" % "test"
+      "org.scalatestplus"       %% "scalacheck-1-14"             % "3.1.1.1" % "test"
      ),
     scalacOptions := Nil, // don't worry about warnings right now
   )
