@@ -47,7 +47,7 @@ object Fixture {
   def bandResource = new BandResource(RestrictionConfig().bandRestrictions)
 
   def semesterRes(total: Time): SemesterResource =
-    new SemesterResource(raResGroup, timeResourceGroup(total), bandResource)
+    new SemesterResource(raResGroup, timeResourceGroup(total), bandResource, QueueBand.Category.Guaranteed)
 
   // Falls in the first conditions bin (<=CC70)
   val goodCC = ObservingConditions(CC50, IQAny, SBAny, WVAny)

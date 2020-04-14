@@ -121,7 +121,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
    * Filters out proposals from the other site. Initializes bins using that list. *Then* removes non-queue proposals.
    * Note that this means that the RaResourceGroup returned is initialized from non-queue and queue proposals
    */
-  private def filterProposalsAndInitializeBins(proposals: List[Proposal], config: QueueEngineConfig): (List[Proposal], RaResourceGroup) = {
+  def filterProposalsAndInitializeBins(proposals: List[Proposal], config: QueueEngineConfig): (List[Proposal], RaResourceGroup) = {
     // Remove any proposals for the opposite site w/o polluting the log.
     val siteProps = proposals.filter(_.site == config.binConfig.site)
 

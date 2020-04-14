@@ -201,12 +201,20 @@ class QueueEngineTest {
   @Test
   def calculateBands1And2(): Unit =
     Range(1, 5).foreach { i =>
-      val initialPs = randomProposals(100)
+      val initialPs = ProposalPrep(randomProposals(100))
       val config = queueEngineConfig(Site.GS)
-      val (ps, bins) = QueueEngine.filterProposalsAndInitializeBins(initialPs, config)
+      val (ps, bins) = QueueEngine.filterProposalsAndInitializeBins(initialPs.propList, config)
       //Deterministic seed means random always has same result (I hope)
       Assert.assertEquals(51, ps.size)
-      val stage = QueueEngine.fillBands1And2(ps, queueTime(Site.GS), config, bins)
+
+      val params = QueueCalcStage.Params.band12(
+        grouped = initialPs.group,
+        log     = initialPs.log,
+        qtime   = queueTime(Site.GS),
+        config  = config,
+        bins    = bins
+      )
+      val stage = QueueCalcStage(params)
 
       val logs = stage.log.toList
       //Assert.assertEquals(31, logs.size)
