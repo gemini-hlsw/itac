@@ -7,8 +7,8 @@ target
 **/*.iml
 **/*.ipr
 itac-web/bin/
-.idea/
-.metals/
-.bloop/
-work/
-work2/
+.idea
+.metals
+.bloop
+work
+work2
