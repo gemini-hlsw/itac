@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 class ProportionalPartnerSequence(seq: List[Partner], val site: Site, val initialPick: Partner) extends  edu.gemini.tac.qengine.api.config.PartnerSequence {
   def this(seq : List[Partner], site : Site) = this(seq, site, seq.sortWith(_.percentDoubleAt(site) > _.percentDoubleAt(site)).head)
 
-  private val LOGGER : Logger = LoggerFactory.getLogger(classOf[ProportionalPartnerSequence])
+  private val LOGGER : Logger = LoggerFactory.getLogger("edu.gemini.itac")
 
   private def filter(site: Site) = seq.filter(_.sites.contains(site))
 

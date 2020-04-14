@@ -14,7 +14,7 @@ import scala.collection.JavaConverters._
  * final QueueTime.
  */
 object PartnerTimeCalc {
-  val Log = Logger.getLogger(this.getClass.getName)
+  val Log = Logger.getLogger("edu.gemini.itac")
 
   /**
    * Distributes the total queue over the partners for the given site according

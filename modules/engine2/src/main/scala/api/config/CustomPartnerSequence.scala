@@ -22,7 +22,7 @@ class CustomPartnerSequence(val seq : List[Partner],
                             val name : String = "Custom Partner Sequence",
                             val maybeUseAfterFirstCycle : Option[PartnerSequence] = None,
                             val maybePartnerWithInitialPick : Option[Partner] = None) extends PartnerSequence {
-  private val LOGGER : Logger = LoggerFactory.getLogger(classOf[CustomPartnerSequence])
+  private val LOGGER : Logger = LoggerFactory.getLogger("edu.gemini.itac")
   def sequence: Stream[Partner] = {
    val initialPick = maybePartnerWithInitialPick.getOrElse(seq.head)
    val ps = filter(site, seq)

@@ -25,16 +25,17 @@ import edu.gemini.tac.qengine.p1.QueueBand.Category.B1_2
 import edu.gemini.tac.qengine.p1.QueueBand.Category.B3
 import edu.gemini.tac.qengine.p1.QueueBand.Category.Guaranteed
 import edu.gemini.tac.qengine.p1.QueueBand.Category.PoorWeather
+import org.slf4j.LoggerFactory
 
 object QueueCalcStage {
   type Result = (QueueFrame, ProposalLog)
 
-  private val Log = Logger.getLogger(this.getClass.getName)
+  private val Log = LoggerFactory.getLogger("edu.gemini.itac")
 
   object Params {
 
     //Sets parameters for Band1 and 2
-    def apply(grouped: Map[Partner, List[Proposal]], log: ProposalLog, qtime: QueueTime, config: QueueEngineConfig, bins: RaResourceGroup) = {
+    def band12(grouped: Map[Partner, List[Proposal]], log: ProposalLog, qtime: QueueTime, config: QueueEngineConfig, bins: RaResourceGroup) = {
       // Calculate for the full time category (bands 1 and 2)
       val cat = Category.B1_2
 
@@ -53,19 +54,13 @@ object QueueCalcStage {
       val time = new TimeResourceGroup(rbins.map(new TimeResource(_)))
       val band = new BandResource(config.restrictedBinConfig.bandRestrictions)
       val semRes = new SemesterResource(bins, time, band, Category.B1_2)
-      Log.log(Level.FINE, semRes.toXML.toString())
+      Log.trace( semRes.toXML.toString())
 
       new Params(cat, queue, iter, _.obsList, semRes, log)
     }
 
 
     def band3(phase12queue: ProposalQueueBuilder, grouped: Map[Partner, List[Proposal]], phase12log: ProposalLog, config: QueueEngineConfig, phase12bins: SemesterResource) = {
-
-      // continue debugging … why is it saying we have no time in the band?
-      // I think we may need to decrement the time down to the point where it thinks it's in band3
-
-      // Ok let's set available B1/2 time to zero and see how that works out
-
       // ok so now we want to set the band 1/2 cutoffs to be whatever the used time is.
       val hackedQueueTime: QueueTime =
         new QueueTime {
@@ -101,46 +96,11 @@ object QueueCalcStage {
               case PoorWeather => delegate(PoorWeather, p)
             }
         }
-
       val hackedQueue = phase12queue.copy(queueTime = hackedQueueTime)
-
       val iter = BlockIterator(config.partners, phase12queue.queueTime.partnerQuanta, config.partnerSeq.sequence, grouped, _.band3Observations)
       new Params(Category.B3, hackedQueue, iter, _.obsList, phase12bins.copy(cat = Category.B3), phase12log)
     }
 
-
-    // //This is the Band3 Constructor. Uses info from the passed-in queue calc stage.
-    // def apply(partners: List[Partner],  props: ProposalPrep, config: QueueEngineConfig, partiallyFilled: QueueCalcStage, stageWithBands12: QueueCalcStage, partnerQuanta : PartnerTime) = {
-    //   // Use the stageWithBands12 queue state that was previously calculated as the starting
-    //   // point.
-    //   val queue = stageWithBands12.queue
-
-    //   // Put all in Band 3
-    //   val cat = Category.B3
-
-    //   // Use the bins from the stageWithBands12 calculation.  We will be adding on to
-    //   // them as we go, but the previous proposals are still in the queue and
-    //   // still need to be tracked.
-    //   val semRes = stageWithBands12.resource
-
-    //   // Create a new block iterator that starts where we left off with the
-    //   // partner sequence, using the new band 3 proposal pool.
-    //   val prevIter = partiallyFilled.iter
-    //   /*
-    //   However! There is the possibility that the previous iterator is now empty (i.e., B1/B2 calculation
-    //   accepted or rejected every proposal). If that's true, we want to reset the block iterator, since
-    //   we *may* have some proposals that are schedulable in B3 (i.e., rejected in B1/B2 due to conditions)
-    //    */
-
-    //   //// can we just make a new iterator with the original proposal list, now filtered to exclude everything in band1/2??
-
-    //   val iter =
-    //     prevIter.quantaMap == PartnerTime.empty(partners) match {
-    //       case false => BlockIterator(partners, prevIter.quantaMap, prevIter.seq, props.group, _.band3Observations)
-    //       case true => BlockIterator(partners, partnerQuanta, config.partnerSeq.sequence, props.group, _.band3Observations)
-    //     }
-    //   new Params(cat, queue, iter, _.band3Observations, semRes, props.log)
-    // }
   }
 
   class Params(val cat: QueueBand.Category,
@@ -171,9 +131,9 @@ object QueueCalcStage {
   //
   @tailrec private def compute(cat: Category, stack: List[QueueFrame], log: ProposalLog, activeList : Proposal=>List[Observation]): Result = {
     val stackHead = stack.head
-    Log.log(Level.FINE, stackHead.toXML.toString())
+    Log.trace( stackHead.toXML.toString())
     if (stackHead.emptyOrOtherCategory(cat)) {
-      Log.log(Level.FINE, "Stack is empty [" + ! stackHead.hasNext + "] or in other category [Expected : " + cat + " Actual: " + stackHead.queue.band + "]")
+      Log.trace( "Stack is empty [" + ! stackHead.hasNext + "] or in other category [Expected : " + cat + " Actual: " + stackHead.queue.band + "]")
       (stackHead, log.updated(stackHead.iter.remPropList, cat, RejectCategoryOverAllocation(_, cat)))
     } else stackHead.next(activeList) match {
       case Left(msg) => //Error, so roll back (and recurse)

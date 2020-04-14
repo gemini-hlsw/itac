@@ -123,7 +123,7 @@ trait QueueTime {
 
 
 object QueueTime {
-  private val Log = Logger.getLogger(this.getClass.getName)
+  private val Log = Logger.getLogger("edu.gemini.itac")
 
   /** Number of hours in each "cycle" of 100 Partner countries. */
   val CycleTimeConstant = 300

@@ -15,7 +15,7 @@ final case class SemesterResource(
     band: BandResource,
     cat:  QueueBand.Category
 ) extends Resource {
-  private val LOGGER = LoggerFactory.getLogger(this.getClass)
+  private val LOGGER = LoggerFactory.getLogger("edu.gemini.itac")
   type T = SemesterResource
 
   private def reserveAll(block: Block, queue: ProposalQueueBuilder): RejectMessage Either SemesterResource =
