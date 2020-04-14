@@ -4,6 +4,7 @@ publish / skip := true
 inThisBuild(Seq(
   scalaVersion := "2.12.10",
   resolvers    += "Gemini Repository" at "https://github.com/gemini-hlsw/maven-repo/raw/master/releases",
+  homepage := Some(url("https://github.com/gemini-hlsw/itac")),
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
 ) ++ gspPublishSettings)
 
