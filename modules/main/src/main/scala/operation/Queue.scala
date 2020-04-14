@@ -45,6 +45,8 @@ object Queue {
             // }
             // println()
 
+            println(s"\n\n${Console.BOLD}Queue Report for ${queueCalc.context.site.abbreviation}-${queueCalc.context.semester}${Console.RESET}\n")
+
             List(QueueBand.Category.B1_2, QueueBand.Category.B3).foreach { qc =>
               println(s"${Console.BOLD}The following proposals were rejected for $qc.${Console.RESET}")
               pids.foreach { pid =>
@@ -64,7 +66,7 @@ object Queue {
               println()
             }
 
-            println(s"${Console.BOLD}RA/Conditions Bucket Allocations:${Console.RESET}")
+            println(s"${Console.BOLD}RA/Conditions Bucket Allocations:                                                      Used   Avail${Console.RESET}")
             println(queueCalc.bucketsAllocation.raTablesANSI)
             println()
 
