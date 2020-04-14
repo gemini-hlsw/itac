@@ -8,10 +8,10 @@ inThisBuild(Seq(
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
 ))
 
-lazy val engine2 = project
-  .in(file("modules/engine2"))
+lazy val engine = project
+  .in(file("modules/engine"))
   .settings(
-    name := "itc-cli-engine2",
+    name := "itc-cli-engine",
     libraryDependencies ++= Seq(
       "edu.gemini.ocs"          %% "edu-gemini-model-p1"         % "2020001.1.0",
       "edu.gemini.ocs"          %% "edu-gemini-shared-skyobject" % "2019101.1.4",
@@ -26,12 +26,12 @@ lazy val engine2 = project
       "org.scalatest"           %% "scalatest"                   % "3.1.1"   % "test",
       "org.scalatestplus" %% "scalacheck-1-14" % "3.1.1.1" % "test"
      ),
-    scalacOptions := Nil, // don't worry about warnings in tests right now
+    scalacOptions := Nil, // don't worry about warnings right now
   )
 
 lazy val main = project
   .in(file("modules/main"))
-  .dependsOn(engine2)
+  .dependsOn(engine)
   .enablePlugins(AutomateHeaderPlugin)
   .settings(
     name := "itc-cli-main",
