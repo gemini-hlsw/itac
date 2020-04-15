@@ -11,7 +11,7 @@ inThisBuild(Seq(
 lazy val engine = project
   .in(file("modules/engine"))
   .settings(
-    name := "itc-cli-engine",
+    name := "itac-engine",
     libraryDependencies ++= Seq(
       "edu.gemini.ocs"          %% "edu-gemini-model-p1"         % "2020001.1.0",
       "edu.gemini.ocs"          %% "edu-gemini-shared-skyobject" % "2019101.1.4",
@@ -34,7 +34,7 @@ lazy val main = project
   .dependsOn(engine)
   .enablePlugins(AutomateHeaderPlugin)
   .settings(
-    name := "itc-cli-main",
+    name := "itac-main",
     libraryDependencies ++= Seq(
       "com.monovore"       %% "decline-effect"         % "1.0.0",
       "com.monovore"       %% "decline"                % "1.0.0",
@@ -52,5 +52,44 @@ lazy val main = project
       "org.typelevel"      %% "cats-testkit"           % "2.0.0"     % "test",
       "org.typelevel"      %% "cats-testkit-scalatest" % "1.0.0-RC1" % "test",
     )
+  )
+
+lazy val channel = project
+  .in(file("modules/channel"))
+  .settings(
+
+    // Create the app manifest such that it includes the version string.
+    resourceGenerators in Compile += Def.task {
+      val outDir = resourceManaged.value
+      val outFile = new File(outDir, "itac.json")
+      outDir.mkdirs
+      val v = version.value
+      IO.write(outFile,
+        s"""|{
+            |  "repositories": [
+            |    "central",
+            |    "sonatype:public",
+            |    "https://github.com/gemini-hlsw/maven-repo/raw/master/releases",
+            |    "ivy2Local"
+            |  ],
+            |  "dependencies": [
+            |    "edu.gemini:itac-main_2.12:${version.value}"
+            |  ]
+            |}
+            |""".stripMargin)
+      Seq(outFile)
+    }.taskValue,
+
+    // Hack the artifact name to remove the _2.12 because there's no Scala code here and we want to
+    // be able to say `coursier install --channel edu.gemini.itac:channel itac`.
+    // see https://github.com/sbt/librarymanagement/blob/4b4087a23534e5c73ddf752c795d154ebc670425/core/src/main/scala/sbt/librarymanagement/ArtifactExtra.scala#L102
+    artifactName := { (scalaVersion, module, artifact) =>
+      import artifact._
+      val classifierStr = classifier match { case None => ""; case Some(c) => "-" + c }
+      val cross = CrossVersion(module.crossVersion, scalaVersion.full, scalaVersion.binary)
+      val base = artifact.name //CrossVersion.applyCross(artifact.name, cross)
+      base + "-" + module.revision + classifierStr + "." + artifact.extension
+    }
+
   )
 
