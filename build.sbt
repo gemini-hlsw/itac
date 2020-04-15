@@ -54,7 +54,26 @@ lazy val main = project
       "org.typelevel"      %% "cats-effect"            % "2.0.0",
       "org.typelevel"      %% "cats-testkit"           % "2.0.0"     % "test",
       "org.typelevel"      %% "cats-testkit-scalatest" % "1.0.0-RC1" % "test",
-    )
+    ),
+    sourceGenerators in Compile += Def.task {
+      val outDir = (sourceManaged in Compile).value / "scala" / "itac"
+      val outFile = new File(outDir, "BuildInfo.scala")
+      outDir.mkdirs
+      val v = version.value
+      val t = System.currentTimeMillis
+      IO.write(outFile,
+        s"""|package itac
+            |
+            |/** Auto-generated build information. */
+            |object BuildInfo {
+            |  /** Current version of ITAC ($v). */
+            |  val version = "$v"
+            |  /** Build date (${new java.util.Date(t)}). */
+            |  val date    = new java.util.Date(${t}L)
+            |}
+            |""".stripMargin)
+      Seq(outFile)
+    }.taskValue
   )
 
 lazy val channel = project

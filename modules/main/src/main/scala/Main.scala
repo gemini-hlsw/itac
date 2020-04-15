@@ -27,7 +27,7 @@ object Main extends CommandIOApp(
   header  =
     s"""|For more information pass `--help` to a subcommand, for instance `itac init --help`.
         |
-        |ITAC Command Line Interface
+        |ITAC Command Line Interface ${BuildInfo.version}
         |
         |This is a simple program that generates queues by reading proposal XML files and a set of
         |configuration files that you (the user) edit to fine-tune the queue to your liking. There
