@@ -57,6 +57,7 @@ lazy val main = project
 lazy val channel = project
   .in(file("modules/channel"))
   .settings(
+    name := "itac-channel",
 
     // Create the app manifest such that it includes the version string.
     resourceGenerators in Compile += Def.task {
@@ -80,16 +81,9 @@ lazy val channel = project
       Seq(outFile)
     }.taskValue,
 
-    // Hack the artifact name to remove the _2.12 because there's no Scala code here and we want to
-    // be able to say `coursier install --channel edu.gemini.itac:channel itac`.
-    // see https://github.com/sbt/librarymanagement/blob/4b4087a23534e5c73ddf752c795d154ebc670425/core/src/main/scala/sbt/librarymanagement/ArtifactExtra.scala#L102
-    artifactName := { (scalaVersion, module, artifact) =>
-      import artifact._
-      val classifierStr = classifier match { case None => ""; case Some(c) => "-" + c }
-      val cross = CrossVersion(module.crossVersion, scalaVersion.full, scalaVersion.binary)
-      val base = artifact.name //CrossVersion.applyCross(artifact.name, cross)
-      base + "-" + module.revision + classifierStr + "." + artifact.extension
-    }
+    // Don't add _2.12 to the artifact name, and also don't add a dependency to the Scala lib.
+    crossPaths := false,
+    autoScalaLibrary := false
 
   )
 
