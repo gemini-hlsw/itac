@@ -66,7 +66,7 @@ object Queue {
               println()
             }
 
-            println(s"${Console.BOLD}RA/Conditions Bucket Allocations:                                                      Used   Avail${Console.RESET}")
+            println(s"${Console.BOLD}RA/Conditions Bucket Allocations:                                                       Rem   Avail${Console.RESET}")
             println(queueCalc.bucketsAllocation.raTablesANSI)
             println()
 
