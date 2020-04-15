@@ -10,16 +10,12 @@ import io.circe.generic.semiauto._
 import edu.gemini.qengine.skycalc.RaBinSize
 import edu.gemini.qengine.skycalc.DecBinSize
 import edu.gemini.tac.qengine.ctx.{ Partner => ItacPartner }
-import edu.gemini.tac.qengine.api.queue.time.{ QueueTime => ItacQueueTime }
-import edu.gemini.tac.qengine.api.queue.time.{ PartnerTime => ItacPartnerTime }
 import edu.gemini.tac.qengine.api.queue.time.ExplicitQueueTime
 import edu.gemini.tac.qengine.p1.QueueBand
 
 // queue configuration
 final case class QueueConfig(
   site:       Site,
-  totalHours: Double,
-  bands:      BandPercentages,
   overfill:   Option[Percent],
   raBinSize:  RaBinSize,
   decBinSize: DecBinSize,
@@ -27,25 +23,6 @@ final case class QueueConfig(
 ) {
 
   object engine {
-
-    def fullPartnerTime(allPartners: List[ItacPartner]): ItacPartnerTime =
-      // PartnerTime.distribute(Time.hours(totalHours), site, allPartners)
-    {
-      val pt = ItacPartnerTime(
-        allPartners,
-        allPartners.fproduct(p => Time.hours(totalHours * p.percentAt(site).doubleValue / 100.0)).toMap
-      )
-      // println(s">> fullPartnerTime: $pt")
-      pt
-    }
-
-    def queueTime(allPartners: List[ItacPartner]): ItacQueueTime =
-      ItacQueueTime(
-        site,
-        fullPartnerTime(allPartners),
-        bands.engine.queueBandPercentages,
-        overfill
-      )
 
     def explicitQueueTime(allPartners: List[ItacPartner]): ExplicitQueueTime = {
 

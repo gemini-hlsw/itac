@@ -179,7 +179,6 @@ object Init {
         |# Site
         |site: ${site.abbreviation}
         |
-        |# NOT IMPLEMENTED - when this works we won't need totalHours or bands
         |# Observing hours per partner in each band.
         |hours:
         |  US: 226.5	247.8	165.2
@@ -202,18 +201,6 @@ object Init {
         |
         |# Queue filling limit (percentage over 80).
         |overfill: 5
-        |
-        |# TO BE REMOVED
-        |# Total hours available.
-        |totalHours: 1417.8
-        |
-        |# TO BE REMOVED
-        |# Band sizes (not cutoffs). Must sum to 100.
-        |bands:
-        |  band1: 33
-        |  band2: 24
-        |  band3: 43
-        |
         |""".stripMargin
 
   def initialEdits: String =
