@@ -18,7 +18,7 @@ class Editor[F[_]: Applicative](edits: Map[String, Edit], log: Logger[F]) {
 
   def applyEdits(file: File, p: Proposal): F[Proposal] =
     edits.get(p.id) match {
-      case Some(f) => log.info(s"There are edits for ${p.id}/${file.getName} -- $f").as(f(p))
+      case Some(f) => log.debug(s"There are edits for ${p.id}/${file.getName} -- $f").as(f(p))
       case None    => log.trace(s"No edits for ${p.id}/${file.getName}").as(p)
     }
 

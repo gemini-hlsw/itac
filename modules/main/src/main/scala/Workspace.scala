@@ -66,6 +66,8 @@ trait Workspace[F[_]] {
 
   def proposals: F[List[Proposal]]
 
+  def proposal(ref: String): F[List[Proposal]]
+
   /**
    * Create a directory under `cwd` with a name like GN-20190524-103322 and return its path
    * relative to the workspace root.
@@ -233,13 +235,26 @@ object Workspace {
             p     = cwd.resolve(ProposalDir)
             pas   = conf.engine.partners.map { p => (p.id, p) } .toMap
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
-            _    <- log.info(s"Reading proposals from $p")
+            _    <- log.debug(s"Reading proposals from $p")
             es   <- readData[Edits](EditsFile).map(_.edits.getOrElse(Map.empty))
             ps   <- ProposalLoader[F](pas, when, es, log).loadMany(p.toFile.getAbsoluteFile)
             _    <- ps.traverse { case (f, Left(es)) => log.warn(s"$f: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
             psʹ   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
-            _    <- log.info(s"Read ${ps.length} proposals.")
+            _    <- log.debug(s"Read ${ps.length} proposals.")
           } yield ps.collect { case (_, Right(ps)) => ps.toList } .flatten
+
+        def proposal(ref: String): F[List[Proposal]] =
+          for {
+            cwd  <- cwd
+            conf <- commonConfig
+            p     = cwd.resolve(ProposalDir)
+            pas   = conf.engine.partners.map { p => (p.id, p) } .toMap
+            when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
+            _    <- log.debug(s"Reading proposals from $p")
+            es   <- readData[Edits](EditsFile).map(_.edits.getOrElse(Map.empty))
+            p    <- ProposalLoader[F](pas, when, es, log).loadByReference(p.toFile.getAbsoluteFile, ref)
+            _    <- p match { case (f, Left(es)) => log.warn(s"$f: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
+          } yield p._2.foldMap(_.toList)
 
         def newQueueFolder(site: Site): F[Path] =
           for {

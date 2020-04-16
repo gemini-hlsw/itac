@@ -29,6 +29,8 @@ trait ProposalLoader[F[_]] {
 
   def loadMany(dir: File): F[List[(File, EitherNel[String, NonEmptyList[Proposal]])]]
 
+  def loadByReference(dir: File, ref: String): F[(File, EitherNel[String, NonEmptyList[Proposal]])]
+
 }
 
 object ProposalLoader {
@@ -102,6 +104,26 @@ object ProposalLoader {
 
       def loadMany(dir: File): F[List[(File, EitherNel[String, NonEmptyList[Proposal]])]] =
         loadManyPhase1(dir).map(_.traverse(a => read(a._2).tupleLeft(a._1)).runA(JointIdGen(1)).value)
+
+      def loadByReference(dir: File, ref: String): F[(File, EitherNel[String, NonEmptyList[Proposal]])] =
+        Sync[F].delay(Option(dir.listFiles)).flatMap {
+          case None      => Sync[F].raiseError(new RuntimeException(s"Not a directory: $dir"))
+          case Some(arr) =>
+            arr
+              .filter(_.getName().endsWith(".xml")).toList
+              .findM { f =>
+                Sync[F].delay {
+                  val e = XML.load(f.toURI.toURL)
+                  val r = (e \\ "receipt" \ "id").text
+                  r == ref
+                }
+              }
+              .flatMap {
+                case Some(f) => load(f)
+                case None    => Sync[F].raiseError(new ItacException(s"No such proposal: $ref"))
+              }
+        }
+
 
     }
 
