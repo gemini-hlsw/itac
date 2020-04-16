@@ -215,6 +215,15 @@ trait MainOpts { this: CommandIOApp =>
       header = "Generate queue emails."
     )((siteConfig, rolloverReport).mapN((sc, rr) => Email[IO](QueueEngine, sc, rr)))
 
+  lazy val reference: Opts[String] =
+    Opts.argument[String]("semester")
+
+  lazy val summarize: Command[Operation[IO]] =
+    Command(
+      name   = "summarize",
+      header = "Summarize a proposal."
+    )(Opts.argument[String]("semester").map(s => Summarize(s)))
+
   lazy val ops: Opts[Operation[IO]] =
     List(
       email,
@@ -222,7 +231,8 @@ trait MainOpts { this: CommandIOApp =>
       init,
       ls,
       rollover,
-      queue
+      queue,
+      summarize
     ).sortBy(_.name).map(Opts.subcommand(_)).foldK
 
 }
