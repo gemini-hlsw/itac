@@ -12,7 +12,11 @@ Open a command shell (Terminal.app on the Mac) and continue with Step 2.
 
 ### 2. Install Coursier
 
-First install the Coursier native launcher. This will let you set up ITAC as well as the Java Virtual Machine, if necessary. Follow the instructions [here](https://get-coursier.io/docs/cli-overview.html#install-native-launcher). On success you will be able to do:
+First install the Coursier native launcher. This will let you set up ITAC as well as the Java Virtual Machine, if necessary. Follow the instructions [here](https://get-coursier.io/docs/cli-overview.html#install-native-launcher).
+
+Depending on how you installed it, you may need to move `cs` into a directory that's on your executable path, such as `/usr/local/bin/`.
+
+On success you will be able to do:
 
 ```
 $ cs --help
@@ -24,52 +28,17 @@ Available commands: bootstrap, complete, fetch, install, java, java-home, launch
 Type  cs command --help  for help on an individual command
 ```
 
-### 3. Install Java if Needed
+### 3. Install ITAC
 
-See if Java is already on your path. If it is, `java -version` should show you something like this:
-
-```
-$ java -version
-java version "1.8.0_144"
-Java(TM) SE Runtime Environment (build 1.8.0_144-b01)
-Java HotSpot(TM) 64-Bit Server VM (build 25.144-b01, mixed mode)
-```
-
-If you see an error message or version earlier than 1.8.x then continue on below, otherwise skip to Step 3.
-
-Ok so you need to install Java. Do the following.
+Use `cs setup` to set up Java, configure your path, and install ITAC.
 
 ```
-$ cs java --env
-...
-export CS_FORMER_JAVA_HOME="$JAVA_HOME"
-export JAVA_HOME="/root/.cache/coursier/jvm/adopt@1.8.0-242"
-export PATH="/root/.cache/coursier/jvm/adopt@1.8.0-242/bin:$PATH"
+cs setup --yes --channel edu.gemini:itac-channel --apps itac
 ```
-
-At the end of the output will be some `export` statements. Add these to your startup profile (usually `~/.bash_profile`) to add the JVM to your path.
-
-Close and re-open your terminal window and `java -version` should now work.
-
-### 4. Install ITAC
-
-Use `cs` to install ITAC.
-
-```
-cs install --channel edu.gemini:itac-channel itac
-...
-Wrote itac
-Warning: /root/.local/share/coursier/bin is not in your PATH
-To fix that, add the following line to your shell configuration file
-
-export PATH="$PATH:/root/.local/share/coursier/bin"
-```
-
-If the output ends in the warning above, add the `export` statement to your startup profile (usually `~/.bash_profile`) to add Coursier-managed applications to your path.
 
 Close and re-open your terminal window and `itac --help` should now run and print a help message.
 
-### 5. Update ITAC
+### 4. Update ITAC
 
 Once ITAC is installed you can update to the latest version thus:
 
