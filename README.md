@@ -136,6 +136,26 @@ $ tree
 - `gn-rollovers.yaml` and `gn-rollovers.yaml` contain rollover reports fetched from the ODBs at GN and GS. You may wish to adjust the times here. To re-fetch a rollover report you can say `itac --force rollover --south` (or `--north`). Note that you must have an internal or VPN connection to do this.
 - `proposals/` is where your proposal XML files (from Jared's system) need to go.
 
+### Get Help
+
+You can get detailed help about `itac` commands and options with the `--help` flag.
+
+| Command | Action |
+|--|--|
+| `itac --help` | Show top-level help. |
+| `itac <command> --help` | Show help for a specific command. For example, `itac queue --help` |
+
+You can also ask for help on the `#itac` channel on the **Gemini Software** Slack (ask Arturo if you need access).
+
+### Look at Proposals
+
+The following commands display information about the proposals in your workspace's `proposals/` directory.
+
+| Command | Action |
+|--|--|
+|`itac ls` | Show a list of all proposals in the workspace. |
+|`itac summarize <ref>` | Display a summary of a proposal and its observations. For example, `itac summarize BR-2019B-071` |
+
 ### Construct a Queue
 
 Once your workspace is set up you can run a queue, but if you want to play with this software it's likely you don't have any proposals for the current semester. So to do this we can **turn back time** and run a previous semester's queue again. Let's use 2020A.
@@ -150,10 +170,10 @@ You should now be able to run a queue and see output that includes rejection mes
 itac queue --south
 ```
 
-### Editing Proposals
+### Edit Proposals
 
 TBD
 
-### Finalizing a Queue
+### Finalize a Queue
 
 TBD
