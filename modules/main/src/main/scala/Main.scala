@@ -5,6 +5,7 @@ package itac
 
 import cats.data.NonEmptyList
 import cats.data.Validated
+import cats.data.ValidatedNel
 import cats.effect._
 import cats.implicits._
 import com.monovore.decline.Command
@@ -21,6 +22,9 @@ import edu.gemini.tac.qengine.impl.QueueEngine
 import edu.gemini.spModel.core.Semester
 import edu.gemini.spModel.core.Site
 import org.slf4j.impl.ColoredSimpleLogger
+import gsp.math.Angle
+import cats.instances.short
+import com.monovore.decline.Argument
 
 object Main extends CommandIOApp(
   name    = "itac",
@@ -218,11 +222,31 @@ trait MainOpts { this: CommandIOApp =>
   lazy val reference: Opts[String] =
     Opts.argument[String]("semester")
 
+  implicit lazy val ArgumentAngle: Argument[Angle] =
+    new Argument[Angle] {
+      def defaultMetavar: String = "dd:mm:ss.xxx"
+      def read(string: String): ValidatedNel[String,Angle] =
+        Angle.fromStringDMS.getOption(string).toValidNel(s"Expected dd:mm:ss.xxx, found $string")
+    }
+
+  lazy val tolerance: Opts[Angle] =
+    Opts.option[Angle](
+      short = "t",
+      long = "tolerance",
+      help = "Angular separation of targets that might be the same. Default 00:00:10.00"
+    ).withDefault(Angle.fromDoubleArcseconds(10))
+
   lazy val summarize: Command[Operation[IO]] =
     Command(
       name   = "summarize",
       header = "Summarize a proposal."
     )(Opts.argument[String]("semester").map(s => Summarize(s)))
+
+  lazy val duplicates: Command[Operation[IO]] =
+    Command(
+      name   = "duplicates",
+      header = "Search for duplicate targets."
+    )(tolerance.map(Duplicates[IO](_)))
 
   lazy val ops: Opts[Operation[IO]] =
     List(
@@ -232,7 +256,8 @@ trait MainOpts { this: CommandIOApp =>
       ls,
       rollover,
       queue,
-      summarize
+      summarize,
+      duplicates
     ).sortBy(_.name).map(Opts.subcommand(_)).foldK
 
 }
