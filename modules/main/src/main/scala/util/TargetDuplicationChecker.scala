@@ -1,13 +1,13 @@
 package itac.util
 
-import cats.data.NonEmptyList
 import cats.implicits._
 import edu.gemini.tac.qengine.p1.Observation
 import edu.gemini.tac.qengine.p1.Proposal
 import edu.gemini.tac.qengine.p1.Target
 import gsp.math.Angle
 import gsp.math.Coordinates
-import itac.ObservationDigest
+import scala.collection.immutable.Queue
+import cats.data.NonEmptyChain
 
 /**
  *
@@ -31,57 +31,62 @@ class TargetDuplicationChecker(proposals: List[Proposal], val tolerance: Angle =
   def same(t1: Target, t2: Target): Boolean =
     same(coordinates(t1), coordinates(t2))
 
+  /** Are these the same observation within our tolerance? */
+  def same(o1: Observation, o2: Observation): Boolean =
+    same(o1.target, o2.target)
+
+  def same(ti1: TargetInfo, ti2: TargetInfo): Boolean =
+    same(ti1.target, ti2.target)
+
+  case class TargetInfo(proposalRef: String, target: Target)
+
   /**
-   * Given a reference target and a list of proposals, return a list of pairs of proposals and the
-   * digests of their matching observations.
+   * A cluster of targets, grouped by NTAC reference, in which all edges in the minimal spanning
+   * tree are <= `tolerance`.
    */
-  def duplicates(referenceTarget: Target): List[(Proposal, NonEmptyList[String])] =
-    proposals.flatMap { p =>
+  type Cluster = Map[String, NonEmptyChain[Target]]
 
-      // Digests of all observations in `p` that are close to `referenceTarget`.
-      val duplicateDigests: List[String] =
-        (p.obsList ++ p.band3Observations).flatMap { o =>
-          if (same(referenceTarget, o.target)) List(ObservationDigest.digest(o.p1Observation))
-          else Nil
-        }
-
-      // Only yield a value if there are duplicates.
-      NonEmptyList
-        .fromList(duplicateDigests)
-        .foldMap(nel => List((p, nel)))
-
+  /**
+   * Find the members of the cluster that includes the `target`, taken from the list of candidates,
+   * which should *not* contain `target`. Returns the cluster (which may only include `target`) and
+   * a list of non-members.
+   */
+  def clusterIncluding(target: TargetInfo, candidates: List[TargetInfo]): (Cluster, List[TargetInfo]) = {
+    // breadth-first search
+    def go(queue: Queue[TargetInfo], members: List[TargetInfo], candidates: List[TargetInfo]): (Cluster, List[TargetInfo]) = {
+      if (queue.isEmpty) {
+        // This means there are no more nodes to expand, so the cluster is closed and we're done.
+        val cluster = members.foldMap(ti => Map(ti.proposalRef -> NonEmptyChain(ti.target)))
+        (cluster, candidates)
+      } else {
+        //
+        val (focus, queueʹ) = queue.dequeue
+        val (neighbors, candidatesʹ) = candidates.partition(same(focus, _))
+        go(queueʹ ++ neighbors, focus :: members, candidatesʹ)
+      }
     }
-
-  // As we check for duplicates we accumulate a set of observation digests that have already been
-  // found to identify duplicates, as well as references targets that have already been examined.
-  // We don't need to look at these again. The algorithm is O(n^2) and this optimization cuts the
-  // search space in half in the worst case, more when there are duplicates.
-  //
-  // The set of duplicates for a given target can be discarded if only one program mentioned (this
-  // means that the target appears more than once in the same program, which is fine).
-
-  def duplicates: List[List[(Proposal, NonEmptyList[String])]] = {
-
-    // All observations, minus those with dummy targets.
-    val observations: List[Observation] =
-      proposals
-        .flatMap(p => p.obsList ++ p.band3Observations)
-        .filter(o => o.target.ra.mag != 0.0 || o.target.dec.mag != 0.0)
-
-    // As we check for duplicates we accumulate a set of observation digests that have already been
-    // found to identify duplicates, as well as references targets that have already been examined.
-    // We don't need to look at these again. The algorithm is O(n^2) and this optimization cuts the
-    // search space in half in the worst case, more when there are duplicates.
-    val initialState = (Set.empty[String], List.empty[List[(Proposal, NonEmptyList[String])]])
-    observations.foldLeft(initialState) { case ((seen, accum), o) =>
-
-      // ignore seen for now
-
-      (seen, duplicates(o.target) :: accum)
-
-    } ._2.filter(_.length > 1).distinct
-
+    go(Queue(target), Nil, candidates)
   }
 
+  def allClusters: List[Map[String, NonEmptyChain[Target]]] = {
+
+    def go(infos: List[TargetInfo], accum: List[Map[String, NonEmptyChain[Target]]] = Nil): List[Map[String, NonEmptyChain[Target]]] =
+      infos match {
+        case Nil    => accum
+        case h :: t =>
+          val (cluster, nonMembers) = clusterIncluding(h, t)
+          go(nonMembers, if (cluster.size > 1) cluster :: accum else accum)
+      }
+
+    val infos: List[TargetInfo] =
+      for {
+        p <- proposals
+        t <- (p.obsList ++ p.band3Observations).map(_.target).distinct
+        if (t.ra.mag != 0 || t.dec.mag != 0)
+      } yield TargetInfo(p.id.reference, t)
+
+    go(infos)
+
+  }
 
 }
