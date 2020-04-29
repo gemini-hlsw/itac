@@ -23,7 +23,7 @@ class CustomPartnerSequence(val seq : List[Partner],
                             val maybeUseAfterFirstCycle : Option[PartnerSequence] = None,
                             val maybePartnerWithInitialPick : Option[Partner] = None) extends PartnerSequence {
   private val LOGGER : Logger = LoggerFactory.getLogger("edu.gemini.itac")
-  def sequence: Stream[Partner] = {
+  def sequence: LazyList[Partner] = {
    val initialPick = maybePartnerWithInitialPick.getOrElse(seq.head)
    val ps = filter(site, seq)
    val partnerStream = maybeUseAfterFirstCycle match {
@@ -40,16 +40,16 @@ class CustomPartnerSequence(val seq : List[Partner],
  /* --------------------------- */
   private def filter(site: Site, seq : List[Partner]) = seq.filter(_.sites.contains(site))
 
-  private def onceAndThen(seq : List[Partner], post : PartnerSequence) : Stream[Partner] = {
+  private def onceAndThen(seq : List[Partner], post : PartnerSequence) : LazyList[Partner] = {
     seq.isEmpty match {
-      case false => Stream.cons(seq.head, onceAndThen(seq.tail, post))
+      case false => LazyList.cons(seq.head, onceAndThen(seq.tail, post))
       case true => post.sequence
     }
   }
 
   // Creates a recursive definition of the stream, where the head is the
   // corresponding value and the tail is lazily evaluated when needed.
-  private def infiniteSequence(s: List[Partner], i: Int): Stream[Partner] =  {
+  private def infiniteSequence(s: List[Partner], i: Int): LazyList[Partner] =  {
     if(i + 1 % 100 == 0){
       LOGGER.debug("PartnerSequence Cycle: " + i / 100)
       if((i + 1)% 100000 == 0){
@@ -59,7 +59,7 @@ class CustomPartnerSequence(val seq : List[Partner],
       }
     }
     val partner = s(i % s.size)
-    Stream.cons(partner, infiniteSequence(s, i + 1))
+    LazyList.cons(partner, infiniteSequence(s, i + 1))
   }
 
 }

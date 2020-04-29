@@ -35,7 +35,7 @@ final case class Common(
 
     def partnerSequence(site: Site): ItacPartnerSequence =
       new ItacPartnerSequence {
-        def sequence = self.sequence.forSite(site).map(partnersMap).toStream #::: sequence
+        def sequence = self.sequence.forSite(site).map(partnersMap).to(LazyList) #::: sequence
         override def toString = s"ItacPartnerSequence(...)"
       }
 

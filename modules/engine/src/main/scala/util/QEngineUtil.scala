@@ -1,6 +1,6 @@
 package edu.gemini.tac.qengine.util
 
-import scala.collection.JavaConversions._
+import scala.jdk.CollectionConverters._
 
 import annotation.tailrec
 
@@ -31,7 +31,7 @@ object QEngineUtil {
    * the Java collection is null.
    */
   def toList[T](javaCol: java.util.Collection[T]): List[T] =
-    Option(javaCol).map(_.toList).getOrElse(Nil)
+    Option(javaCol).map(_.asScala.toList).getOrElse(Nil)
 
   /**
    * Trims the given (possibly null) string, returning an Option that is Some

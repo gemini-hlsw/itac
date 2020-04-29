@@ -84,8 +84,8 @@ class DecBinGroupTest {
     val grp = DecBinGroup.gen10DegBins(f)
     val grpInt = grp.map(_.value)
     assertEquals(None, grpInt.get(new Angle(-1, Angle.Deg)))
-    assertEquals(   0, grpInt.get(Angle.angleDeg0).get.binValue.doubleValue(), Double.MinPositiveValue)
-    assertEquals(  10, grpInt.get(new Angle(15, Angle.Deg)).get.binValue.doubleValue(), Double.MinPositiveValue)
+    assertEquals(   0, grpInt.get(Angle.angleDeg0).get.binValue.doubleValue, Double.MinPositiveValue)
+    assertEquals(  10, grpInt.get(new Angle(15, Angle.Deg)).get.binValue.doubleValue, Double.MinPositiveValue)
   }
 
   @Test def testGenFromBinValues() {

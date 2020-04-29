@@ -132,10 +132,10 @@ abstract class AbstractQueueOperation[F[_]](
     ShutdownCalc.sumHoursPerRa(ShutdownCalc.trim(shutdowns, ctx), size)
 
   private def createConfig(ctx: Context, ra: RaBinSize, dec: DecBinSize, shutdowns: List[Shutdown], conditions: ConditionsBinGroup[Percent]): SiteSemesterConfig = {
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
     val calc = RaDecBinCalc.get(ctx.site, ctx.semester, ra, dec)
-    val hrs  = calc.getRaHours.asScala.map(h => Time.hours(h.getHours))
-    val perc = calc.getDecPercentages.asScala.map(p => Percent(p.getAmount.round.toInt.toDouble))
+    val hrs  = calc.getRaHours.asScala.toList.map(h => Time.hours(h.getHours))
+    val perc = calc.getDecPercentages.asScala.toList.map(p => Percent(p.getAmount.round.toInt.toDouble))
     val hrsʹ = hrs.zip(shutdownHours(shutdowns, ctx, ra)).map { case (t1, t2) => (t1 - t2).max(Time.ZeroHours) }
     new SiteSemesterConfig(ctx.site, ctx.semester, RaBinGroup(hrsʹ), DecBinGroup(perc), shutdowns, conditions)
   }

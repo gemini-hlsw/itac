@@ -2,7 +2,7 @@
 publish / skip := true
 
 inThisBuild(Seq(
-  scalaVersion := "2.12.10",
+  scalaVersion := "2.13.1",
   resolvers    += "Gemini Repository" at "https://github.com/gemini-hlsw/maven-repo/raw/master/releases",
   homepage := Some(url("https://github.com/gemini-hlsw/itac")),
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
@@ -13,10 +13,10 @@ lazy val engine = project
   .settings(
     name := "itac-engine",
     libraryDependencies ++= Seq(
-      "edu.gemini.ocs"          %% "edu-gemini-model-p1"         % "2020001.1.0",
-      "edu.gemini.ocs"          %% "edu-gemini-shared-skyobject" % "2019101.1.4",
-      "edu.gemini.ocs"          %% "edu-gemini-util-skycalc"     % "2019101.1.4",
-      "edu.gemini.ocs"          %% "edu-gemini-util-security"    % "2019101.1.4",
+      "edu.gemini.ocs"          %% "edu-gemini-model-p1"         % "2020102.1.4",
+      "edu.gemini.ocs"          %% "edu-gemini-shared-skyobject" % "2020001.1.4",
+      "edu.gemini.ocs"          %% "edu-gemini-util-skycalc"     % "2020001.1.4",
+      // "edu.gemini.ocs"          %% "edu-gemini-util-security"    % "2020001.1.4",
       "org.scala-lang.modules"  %% "scala-xml"                   % "2.0.0-M1",
       "org.slf4j"                % "slf4j-api"                   % "1.7.28",
       "javax.xml.bind"           % "jaxb-api"                    % "2.3.1",
@@ -41,12 +41,12 @@ lazy val main = project
     libraryDependencies ++= Seq(
       "com.monovore"       %% "decline-effect"         % "1.0.0",
       "com.monovore"       %% "decline"                % "1.0.0",
-      "edu.gemini"         %% "gsp-math"               % "0.1.10",
+      "edu.gemini"         %% "gsp-math"               % "0.1.17",
       "io.chrisdavenport"  %% "log4cats-slf4j"         % "1.0.1",
-      "io.circe"           %% "circe-core"             % "0.11.1",
-      "io.circe"           %% "circe-generic"          % "0.11.1",
-      "io.circe"           %% "circe-parser"           % "0.11.1",
-      "io.circe"           %% "circe-yaml"             % "0.10.0",
+      "io.circe"           %% "circe-core"             % "0.13.0",
+      "io.circe"           %% "circe-generic"          % "0.13.0",
+      "io.circe"           %% "circe-parser"           % "0.13.0",
+      "io.circe"           %% "circe-yaml"             % "0.13.0",
       "javax.mail"          % "javax.mail-api"         % "1.6.2",
       "org.apache.velocity" % "velocity-engine-core"   % "2.2",    // save me jeebus
       "org.slf4j"           % "slf4j-simple"           % "1.7.28",

@@ -39,7 +39,7 @@ class ProportionalPartnerSequence(seq: List[Partner], val site: Site, val initia
     } else {
       achievedToDate.values.sum
     }
-    val achievedPercentages = achievedToDate.mapValues(v => v / toDateTotal)
+    val achievedPercentages = achievedToDate.mapValues(v => v / toDateTotal).toMap
     LOGGER.debug("Desired percentages:" + desiredPercentages)
     LOGGER.debug("Achieved percentages: " + achievedPercentages)
     val gaps = achievedPercentages.map {
@@ -50,7 +50,7 @@ class ProportionalPartnerSequence(seq: List[Partner], val site: Site, val initia
     //Now find the key whose current gap corresponds to biggest under-served element
     val gapsForMaxUnder = gaps.mapValues {
       v => Math.abs(v - maxUnder) < Double.MinPositiveValue
-    }
+    } .toMap
     val keysByHasMaxUnder =
       maxUnder < Double.MinPositiveValue match {
         case false => gapsForMaxUnder.map(_.swap)
@@ -68,19 +68,19 @@ class ProportionalPartnerSequence(seq: List[Partner], val site: Site, val initia
   /**
   Stream of most-fair next element
    */
-  private def proportionalStream[T](proportions: Map[T, Double], toDate: Map[T, Double]): Stream[T] = {
+  private def proportionalStream[T](proportions: Map[T, Double], toDate: Map[T, Double]): LazyList[T] = {
     val nextS = next(proportions, toDate)
     val tailToDate = toDate + (nextS -> (toDate(nextS) + 1.0))
-    Stream.cons(
+    LazyList.cons(
       nextS,
       proportionalStream(proportions, tailToDate)
     )
   }
 
-  def sequence: Stream[Partner] = {
+  def sequence: LazyList[Partner] = {
     val partnersForSite = siteSeq(site)
     val proportions = partnersForSite.map(p => p -> p.share.doubleValue).toMap
-    val none = proportions.mapValues(_ => 0.0)
+    val none = proportions.mapValues(_ => 0.0).toMap
     proportionalStream(proportions, none).dropWhile(p => p != initialPick)
   }
 

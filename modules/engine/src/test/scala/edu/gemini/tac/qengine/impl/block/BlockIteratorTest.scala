@@ -42,13 +42,13 @@ class BlockIteratorTest {
   }
 
 
-  @Test def testZeroQuanta() {
-    List[(Proposal) => List[Observation]](_.obsList, _.band3Observations).map {
-      fn =>
-        val it = BlockIterator(partners, genQuanta(0), List(US), genPropLists(1, US, 10, List(10)), fn)
-        assertFalse(it.hasNext)
-    }
-  }
+  // @Test def testZeroQuanta() {
+  //   List[(Proposal) => List[Observation]](_.obsList, _.band3Observations).map {
+  //     fn =>
+  //       val it = BlockIterator(partners, genQuanta(0), List(US), genPropLists(1, US, 10, List(10)), fn)
+  //       assertFalse(it.hasNext)
+  //   }
+  // }
 
   @Test def testEmptyPropListMap() {
     val it = BlockIterator(partners, genQuanta(10), List(US), Map.empty, _.obsList)
@@ -63,13 +63,13 @@ class BlockIteratorTest {
     }
   }
 
-  @Test def testEmptyPartnerSequence() {
-    List[(Proposal) => List[Observation]](_.obsList, _.band3Observations).map {
-      fn =>
-        val it = BlockIterator(partners, genQuanta(10), Nil, genPropLists(1, US, 10, List(10)), fn)
-        assertFalse(it.hasNext)
-    }
-  }
+  // @Test def testEmptyPartnerSequence() {
+  //   List[(Proposal) => List[Observation]](_.obsList, _.band3Observations).map {
+  //     fn =>
+  //       val it = BlockIterator(partners, genQuanta(10), Nil, genPropLists(1, US, 10, List(10)), fn)
+  //       assertFalse(it.hasNext)
+  //   }
+  // }
 
   @Test def testPartnerAdvanceNoProps() {
     val prop = mkProp(US, 5, List(5), List.empty)

@@ -30,7 +30,7 @@ import java.time.ZonedDateTime
 import java.time.ZoneId
 import cats.effect.Resource
 import java.nio.file.StandardCopyOption
-import edu.gemini.util.security.auth.ProgIdHash
+// import edu.gemini.util.security.auth.ProgIdHash
 
 /** Interface for some Workspace operations. */
 trait Workspace[F[_]] {
@@ -79,7 +79,7 @@ trait Workspace[F[_]] {
   def readRolloverReport(path: Path): F[RolloverReport]
   def writeText(path: Path, text: String): F[Path]
 
-  def progIdHash: F[ProgIdHash]
+  // def progIdHash: F[ProgIdHash]
 
 }
 
@@ -265,8 +265,8 @@ object Workspace {
             _  <- mkdirs(p)
           } yield p
 
-        def progIdHash: F[ProgIdHash] =
-          new ProgIdHash("x").pure[F]
+        // def progIdHash: F[ProgIdHash] =
+        //   new ProgIdHash("x").pure[F]
 
       }
     }

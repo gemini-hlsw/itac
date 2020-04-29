@@ -23,7 +23,6 @@ import edu.gemini.spModel.core.Semester
 import edu.gemini.spModel.core.Site
 import org.slf4j.impl.ColoredSimpleLogger
 import gsp.math.Angle
-import cats.instances.short
 import com.monovore.decline.Argument
 
 object Main extends CommandIOApp(

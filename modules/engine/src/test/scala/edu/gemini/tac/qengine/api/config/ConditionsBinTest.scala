@@ -11,7 +11,7 @@ class ConditionsBinTest {
   private val bin = ConditionsBin(ConditionsCategory(), Percent(10))
 
   @Test def testMap() {
-    assertEquals(10, bin.map(_.value).binValue.doubleValue(), Double.MinPositiveValue)
+    assertEquals(10, bin.map(_.value).binValue.doubleValue, Double.MinPositiveValue)
   }
 
   @Test def testUpdated() {

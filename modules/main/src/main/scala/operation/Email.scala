@@ -12,7 +12,7 @@ import edu.gemini.tac.qengine.p1.CoreProposal
 import edu.gemini.tac.qengine.p1._
 import org.apache.velocity.VelocityContext
 import java.io.StringWriter
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import cats.effect.Sync
 import cats.Parallel
 import itac.Operation
@@ -26,7 +26,7 @@ import edu.gemini.spModel.core.Semester
 import org.apache.velocity.app.VelocityEngine
 import edu.gemini.tac.qengine.api.QueueEngine
 import edu.gemini.tac.qengine.api.queue.ProposalQueue
-import edu.gemini.util.security.auth.ProgIdHash
+// import edu.gemini.util.security.auth.ProgIdHash
 import edu.gemini.model.p1.immutable.TimeAmount
 import edu.gemini.tac.qengine.util.Time
 import edu.gemini.tac.qengine.p1.QueueBand.QBand1
@@ -127,8 +127,8 @@ object Email {
         for {
           s  <- ws.commonConfig.map(_.semester)
           t  <- ws.readEmailTemplate(EmailTemplateRef.PiSuccessful)
-          h  <- ws.progIdHash
-          ps  = velocityBindings(p, s, pq, h)
+          // h  <- ws.progIdHash
+          ps  = velocityBindings(p, s, pq) // , h)
           _  <- Sync[F].delay(ps.foreach(println))
           tit = merge(velocity, t.name, t.titleTemplate, ps)
           _  <- Sync[F].delay(println(tit))
@@ -179,7 +179,7 @@ object Email {
        * not, before attempting a dereference.
        * @see strict reference mode https://velocity.apache.org/engine/1.7/user-guide.html#strict-reference-mode
        */
-      def velocityBindings(p: Proposal, s: Semester, q: ProposalQueue, pih: ProgIdHash): Map[String, AnyRef] = {
+      def velocityBindings(p: Proposal, s: Semester, q: ProposalQueue) /*, pih: ProgIdHash)*/: Map[String, AnyRef] = {
 
         // println(s"==> ${p.id.reference} - ${q.programId(p).map(_.toString).orEmpty}")
 
@@ -219,7 +219,10 @@ object Email {
         //         this.progId = itac.getAccept().getProgramId();
         q.programId(p).foreach(v => mut += "progId" -> v)
         //         this.progKey = ProgIdHash.pass(this.progId);
-        q.programId(p).foreach(v => mut += "progKey" -> pih.pass(v.toString))
+
+        // TODO
+        // q.programId(p).foreach(v => mut += "progKey" -> pih.pass(v.toString))
+
         //         this.geminiContactEmail = itac.getAccept().getContact();
         itac.flatMap(_.decision.flatMap(_.toOption)).flatMap(_.contact).foreach(v => mut += "geminiContactEmail" -> v)
         //         this.timeAwarded = itac.getAccept().getAward().toPrettyString();

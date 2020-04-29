@@ -38,7 +38,7 @@ final case class ConditionsBinGroup[A](
     bins.get(c).getOrElse(sys.error(s"ConditionsBinGroup: no mapping for $c"))
 
   def map[B](f: A => B): ConditionsBinGroup[B] =
-    new ConditionsBinGroup[B](bins.mapValues(f(_)), searchPath)
+    new ConditionsBinGroup[B](bins.mapValues(f(_)).toMap, searchPath)
 
   def category(oc: ObservingConditions): ConditionsCategory = searchPath.category(oc)
 

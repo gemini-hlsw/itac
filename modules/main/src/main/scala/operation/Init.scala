@@ -58,7 +58,7 @@ object Init {
     val start: LocalDate = LocalDate.of(semester.getYear, semester.getHalf.getStartMonth, 1)
 
     def shutdown(offsetDays: Int, lengthDays: Int): LocalDateRange =
-      LocalDateRange(start.plusDays(offsetDays.toLong), start.plusDays((offsetDays + lengthDays).toLong)).right.get
+      LocalDateRange(start.plusDays(offsetDays.toLong), start.plusDays((offsetDays + lengthDays).toLong)).toOption.get
 
     val (sd1, sd2, sd3) = (shutdown(20, 3), shutdown(40, 4), shutdown(70, 2))
 

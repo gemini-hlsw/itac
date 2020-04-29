@@ -16,7 +16,7 @@ final class ProposalPrep private (val propList: List[Proposal], val cat: QueueBa
    * contain the partner's proposals sorted by ranking.
    */
   def group: Map[Partner, List[Proposal]] =
-    propList.groupBy(_.ntac.partner).mapValues(_.sortBy(_.ntac.ranking))
+    propList.groupBy(_.ntac.partner).mapValues(_.sortBy(_.ntac.ranking)).toMap
 
   private def filter(p: (Proposal) => Boolean, l: (Proposal) => LogMessage): ProposalPrep =
     propList.partition(p) match {
