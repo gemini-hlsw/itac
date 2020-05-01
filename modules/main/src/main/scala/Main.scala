@@ -236,11 +236,25 @@ trait MainOpts { this: CommandIOApp =>
       help = "Angular separation of targets that might be the same. Default 00:00:10.00"
     ).withDefault(Angle.fromDoubleArcseconds(10))
 
+  implicit lazy val ArgumentOrderObservation: Argument[NonEmptyList[Summarize.Field]] =
+    new Argument[NonEmptyList[Summarize.Field]] {
+      def defaultMetavar: String = "sort"
+      def read(string: String): ValidatedNel[String,NonEmptyList[Summarize.Field]] =
+        Summarize.Field.parse(string).toValidatedNel
+    }
+
+  lazy val fields: Opts[NonEmptyList[Summarize.Field]] =
+    Opts.option[NonEmptyList[Summarize.Field]](
+      short = "s",
+      long  = "sort",
+      help  = s"Fields to sort by, comma-delimited. One or more of ${Summarize.Field.all.map(_.name).mkString(",")}. Default is band,ra"
+    ) .withDefault(NonEmptyList.of(Summarize.Field.band, Summarize.Field.ra))
+
   lazy val summarize: Command[Operation[IO]] =
     Command(
       name   = "summarize",
       header = "Summarize a proposal."
-    )(Opts.argument[String]("semester").map(s => Summarize(s)))
+    )((Opts.argument[String]("reference"), fields).mapN(Summarize(_, _)))
 
   lazy val duplicates: Command[Operation[IO]] =
     Command(
