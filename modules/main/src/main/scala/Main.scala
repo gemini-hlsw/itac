@@ -168,6 +168,12 @@ trait MainOpts { this: CommandIOApp =>
       header = "Generate a queue."
     )((siteConfig, rolloverReport).mapN((sc, rr) => Queue[IO](QueueEngine, sc, rr)))
 
+  lazy val export: Command[Operation[IO]] =
+    Command(
+      name   = "export",
+      header = "Export proposals."
+    )((siteConfig, rolloverReport).mapN((sc, rr) => Export[IO](QueueEngine, sc, rr)))
+
   lazy val gn: Opts[Site.GN.type] = Opts.flag(
     short = "n",
     long  = "north",
@@ -271,7 +277,8 @@ trait MainOpts { this: CommandIOApp =>
       rollover,
       queue,
       summarize,
-      duplicates
+      duplicates,
+      export
     ).sortBy(_.name).map(Opts.subcommand(_)).foldK
 
 }
