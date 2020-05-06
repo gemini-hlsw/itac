@@ -89,7 +89,7 @@ class ProposalIo(partners: Map[String, Partner]) {
             ntac.poorWeather,
             piName(p),
             piEmail(p),
-            Some(p)
+            p
           )
 
           // If there are more ntacs, it is a Joint, otherwise just this core.

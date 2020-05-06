@@ -80,7 +80,7 @@ object Summarize {
 
           println()
           println(s"Reference: ${p.id.reference}")
-          println(s"Title:     ${p.p1proposal.foldMap(_.title)}")
+          println(s"Title:     ${p.p1proposal.title}")
           println(s"PI:        ${p.piName.orEmpty}")
           println(s"Partner:   ${p.ntac.partner.fullName}")
           println(f"Award:     ${p.time.toHours.value}%1.1f hours")

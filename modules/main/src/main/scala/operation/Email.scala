@@ -187,11 +187,10 @@ object Email {
         mut = mut // defeat bogus unused warning
 
         // bindings that are always present
-        mut += "semester" -> s.toString
+        mut += "semester"  -> s.toString
 
         p.piEmail     .foreach(v => mut += "piMail"       -> v)
         p.piName      .foreach(v => mut += "piName"       -> v)
-        p.p1proposal  .foreach(p => mut += "progTitle"    -> p.title)
 
         //     // proposals that made it that far must have an itac part, accepted ones must have an accept part
         //     Validate.notNull(proposal.getPhaseIProposal());
@@ -200,7 +199,7 @@ object Email {
         //     // get some of the important objects
         //     PhaseIProposal doc = proposal.getPhaseIProposal();
         //     Itac itac = proposal.getItac();
-        val itac = p.p1proposal.get.proposalClass.itac
+        val itac = p.p1proposal.proposalClass.itac
         //     Investigator pi = doc.getInvestigators().getPi();
         //     Submission partnerSubmission = doc.getPrimary();
 
@@ -312,14 +311,14 @@ object Email {
         //     // emails will be concatenated to a list separated by semi-colons
         //     this.piMail = pi.getEmail();
         //     this.piName = pi.getFirstName() + " " + pi.getLastName();
-        val pi = p.p1proposal.get.investigators.pi
+        val pi = p.p1proposal.investigators.pi
         mut += "piMail"       -> s"${pi.firstName} ${pi.lastName}"
         mut += "piName"       -> pi.email
 
         //     if (doc.getTitle() != null) {
         //         this.progTitle = doc.getTitle();
         //     }
-        p.p1proposal  .foreach(p => mut += "progTitle"    -> p.title)
+        mut += "progTitle"    -> p.p1proposal.title
 
         //     if (banding != null) {
         //         this.queueBand = banding.getBand().getDescription();

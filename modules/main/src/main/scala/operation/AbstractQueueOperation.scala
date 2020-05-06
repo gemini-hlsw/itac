@@ -86,7 +86,7 @@ abstract class AbstractQueueOperation[F[_]](
   def addOrUpdateItacNode(p: Proposal, q: ProposalQueue): Proposal = {
 
     // P1Proposal, which should always be present
-    val p1 = p.p1proposal.getOrElse(sys.error(s"No p1 proposal associated with ${p.id.reference}"))
+    val p1 = p.p1proposal
 
     // Our decision, based on presence of a queue position.
     val decision: Either[ItacReject, ItacAccept] =
@@ -115,9 +115,9 @@ abstract class AbstractQueueOperation[F[_]](
 
     // New Proposal
     val pʹ = p match {
-      case cp: CoreProposal      => cp.copy(p1proposal = Some(p1ʹ))
-      case jp: JointProposal     => jp.copy(core = jp.core.copy(p1proposal = Some(p1ʹ)))
-      case pp: JointProposalPart => pp.copy(core = pp.core.copy(p1proposal = Some(p1ʹ)))
+      case cp: CoreProposal      => cp.copy(p1proposal = p1ʹ)
+      case jp: JointProposal     => jp.copy(core = jp.core.copy(p1proposal = p1ʹ))
+      case pp: JointProposalPart => pp.copy(core = pp.core.copy(p1proposal = p1ʹ))
     }
 
     // Done
