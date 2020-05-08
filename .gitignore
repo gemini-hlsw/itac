@@ -10,5 +10,7 @@ itac-web/bin/
 .idea
 .metals
 .bloop
+.vscode
 work
 work2
+hawaii

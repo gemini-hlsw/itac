@@ -25,6 +25,8 @@ class PartnerTime private(val partners: List[Partner], val map: Map[Partner, Tim
 
   def -(that: PartnerTime): PartnerTime = timeOp(_ - _, that)
 
+  def filter(f: Partner => Boolean): PartnerTime = new PartnerTime(partners, map.filterKeys(f))
+
   def +(that: PartnerTime): PartnerTime = timeOp(_ + _, that)
 
   def *(perc: Percent): PartnerTime = percOp(_ * _, perc)

@@ -143,7 +143,7 @@ trait ProposalQueue {
 
   def programId(p: Proposal): Option[ProgramId] =
     positionOf(p).map(_.programNumber).map { num =>
-      val str = s"${p.site.abbreviation}-${p.p1proposal.get.semester.display}-${p.mode.programId}-$num"
+      val str = s"${p.site.abbreviation}-${p.p1proposal.semester.display}-${p.mode.programId}-$num"
       ProgramId.parse(str) // sorry
     }
 
