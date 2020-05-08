@@ -18,6 +18,7 @@ import java.nio.file.Path
 import _root_.edu.gemini.tac.qengine.log.RejectCategoryOverAllocation
 import edu.gemini.tac.qengine.log.RejectTarget
 import edu.gemini.tac.qengine.log.RejectConditions
+import edu.gemini.tac.qengine.ctx.Partner
 
 object Queue {
 
@@ -93,8 +94,10 @@ object Queue {
 
               println(separator)
 
+              def hasProposals(p: Partner): Boolean = ps.exists(_.ntac.partner == p)
+
               // Partners that appear in the queue
-              partners.filter(queueCalc.queue.queueTime(_).toHours.value > 0) foreach { p =>
+              partners.filter(p => queueCalc.queue.queueTime(p).toHours.value > 0 && hasProposals(p)) foreach { p =>
                 println(s"${Console.BOLD}Partner Details for $p ${Console.RESET}")
                 QueueBand.values.foreach { qb =>
                   val q = queueCalc.queue

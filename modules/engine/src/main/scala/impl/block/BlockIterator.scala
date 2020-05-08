@@ -193,12 +193,18 @@ object BlockIterator {
    * in order to be able to generate time blocks for all the proposals.
    */
   def apply(allPartners: List[Partner], quantaMap: PartnerTime, seq: Seq[Partner], propLists: Map[Partner, List[Proposal]], activeList : Proposal=>List[Observation]): BlockIterator = {
+
+    // Filter `quantaMap` to retain entries only for relevant partners; i.e., those who have
+    // proposals. Failure to do this can lead to nontermination in `advancePartner`.
+    val relevant   = propLists.toList.collect { case (p, _ :: _) => p } .toSet
+    val quantaMapʹ = quantaMap.filter(relevant)
+
     val iterMap = genIterMap(allPartners, propLists, activeList)
 
-    init(quantaMap, iterMap, seq, validpartners(allPartners, quantaMap)) match {
+    init(quantaMapʹ, iterMap, seq, validpartners(allPartners, quantaMapʹ)) match {
       case (s, t) if s.isEmpty => new Empty(allPartners)
       case (partnerSeq, remainingTime) => {
-        new BlockIteratorImpl(allPartners, quantaMap, partnerSeq, remainingTime, iterMap)
+        new BlockIteratorImpl(allPartners, quantaMapʹ, partnerSeq, remainingTime, iterMap)
       }
     }
   }
