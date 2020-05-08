@@ -43,6 +43,12 @@ class NtacIoTest {
 
   val ntacIo = new NtacIo(TestPartners.AllMap)
 
+  // HACK HACK HACK
+  // Let's ignore the p1 node in Ntac (added long after this test was written) because it's not relevant.
+  def stripP1Node(n: Ntac): Ntac = n.copy(submission = null)
+  def assertEquals(a: Any, b: Any): Unit = Assert.assertEquals(a, b)
+  def assertEquals(n1: Ntac, n2: Ntac): Unit = Assert.assertEquals(stripP1Node(n1), stripP1Node(n2))
+  def assertEquals(ns1: IList[Ntac], ns2: IList[Ntac]): Unit = Assert.assertEquals(ns1.map(stripP1Node), ns2.map(stripP1Node))
 
   def fixtureNtac(p: ProposalFixture) = {
     Ntac(AU, p.submissionId, Ntac.Rank(some(p.partnerRanking)), Time.hours(1.0), poorWeather = false, some(p.pi.lastName))
