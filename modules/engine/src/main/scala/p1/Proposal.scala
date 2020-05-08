@@ -7,6 +7,15 @@ import edu.gemini.tac.qengine.util.Time
 import scala.annotation.tailrec
 import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.spModel.core.Site
+import edu.gemini.model.p1.immutable.GeminiNormalProposalClass
+import edu.gemini.model.p1.immutable.SpecialProposalClass
+import edu.gemini.model.p1.immutable.ExchangeProposalClass
+import edu.gemini.model.p1.immutable.LargeProgramClass
+import edu.gemini.model.p1.immutable.SubaruIntensiveProgramClass
+import edu.gemini.model.p1.immutable.FastTurnaroundProgramClass
+import edu.gemini.model.p1.immutable.ClassicalProposalClass
+import edu.gemini.model.p1.immutable.QueueProposalClass
+import edu.gemini.model.p1.immutable.ProposalClass
 
 /**
  * The Proposal trait defines the information associated with a proposal for the purpose
@@ -111,7 +120,6 @@ sealed abstract class DelegatingProposal(coreProposal: Proposal) extends Proposa
   def isPoorWeather: Boolean               = coreProposal.isPoorWeather
   def piName: Option[String]               = coreProposal.piName
   def piEmail: Option[String]              = coreProposal.piEmail
-  def p1proposal: edu.gemini.model.p1.immutable.Proposal = coreProposal.p1proposal
 }
 
 /**
@@ -137,6 +145,7 @@ case class JointProposalPart(
    */
   def toJoint: JointProposal = JointProposal(jointIdValue, core, List(core.ntac))
 
+  def p1proposal = core.p1proposal
 
 }
 
@@ -156,7 +165,7 @@ case class JointProposal(jointIdValue: String, core: CoreProposal, ntacs: List[N
   // combining the awarded times.  Using the master for everything except the
   // time and the id which must be unique.
   override val ntac =
-    Ntac(core.ntac.partner, jointIdValue, core.ntac.ranking, Ntac.awardedTimeSum(ntacs))
+    Ntac(core.ntac.partner, jointIdValue, core.ntac.ranking, Ntac.awardedTimeSum(ntacs), false, None, None, null) // there is no submission for this
 
   override def jointId = Some(jointIdValue)
 
@@ -169,6 +178,36 @@ case class JointProposal(jointIdValue: String, core: CoreProposal, ntacs: List[N
   override def containsId(that: Proposal.Id) =
     super.containsId(that) ||
       ntacs.exists(n => (that.partner == n.partner) && (that.reference == n.reference))
+
+  // This needs to return a p1Proposal that contains all the ntacs.
+  lazy val p1proposal: edu.gemini.model.p1.immutable.Proposal = {
+
+    // Get our old proposal and replace its proposal class with a new one with all the filled-in
+    // submissions, which are hanging off the Ntac values.
+    val p1proposal = core.p1proposal
+    def newSubs    = ntacs.map(_.ngoSubmission)
+    val newPC      =
+      core.p1proposal.proposalClass match {
+
+        // These cases can be joint.
+        case pc @ ExchangeProposalClass(_, _, _, _, subs)               => pc.copy(subs = newSubs)
+        case pc @ ClassicalProposalClass(_, _, _, subs, _)              => pc.copy(subs = subs.left.map(_ => newSubs))
+        case pc @ QueueProposalClass(_, _, _, subs, _, _)               => pc.copy(subs = subs.left.map(_ => newSubs))
+
+        // These can't. Go ahead and list them all out so we'll get a warning if a new class shows up.
+        case pc @ SpecialProposalClass(_, _, _, _)                      => pc
+        case pc @ LargeProgramClass(_, _, _, _, _)                      => pc
+        case pc @ SubaruIntensiveProgramClass(_, _, _, _, _)            => pc
+        case pc @ FastTurnaroundProgramClass(_, _, _, _, _, _, _, _, _) => pc
+
+      }
+
+    // Done!
+    p1proposal.copy(proposalClass = newPC)
+
+  }
+
+
 }
 
 object JointProposal {

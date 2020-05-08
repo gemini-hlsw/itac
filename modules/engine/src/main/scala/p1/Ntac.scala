@@ -3,12 +3,28 @@ package edu.gemini.tac.qengine.p1
 import edu.gemini.tac.qengine.util.{Percent, CompoundOrdering, Time}
 import edu.gemini.tac.qengine.p1.Ntac.Rank
 import edu.gemini.tac.qengine.ctx.{Share, Partner}
+import edu.gemini.model.p1.immutable.{ Submission, NgoSubmission }
 
 
-case class Ntac(partner: Partner, reference: String, ranking: Rank, awardedTime: Time, poorWeather: Boolean = false, lead: Option[String] = None,  comment: Option[String] = None) extends Ordered[Ntac] {
+case class Ntac(partner: Partner,
+  reference: String,
+  ranking: Rank,
+  awardedTime: Time,
+  poorWeather: Boolean,
+  lead: Option[String] = None,
+  comment: Option[String] = None,
+  submission: Submission = null
+) extends Ordered[Ntac] {
   require(awardedTime.ms >= 0, "Awarded time must be non-negative, not " + awardedTime.ms)
 
   def compare(that: Ntac): Int = Ntac.MasterOrdering.compare(this, that)
+
+  def ngoSubmission: NgoSubmission =
+    submission match {
+      case s: NgoSubmission => s
+      case _ => sys.error(s"Not an NgoSubmission: $submission")
+    }
+
 }
 
 object Ntac {
@@ -61,12 +77,11 @@ object Ntac {
     (Time.ZeroHours/:ntacs)(_ + _.awardedTime)
 
   def apply(partner: Partner, reference: String, ranking: Double, awardedTime: Time, poorWeather : Boolean): Ntac =
-      new Ntac(partner, reference, Ntac.Rank(ranking), awardedTime, poorWeather, lead = None)
-
+      new Ntac(partner, reference, Ntac.Rank(ranking), awardedTime, poorWeather)
 
   def apply(partner: Partner, reference: String, ranking: Double, awardedTime: Time): Ntac =
-    new Ntac(partner, reference, Ntac.Rank(ranking), awardedTime, poorWeather = false, lead = None)
+    new Ntac(partner, reference, Ntac.Rank(ranking), awardedTime, false)
 
   def apply(partner: Partner, reference: String, ranking: Double, awardedTime: Time, lead: String): Ntac =
-    new Ntac(partner, reference, Ntac.Rank(ranking), awardedTime, poorWeather = false, Some(lead))
+    new Ntac(partner, reference, Ntac.Rank(ranking), awardedTime, false, Some(lead))
 }

@@ -42,8 +42,8 @@ object NtacIo {
         }
     }
 
-  private def mkNtac(lead: Option[String])(p: Partner)(response: Option[Response]): Option[Ntac] =
-    response.map { r => Ntac(p, r.ref, r.rank, r.awardedTime, r.poorWeather, lead) }
+  private def mkNtac(lead: Option[String], submission: im.Submission)(p: Partner)(response: Option[Response]): Option[Ntac] =
+    response.map { r => Ntac(p, r.ref, r.rank, r.awardedTime, r.poorWeather, lead, None, submission) }
 
   private val NoneAccepted = NONE_ACCEPTED.failureNel[NonEmptyList[Ntac]]
 
@@ -83,7 +83,7 @@ class NtacIo(partners: Map[String, Partner]) {
 
   private def ntac(sub: im.Submission, partnerId: String, lead: Option[String]): ValidationNel[String, Option[Ntac]] = {
     val partner = partners.get(partnerId).toSuccess(UNKNOWN_PARTNER_ID(partnerId).wrapNel)
-    response(sub, partnerId) <*> partner.map(mkNtac(lead))
+    response(sub, partnerId) <*> partner.map(mkNtac(lead, sub))
   }
 }
 
