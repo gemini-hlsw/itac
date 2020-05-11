@@ -85,7 +85,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
 
     val raTablesANSI: String =
       report.flatten.map {
-        case RaRow(h, r, l)         => f"${Console.BOLD}RA: $h%-78s   $r%6.2f  $l%6.2f${Console.RESET}"
+        case RaRow(h, r, l)         => f"\n${Console.BOLD}RA: $h%-78s   $r%6.2f  $l%6.2f${Console.RESET}"
         case ConditionsRow(t, r, l) => f"Conditions: $t%-70s   $r%6.2f  $l%6.2f "
       } .mkString("\n")
 

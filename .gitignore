@@ -9,8 +9,12 @@ target
 itac-web/bin/
 .idea
 .metals
+project/metals.sbt
 .bloop
 .vscode
+
+# rob's local work
+modules/main/src/main/scala/ws/
 work
 work2
 hawaii
