@@ -83,9 +83,16 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
       </table>
     }.toString
 
+    // Annoying, we need to turn off ANSI color if output is being redirected. In the `main` project
+    // we have a `Colors` module for this but in `engine` there's no such thing we we'll just hack
+    // it in again.
+    def embolden(s: String): String =
+      if (System.console == null) s
+      else s"${Console.BOLD}$s${Console.RESET}"
+
     val raTablesANSI: String =
       report.flatten.map {
-        case RaRow(h, r, l)         => f"\n${Console.BOLD}RA: $h%-78s   $r%6.2f  $l%6.2f${Console.RESET}"
+        case RaRow(h, r, l)         => embolden(f"\nRA: $h%-78s   $r%6.2f  $l%6.2f")
         case ConditionsRow(t, r, l) => f"Conditions: $t%-70s   $r%6.2f  $l%6.2f "
       } .mkString("\n")
 
