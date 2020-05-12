@@ -17,5 +17,5 @@ jobs:
         with:
           path: ~/.sbt
           key: sbt-${{ hashFiles('**/build.sbt') }}
-      - name: Run tests
-        run: csbt compile test
+      - name: Compile and run tests
+        run: csbt main/headerCheck compile test
