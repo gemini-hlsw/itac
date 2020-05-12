@@ -66,12 +66,12 @@ object Summarize {
           val order = fields.reduceMap(_.order)(Order.whenEqualMonoid)
 
           def printObs(band: String)(o: Observation): Unit = {
-            val id     = ObservationDigest.digest(o.p1Observation)
-            val ra     = HourAngle.HMS(o.ra).format
-            val dec    = Angle.DMS(o.dec).format
-            val coords = f"${o.conditions.cc}%-5s ${o.conditions.iq}%-5s ${o.conditions.sb}%-5s ${o.conditions.wv}%-5s "
-            val hrs    = o.time.toHours.value
-            println(f"$id $band%-4s $hrs%5.1fh $coords $ra%16s $dec%16s ${o.target.name.orEmpty}")
+            val id    = ObservationDigest.digest(o.p1Observation)
+            val ra    = HourAngle.HMS(o.ra).format
+            val dec   = Angle.DMS(o.dec).format
+            val conds = f"${o.conditions.cc}%-5s ${o.conditions.iq}%-5s ${o.conditions.sb}%-5s ${o.conditions.wv}%-5s "
+            val hrs   = o.time.toHours.value
+            println(f"$id  $band%-4s  $hrs%5.1fh  $conds  $ra%16s  $dec%16s  ${o.target.name.orEmpty}")
           }
 
           val obsList: List[BandedObservation] =
@@ -84,6 +84,8 @@ object Summarize {
           println(s"PI:        ${p.piName.orEmpty}")
           println(s"Partner:   ${p.ntac.partner.fullName}")
           println(f"Award:     ${p.time.toHours.value}%1.1f hours")
+          println(f"Rank:      ${p.ntac.ranking.num.orEmpty}%1.1f")
+          println(f"ToO:       ${p.too}")
           println()
 
           obsList
