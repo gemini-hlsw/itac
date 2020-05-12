@@ -15,6 +15,7 @@ import cats.effect.Blocker
 import cats.data.NonEmptyList
 import edu.gemini.tac.qengine.ctx.Partner
 import itac.ItacException
+import itac.util.Colors
 
 object Ls {
 
@@ -24,7 +25,7 @@ object Ls {
       val order = fields.reduceMap(_.order)(Order.whenEqualMonoid)
 
       def header: String =
-        f"${Console.BOLD}${"Id"}%-20s  ${"PI"}%-20s  ${"Rank"}%4s ${"Partner"}%6s   ${"Time"}%6s${Console.RESET}"
+        f"${Colors.BOLD}${"Id"}%-20s  ${"PI"}%-20s  ${"Rank"}%4s ${"Partner"}%6s   ${"Time"}%6s${Colors.RESET}"
 
       def format(p: Proposal): String =
         f"${p.id.reference}%-20s  ${p.piName.orEmpty}%-20s  ${p.ntac.ranking}%4s  ${p.ntac.partner.id}%6s  ${p.ntac.awardedTime.toHours.value}%5.1f h"

@@ -2,8 +2,10 @@
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac
+
 package operation
 
+import itac.util.Colors
 import cats._
 import cats.effect._
 import cats.implicits._
@@ -42,18 +44,18 @@ object Queue {
               val pids = log.proposalIds // proposals that were considered
               val separator = "━" * 100 + "\n"
 
-              // println(s"${Console.BOLD}The following proposals were not considered due to site, mode, or lack of awarded time or observations.${Console.RESET}")
+              // println(s"${Colors.BOLD}The following proposals were not considered due to site, mode, or lack of awarded time or observations.${Colors.RESET}")
               // ps.filterNot(p => pids.contains(p.id)).foreach { p =>
               //   println(f"- ${p.id.reference} (${p.site.abbreviation}, ${p.mode.programId}%2s, ${p.ntac.awardedTime.toHours.value}%4.1fh ${p.ntac.partner.id}, ${p.obsList.length}%3d obs)")
               // }
               // println()
 
-              println(s"\n${Console.BOLD}${queueCalc.context.site.displayName} ${queueCalc.context.semester} Queue Candidate${Console.RESET}")
+              println(s"\n${Colors.BOLD}${queueCalc.context.site.displayName} ${queueCalc.context.semester} Queue Candidate${Colors.RESET}")
               println(s"${new java.util.Date}\n") // lazy, this has a reasonable default toString
 
               println(separator)
 
-              println(s"${Console.BOLD}RA/Conditions Bucket Allocations:                                                       Rem   Avail${Console.RESET}")
+              println(s"${Colors.BOLD}RA/Conditions Bucket Allocations:                                                       Rem   Avail${Colors.RESET}")
               println(queueCalc.bucketsAllocation.raTablesANSI)
               println()
 
@@ -61,17 +63,17 @@ object Queue {
 
               QueueBand.values.foreach { qb =>
                 val q = queueCalc.queue
-                println(s"${Console.BOLD}The following proposals were accepted for Band ${qb.number}.${Console.RESET}")
+                println(s"${Colors.BOLD}The following proposals were accepted for Band ${qb.number}.${Colors.RESET}")
                 println(qb.number match {
-                  case 1 => Console.YELLOW
-                  case 2 => Console.GREEN
-                  case 3 => Console.BLUE
-                  case 4 => Console.RED
+                  case 1 => Colors.YELLOW
+                  case 2 => Colors.GREEN
+                  case 3 => Colors.BLUE
+                  case 4 => Colors.RED
                 })
                 q.bandedQueue.get(qb).orEmpty.sortBy(_.ntac.ranking.num.orEmpty).foreach { p =>
                     println(f"- ${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-13s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  ${q.programId(p).get}")
                 }
-                println(Console.RESET)
+                println(Colors.RESET)
               }
 
               println(separator)
@@ -80,18 +82,18 @@ object Queue {
 
               // Partners that appear in the queue
               partners.filter(p => queueCalc.queue.queueTime(p).toHours.value > 0 && hasProposals(p)) foreach { p =>
-                println(s"${Console.BOLD}Partner Details for $p ${Console.RESET}\n")
+                println(s"${Colors.BOLD}Partner Details for $p ${Colors.RESET}\n")
                 QueueBand.values.foreach { qb =>
                   val q = queueCalc.queue
                   val color = qb.number match {
-                    case 1 => Console.YELLOW
-                    case 2 => Console.GREEN
-                    case 3 => Console.BLUE
-                    case 4 => Console.RED
+                    case 1 => Colors.YELLOW
+                    case 2 => Colors.GREEN
+                    case 3 => Colors.BLUE
+                    case 4 => Colors.RED
                   }
                   val included = q.bandedQueue.get(qb).orEmpty.filter(_.ntac.partner == p)
                   included.sortBy(_.ntac.ranking.num.orEmpty).foreach { p =>
-                    println(f"$color- ${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-13s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  ${q.programId(p).get}${Console.RESET}")
+                    println(f"$color- ${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-13s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  ${q.programId(p).get}${Colors.RESET}")
                   }
                   if (qb.number < 4) {
                     val used = q.usedTime(qb, p).toHours.value
@@ -108,10 +110,10 @@ object Queue {
 
 
               println(separator)
-              println(s"${Console.BOLD}Rejection Report for ${queueCalc.context.site.abbreviation}-${queueCalc.context.semester}${Console.RESET}\n")
+              println(s"${Colors.BOLD}Rejection Report for ${queueCalc.context.site.abbreviation}-${queueCalc.context.semester}${Colors.RESET}\n")
 
               List(QueueBand.Category.B1_2, QueueBand.Category.B3).foreach { qc =>
-                println(s"${Console.BOLD}The following proposals were rejected for $qc.${Console.RESET}")
+                println(s"${Colors.BOLD}The following proposals were rejected for $qc.${Colors.RESET}")
                 pids.foreach { pid =>
                   val p = ps.find(_.id == pid).get
                   log.get(pid, qc) match {

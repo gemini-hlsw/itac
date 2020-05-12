@@ -1,13 +1,6 @@
 
-# Demo
+To run a local snapshot:
 
-- Make sure VPN is on.
-
-
-# FAQ
-
-#### How do I change the awarded time?
-
-Edit the proposal XML using the PIT. You can't do it via an edit right now because it's not clear how to deal with joint proposals.
-
-
+```
+cs launch -r https://github.com/gemini-hlsw/maven-repo/raw/master/releases edu.gemini:itac-main_2.12:2020.1.12+0-dd8396ab+20200512-1219-SNAPSHOT -- -d hawaii queue -n
+```

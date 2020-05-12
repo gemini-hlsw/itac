@@ -16,6 +16,7 @@ import gsp.math.HourAngle
 import gsp.math.Angle
 import edu.gemini.tac.qengine.p1.Proposal
 import edu.gemini.tac.qengine.p1.Target
+import itac.util.Colors
 
 object Duplicates {
 
@@ -33,7 +34,7 @@ object Duplicates {
         val dups = tdc.allClusters
         Sync[F].delay {
             println()
-            println(s"${Console.BOLD}Target Duplication Report${Console.RESET}")
+            println(s"${Colors.BOLD}Target Duplication Report${Colors.RESET}")
             println(s"Target clusters with minimal spanning tree edges ≤ ${Angle.fromStringDMS.reverseGet(tolerance)}.")
             println()
         } *> dups.traverse_{ ds =>

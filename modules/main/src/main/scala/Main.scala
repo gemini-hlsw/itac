@@ -59,7 +59,6 @@ object Main extends CommandIOApp(
         |""".stripMargin.trim
 ) with MainOpts {
 
-
   def main: Opts[IO[ExitCode]] =
     (cwd, commonConfig, logger[IO], force, ops).mapN { (cwd, commonConfig, log, force, cmd) =>
       Blocker[IO].use { b =>
