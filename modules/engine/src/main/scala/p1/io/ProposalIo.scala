@@ -12,7 +12,6 @@ import scalaz._
 import Scalaz._
 import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.util.Percent
-import com.itextpdf.text.log.LoggerFactory
 
 /**
   * Immutable Phase1 proposal
