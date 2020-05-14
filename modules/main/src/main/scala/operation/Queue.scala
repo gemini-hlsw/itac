@@ -2,9 +2,11 @@
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac
-
 package operation
 
+import edu.gemini.spModel.core.Site.GN
+import edu.gemini.spModel.core.Site.GS
+import edu.gemini.tac.qengine.p1.Proposal
 import itac.util.Colors
 import cats._
 import cats.effect._
@@ -141,6 +143,27 @@ object Queue {
                 }
                 println()
               }
+
+              // Find proposals with divided time.
+              val dividedProposals: List[Proposal] =
+                queueCalc.queue.toList.filter(p => p.time != p.undividedTime)
+
+              if (dividedProposals.nonEmpty) {
+                println(separator)
+                println(s"${Colors.BOLD}Time Computations for Proposals at Both Sites${Colors.RESET}\n")
+                println(s"${Colors.BOLD}  Reference        Award     GN     GS${Colors.RESET}")
+                                      //- CA-2020B-013     3.8 h    1.8    1.8
+                dividedProposals.foreach { p =>
+                  val t  = p.undividedTime.toHours.value
+                  val tʹ = p.time.toHours.value
+                  val (gn, gs) = queueCalc.context.site match {
+                    case GN => (tʹ, t - tʹ)
+                    case GS => (t - tʹ, tʹ)
+                  }
+                  println(f"- ${p.id.reference}%-13s  $t%5.1f h  $gn%5.1f  $gs%5.1f")
+                }
+              }
+
 
               ExitCode.Success
 

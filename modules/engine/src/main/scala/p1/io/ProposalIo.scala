@@ -98,7 +98,7 @@ class ProposalIo(partners: Map[String, Partner]) {
           val tetThis = if (site == Site.GN) tetGN else tetGS
           val proportion = tetThis.ms.toDouble / tet.ms.toDouble
           val scaledAward = ntac.awardedTime * Percent(proportion * 100)
-          val ntacʹ = ntac.copy(awardedTime = scaledAward)
+          val ntacʹ = ntac.copy(awardedTime = scaledAward, undividedTime = Some(ntac.awardedTime))
 
           if (proportion != 1.0)
             println(f"${ntac.reference}%-15s est for ${site.abbreviation} is ${tetThis.toHours.value}%5.1f h (${proportion * 100}%5.1f%% of total) ... scaled award is ${scaledAward.toHours.value}%5.1f of ${ntac.awardedTime.toHours.value}%5.1f")
