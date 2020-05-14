@@ -79,7 +79,7 @@ object Summarize {
             p.band3Observations.map(BandedObservation("B3", _))
 
           println()
-          println(s"Reference: ${p.id.reference}")
+          println(s"Reference: ${p.id.reference} (${p.site.abbreviation})")
           println(s"Title:     ${p.p1proposal.title}")
           println(s"PI:        ${p.piName.orEmpty}")
           println(s"Partner:   ${p.ntac.partner.fullName}")

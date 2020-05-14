@@ -10,6 +10,8 @@ import edu.gemini.tac.qengine.p1._
 
 import scalaz._
 import Scalaz._
+import edu.gemini.spModel.core.Site
+import edu.gemini.tac.qengine.util.Percent
 
 /**
   * Immutable Phase1 proposal
@@ -66,21 +68,46 @@ class ProposalIo(partners: Map[String, Partner]) {
       // Discover which sites are used in the observations.
       val sites = obsGroups.map(_._1).list.toList.distinct
 
+      // Get the total estimated time at a given site.
+      def totalEstimatedTime(site: Site) =
+        obsGroups.list.collect {
+          case (`site`, _, os) => os.foldMap(_.time)
+        } .foldMap(identity)
+
+      // Get estimated time for each site, as well as their sum.
+      val tetGN = totalEstimatedTime(Site.GN)
+      val tetGS = totalEstimatedTime(Site.GS)
+      val tet   = tetGN + tetGS
+
       // Make a proposal per site represented in the observations.
       val (props, newGen) = sites.foldLeft((List.empty[Proposal], jointIdGen)) {
         case ((propList, gen), site) =>
+
           // Get the list of observations associated with the given band category (if any).
           def bandList(cat: QueueBand.Category): List[Observation] =
             ~obsGroups.list
               .find { case (s, b, _) => s == site && b == cat }
               .map(_._3.list.toList)
 
-          // Make the corresponding CoreProposal
+          // The first NTAC is the one we care about here (why?)
           val ntac = ntacs.head
+
+          // Figure out the proportion of estimated time we're using for the current site, and
+          // scale the total award by that amount. For proposals that are only at one site the
+          // proportion is 100% and the scaling is a no-op.
+          val tetThis = if (site == Site.GN) tetGN else tetGS
+          val proportion = tetThis.ms.toDouble / tet.ms.toDouble
+          val scaledAward = ntac.awardedTime * Percent(proportion * 100)
+          val ntacʹ = ntac.copy(awardedTime = scaledAward)
+
+          if (proportion != 1.0)
+            println(f"${ntac.reference}%-15s est for ${site.abbreviation} is ${tetThis.toHours.value}%5.1f h (${proportion * 100}%5.1f%% of total) ... scaled award is ${scaledAward.toHours.value}%5.1f of ${ntac.awardedTime.toHours.value}%5.1f")
+
+          // Make the corresponding CoreProposal
           val b12 = bandList(QueueBand.Category.B1_2)
           val b3 = bandList(QueueBand.Category.B3)
           val core = CoreProposal(
-            ntac,
+            ntacʹ,
             site,
             mode(p),
             too(p),
