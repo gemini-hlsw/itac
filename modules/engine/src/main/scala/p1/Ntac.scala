@@ -13,7 +13,8 @@ case class Ntac(partner: Partner,
   poorWeather: Boolean,
   lead: Option[String] = None,
   comment: Option[String] = None,
-  submission: Submission = null
+  submission: Submission = null,
+  undividedTime: Option[Time] = None, // this will be set to the original time if the actual time is reduced due to a site split
 ) extends Ordered[Ntac] {
   require(awardedTime.ms >= 0, "Awarded time must be non-negative, not " + awardedTime.ms)
 

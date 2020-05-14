@@ -53,6 +53,12 @@ sealed trait Proposal {
   def time: Time = ntac.awardedTime
 
   /**
+   * Returns the original awarded time for this proposal, which will be more than `awardedTime` if
+   * the original proposal was split in half due to the presence of observations at both sites.
+   */
+  def undividedTime: Time = ntac.undividedTime.getOrElse(time)
+
+  /**
    * Gets the time for the given observation relative to the total for all
    * observations in the proposal.
    */
