@@ -1,6 +1,7 @@
 package edu.gemini.tac.qengine.util
 
 import Time.Units
+import scalaz.Monoid
 
 object Time {
   sealed abstract class Units extends Ordered[Units] with Serializable {
@@ -72,6 +73,9 @@ object Time {
     def *(t: Time): Time = t * p
   }
   implicit val toPercentMultiplier = (p: Percent) => new PercentMultiplier(p)
+
+  implicit val MonoidTime: Monoid[Time] =
+    Monoid.instance(_ + _, Zero)
 }
 
 final class Time private (val ms: Long, val unit: Units) extends Ordered[Time] with Serializable {
@@ -124,4 +128,5 @@ final class Time private (val ms: Long, val unit: Units) extends Ordered[Time] w
 //  def /(amt: Double): Time = Time((ms.toDouble / unit.toMs(amt).toDouble).round, unit)
 
   def toXML = <Time unit="minutes">{ this.toMinutes.value }</Time>
+
 }
