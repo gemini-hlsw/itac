@@ -100,8 +100,8 @@ class ProposalIo(partners: Map[String, Partner]) {
           val scaledAward = ntac.awardedTime * Percent(proportion * 100)
           val ntacʹ = ntac.copy(awardedTime = scaledAward, undividedTime = Some(ntac.awardedTime))
 
-          if (proportion != 1.0)
-            println(f"${ntac.reference}%-15s est for ${site.abbreviation} is ${tetThis.toHours.value}%5.1f h (${proportion * 100}%5.1f%% of total) ... scaled award is ${scaledAward.toHours.value}%5.1f of ${ntac.awardedTime.toHours.value}%5.1f")
+          // if (proportion != 1.0)
+          //   println(f"${ntac.reference}%-15s est for ${site.abbreviation} is ${tetThis.toHours.value}%5.1f h (${proportion * 100}%5.1f%% of total) ... scaled award is ${scaledAward.toHours.value}%5.1f of ${ntac.awardedTime.toHours.value}%5.1f")
 
           // Make the corresponding CoreProposal
           val b12 = bandList(QueueBand.Category.B1_2)
