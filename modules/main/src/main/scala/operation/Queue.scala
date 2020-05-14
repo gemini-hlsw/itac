@@ -71,7 +71,7 @@ object Queue {
                   case 4 => Colors.RED
                 })
                 q.bandedQueue.get(qb).orEmpty.sortBy(_.ntac.ranking.num.orEmpty).foreach { p =>
-                    println(f"- ${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-13s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  ${q.programId(p).get}")
+                    println(f"- ${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-15s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  ${q.programId(p).get}")
                 }
                 println(Colors.RESET)
               }
@@ -93,13 +93,24 @@ object Queue {
                   }
                   val included = q.bandedQueue.get(qb).orEmpty.filter(_.ntac.partner == p)
                   included.sortBy(_.ntac.ranking.num.orEmpty).foreach { p =>
-                    println(f"$color- ${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-13s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  ${q.programId(p).get}${Colors.RESET}")
+                    println(f"$color- ${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-15s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  ${q.programId(p).get}${Colors.RESET}")
                   }
                   if (qb.number < 4) {
-                    val used = q.usedTime(qb, p).toHours.value
+                    val used  = q.usedTime(qb, p).toHours.value
                     val avail = q.queueTime(qb, p).toHours.value
                     val pct   = if (avail == 0) 0.0 else (used / avail) * 100
-                    println(f"                                 B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%%)\n")
+                    println(f"                                 B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%%)")
+
+                    // After the Band2 total print an extra B1+B2 total.
+                    if (qb == QueueBand.QBand2) {
+                      val used  = (q.usedTime(QueueBand.QBand1, p) + q.usedTime(QueueBand.QBand2, p)).toHours.value
+                      val avail = (q.queueTime(QueueBand.QBand1, p) + q.queueTime(QueueBand.QBand2, p)).toHours.value
+                      val pct   = if (avail == 0) 0.0 else (used / avail) * 100
+                      println(f"                              B1+B2 Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%%)")
+                    }
+
+                    println()
+
                   } else {
                     val used = q.usedTime(qb, p).toHours.value
                     println(f"                                 B${qb.number} Total: $used%5.1f h\n")
