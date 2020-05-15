@@ -38,8 +38,8 @@ trait ConditionsCategoryParser {
   private def spec[A <: ObservingCondition: Ordering](cond: Parser[A]): Parser[Specification[A]] =
     (comparator, cond).mapN {
       case (None,      c) => Eq(c)
-      case (Some(Gte), c) => Le(c)
-      case (Some(Lte), c) => Ge(c)
+      case (Some(Gte), c) => Ge(c)
+      case (Some(Lte), c) => Le(c)
     }
 
   private val cc: Parser[Specification[CloudCover]]    =
