@@ -60,7 +60,7 @@ object RolloverReport {
       val site = Site.parse(rollover \@ "site")
       val sem  = Semester.parse(rollover \@ "semester")
       val ins  = Instant.ofEpochMilli((rollover \@ "timestamp").toLong)
-      val ros  = (rollover \ "obs").toList.traverseU { RolloverObservation.fromXml(_, partners) }
+      val ros  = (rollover \ "obs").toList.traverseU(RolloverObservation.fromXml)
       ros match {
         case Right(ros) => RolloverReport(site, sem, ins, ros)
         case Left(e)    => sys.error(e)

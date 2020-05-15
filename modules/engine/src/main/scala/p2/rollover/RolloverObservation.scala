@@ -7,24 +7,23 @@ import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.tac.qengine.p1._
 import edu.gemini.tac.qengine.p1.{CategorizedTime, ObservingConditions, Target}
-import edu.gemini.tac.qengine.p2.ObservationId
 import edu.gemini.tac.qengine.util.Angle
 import edu.gemini.tac.qengine.util.Time
 import scala.util.Try
 import scalaz._, Scalaz._
+import edu.jhu.htm.parsers.ParseException
 
 /**
  * A class that represents a rollover time observation.  The time for each
  * rollover observation should be subtracted from the corresponding bins.
  */
 case class RolloverObservation(
-  partner: Partner,
-  obsId: ObservationId,
+  obsId: String, // we don't care as long as it starts with G?-...
   target: Target,
   conditions: ObservingConditions,
   time: Time
 ) extends CategorizedTime {
-  def site: Site = obsId.site
+  def site: Site = Site.parse(obsId.take(2))
 }
 
 object RolloverObservation {
@@ -55,14 +54,13 @@ object RolloverObservation {
    *
    * @return a RolloverObservation, or a message on failure.
    */
-  def fromXml(o: scala.xml.Node, partners: List[Partner]): Either[String, RolloverObservation] =
+  def fromXml(o: scala.xml.Node): Either[String, RolloverObservation] =
     Try {
 
       def fail(field: String): Nothing =
         sys.error(s"Error parsing RolloverObservation: missing or invalid $field\n$o")
 
-      val id   = ObservationId.parse((o \ "id").text).getOrElse(fail("observation id"))
-      val p    = partners.find(_.fullName == (o \ "partner").text).getOrElse(fail("partner"))
+      val id   = (o \ "id").text
       val time = Time.millisecs((o \ "time").text.toLong).toMinutes
       val ra   = new Angle((o \ "target" \ "ra" ).text.takeWhile(_ != ' ').toDouble, Angle.Deg)
       val dec  = new Angle((o \ "target" \ "dec").text.takeWhile(_ != ' ').toDouble, Angle.Deg)
@@ -72,7 +70,14 @@ object RolloverObservation {
       val sb   = SkyBackground.values.find(_.percent == (o \ "conditions" \ "sb").text.toInt).getOrElse(fail("sb"))
       val wv   = WaterVapor   .values.find(_.percent == (o \ "conditions" \ "wv").text.toInt).getOrElse(fail("wv"))
 
-      RolloverObservation(p, id, t, ObservingConditions(cc, iq, sb, wv), time)
+      // Almost done!
+      val ro   = RolloverObservation(id, t, ObservingConditions(cc, iq, sb, wv), time)
+
+      // Hack: ensure the id is valid enough to discern the site
+      try { ro.site } catch { case _: ParseException => fail("observation id")}
+
+      // Ok, done.
+      ro
 
     } .toEither.leftMap(_.getMessage)
 

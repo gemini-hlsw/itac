@@ -207,7 +207,7 @@ object Workspace {
         }
 
         def readRolloverReport(path: Path): F[RolloverReport] =
-          commonConfig.flatMap(cc => readData(path)(decoderRolloverReport(cc.engine.partners)))
+          readData(path)(decoderRolloverReport)
 
         def mkdirs(path: Path): F[Path] = {
           val p = dir.resolve(path)
