@@ -52,7 +52,7 @@ trait RolloverObservationCodec {
           RolloverObservation(oidʹ, Target(raʹ.toDoubleDegrees, decʹ.toDoubleDegrees), ObservingConditions(ccʹ, iqʹ, sbʹ, wvʹ), minsʹ)
         } .toEither.leftMap(_.getMessage)
 
-      case arr => Left(s"Expected ten columns, found ${arr.length}: $s")
+      case _ => Left(s"Invalid rollover file format. Please re-fetch via `itac -f rollover -s` or `-n`")
     }
 
 }
