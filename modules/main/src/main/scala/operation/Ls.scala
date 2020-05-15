@@ -25,10 +25,10 @@ object Ls {
       val order = fields.reduceMap(_.order)(Order.whenEqualMonoid)
 
       def header: String =
-        f"${Colors.BOLD}${"Id"}%-20s  ${"PI"}%-20s  ${"Rank"}%4s ${"Partner"}%6s   ${"Time"}%6s${Colors.RESET}"
+        f"${Colors.BOLD}${"Id"}%-18s  Site    ${"PI"}%-20s  ${"Rank"}%4s ${"Partner"}%6s   ${"Time"}%6s${Colors.RESET}"
 
       def format(p: Proposal): String =
-        f"${p.id.reference}%-20s  ${p.piName.orEmpty}%-20s  ${p.ntac.ranking}%4s  ${p.ntac.partner.id}%6s  ${p.ntac.awardedTime.toHours.value}%5.1f h"
+        f"${p.id.reference}%-20s  ${p.site.abbreviation}    ${p.piName.orEmpty}%-20s  ${p.ntac.ranking}%4s  ${p.ntac.partner.id}%6s  ${p.ntac.awardedTime.toHours.value}%5.1f h"
 
       def findPartner(partners: List[Partner])(name: String): F[Partner] =
         partners.find(_.id.equalsIgnoreCase(name)) match {
@@ -52,14 +52,15 @@ object Ls {
   final case class Field(name: String, order: Order[Proposal])
   object Field {
 
-    val id      = Field("id",       Order.by(o => o.id.reference))
-    val pi      = Field("pi",       Order.by(o => o.piName.orEmpty))
-    val rank    = Field("rank",     Order.by(o => o.ntac.ranking.num.orEmpty))
-    val partner = Field("partner",  Order.by(o => o.ntac.partner.id))
-    val time    = Field("time",     Order.by(o => o.time.ms))
+    val id      = Field("id",       Order.by(p => p.id.reference))
+    val site    = Field("site",     Order.by(p => p.site.abbreviation))
+    val pi      = Field("pi",       Order.by(p => p.piName.orEmpty))
+    val rank    = Field("rank",     Order.by(p => p.ntac.ranking.num.orEmpty))
+    val partner = Field("partner",  Order.by(p => p.ntac.partner.id))
+    val time    = Field("time",     Order.by(p => p.time.ms))
 
     val all: List[Field] =
-      List(id, pi, rank, partner, time)
+      List(id, site, pi, rank, partner, time)
 
     def fromString(name: String): Either[String, Field] =
       all.find(_.name.toLowerCase == name)
