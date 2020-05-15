@@ -30,7 +30,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
 
     sealed trait Row extends Product with Serializable
     case class RaRow(h: String, r: Double, l: Double) extends Row
-    case class ConditionsRow(t: ConditionsCategory, r: Double, l: Double) extends Row
+    case class ConditionsRow(t: ConditionsCategory, u: Double, r: Double, l: Double) extends Row
 
     val hPerBin  = 24 / raBins.length
     val binHours = 0 until 24 by 24 / raBins.length
@@ -46,6 +46,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
           case (c, t) =>
             ConditionsRow(
               c,
+              math.round(t.used.toMinutes.value) / 60.0,
               math.round(t.remaining.toMinutes.value) / 60.0,
               math.round(t.limit.toMinutes.value) / 60.0
             )
@@ -72,7 +73,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
                 <td style="text-align:right">{f"$r%1.2f"} hrs</td>
                 <td style="text-align:right">{f"$l%1.2f"} hrs</td>
               </tr>
-          case ConditionsRow(t: ConditionsCategory, r: Double, l: Double) =>
+          case ConditionsRow(t: ConditionsCategory, _, r: Double, l: Double) =>
             <tr>
                 <td style="text-align:right">Conditions: {t}</td>
                 <td style="text-align:right">{f"$r%1.2f"} hrs</td>
@@ -92,8 +93,8 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
 
     val raTablesANSI: String =
       report.flatten.map {
-        case RaRow(h, r, l)         => embolden(f"\nRA: $h%-78s   $r%6.2f  $l%6.2f")
-        case ConditionsRow(t, r, l) => f"Conditions: $t%-70s   $r%6.2f  $l%6.2f "
+        case x @ RaRow(h, r, l)         => embolden(f"\nRA: $h%-78s  $l%6.2f  - ?????? = $r%6.2f")
+        case ConditionsRow(t, u, r, l) => f"Conditions: $t%-70s  $l%6.2f  - $u%6.2f = $r%6.2f "
       } .mkString("\n")
 
   }

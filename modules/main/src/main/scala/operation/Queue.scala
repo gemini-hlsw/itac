@@ -57,7 +57,7 @@ object Queue {
 
               println(separator)
 
-              println(s"${Colors.BOLD}RA/Conditions Bucket Allocations:                                                       Rem   Avail${Colors.RESET}")
+              println(s"${Colors.BOLD}RA/Conditions Bucket Allocations:                                                    Limit      Used     Rem${Colors.RESET}")
               println(queueCalc.bucketsAllocation.raTablesANSI)
               println()
 
@@ -132,13 +132,13 @@ object Queue {
                   log.get(pid, qc) match {
                     case None =>
                     case Some(AcceptMessage(_, _, _)) =>
-                    case Some(m: RejectPartnerOverAllocation) => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.detail}")
-                    case Some(m: RejectNotBand3) => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.detail}")
-                    case Some(m: RejectNoTime) => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.detail}")
-                    case Some(m: RejectCategoryOverAllocation) => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.detail}")
-                    case Some(m: RejectTarget) => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
-                    case Some(m: RejectConditions) => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
-                    case Some(lm) => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s $lm")
+                    case Some(m: RejectPartnerOverAllocation) =>  println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Partner full:"}%-20s ${m.detail}")
+                    case Some(m: RejectNotBand3) =>               println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Not band 3:"}%-20s ${m.detail}")
+                    case Some(m: RejectNoTime) =>                 println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"No time:"}%-20s ${m.detail}")
+                    case Some(m: RejectCategoryOverAllocation) => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Category overallocated:"}%-20s ${m.detail}")
+                    case Some(m: RejectTarget) =>                 println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.raDecType + " bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
+                    case Some(m: RejectConditions) =>             println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Conditions bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
+                    case Some(lm) =>                              println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Miscellaneous"}%-20s $lm")
                   }
                 }
                 println()
