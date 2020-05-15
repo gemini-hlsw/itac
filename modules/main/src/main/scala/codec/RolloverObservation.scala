@@ -4,9 +4,7 @@
 package itac.codec
 
 import cats.implicits._
-import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.tac.qengine.p1.{ CloudCover, ImageQuality, SkyBackground, WaterVapor, Target, ObservingConditions }
-import edu.gemini.tac.qengine.p2.ObservationId
 import edu.gemini.tac.qengine.p2.rollover.RolloverObservation
 import edu.gemini.tac.qengine.util.Time
 import gsp.math.{ Angle => GAngle, HourAngle }
@@ -23,8 +21,8 @@ import io.circe.Encoder
  */
 trait RolloverObservationCodec {
 
-  def decoderRolloverObservation(partners: List[Partner]): Decoder[RolloverObservation] =
-    Decoder[String].emap(fromDelimitedString(_, partners))
+  implicit val decoderRolloverObservation: Decoder[RolloverObservation] =
+    Decoder[String].emap(fromDelimitedString)
 
   implicit val encoderRolloverObservation: Encoder[RolloverObservation] =
     Encoder[String].contramap(toDelimitedString)
@@ -32,19 +30,18 @@ trait RolloverObservationCodec {
   private def toDelimitedString(o: RolloverObservation): String = {
     val ra = HourAngle.HMS(HourAngle.fromDoubleHours(o.target.ra.toHr.mag)).format
     val dec = GAngle.DMS(GAngle.fromDoubleDegrees(o.target.dec.toDeg.mag)).format
-    f"${o.partner.id}%-7s ${o.obsId}%-17s $ra%16s $dec%17s ${o.conditions.cc}%-6s ${o.conditions.iq}%-6s ${o.conditions.sb}%-6s ${o.conditions.wv}%-6s ${o.time.toMinutes}%14s"
+    f"${o.obsId}%-20s $ra%16s $dec%17s ${o.conditions.cc}%-6s ${o.conditions.iq}%-6s ${o.conditions.sb}%-6s ${o.conditions.wv}%-6s ${o.time.toMinutes.value}%6.1f min"
   }
 
-  private def fromDelimitedString(s: String, partners: List[Partner]): Either[String, RolloverObservation] =
+  private def fromDelimitedString(s: String): Either[String, RolloverObservation] =
     s.split("\\s+") match {
-      case Array(pid, oid, ra, dec, cc, iq, sb, wv, mins, "min") =>
+      case Array(oid, ra, dec, cc, iq, sb, wv, mins, "min") =>
 
         def fail(field: String): Nothing =
           sys.error(s"Error parsing RolloverObservation: invalid $field\n$s")
 
         Try {
-          val pidʹ  = partners.find(_.id == pid).getOrElse(fail("partner id"))
-          val oidʹ  = ObservationId.parse(oid).getOrElse(fail("observation id"))
+          val oidʹ  = oid
           val raʹ   = HourAngle.fromStringHMS.getOption(ra).getOrElse(fail("RA"))
           val decʹ  = GAngle.fromStringDMS.getOption(dec).getOrElse(fail("DEC"))
           val ccʹ   = CloudCover.values.find(_.toString == cc).getOrElse(fail("CC"))
@@ -52,7 +49,7 @@ trait RolloverObservationCodec {
           val sbʹ   = SkyBackground.values.find(_.toString == sb).getOrElse(fail("SB"))
           val wvʹ   = WaterVapor.values.find(_.toString == wv).getOrElse(fail("WV"))
           val minsʹ = Time.minutes(mins.toDouble)
-          RolloverObservation(pidʹ, oidʹ, Target(raʹ.toDoubleDegrees, decʹ.toDoubleDegrees), ObservingConditions(ccʹ, iqʹ, sbʹ, wvʹ), minsʹ)
+          RolloverObservation(oidʹ, Target(raʹ.toDoubleDegrees, decʹ.toDoubleDegrees), ObservingConditions(ccʹ, iqʹ, sbʹ, wvʹ), minsʹ)
         } .toEither.leftMap(_.getMessage)
 
       case arr => Left(s"Expected ten columns, found ${arr.length}: $s")

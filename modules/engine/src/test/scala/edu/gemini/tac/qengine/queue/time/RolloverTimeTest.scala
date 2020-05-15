@@ -20,13 +20,12 @@ class RolloverTimeTest extends PartnerTimeCalcTestBase {
     assertZero(partnersExceptCL, rollover(Site.GN, rop, partners))
   }
 
-  val partner = CA
-  val obsId   = ObservationId.parse("GN-2011A-Q-1-2").get
+  val obsId   = "GN-2011A-Q-1-2"
   val target  = Target(15.0, 2.0)
   val conds   = ObservingConditions.AnyConditions
   val time    = Time.hours(100.0)
 
-  val ro      = RolloverObservation(partner, obsId, target, conds, time)
+  val ro      = RolloverObservation(obsId, target, conds, time)
 
   private def assert100Even(rop: RolloverReport): Unit = {
     val pt = rollover(Site.GN, rop, partners)
@@ -41,13 +40,12 @@ class RolloverTimeTest extends PartnerTimeCalcTestBase {
   }
 
   @Test def tstFilterSouth(): Unit = {
-    val partner = BR
-    val obsId   = ObservationId.parse("GS-2011A-Q-3-4").get
+    val obsId   = "GS-2011A-Q-3-4"
     val target  = Target(30.0, 3.0)
     val conds   = ObservingConditions.AnyConditions
     val time    = Time.hours(6.0)
 
-    val roSouth = RolloverObservation(partner, obsId, target, conds, time)
+    val roSouth = RolloverObservation(obsId, target, conds, time)
 
     val rop     = RolloverReport.empty.copy(obsList = List(ro, roSouth))
     assert100Even(rop)
