@@ -26,6 +26,11 @@ import gsp.math.Angle
 import cats.instances.short
 import com.monovore.decline.Argument
 
+// object Stub {
+//   def main(args: Array[String]): Unit =
+//     Main.main(Array("-d", "hawaii", "summarize", "CL-2020B-014"))
+// }
+
 object Main extends CommandIOApp(
   name    = "itac",
   header  =
