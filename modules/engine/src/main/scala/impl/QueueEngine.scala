@@ -163,6 +163,10 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
     def stage(params: QueueCalcStage.Params): QueueCalcStage = {
       val stage = QueueCalcStage(params)
       show(config, stage)
+      // stage.queue.bandedQueue.foreach { case (b, ps) =>
+      //     println(s"$b")
+      //     ps.foreach(p => println(s"  ${p.id.reference}"))
+      // }
       stage
     }
 
@@ -187,13 +191,13 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
     // Now add the band 3 programs. We do this by pretending the used time in bands 1/2 is all the
     // time we had in those bands, which is kind of an ugly hack but it works. Everything goes into
     // band 3, up to partner time limits.
+    val b3candidates = initialCandidates.remove(stageWithBands12.queue.toList).band3(stageWithBands12.log)
     val stageWithBands123 = {
-      val candidates = initialCandidates.remove(stageWithBands12.queue.toList).band3(stageWithBands12.log)
       val params = QueueCalcStage.Params.band3(
         config       = config,
-        grouped      = candidates.group,
+        grouped      = b3candidates.group,
         phase12bins  = stageWithBands12.resource,
-        phase12log   = stageWithBands12.log,
+        phase12log   = b3candidates.log,
         phase12queue = stageWithBands12.queue,
       )
       val s = stage(params)
@@ -213,11 +217,16 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
       val band12map: Map[QueueBand, List[Proposal]] =
         config.partners.foldMap { pa =>
 
-          // Within a given partner we can map used time to band
+          // Within a given partner we can map used time to band.
           def band(t: Time): QueueBand = {
             val b1 = queueTime(QueueBand.QBand1, pa).percent(105)
-            val b2 = queueTime(QueueBand.QBand2, pa).percent(105)
-            if (t <= b1) QueueBand.QBand1 else if (t <= (b1 + b2)) QueueBand.QBand2 else QueueBand.QBand3
+
+            // NOTE: the following doesn't work because the engine sometimes overfills slightly past
+            // the limit. In these cases we *can't* push the last proposal to B3 because it's using
+            // the wrong set of observations. So just leave it in B2 in that case.
+            // val b2 = queueTime(QueueBand.QBand2, pa).percent(105)
+            // if (t <= b1) QueueBand.QBand1 else if (t <= (b1 + b2)) QueueBand.QBand2 else QueueBand.QBand3
+            if (t <= b1) QueueBand.QBand1 else QueueBand.QBand2
           }
 
           // Go through all the proposals for this partner adding each to its band, based on the
@@ -236,10 +245,20 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
 
       // Ok so *replace* bands 1/2 and then add band 4 then [deterministically] scramble the proposals
       // within each band since at this point they're all created equal.
-      val bandedQueueʹ  = stageWithBands123.queue.bandedQueue ++ band12map
-      val bandedQueueʹʹ = bandedQueueʹ + (QueueBand.QBand4 -> band4)
+      val bandedQueueʹ   = stageWithBands123.queue.bandedQueue ++ band12map
+      val bandedQueueʹʹ  = bandedQueueʹ + (QueueBand.QBand4 -> band4)
       val bandedQueueʹʹʹ = bandedQueueʹʹ.map { case (k, v) => (k, v.sortBy(_.piName.reverse)) }
-      new FinalProposalQueue(queueTime, bandedQueueʹʹʹ)
+      val finalQueue     = new FinalProposalQueue(queueTime, bandedQueueʹʹʹ)
+
+      // println(s"proposals: ${proposals.find(_.id.reference == "CA-2020B-006").map(_.id.reference)}")
+      // println(s"initialCandidates: ${initialCandidates.propList.find(_.id.reference == "CA-2020B-006").map(_.id.reference)}")
+      // println(s"b3candidates: ${b3candidates.propList.find(_.id.reference == "CA-2020B-006").map(_.id.reference)}")
+      // println(s"finalQueue: ${finalQueue.toList.find(_.id.reference == "CA-2020B-006").map(_.id.reference)}")
+      // stageWithBands123.log.toList.find { e => e.key.id.reference == "CA-2020B-006" } .foreach(s => println(s.msg.getClass()))
+      // sys.exit(-1)
+
+      // Done!
+      finalQueue
 
     }
 

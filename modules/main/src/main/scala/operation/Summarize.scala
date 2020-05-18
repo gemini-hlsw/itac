@@ -17,6 +17,8 @@ import gsp.math.HourAngle
 import cats.Order
 import edu.gemini.tac.qengine.p1.Observation
 import cats.data.NonEmptyList
+import edu.gemini.tac.qengine.p1.JointProposal
+import edu.gemini.tac.qengine.ctx.Partner
 
 object Summarize {
 
@@ -78,11 +80,19 @@ object Summarize {
             p.obsList.map(BandedObservation("B1/2", _)) ++
             p.band3Observations.map(BandedObservation("B3", _))
 
+          // println(s"===> ${p.getClass}")
+
+          val partners: List[Partner] =
+            p match {
+              case JointProposal(_, _, ntacs) => ntacs.map(_.partner)
+              case p => List(p.ntac.partner)
+            }
+
           println()
-          println(s"Reference: ${p.id.reference} (${p.site.abbreviation})")
+          println(s"Reference: ${p.id.reference} (${p.site.abbreviation}, ${p.mode})")
           println(s"Title:     ${p.p1proposal.title}")
           println(s"PI:        ${p.piName.orEmpty}")
-          println(s"Partner:   ${p.ntac.partner.fullName}")
+          println(s"Partner:   ${partners.map(_.fullName).mkString(", ")}")
           println(f"Award:     ${p.time.toHours.value}%1.1f hours")
           println(f"Rank:      ${p.ntac.ranking.num.orEmpty}%1.1f")
           println(f"ToO:       ${p.too}")

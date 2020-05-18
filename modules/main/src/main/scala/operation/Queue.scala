@@ -131,28 +131,38 @@ object Queue {
                   val p = ps.find(_.id == pid).get
                   log.get(pid, qc) match {
                     case None =>
-                    case Some(AcceptMessage(_, _, _)) =>
-                    case Some(m: RejectPartnerOverAllocation) =>  println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Partner full:"}%-20s ${m.detail}")
-                    case Some(m: RejectNotBand3) =>               println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Not band 3:"}%-20s ${m.detail}")
-                    case Some(m: RejectNoTime) =>                 println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"No time:"}%-20s ${m.detail}")
+                    case Some(AcceptMessage(_, _, _))          => //println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s 👍")
+                    case Some(m: RejectPartnerOverAllocation)  => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Partner full:"}%-20s ${m.detail}")
+                    case Some(m: RejectNotBand3)               => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Not band 3:"}%-20s ${m.detail}")
+                    case Some(m: RejectNoTime)                 => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"No time:"}%-20s ${m.detail}")
                     case Some(m: RejectCategoryOverAllocation) => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Category overallocated:"}%-20s ${m.detail}")
-                    case Some(m: RejectTarget) =>                 println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.raDecType + " bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
-                    case Some(m: RejectConditions) =>             println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Conditions bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
-                    case Some(lm) =>                              println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Miscellaneous"}%-20s $lm")
+                    case Some(m: RejectTarget)                 => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.raDecType + " bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
+                    case Some(m: RejectConditions)             => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Conditions bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
+                    case Some(lm)                              => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Miscellaneous"}%-20s $lm")
                   }
                 }
                 println()
               }
 
+              println(s"${Colors.BOLD}The following proposals for ${queueCalc.context.site.abbreviation} do not appear in the proposal log:${Colors.RESET}")
+              ps.foreach { p =>
+                val b12msg = log.get(p.id, QueueBand.Category.B1_2)
+                val b3msg  = log.get(p.id, QueueBand.Category.B3)
+                if (p.site == queueCalc.context.site && b12msg.isEmpty && b3msg.isEmpty) {
+                  println(f"- ${p.id.reference}%-15s ${p.piName.orEmpty}%-20s  ${p.time.toHours.value}%5.1f h")
+                }
+              }
+              println()
+
               // Find proposals with divided time.
               val dividedProposals: List[Proposal] =
-                queueCalc.queue.toList.filter(p => p.time != p.undividedTime)
+                ps.sortBy(_.id.reference).filter(p => p.time != p.undividedTime && p.site == queueCalc.context.site)
 
               if (dividedProposals.nonEmpty) {
                 println(separator)
                 println(s"${Colors.BOLD}Time Computations for Proposals at Both Sites${Colors.RESET}\n")
-                println(s"${Colors.BOLD}  Reference      PI                      Award     GN     GS${Colors.RESET}")
-                                      //- CA-2020B-013   Drout                   3.8 h    2.0    1.8
+                println(s"${Colors.BOLD}  Reference        PI                      Award     GN     GS${Colors.RESET}")
+                                      //- CA-2020B-013     Drout                   3.8 h    2.0    1.8
                 dividedProposals.foreach { p =>
                   val t  = p.undividedTime.toHours.value
                   val tʹ = p.time.toHours.value
@@ -160,7 +170,7 @@ object Queue {
                     case GN => (tʹ, t - tʹ)
                     case GS => (t - tʹ, tʹ)
                   }
-                  println(f"- ${p.id.reference}%-13s  ${p.piName.orEmpty.take(20)}%-20s  $t%5.1f h  $gn%5.1f  $gs%5.1f")
+                  println(f"- ${p.id.reference}%-15s  ${p.piName.orEmpty.take(20)}%-20s  $t%5.1f h  $gn%5.1f  $gs%5.1f")
                 }
               }
 
