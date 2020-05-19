@@ -2,10 +2,10 @@
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac
+
 package operation
 
-import edu.gemini.spModel.core.Site.GN
-import edu.gemini.spModel.core.Site.GS
+import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.p1.Proposal
 import itac.util.Colors
 import cats._
@@ -134,7 +134,7 @@ object Queue {
                     case Some(AcceptMessage(_, _, _))          => //println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s 👍")
                     case Some(m: RejectPartnerOverAllocation)  => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Partner full:"}%-20s ${m.detail}")
                     case Some(m: RejectNotBand3)               => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Not band 3:"}%-20s ${m.detail}")
-                    case Some(m: RejectNoTime)                 => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"No time:"}%-20s ${m.detail}")
+                    case Some(m: RejectNoTime)                 => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"No time awarded:"}%-20s ${m.detail}")
                     case Some(m: RejectCategoryOverAllocation) => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Category overallocated:"}%-20s ${m.detail}")
                     case Some(m: RejectTarget)                 => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.raDecType + " bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
                     case Some(m: RejectConditions)             => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Conditions bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
@@ -158,17 +158,20 @@ object Queue {
               val dividedProposals: List[Proposal] =
                 ps.sortBy(_.id.reference).filter(p => p.time != p.undividedTime && p.site == queueCalc.context.site)
 
+              val thisSite = queueCalc.context.site
+              val otherSite = if (thisSite == Site.GN) Site.GS else Site.GN
+
               if (dividedProposals.nonEmpty) {
                 println(separator)
-                println(s"${Colors.BOLD}Time Computations for Proposals at Both Sites${Colors.RESET}\n")
+                println(s"${Colors.BOLD}Time proportions for ${thisSite} proposals that also have awarded time at ${otherSite} ${Colors.RESET}\n")
                 println(s"${Colors.BOLD}  Reference         PI                      Award     GN     GS${Colors.RESET}")
                                       //- CA-2020B-013     Drout                   3.8 h    2.0    1.8
                 dividedProposals.foreach { p =>
                   val t  = p.undividedTime.toHours.value
                   val tʹ = p.time.toHours.value
                   val (gn, gs) = queueCalc.context.site match {
-                    case GN => (tʹ, t - tʹ)
-                    case GS => (t - tʹ, tʹ)
+                    case Site.GN => (tʹ, t - tʹ)
+                    case Site.GS => (t - tʹ, tʹ)
                   }
                   println(f"- ${p.id.reference}%-16s  ${p.piName.orEmpty.take(20)}%-20s  $t%5.1f h  $gn%5.1f  $gs%5.1f")
                 }
