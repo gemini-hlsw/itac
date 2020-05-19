@@ -12,6 +12,8 @@ import scalaz._
 import Scalaz._
 import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.util.Percent
+import edu.gemini.tac.qengine.util.Time
+import org.slf4j.LoggerFactory
 
 /**
   * Immutable Phase1 proposal
@@ -51,6 +53,11 @@ import ProposalIo._
 class ProposalIo(partners: Map[String, Partner]) {
   val ntacIo = new NtacIo(partners)
 
+  // We need to split up the partners based on the sites where they are active.
+  val gnPartners   = partners.values.filter(_.sites == Set(Site.GN)).toSet
+  val gsPartners   = partners.values.filter(_.sites == Set(Site.GS)).toSet
+  val dualPartners = partners.values.filter(_.sites.size == 2).toSet
+
   /**
     * Extracts Queue Engine proposal information from the immutable proposal.
     * May return multiple queue engine proposals since they must be split by
@@ -74,10 +81,52 @@ class ProposalIo(partners: Map[String, Partner]) {
           case (`site`, _, os) => os.foldMap(_.time)
         } .foldMap(identity)
 
-      // Get estimated time for each site, as well as their sum.
-      val tetGN = totalEstimatedTime(Site.GN)
-      val tetGS = totalEstimatedTime(Site.GS)
-      val tet   = tetGN + tetGS
+
+      // OK LISTEN UP
+
+      // Some proposals have observations at both sites, so we need to figure out how much awarded
+      // time goes to each site. Most partner time can be divided proportionally, but some partner
+      // time can be used only at one site or the other. So that's what all the code below figures
+      // out. It's repetitive and has a lot of comments with small words. I want to keep it simple.
+
+      // Total estimated time at each site. This bears little relation to the awarded time (which is
+      // almost invariably substantially less) but we use their ratio to figure out how to split up
+      // time that can go to either site.
+      val estimatedTimeGN = totalEstimatedTime(Site.GN)
+      val estimatedTimeGS = totalEstimatedTime(Site.GS)
+
+      // NTAC awards, divided into gn, gs, and dual-site. These are mutually exclusive. The GN award
+      // can be used only at GN; the GS award can be used only at GS; and the remainder can be used
+      // anywhers.
+      val dedicatedAwardGN = ntacs.toList.filter(n => gnPartners.contains(n.partner)).foldMap(_.awardedTime)
+      val dedicatedAwardGS = ntacs.toList.filter(n => gsPartners.contains(n.partner)).foldMap(_.awardedTime)
+      val dualSiteAward    = ntacs.toList.filter(n => dualPartners.contains(n.partner)).foldMap(_.awardedTime)
+
+      // The estimated shared time at each site, which means the estimated time at the site, less
+      // dedicated time that can only be used there. We want to remove the dedicated time and then
+      // split the shared time among the remainder, proprotionally. This probably isn't quite right;
+      // it might make sense to scale the awards somehow since they can be much smaller than the
+      // estimated time and thus won't affect the ratio very much in some cases. But for now let's
+      // call it ok.
+      val estimatedSharedTimeGN = estimatedTimeGN - dedicatedAwardGN
+      val estimatedSharedTimeGS = estimatedTimeGS - dedicatedAwardGS
+      val totalSharedTime       = estimatedSharedTimeGN + estimatedSharedTimeGS
+
+      // The proportion of shared time that goes to each site. If there is no shared time at all
+      // then it's zero. We have to catch that case or we get an ArithmeticException later on.
+      val proportionOfSharedTimeGN = if (totalSharedTime.isZero) 0.0 else estimatedSharedTimeGN.ms.toDouble / totalSharedTime.ms.toDouble
+      val proportionOfSharedTimeGS = if (totalSharedTime.isZero) 0.0 else estimatedSharedTimeGS.ms.toDouble / totalSharedTime.ms.toDouble
+
+      // Now we can split the dual-site award between sites.
+      val sharedAwardGN = dualSiteAward * Percent(proportionOfSharedTimeGN * 100)
+      val sharedAwardGS = dualSiteAward * Percent(proportionOfSharedTimeGS * 100)
+
+      // And add back the dedicated time.
+      val totalAwardGN = dedicatedAwardGN + sharedAwardGN
+      val totalAwardGS = dedicatedAwardGS + sharedAwardGS
+
+      // And that's it. In a moment we select which of the total awards to use.
+      // Fin.
 
       // Make a proposal per site represented in the observations.
       val (props, newGen) = sites.foldLeft((List.empty[Proposal], jointIdGen)) {
@@ -91,17 +140,34 @@ class ProposalIo(partners: Map[String, Partner]) {
 
           // The first NTAC is the one we care about here (why?)
           val ntac = ntacs.head
+          val totalAwardHere = if (site == Site.GN) totalAwardGN else totalAwardGS
 
-          // Figure out the proportion of estimated time we're using for the current site, and
-          // scale the total award by that amount. For proposals that are only at one site the
-          // proportion is 100% and the scaling is a no-op.
-          val tetThis = if (site == Site.GN) tetGN else tetGS
-          val proportion = tetThis.ms.toDouble / tet.ms.toDouble
-          val scaledAward = ntac.awardedTime * Percent(proportion * 100)
-          val ntacʹ = ntac.copy(awardedTime = scaledAward, undividedTime = Some(ntac.awardedTime))
+          // println()
+          // println(ntac.reference)
+          // println(s"my gn   award is ${dedicatedAwardGN.toHours}")
+          // println(s"my gs   award is ${dedicatedAwardGS.toHours}")
+          // println(s"my dual award is ${dualSiteAward.toHours}")
+          // println(s"my total estimated time is ${tet.toHours}")
+          // println(s"my total estimated time at gn is ${estimatedTimeGN.toHours}")
+          // println(s"my total estimated time at gs is ${estimatedTimeGS.toHours}")
+          // println(s"subtracting site-specific award, my shared time at gn is ${estimatedSharedTimeGN.toHours}")
+          // println(s"subtracting site-specific award, my shared time at gs is ${estimatedSharedTimeGS.toHours}")
+          // println(s"proportion of shared time at GN is ${proportionOfSharedTimeGN}")
+          // println(s"proportion of shared time at GN is ${proportionOfSharedTimeGS}")
+          // println(s"shared award at GN is ${sharedAwardGN.toHours}")
+          // println(s"shared award at GS is ${sharedAwardGS.toHours}")
+          // println(s"total award at GN is ${totalAwardGN.toHours}")
+          // println(s"total award at GS is ${totalAwardGS.toHours}")
+          // println(s"---")
+          // println(s"my site is $site so my award here is ${totalAwardHere.toHours}")
+          // println(s"---")
+          // println(ntacs.map(n => f"${n.partner.id}:${n.awardedTime.toHours.value}%5.1f").list.toList.mkString(", "))
 
-          // if (proportion != 1.0)
-          //   println(f"${ntac.reference}%-15s est for ${site.abbreviation} is ${tetThis.toHours.value}%5.1f h (${proportion * 100}%5.1f%% of total) ... scaled award is ${scaledAward.toHours.value}%5.1f of ${ntac.awardedTime.toHours.value}%5.1f")
+          if (totalAwardHere.isZero) {
+            LoggerFactory.getLogger("edu.gemini.itac").warn(s"Proposal ${ntac.reference} has observatiosn at $site but no awarded time is usable there. Award was ${ntacs.map(n => s"${n.partner.id}: ${n.awardedTime.toHours}").toList.mkString(", ")}.")
+          }
+
+          val ntacʹ = ntac.copy(awardedTime = totalAwardHere, undividedTime = Some(ntac.awardedTime))
 
           // Make the corresponding CoreProposal
           val b12 = bandList(QueueBand.Category.B1_2)
