@@ -8,11 +8,11 @@ import xml.Elem
  */
 object RejectNoTime {
   val name        = "No Time Award"
-  val description = "NTAC did not award time to the proposal."
+  def description(p: Proposal) = s"No awarded time, or time is not usable at ${p.site}."
 }
 final case class RejectNoTime(prop: Proposal) extends RejectMessage {
   def reason: String = RejectNoTime.name
-  def detail: String = RejectNoTime.description
+  def detail: String = RejectNoTime.description(prop)
 
   override def subToXML : Elem = <NoTimeAward><Proposal id= { prop.id.toString }/></NoTimeAward>
 
