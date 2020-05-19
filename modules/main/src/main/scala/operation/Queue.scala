@@ -161,7 +161,7 @@ object Queue {
               if (dividedProposals.nonEmpty) {
                 println(separator)
                 println(s"${Colors.BOLD}Time Computations for Proposals at Both Sites${Colors.RESET}\n")
-                println(s"${Colors.BOLD}  Reference        PI                      Award     GN     GS${Colors.RESET}")
+                println(s"${Colors.BOLD}  Reference         PI                      Award     GN     GS${Colors.RESET}")
                                       //- CA-2020B-013     Drout                   3.8 h    2.0    1.8
                 dividedProposals.foreach { p =>
                   val t  = p.undividedTime.toHours.value
@@ -170,7 +170,7 @@ object Queue {
                     case GN => (tʹ, t - tʹ)
                     case GS => (t - tʹ, tʹ)
                   }
-                  println(f"- ${p.id.reference}%-15s  ${p.piName.orEmpty.take(20)}%-20s  $t%5.1f h  $gn%5.1f  $gs%5.1f")
+                  println(f"- ${p.id.reference}%-16s  ${p.piName.orEmpty.take(20)}%-20s  $t%5.1f h  $gn%5.1f  $gs%5.1f")
                 }
               }
 
