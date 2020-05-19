@@ -31,6 +31,8 @@ import java.time.ZoneId
 import cats.effect.Resource
 import java.nio.file.StandardCopyOption
 import edu.gemini.util.security.auth.ProgIdHash
+import java.io.File
+import cats.data.NonEmptyList
 
 /** Interface for some Workspace operations. */
 trait Workspace[F[_]] {
@@ -66,7 +68,7 @@ trait Workspace[F[_]] {
 
   def proposals: F[List[Proposal]]
 
-  def proposal(ref: String): F[List[Proposal]]
+  def proposal(ref: String): F[(File, NonEmptyList[Proposal])]
 
   /**
    * Create a directory under `cwd` with a name like GN-20190524-103322 and return its path
@@ -243,7 +245,7 @@ object Workspace {
             _    <- log.debug(s"Read ${ps.length} proposals.")
           } yield ps.collect { case (_, Right(ps)) => ps.toList } .flatten
 
-        def proposal(ref: String): F[List[Proposal]] =
+        def proposal(ref: String): F[(File, NonEmptyList[Proposal])] =
           for {
             cwd  <- cwd
             conf <- commonConfig
@@ -253,8 +255,7 @@ object Workspace {
             _    <- log.debug(s"Reading proposals from $p")
             es   <- readData[Edits](EditsFile).map(_.edits.getOrElse(Map.empty))
             p    <- ProposalLoader[F](pas, when, es, log).loadByReference(p.toFile.getAbsoluteFile, ref)
-            _    <- p match { case (f, Left(es)) => log.warn(s"$f: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
-          } yield p._2.foldMap(_.toList)
+          } yield p
 
         def newQueueFolder(site: Site): F[Path] =
           for {

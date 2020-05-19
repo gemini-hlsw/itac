@@ -17,8 +17,6 @@ import gsp.math.HourAngle
 import cats.Order
 import edu.gemini.tac.qengine.p1.Observation
 import cats.data.NonEmptyList
-import edu.gemini.tac.qengine.p1.JointProposal
-import edu.gemini.tac.qengine.ctx.Partner
 
 object Summarize {
 
@@ -58,60 +56,65 @@ object Summarize {
 
   }
 
+  def summary(ps: List[Proposal]): String =
+    ???
+
 
   def apply[F[_]: Sync](reference: String, fields: NonEmptyList[Field]): Operation[F] =
     new Operation[F] {
 
-      def summarize(p: Proposal): F[Unit] =
+      def summarize(ps: NonEmptyList[Proposal]): F[Unit] =
         Sync[F].delay {
 
           val order = fields.reduceMap(_.order)(Order.whenEqualMonoid)
 
-          def printObs(band: String)(o: Observation): Unit = {
+          def obs(band: String)(o: Observation): String = {
             val id    = ObservationDigest.digest(o.p1Observation)
             val ra    = HourAngle.HMS(o.ra).format
             val dec   = Angle.DMS(o.dec).format
             val conds = f"${o.conditions.cc}%-5s ${o.conditions.iq}%-5s ${o.conditions.sb}%-5s ${o.conditions.wv}%-5s "
             val hrs   = o.time.toHours.value
-            println(f"$id  $band%-4s  $hrs%5.1fh  $conds  $ra%16s  $dec%16s  ${o.target.name.orEmpty}")
+            f"  - $id  $band%-4s  $hrs%5.1fh  $conds  $ra%16s  $dec%16s  ${o.target.name.orEmpty}"
           }
 
-          val obsList: List[BandedObservation] =
+          def obsList(p: Proposal): List[BandedObservation] =
             p.obsList.map(BandedObservation("B1/2", _)) ++
             p.band3Observations.map(BandedObservation("B3", _))
 
-          // println(s"===> ${p.getClass}")
+          def obsYaml(p: Proposal): String =
+            f"""|  ${p.site}:
+                |${obsList(p).sorted(order.toOrdering).map(bo => obs(bo.band)(bo.obs)).mkString("\n")}
+                |""".stripMargin
 
-          val partners: List[Partner] =
-            p match {
-              case JointProposal(_, _, ntacs) => ntacs.map(_.partner)
-              case p => List(p.ntac.partner)
-            }
+          val header =
+            f"""|
+                |# Edits for ${ps.head.id.reference}. Any changes you make here will be applied when the proposal is read.
+                |# To discard edits, delete this file.
+             """.stripMargin
 
-          println()
-          println(s"Reference: ${p.id.reference} (${p.site.abbreviation}, ${p.mode})")
-          println(s"Title:     ${p.p1proposal.title}")
-          println(s"PI:        ${p.piName.orEmpty}")
-          println(s"Partner:   ${partners.map(_.fullName).mkString(", ")}")
-          println(f"Award:     ${p.time.toHours.value}%1.1f hours")
-          println(f"Rank:      ${p.ntac.ranking.num.orEmpty}%1.1f")
-          println(f"ToO:       ${p.too}")
-          println()
+          val yaml =
+            f"""|
+                |Reference: ${ps.head.id.reference}
+                |Mode:      ${ps.head.mode}
+                |Title:     ${ps.head.p1proposal.title}
+                |PI:        ${ps.head.piName.orEmpty}
+                |Partner:   ${ps.head.ntac.partner.fullName}
+                |Award:     ${ps.head.time.toHours.value}%1.1f
+                |Rank:      ${ps.head.ntac.ranking.num.orEmpty}%1.1f
+                |ToO:       ${ps.head.too}
+                |
+                |Observations:
+                |${ps.map(obsYaml).toList.mkString("")}
+            """.stripMargin
 
-          obsList
-            // remove duplicates ... ?
-            // .groupBy(o => ObservationDigest.digest(o.obs.p1Observation))
-            // .values.map(_.head)
-            // .toList
-            .sorted(order.toOrdering)
-            .foreach(bo => printObs(bo.band)(bo.obs))
+          println(header + yaml)
 
-          println()
         }
 
       def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
-        ws.proposal(reference).flatMap(_.traverse(summarize)).as(ExitCode.Success)
+        ws.proposal(reference).flatMap { case (_, ps) => summarize(ps) } .as(ExitCode.Success)
 
   }
 
 }
+

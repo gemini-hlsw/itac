@@ -29,7 +29,7 @@ trait ProposalLoader[F[_]] {
 
   def loadMany(dir: File): F[List[(File, EitherNel[String, NonEmptyList[Proposal]])]]
 
-  def loadByReference(dir: File, ref: String): F[(File, EitherNel[String, NonEmptyList[Proposal]])]
+  def loadByReference(dir: File, ref: String): F[(File, NonEmptyList[Proposal])]
 
 }
 
@@ -105,7 +105,7 @@ object ProposalLoader {
       def loadMany(dir: File): F[List[(File, EitherNel[String, NonEmptyList[Proposal]])]] =
         loadManyPhase1(dir).map(_.traverse(a => read(a._2).tupleLeft(a._1)).runA(JointIdGen(1)).value)
 
-      def loadByReference(dir: File, ref: String): F[(File, EitherNel[String, NonEmptyList[Proposal]])] =
+      def loadByReference(dir: File, ref: String): F[(File, NonEmptyList[Proposal])] =
         Sync[F].delay(Option(dir.listFiles)).flatMap {
           case None      => Sync[F].raiseError(new RuntimeException(s"Not a directory: $dir"))
           case Some(arr) =>
@@ -119,7 +119,10 @@ object ProposalLoader {
                 }
               }
               .flatMap {
-                case Some(f) => load(f)
+                case Some(f) => load(f) flatMap {
+                  case (f, Left(es))  => Sync[F].raiseError(new ItacException(s"Error loading $f: ${es.toList.mkString(", ")}"))
+                  case (f, Right(ps)) => (f, ps).pure[F]
+                }
                 case None    => Sync[F].raiseError(new ItacException(s"No such proposal: $ref"))
               }
         }
