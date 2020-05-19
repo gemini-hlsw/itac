@@ -8,7 +8,9 @@ import scala.io.AnsiColor
 /** Like `AnsiColor` but sets colors to "" if there's no console attached. */
 object Colors {
 
-  private lazy val isDetached = System.console == null
+  private lazy val isDetached = {
+    (!sys.props.contains("force-color")) && (System.console == null)
+  }
 
   private def color(s: String): String =
     if (isDetached) "" else s
