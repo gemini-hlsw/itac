@@ -11,6 +11,7 @@ import edu.gemini.model.p1.immutable.GeminiNormalProposalClass
 import java.io.File
 import edu.gemini.model.p1.immutable.ExchangeProposalClass
 import itac.config.Edit
+import edu.gemini.model.p1.immutable.LargeProgramClass
 
 /** Proposal editing. This applies edits that are supplied as part of the configuration. */
 class Editor[F[_]: Applicative](edits: Map[String, Edit], log: Logger[F]) {
@@ -39,6 +40,9 @@ object EditorOps {
 
         case pc: ExchangeProposalClass =>
           pc.subs.flatMap(_.response.map(_.receipt.id)).headOption.getOrElse(sys.error(s"Can't get id from ${pc.subs}"))
+
+        case lp: LargeProgramClass =>
+          lp.sub.response.map(_.receipt.id).headOption.getOrElse(sys.error(s"Can't get id from ${lp.sub}"))
 
         case pc => sys.error(s"Unsupported proposal class: $pc")
       }
