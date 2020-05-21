@@ -34,7 +34,6 @@ object Init {
             _ <- Workspace.WorkspaceDirs.traverse(ws.mkdirs(_))
             _ <- EmailTemplateRef.all.traverse(ws.extractEmailTemplate)
             _ <- ws.writeText(Workspace.Default.CommonConfigFile, initialCommonConfig(semester))
-            _ <- ws.writeText(Workspace.EditsFile, initialEdits)
             _ <- Site.values.toList.traverse(s => ws.writeText(Workspace.Default.queueConfigFile(s), initialSiteConfig(s)))
             _ <- Site.values.toList.traverse(s => Rollover(s, None).run(ws, log, b))
           } yield ExitCode.Success
@@ -202,35 +201,5 @@ object Init {
         |# Queue filling limit (percentage over 80).
         |overfill: 5
         |""".stripMargin
-
-  def initialEdits: String =
-  s"""|
-      |# This is the edits file, shared by all queues. You can change any values here, as long as the
-      |# format remains the same. You can also add comment lines.
-      |#
-      |# Each edit is keyed by the proposal reference id, followed by one or more edits:
-      |#
-      |#   itacComment  - use this to add a comment
-      |#
-      |#   observations - a list of observation edits keyed by observation hash (provided in error messages
-      |#                  when queue filling fails). Possible edits are:
-      |#                    Disable - disable the
-      |#
-      |# An example definition might look like this:
-      |#
-      |#   edits:
-      |#
-      |#     US-2020A-129:
-      |#       itacComment: We had to take some hours away, sorry.
-      |#
-      |#     AR-2020A-006:
-      |#       itacComment: Excellent proposal.
-      |#       observations:
-      |#         bd42d3b6: Disable
-      |#         5bc82e30: Disable
-      |
-      |edits:
-      |  # no edits yet
-      |""".stripMargin
 
 }
