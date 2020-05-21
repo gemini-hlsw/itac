@@ -40,7 +40,7 @@ class Editor[F[_]: Sync](edits: Map[String, SummaryEdit], log: Logger[F]) {
 
         }
 
-      case None    => log.warn(s"No edits for ${p.id}/${file.getName}")
+      case None    => log.trace(s"No edits for ${p.id}/${file.getName}")
 
     }
 
