@@ -6,6 +6,7 @@ package itac
 import cats.Hash
 import cats.implicits._
 import edu.gemini.model.p1.immutable._
+import edu.gemini.model.p1.{ mutable => M }
 import edu.gemini.spModel.core.Coordinates
 import edu.gemini.spModel.core.Magnitude
 import edu.gemini.spModel.core.MagnitudeBand
@@ -133,5 +134,9 @@ object ObservationDigest {
   /** A zero-padded 8-character hash digest of the given observation. */
   def digest(o: Observation): String =
     ("00000000" + o.hash.toHexString).takeRight(8)
+
+  def digest(o: M.Observation): String =
+    digest(Observation(o))
+
 
 }

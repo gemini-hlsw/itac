@@ -279,11 +279,18 @@ trait MainOpts { this: CommandIOApp =>
       help  = s"Fields to sort by, comma-delimited. One or more of ${Summarize.Field.all.map(_.name).mkString(",")}. Default is band,ra"
     ) .withDefault(NonEmptyList.of(Summarize.Field.band, Summarize.Field.ra))
 
+  lazy val edit: Opts[Boolean] =
+    Opts.flag(
+      long  = "edit",
+      short = "e",
+      help  = "Write the summary to the edits/ folder."
+    ).orFalse
+
   lazy val summarize: Command[Operation[IO]] =
     Command(
       name   = "summarize",
       header = "Summarize a proposal."
-    )((Opts.argument[String]("reference"), summarizeFields).mapN(Summarize(_, _)))
+    )((Opts.argument[String]("reference"), summarizeFields, edit).mapN(Summarize(_, _, _)))
 
   lazy val duplicates: Command[Operation[IO]] =
     Command(

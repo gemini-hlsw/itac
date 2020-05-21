@@ -17,8 +17,14 @@ import gsp.math.HourAngle
 import cats.Order
 import edu.gemini.tac.qengine.p1.Observation
 import cats.data.NonEmptyList
-import edu.gemini.tac.qengine.p1.JointProposal
-import edu.gemini.tac.qengine.ctx.Partner
+import itac.Summary
+import itac.util.OneOrTwo
+import itac.Summary.BandedObservation
+import java.nio.file.Paths
+import edu.gemini.tac.qengine.p1.CloudCover
+import edu.gemini.tac.qengine.p1.ImageQuality
+import edu.gemini.tac.qengine.p1.SkyBackground
+import edu.gemini.tac.qengine.p1.WaterVapor
 
 object Summarize {
 
@@ -27,20 +33,18 @@ object Summarize {
     def dec: Angle     = Angle.fromDoubleDegrees(o.target.dec.mag)
   }
 
-  final case class BandedObservation(band: String, obs: Observation)
-
   final case class Field(name: String, order: Order[BandedObservation])
   object Field {
 
-    val band = Field("band",  Order.by(o => o.band))
-    val hash = Field("hash",  Order.by(o => ObservationDigest.digest(o.obs.p1Observation)))
-    val ra   = Field("ra",    Order.by(o => o.obs.ra.toDoubleDegrees))
-    val dec  = Field("dec",   Order.by(o => o.obs.dec.toSignedDoubleDegrees))
-    val time = Field("time",  Order.by(o => o.obs.time.toHours.value))
-    val name = Field("name",  Order.by(o => o.obs.target.name.orEmpty.toLowerCase()))
+    val band  = Field("band",  Order.by(o => o.band))
+    val hash  = Field("hash",  Order.by(o => ObservationDigest.digest(o.obs.p1Observation)))
+    val ra    = Field("ra",    Order.by(o => o.obs.ra.toDoubleDegrees))
+    val dec   = Field("dec",   Order.by(o => o.obs.dec.toSignedDoubleDegrees))
+    val award = Field("award", Order.by(o => o.obs.time.toHours.value))
+    val name  = Field("name",  Order.by(o => o.obs.target.name.orEmpty.toLowerCase()))
 
     val all: List[Field] =
-      List(band, hash, ra, dec, time, name)
+      List(band, hash, ra, dec, award, name)
 
     def fromString(name: String): Either[String, Field] =
       all.find(_.name.toLowerCase == name)
@@ -58,60 +62,48 @@ object Summarize {
 
   }
 
-
-  def apply[F[_]: Sync](reference: String, fields: NonEmptyList[Field]): Operation[F] =
+  def apply[F[_]: Sync](reference: String, fields: NonEmptyList[Field], edit: Boolean): Operation[F] =
     new Operation[F] {
 
-      def summarize(p: Proposal): F[Unit] =
-        Sync[F].delay {
+      def summarize(ws: Workspace[F], ps: NonEmptyList[Proposal]): F[Unit] = {
 
-          val order = fields.reduceMap(_.order)(Order.whenEqualMonoid)
-
-          def printObs(band: String)(o: Observation): Unit = {
-            val id    = ObservationDigest.digest(o.p1Observation)
-            val ra    = HourAngle.HMS(o.ra).format
-            val dec   = Angle.DMS(o.dec).format
-            val conds = f"${o.conditions.cc}%-5s ${o.conditions.iq}%-5s ${o.conditions.sb}%-5s ${o.conditions.wv}%-5s "
-            val hrs   = o.time.toHours.value
-            println(f"$id  $band%-4s  $hrs%5.1fh  $conds  $ra%16s  $dec%16s  ${o.target.name.orEmpty}")
+        val summary: Summary =
+          OneOrTwo.fromFoldable(ps) match {
+            case Some(ot) => Summary(ot)
+            case None => sys.error("wat? there were more than two slices??!?")
           }
 
-          val obsList: List[BandedObservation] =
-            p.obsList.map(BandedObservation("B1/2", _)) ++
-            p.band3Observations.map(BandedObservation("B3", _))
+        implicit val ordering = fields.reduceMap(_.order)(Order.whenEqualMonoid).toOrdering
 
-          // println(s"===> ${p.getClass}")
+        val header =
+          s"""|# Edit file for ${summary.reference}
+              |# You may edit [only] the following fields/columns.
+              |# - Award as Decimal Hours
+              |# - Rank  as Decimal
+              |# - Band  as B1/2, B3
+              |# - CC    as ${CloudCover.values.mkString(", ")}
+              |# - IQ    as ${ImageQuality.values.mkString(", ")}
+              |# - SB    as ${SkyBackground.values.mkString(", ")}
+              |# - WV    as ${WaterVapor.values.mkString(", ")}
+              |# - RA    as HMS
+              |# - Dec   as Signed DMS(signed dms)
+              |# - Name  as Text, set to DISABLE to disable observation
+              |""".stripMargin
 
-          val partners: List[Partner] =
-            p match {
-              case JointProposal(_, _, ntacs) => ntacs.map(_.partner)
-              case p => List(p.ntac.partner)
-            }
-
-          println()
-          println(s"Reference: ${p.id.reference} (${p.site.abbreviation}, ${p.mode})")
-          println(s"Title:     ${p.p1proposal.title}")
-          println(s"PI:        ${p.piName.orEmpty}")
-          println(s"Partner:   ${partners.map(_.fullName).mkString(", ")}")
-          println(f"Award:     ${p.time.toHours.value}%1.1f hours")
-          println(f"Rank:      ${p.ntac.ranking.num.orEmpty}%1.1f")
-          println(f"ToO:       ${p.too}")
-          println()
-
-          obsList
-            // remove duplicates ... ?
-            // .groupBy(o => ObservationDigest.digest(o.obs.p1Observation))
-            // .values.map(_.head)
-            // .toList
-            .sorted(order.toOrdering)
-            .foreach(bo => printObs(bo.band)(bo.obs))
-
-          println()
+        if (edit) {
+          val path = Paths.get(Workspace.EditsDir.toString, s"${summary.reference}.yaml")
+          val yaml = header + summary.yaml
+          ws.writeText(path, yaml).void
+        } else {
+          Sync[F].delay(println(summary.yaml))
         }
 
-      def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
-        ws.proposal(reference).flatMap(_.traverse(summarize)).as(ExitCode.Success)
+      }
+
+    def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
+      ws.proposal(reference).flatMap { case (_, ps) => summarize(ws, ps) } .as(ExitCode.Success)
 
   }
 
 }
+

@@ -31,6 +31,9 @@ import java.time.ZoneId
 import cats.effect.Resource
 import java.nio.file.StandardCopyOption
 import edu.gemini.util.security.auth.ProgIdHash
+import java.io.File
+import cats.data.NonEmptyList
+import scala.collection.JavaConverters._
 
 /** Interface for some Workspace operations. */
 trait Workspace[F[_]] {
@@ -66,7 +69,7 @@ trait Workspace[F[_]] {
 
   def proposals: F[List[Proposal]]
 
-  def proposal(ref: String): F[List[Proposal]]
+  def proposal(ref: String): F[(File, NonEmptyList[Proposal])]
 
   /**
    * Create a directory under `cwd` with a name like GN-20190524-103322 and return its path
@@ -87,10 +90,10 @@ object Workspace {
 
   val EmailTemplateDir = Paths.get("email_templates")
   val ProposalDir      = Paths.get("proposals")
-  val EditsFile        = Paths.get("edits.yaml")
+  val EditsDir         = Paths.get("edits")
 
   val WorkspaceDirs: List[Path] =
-    List(EmailTemplateDir, ProposalDir)
+    List(EmailTemplateDir, ProposalDir, EditsDir)
 
   object Default {
     val CommonConfigFile = Paths.get("common.yaml")
@@ -166,6 +169,19 @@ object Workspace {
                 )
             }
 
+        def listFiles(path: Path): F[List[Path]] =
+          Sync[F].delay {
+            Files
+              .list(dir.resolve(path))
+              .iterator
+              .asScala
+              .map(dir.relativize)
+              .toList
+          }
+
+        def readAll[A: Decoder](path: Path): F[List[A]] =
+          listFiles(path).flatMap(_.traverse(readData[A]))
+
         def extractResource(name: String, path: Path): F[Path] =
           Resource.make(Sync[F].delay(getClass.getResourceAsStream(name)))(is => Sync[F].delay(is.close()))
             .use { is =>
@@ -228,6 +244,9 @@ object Workspace {
             case _: NoSuchFileException => cwd.flatMap(p => Sync[F].raiseError(ItacException(s"Site-specific configuration file not found: ${p.resolve(path)}")))
           }
 
+        def edits: F[Map[String, SummaryEdit]] =
+          readAll[SummaryEdit](EditsDir).map(_.map(e => (e.reference -> e)).toMap)
+
         def proposals: F[List[Proposal]] =
           for {
             cwd  <- cwd
@@ -236,14 +255,14 @@ object Workspace {
             pas   = conf.engine.partners.map { p => (p.id, p) } .toMap
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
-            es   <- readData[Edits](EditsFile).map(_.edits.getOrElse(Map.empty))
+            es   <- edits
             ps   <- ProposalLoader[F](pas, when, es, log).loadMany(p.toFile.getAbsoluteFile)
             _    <- ps.traverse { case (f, Left(es)) => log.warn(s"$f: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
             psʹ   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
             _    <- log.debug(s"Read ${ps.length} proposals.")
           } yield ps.collect { case (_, Right(ps)) => ps.toList } .flatten
 
-        def proposal(ref: String): F[List[Proposal]] =
+        def proposal(ref: String): F[(File, NonEmptyList[Proposal])] =
           for {
             cwd  <- cwd
             conf <- commonConfig
@@ -251,10 +270,9 @@ object Workspace {
             pas   = conf.engine.partners.map { p => (p.id, p) } .toMap
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
-            es   <- readData[Edits](EditsFile).map(_.edits.getOrElse(Map.empty))
+            es   <- edits
             p    <- ProposalLoader[F](pas, when, es, log).loadByReference(p.toFile.getAbsoluteFile, ref)
-            _    <- p match { case (f, Left(es)) => log.warn(s"$f: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
-          } yield p._2.foldMap(_.toList)
+          } yield p
 
         def newQueueFolder(site: Site): F[Path] =
           for {
