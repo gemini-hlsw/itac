@@ -64,7 +64,7 @@ ITAC is a command-line application that reads proposal XML files along with some
 Keep in mind the following big ideas:
 
 - All the input files are just normal text files. You can rename them, make backups, store them in source control, manage them however you like.
-- All proposal "edits" are specified as part of configuration and occur as proposals are loaded from disk. *The XML files are never touched.* This means you undo or change edits simply by updating the `edits.yaml` file (see below).
+- All proposal "edits" are specified as part of configuration and occur as proposals are loaded from disk. *The XML files are never touched.* This means you undo or change edits simply by updating the contents of the `edits/` folder.
 - The input files completely specify the Queue. If you want to have several queues that you can compare, you can have several sets of input files.
 
 Now let's examine these steps in more detail.
@@ -81,6 +81,7 @@ $ cd itac-example
 $ itac init 2020B
 [INFO ] Creating folder: email_templates
 [INFO ] Creating folder: proposals
+[INFO ] Creating folder: edits
 [INFO ] Writing: ./email_templates/ngo_classical.vm
 [INFO ] Writing: ./email_templates/ngo_exchange.vm
 [INFO ] Writing: ./email_templates/ngo_joint_classical.vm
@@ -92,10 +93,8 @@ $ itac init 2020B
 [INFO ] Writing: ./email_templates/pi_successful.vm
 [INFO ] Writing: ./email_templates/unsuccessful.vm
 [INFO ] Writing: ./common.yaml
-[INFO ] Writing: ./edits.yaml
 [INFO ] Writing: ./gn-queue.yaml
 [INFO ] Writing: ./gs-queue.yaml
-[INFO ] Fetching current rollover report from Gemini North...
 [INFO ] Got rollover information for 2020A
 [INFO ] Writing: ./gn-rollovers.yaml
 [INFO ] Fetching current rollover report from Gemini South...
@@ -110,7 +109,6 @@ $ itac init 2020B
 $ tree
 .
 ├── common.yaml
-├── edits.yaml
 ├── email_templates
 │   ├── ngo_classical.vm
 │   ├── ngo_exchange.vm
@@ -130,11 +128,11 @@ $ tree
 ```
 
 - `common.yaml` contains configuration that applies to all queues and is unlikely to change much. You will need to edit this file to specify shutdown times and partner contact emails. The rest is probably ok.
-- `edits.yaml` contains edits to proposals that you will make in the process of constructing your queue. We will revisit this later.
 - `email_templates/` contains the default email templates which are used to generate emails that are sent to partners and PIs. You can change these if you wish (and if you do, let us know so we can change the defaults) but they're probably ok.
 - `gn-queue.yaml` and `gs-queue.yaml` specify site-specific queue configurations. The most important part here is `hours` which specifies per-partner hours in bands 1, 2, and 3. Remaining configuration is probably ok.
 - `gn-rollovers.yaml` and `gn-rollovers.yaml` contain rollover reports fetched from the ODBs at GN and GS. You may wish to adjust the times here. To re-fetch a rollover report you can say `itac --force rollover --south` (or `--north`). Note that you must have an internal or VPN connection to do this.
 - `proposals/` is where your proposal XML files (from Jared's system) need to go.
+- `edits/` is where you define edits that are applied to the XML files as they are read.
 
 ### Get Help
 
@@ -172,8 +170,16 @@ itac queue --south
 
 ### Edit Proposals
 
-TBD
+`itac` allows you to define edits that are applied to proposals as the XML files are read. Here is the workflow.
 
-### Finalize a Queue
+- Use `itac summarize <ref>` to look at the proposal you wish to edit.
+- Use `itac summarize --edit <ref>` to write a copy of the summary into the `edits/` folder, with the name `<ref>.yaml`.
+- Edit the file in the `edits/` folder, making changes as instructed in the comment at the top of the file.
+- Changes will be applied each time the proposal is loaded from disk. The original XML file is never touched. You can verify changes by running `itac summarize <ref>` again.
+- To undo your edits, delete the edit file.
 
-TBD
+Limitations:
+
+- It is not possible to update ToO or nonsidereal targets using `itac`. Such edits will be ignored.
+- It is not possible to **add** observations. This must be done in the PIT.
+
