@@ -91,7 +91,6 @@ object Workspace {
   val EmailTemplateDir = Paths.get("email_templates")
   val ProposalDir      = Paths.get("proposals")
   val EditsDir         = Paths.get("edits")
-  val EditsFile        = Paths.get("edits.yaml")
 
   val WorkspaceDirs: List[Path] =
     List(EmailTemplateDir, ProposalDir, EditsDir)
