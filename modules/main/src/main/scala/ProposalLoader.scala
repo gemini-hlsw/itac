@@ -9,19 +9,13 @@ import cats.effect.Sync
 import cats.implicits._
 import edu.gemini.model.p1.{mutable => M, immutable => I}
 import java.io.File
-import java.lang.reflect.Constructor
 import javax.xml.bind.JAXBContext
 import edu.gemini.tac.qengine.p1.Proposal
 import edu.gemini.tac.qengine.p1.io.ProposalIo
 import edu.gemini.tac.qengine.p1.io.JointIdGen
 import edu.gemini.tac.qengine.ctx.Partner
-import edu.gemini.model.p1.immutable.transform.UpConverter
-import scalaz.Failure
-import scalaz.Success
 import scala.xml.XML
-import java.io.StringReader
 import io.chrisdavenport.log4cats.Logger
-import itac.config.Edit
 
 trait ProposalLoader[F[_]] {
 
@@ -45,41 +39,41 @@ object ProposalLoader {
     JAXBContext.newInstance(factory.createProposal().getClass()) //contextPackage, getClass.getClassLoader)
   }
 
-  private val ctor: Constructor[I.Proposal] =
-    classOf[I.Proposal].getConstructor(classOf[M.Proposal])
-
   def apply[F[_]: Sync: Parallel](
     partners: Map[String, Partner],
     when: Long,
-    edits: Map[String, Edit],
+    edits: Map[String, SummaryEdit],
     logger: Logger[F]
   ): ProposalLoader[F] =
     new ProposalLoader[F] {
 
       // Should we do upconversion? Unclear. Delete once we answer this.
-      val UpConvert = false
+      // val UpConvert = false
 
       val editor: Editor[F] =
         new Editor[F](edits, logger)
 
       // this does upconversion .. is it necessary?
       def loadPhase1(f:File): F[I.Proposal] =
-        if (UpConvert) {
-          Sync[F].delay(XML.loadFile(f)).map(UpConverter.upConvert).flatMap {
-            case Failure(ss) => Sync[F].raiseError(new RuntimeException(ss.list.toList.mkString("\n")))
-            case Success(r)  => ctor.newInstance(context.createUnmarshaller.unmarshal(new StringReader(r.root.toString))).pure[F]
-          }
-        } else {
-          Sync[F].delay {
-            // This can fail if there is a problem in the XML, so we need to raise a useful error here
-            // and catch it in the load methods below; or return Either here.
-            ctor.newInstance(context.createUnmarshaller.unmarshal(f))
-          }
-        } .map { p =>
-          // see https://github.com/gemini-hlsw/itac/pull/29 :-(
-          p.copy(observations = p.nonEmptyObservations)
+        // if (UpConvert) {
+        //   Sync[F].delay(XML.loadFile(f)).map(UpConverter.upConvert).flatMap {
+        //     case Failure(ss) => Sync[F].raiseError(new RuntimeException(ss.list.toList.mkString("\n")))
+        //     case Success(r)  => context.createUnmarshaller.unmarshal(new StringReader(r.root.toString)).asInstanceOf[M.Proposal].pure[F]
+        //   }
+        // } else {
+        Sync[F].delay {
+          // This can fail if there is a problem in the XML, so we need to raise a useful error here
+          // and catch it in the load methods below; or return Either here.
+          context.createUnmarshaller.unmarshal(f).asInstanceOf[M.Proposal]
         } .flatMap { p =>
-          editor.applyEdits(f, p)
+          editor.applyEdits(f, p).flatMap { _ =>
+            Sync[F].delay {
+              // important to delay here! any time you look at a mutable value it's a side-effect!
+              // see https://github.com/gemini-hlsw/itac/pull/29 :-(
+              val pʹ = edu.gemini.model.p1.immutable.Proposal(p)
+              pʹ.copy(observations = pʹ.nonEmptyObservations)
+            }
+          }
         }
 
       def loadManyPhase1(dir: File): F[List[(File, I.Proposal)]] =

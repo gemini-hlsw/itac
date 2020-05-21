@@ -20,6 +20,11 @@ import cats.data.NonEmptyList
 import itac.Summary
 import itac.util.OneOrTwo
 import itac.Summary.BandedObservation
+import java.nio.file.Paths
+import edu.gemini.tac.qengine.p1.CloudCover
+import edu.gemini.tac.qengine.p1.ImageQuality
+import edu.gemini.tac.qengine.p1.SkyBackground
+import edu.gemini.tac.qengine.p1.WaterVapor
 
 object Summarize {
 
@@ -57,70 +62,46 @@ object Summarize {
 
   }
 
-  def apply[F[_]: Sync](reference: String, fields: NonEmptyList[Field]): Operation[F] =
+  def apply[F[_]: Sync](reference: String, fields: NonEmptyList[Field], edit: Boolean): Operation[F] =
     new Operation[F] {
 
-      def summarize(ps: NonEmptyList[Proposal]): F[Unit] =
-        Sync[F].delay {
+      def summarize(ws: Workspace[F], ps: NonEmptyList[Proposal]): F[Unit] = {
 
-          val summary: Summary =
-            OneOrTwo.fromFoldable(ps) match {
-              case Some(ot) => Summary(ot)
-              case None => sys.error("wat? there were more than two slices??!?")
-            }
-
-          implicit val ordering = fields.reduceMap(_.order)(Order.whenEqualMonoid).toOrdering
-
-          println(summary.yaml)
-          sys.exit(-1) : Null
-
-          val order = fields.reduceMap(_.order)(Order.whenEqualMonoid)
-
-          def obs(band: String)(o: Observation): String = {
-            val id    = ObservationDigest.digest(o.p1Observation)
-            val ra    = HourAngle.HMS(o.ra).format
-            val dec   = Angle.DMS(o.dec).format
-            val conds = f"${o.conditions.cc}%-5s ${o.conditions.iq}%-5s ${o.conditions.sb}%-5s ${o.conditions.wv}%-5s "
-            val hrs   = o.time.toHours.value
-            f"  - $id  $band%-4s  $hrs%5.1fh  $conds  $ra%16s  $dec%16s  ${o.target.name.orEmpty}"
+        val summary: Summary =
+          OneOrTwo.fromFoldable(ps) match {
+            case Some(ot) => Summary(ot)
+            case None => sys.error("wat? there were more than two slices??!?")
           }
 
-          def obsList(p: Proposal): List[BandedObservation] =
-            p.obsList.map(BandedObservation("B1/2", _)) ++
-            p.band3Observations.map(BandedObservation("B3", _))
+        implicit val ordering = fields.reduceMap(_.order)(Order.whenEqualMonoid).toOrdering
 
-          def obsYaml(p: Proposal): String =
-            f"""|  ${p.site}:
-                |${obsList(p).sorted(order.toOrdering).map(bo => obs(bo.band)(bo.obs)).mkString("\n")}
-                |""".stripMargin
+        val header =
+          s"""|# Edit file for ${summary.reference}
+              |# You may edit [only] the following fields/columns.
+              |# - Award as Decimal Hours
+              |# - Rank  as Decimal
+              |# - Band  as B1/2, B3
+              |# - CC    as ${CloudCover.values.mkString(", ")}
+              |# - IQ    as ${ImageQuality.values.mkString(", ")}
+              |# - SB    as ${SkyBackground.values.mkString(", ")}
+              |# - WV    as ${WaterVapor.values.mkString(", ")}
+              |# - RA    as HMS
+              |# - Dec   as Signed DMS(signed dms)
+              |# - Name  as Text
+              |""".stripMargin
 
-          val header =
-            f"""|
-                |# Edits for ${ps.head.id.reference}. Any changes you make here will be applied when the proposal is read.
-                |# To discard edits, delete this file.
-             """.stripMargin
-
-          val yaml =
-            f"""|
-                |Reference: ${ps.head.id.reference}
-                |Mode:      ${ps.head.mode}
-                |Title:     ${ps.head.p1proposal.title}
-                |PI:        ${ps.head.piName.orEmpty}
-                |Partner:   ${ps.head.ntac.partner.fullName}
-                |Award:     ${ps.head.time.toHours.value}%1.1f
-                |Rank:      ${ps.head.ntac.ranking.num.orEmpty}%1.1f
-                |ToO:       ${ps.head.too}
-                |
-                |Observations:
-                |${ps.map(obsYaml).toList.mkString("")}
-            """.stripMargin
-
-          println(header + yaml)
-
+        if (edit) {
+          val path = Paths.get(Workspace.EditsDir.toString, s"${summary.reference}.yaml")
+          val yaml = header + summary.yaml
+          ws.writeText(path, yaml).void
+        } else {
+          Sync[F].delay(println(summary.yaml))
         }
 
-      def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
-        ws.proposal(reference).flatMap { case (_, ps) => summarize(ps) } .as(ExitCode.Success)
+      }
+
+    def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
+      ws.proposal(reference).flatMap { case (_, ps) => summarize(ws, ps) } .as(ExitCode.Success)
 
   }
 

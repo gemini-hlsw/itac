@@ -24,7 +24,6 @@ case class Summary(slices: OneOrTwo[Proposal]) {
 
   val reference = slices.fst.ntac.reference
   val mode      = slices.fst.mode
-  val title     = slices.fst.p1proposal.title
   val pi        = slices.fst.piName.orEmpty
   val partner   = slices.fst.ntac.partner
   val award     = slices.fst.ntac.awardedTime
@@ -35,7 +34,6 @@ case class Summary(slices: OneOrTwo[Proposal]) {
     f"""|
         |Reference: ${reference}
         |Mode:      ${mode}
-        |Title:     ${title}
         |PI:        ${pi}
         |Partner:   ${partner.fullName}
         |Award:     ${award.toHours.value}%1.1f

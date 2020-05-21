@@ -33,6 +33,7 @@ import java.nio.file.StandardCopyOption
 import edu.gemini.util.security.auth.ProgIdHash
 import java.io.File
 import cats.data.NonEmptyList
+import scala.collection.JavaConverters._
 
 /** Interface for some Workspace operations. */
 trait Workspace[F[_]] {
@@ -89,10 +90,11 @@ object Workspace {
 
   val EmailTemplateDir = Paths.get("email_templates")
   val ProposalDir      = Paths.get("proposals")
+  val EditsDir         = Paths.get("edits")
   val EditsFile        = Paths.get("edits.yaml")
 
   val WorkspaceDirs: List[Path] =
-    List(EmailTemplateDir, ProposalDir)
+    List(EmailTemplateDir, ProposalDir, EditsDir)
 
   object Default {
     val CommonConfigFile = Paths.get("common.yaml")
@@ -168,6 +170,19 @@ object Workspace {
                 )
             }
 
+        def listFiles(path: Path): F[List[Path]] =
+          Sync[F].delay {
+            Files
+              .list(dir.resolve(path))
+              .iterator
+              .asScala
+              .map(dir.relativize)
+              .toList
+          }
+
+        def readAll[A: Decoder](path: Path): F[List[A]] =
+          listFiles(path).flatMap(_.traverse(readData[A]))
+
         def extractResource(name: String, path: Path): F[Path] =
           Resource.make(Sync[F].delay(getClass.getResourceAsStream(name)))(is => Sync[F].delay(is.close()))
             .use { is =>
@@ -230,6 +245,9 @@ object Workspace {
             case _: NoSuchFileException => cwd.flatMap(p => Sync[F].raiseError(ItacException(s"Site-specific configuration file not found: ${p.resolve(path)}")))
           }
 
+        def edits: F[Map[String, SummaryEdit]] =
+          readAll[SummaryEdit](EditsDir).map(_.map(e => (e.reference -> e)).toMap)
+
         def proposals: F[List[Proposal]] =
           for {
             cwd  <- cwd
@@ -238,7 +256,7 @@ object Workspace {
             pas   = conf.engine.partners.map { p => (p.id, p) } .toMap
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
-            es   <- readData[Edits](EditsFile).map(_.edits.getOrElse(Map.empty))
+            es   <- edits
             ps   <- ProposalLoader[F](pas, when, es, log).loadMany(p.toFile.getAbsoluteFile)
             _    <- ps.traverse { case (f, Left(es)) => log.warn(s"$f: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
             psʹ   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
@@ -253,7 +271,7 @@ object Workspace {
             pas   = conf.engine.partners.map { p => (p.id, p) } .toMap
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
-            es   <- readData[Edits](EditsFile).map(_.edits.getOrElse(Map.empty))
+            es   <- edits
             p    <- ProposalLoader[F](pas, when, es, log).loadByReference(p.toFile.getAbsoluteFile, ref)
           } yield p
 
