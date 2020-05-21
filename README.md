@@ -96,6 +96,7 @@ $ itac init 2020B
 [INFO ] Writing: ./gn-queue.yaml
 [INFO ] Writing: ./gs-queue.yaml
 [INFO ] Got rollover information for 2020A
+[INFO ] Fetching current rollover report from Gemini North...
 [INFO ] Writing: ./gn-rollovers.yaml
 [INFO ] Fetching current rollover report from Gemini South...
 [INFO ] Got rollover information for 2020A
