@@ -24,10 +24,13 @@ case class SummaryEdit(
   obsEdits:  List[SummaryEdit.Obs]
 ) {
 
-  private def update(os: java.util.List[Observation]): Unit =
+  private def update(os: java.util.List[Observation]): Unit = {
     os.forEach { o =>
       obsEdits.find(_.hash == ObservationDigest.digest(im.Observation(o))).foreach(_ update o)
     }
+    os.removeIf { o => !o.isEnabled() }
+    ()
+  }
 
   private def update(sa: SubmissionAccept): Unit =
     if (sa != null) {
@@ -178,7 +181,8 @@ object SummaryEdit {
       if (t != null) {
         t match {
           case st: SiderealTarget => updateSiderealTarget(st)
-          case _ => throw new ItacException(s"$hash: Edits to ToO and nonsidereal targets must be done in the PIT.")
+          case _ => () // TODO: log
+              // throw new ItacException(s"$hash: Edits to ToO and nonsidereal targets must be done in the PIT.")
         }
       }
 
@@ -187,6 +191,7 @@ object SummaryEdit {
         o.setBand(band)
         updateCondition(o.getCondition)
         updateTarget(o.getTarget)
+        o.setEnabled(name != "DISABLE")
       }
 
   }

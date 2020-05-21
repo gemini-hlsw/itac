@@ -87,7 +87,7 @@ object Summarize {
               |# - WV    as ${WaterVapor.values.mkString(", ")}
               |# - RA    as HMS
               |# - Dec   as Signed DMS(signed dms)
-              |# - Name  as Text
+              |# - Name  as Text, set to DISABLE to disable observation
               |""".stripMargin
 
         if (edit) {
