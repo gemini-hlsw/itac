@@ -17,6 +17,9 @@ import gsp.math.HourAngle
 import cats.Order
 import edu.gemini.tac.qengine.p1.Observation
 import cats.data.NonEmptyList
+import itac.Summary
+import itac.util.OneOrTwo
+import itac.Summary.BandedObservation
 
 object Summarize {
 
@@ -25,20 +28,18 @@ object Summarize {
     def dec: Angle     = Angle.fromDoubleDegrees(o.target.dec.mag)
   }
 
-  final case class BandedObservation(band: String, obs: Observation)
-
   final case class Field(name: String, order: Order[BandedObservation])
   object Field {
 
-    val band = Field("band",  Order.by(o => o.band))
-    val hash = Field("hash",  Order.by(o => ObservationDigest.digest(o.obs.p1Observation)))
-    val ra   = Field("ra",    Order.by(o => o.obs.ra.toDoubleDegrees))
-    val dec  = Field("dec",   Order.by(o => o.obs.dec.toSignedDoubleDegrees))
-    val time = Field("time",  Order.by(o => o.obs.time.toHours.value))
-    val name = Field("name",  Order.by(o => o.obs.target.name.orEmpty.toLowerCase()))
+    val band  = Field("band",  Order.by(o => o.band))
+    val hash  = Field("hash",  Order.by(o => ObservationDigest.digest(o.obs.p1Observation)))
+    val ra    = Field("ra",    Order.by(o => o.obs.ra.toDoubleDegrees))
+    val dec   = Field("dec",   Order.by(o => o.obs.dec.toSignedDoubleDegrees))
+    val award = Field("award", Order.by(o => o.obs.time.toHours.value))
+    val name  = Field("name",  Order.by(o => o.obs.target.name.orEmpty.toLowerCase()))
 
     val all: List[Field] =
-      List(band, hash, ra, dec, time, name)
+      List(band, hash, ra, dec, award, name)
 
     def fromString(name: String): Either[String, Field] =
       all.find(_.name.toLowerCase == name)
@@ -56,15 +57,22 @@ object Summarize {
 
   }
 
-  def summary(ps: List[Proposal]): String =
-    ???
-
-
   def apply[F[_]: Sync](reference: String, fields: NonEmptyList[Field]): Operation[F] =
     new Operation[F] {
 
       def summarize(ps: NonEmptyList[Proposal]): F[Unit] =
         Sync[F].delay {
+
+          val summary: Summary =
+            OneOrTwo.fromFoldable(ps) match {
+              case Some(ot) => Summary(ot)
+              case None => sys.error("wat? there were more than two slices??!?")
+            }
+
+          implicit val ordering = fields.reduceMap(_.order)(Order.whenEqualMonoid).toOrdering
+
+          println(summary.yaml)
+          sys.exit(-1) : Null
 
           val order = fields.reduceMap(_.order)(Order.whenEqualMonoid)
 
