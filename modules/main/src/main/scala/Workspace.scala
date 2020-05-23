@@ -122,6 +122,7 @@ object Workspace {
     ItacException(s"Workspace directory not found: ${dir}").raiseError[F, Workspace[F]].unlessA(dir.toFile.getAbsoluteFile.isDirectory) *>
     Ref[F].of(Map.empty[Path, String]).map { cache =>
       new Workspace[F] {
+        implicit val _log = log: Logger[F]
 
         def cwd = dir.pure[F]
 

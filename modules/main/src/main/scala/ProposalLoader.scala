@@ -39,7 +39,7 @@ object ProposalLoader {
     JAXBContext.newInstance(factory.createProposal().getClass()) //contextPackage, getClass.getClassLoader)
   }
 
-  def apply[F[_]: Sync: Parallel](
+  def apply[F[_]: Sync: Parallel: Logger](
     partners: Map[String, Partner],
     when: Long,
     edits: Map[String, SummaryEdit],

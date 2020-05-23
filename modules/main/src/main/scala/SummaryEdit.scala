@@ -11,6 +11,9 @@ import gsp.math.Declination
 import edu.gemini.tac.qengine.{ p1 => itac }
 import io.circe.Decoder
 import io.circe.HCursor
+import scala.collection.JavaConverters._
+import io.chrisdavenport.log4cats.Logger
+import cats.effect.Sync
 
 /**
  * It turns out we can't really go back from the immutable model to the mutable one. The PIT must
@@ -24,9 +27,20 @@ case class SummaryEdit(
   obsEdits:  List[SummaryEdit.Obs]
 ) {
 
-  private def update(os: java.util.List[Observation]): Unit = {
+  // For conditions and targets:
+  //   if it's unshared, update in place
+  //   if it's shared
+  //     if the edit would make it identical to an existing one, use that one
+  //     otherwise create a new one
+  // This means the edit will never affect another observation.
+
+  private def update(os: java.util.List[Observation], p: Proposal): Unit = {
     os.forEach { o =>
-      obsEdits.find(_.hash == ObservationDigest.digest(im.Observation(o))).foreach(_ update o)
+      val digest = ObservationDigest.digest(im.Observation(o))
+      obsEdits.find(_.hash == digest) match {
+        case Some(e) => e.update(o, p)
+        case None => println(s"No digest for $o")
+      }
     }
     os.removeIf { o => !o.isEnabled() }
     ()
@@ -123,13 +137,18 @@ case class SummaryEdit(
       update(pc.getFastTurnaround())
     }
 
-  def update(p: Proposal): Unit =
+  private def update(p: Proposal): Unit =
     try {
-      update(p.getObservations().getObservation())
+      update(p.getObservations().getObservation(), p)
       updatePC(p.getProposalClass())
     } catch {
       case e: Exception => throw new ItacException(s"$reference: ${e.getMessage}")
     }
+
+  def applyUpdate[F[_]: Sync: Logger](p: Proposal): F[Unit] =
+    Logger[F].debug(s"Pre-edit\n${SummaryDebug.summary(p)}") *>
+    Sync[F].delay(update(p)) <*
+    Logger[F].debug(s"Post-edit\n${SummaryDebug.summary(p)}")
 
 }
 
@@ -159,13 +178,44 @@ object SummaryEdit {
     name: String
   ) {
 
-    private def updateCondition(c: Condition): Unit =
-      if (c != null) {
-        c.setCc(cc)
-        c.setIq(iq)
-        c.setSb(sb)
-        c.setWv(wv)
-      }
+    def updateCondition(o: Observation, p: Proposal): Unit = {
+
+      val c = o.getCondition()
+      val allConditions = p.getConditions().getCondition().asScala.toList
+
+      // If the edit would cause it to be identical to an existing Condition then just use
+      // that one, otherwise construct a new one. We never want to change in place.
+      val existing: Option[Condition] =
+        allConditions.find { c2 =>
+          c2.getCc         == cc &&
+          c2.getIq         == iq &&
+          c2.getSb         == sb &&
+          c2.getWv         == wv &&
+          c2.getMaxAirmass == c.getMaxAirmass // not changing this one
+        }
+
+      val replaceWith: Condition =
+        existing match {
+          case Some(c2) =>
+            if (c.getId() == c2.getId()) println(f"${System.identityHashCode(o).toHexString}%8s: keeping ${c.getId()}.")
+            else println(f"${System.identityHashCode(o).toHexString}%8s: switching from ${c.getId()} to ${c2.getId()}")
+            c2
+          case None     =>
+            val c2 = new Condition
+            c2.setCc(cc)
+            c2.setIq(iq)
+            c2.setSb(sb)
+            c2.setWv(wv)
+            c2.setMaxAirmass(c.getMaxAirmass())
+            c2.setId(s"condition-${allConditions.map(_.getId.dropWhile(!_.isDigit).toInt).max + 1}")
+            p.getConditions().getCondition().add(c2)
+            println(f"${System.identityHashCode(o).toHexString}%8s: switching from ${c.getId()} to NEW ${c2.getId()}")
+            c2
+        }
+
+      o.setCondition(replaceWith)
+
+    }
 
     private def updateSiderealTarget(t: SiderealTarget): Unit = {
       t.setName(name)
@@ -186,10 +236,10 @@ object SummaryEdit {
         }
       }
 
-    def update(o: Observation): Unit =
+    def update(o: Observation, p: Proposal): Unit =
       if (o != null) {
         o.setBand(band)
-        updateCondition(o.getCondition)
+        updateCondition(o, p)
         updateTarget(o.getTarget)
         o.setEnabled(name != "DISABLE")
       }

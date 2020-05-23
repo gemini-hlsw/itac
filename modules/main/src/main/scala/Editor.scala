@@ -11,7 +11,7 @@ import io.chrisdavenport.log4cats.Logger
 import java.io.File
 
 /** Proposal editing. This applies edits that are supplied as part of the configuration. */
-class Editor[F[_]: Sync](edits: Map[String, SummaryEdit], log: Logger[F]) {
+class Editor[F[_]: Sync: Logger](edits: Map[String, SummaryEdit], log: Logger[F]) {
   import EditorOps._
 
   def applyEdits(file: File, p: Proposal): F[Unit] =
@@ -19,26 +19,7 @@ class Editor[F[_]: Sync](edits: Map[String, SummaryEdit], log: Logger[F]) {
       case Some(e) =>
 
         log.warn(s"There are edits for ${p.id}/${file.getName}") *>
-        Sync[F].delay {
-
-          // Show the before
-          // import javax.xml.bind.JAXBContext
-          // import javax.xml.bind.Marshaller
-          // val context: JAXBContext = {
-          //   val factory        = new edu.gemini.model.p1.mutable.ObjectFactory
-          //   JAXBContext.newInstance(factory.createProposal().getClass()) //contextPackage, getClass.getClassLoader)
-          // }
-          // val m = context.createMarshaller()
-          // m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-          // m.marshal(p, System.out)
-
-          e.update(p)
-
-          // And the after
-          // println(s"\n\napplied edits to ${p.id}\n\n")
-          // m.marshal(p, System.out)
-
-        }
+        e.applyUpdate(p)
 
       case None    => log.trace(s"No edits for ${p.id}/${file.getName}")
 
