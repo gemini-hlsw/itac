@@ -6,33 +6,24 @@ package itac
 import cats.implicits._
 import edu.gemini.model.p1.mutable._
 import edu.gemini.model.p1.{ immutable => im }
-import gsp.math.RightAscension
-import gsp.math.Declination
-import edu.gemini.tac.qengine.{ p1 => itac }
 import io.circe.Decoder
 import io.circe.HCursor
-import scala.collection.JavaConverters._
 import io.chrisdavenport.log4cats.Logger
 import cats.effect.Sync
 
 /**
- * It turns out we can't really go back from the immutable model to the mutable one. The PIT must
- * do some awful things to make it work. Here we're providing an editor for the initial mutable
- * model we load from disk, before anything else ever sees it.
+ * Apply edits to the MUTABLE p1 `Proposal` as it is loaded from disk, before it is turned into an
+ * immutable version. It's very important that we recognize the sharing relationships between
+ * observations, conditions, and targets and make the smallest number of changes that we need,
+ * without modifying shared objects (conditions and targets) in-place. This is a rather delicate
+ * dance if you're not accustomed to programming with mutable values, as I no longer am.
  */
 case class SummaryEdit(
   reference: String,
   ranking:   Double,
   award:     edu.gemini.model.p1.mutable.TimeAmount,
-  obsEdits:  List[SummaryEdit.Obs]
+  obsEdits:  List[SummaryObsEdit]
 ) {
-
-  // For conditions and targets:
-  //   if it's unshared, update in place
-  //   if it's shared
-  //     if the edit would make it identical to an existing one, use that one
-  //     otherwise create a new one
-  // This means the edit will never affect another observation.
 
   private def update(os: java.util.List[Observation], p: Proposal): Unit = {
     os.forEach { o =>
@@ -145,6 +136,7 @@ case class SummaryEdit(
       case e: Exception => throw new ItacException(s"$reference: ${e.getMessage}")
     }
 
+  // Pure entry point with logging.
   def applyUpdate[F[_]: Sync: Logger](p: Proposal): F[Unit] =
     Logger[F].debug(s"Pre-edit\n${SummaryDebug.summary(p)}") *>
     Sync[F].delay(update(p)) <*
@@ -161,156 +153,9 @@ object SummaryEdit {
           ref   <- c.downField("Reference").as[String]
           rank  <- c.downField("Rank").as[Double]
           award <- c.downField("Award").as[BigDecimal].map { d => val ta = new TimeAmount(); ta.setUnits(TimeUnit.HR); ta.setValue(d.bigDecimal); ta }
-          obs   <- c.downField("Observations").as[Map[String, List[Obs]]].map(_.values.toList.combineAll)
+          obs   <- c.downField("Observations").as[Map[String, List[SummaryObsEdit]]].map(_.values.toList.combineAll)
         } yield SummaryEdit(ref, rank, award, obs)
     }
-
-  // These need to be applied to a p1.immutable value so we parse into those data types.
-  case class Obs(
-    hash: String,
-    band: Band,
-    cc:   CloudCover,
-    iq:   ImageQuality,
-    sb:   SkyBackground,
-    wv:   WaterVapor,
-    ra:   RightAscension,
-    dec:  Declination,
-    name: String
-  ) {
-
-    def updateCondition(o: Observation, p: Proposal): Unit = {
-
-      val c = o.getCondition()
-      val allConditions = p.getConditions().getCondition().asScala.toList
-
-      // If the edit would cause it to be identical to an existing Condition then just use
-      // that one, otherwise construct a new one. We never want to change in place.
-      val existing: Option[Condition] =
-        allConditions.find { c2 =>
-          c2.getCc         == cc &&
-          c2.getIq         == iq &&
-          c2.getSb         == sb &&
-          c2.getWv         == wv &&
-          c2.getMaxAirmass == c.getMaxAirmass // not changing this one
-        }
-
-      val replaceWith: Condition =
-        existing match {
-          case Some(c2) =>
-            if (c.getId() == c2.getId()) println(f"${System.identityHashCode(o).toHexString}%8s: keeping ${c.getId()}.")
-            else println(f"${System.identityHashCode(o).toHexString}%8s: switching from ${c.getId()} to ${c2.getId()}")
-            c2
-          case None     =>
-            val c2 = new Condition
-            c2.setCc(cc)
-            c2.setIq(iq)
-            c2.setSb(sb)
-            c2.setWv(wv)
-            c2.setMaxAirmass(c.getMaxAirmass())
-            c2.setId(s"condition-${allConditions.map(_.getId.dropWhile(!_.isDigit).toInt).max + 1}")
-            p.getConditions().getCondition().add(c2)
-            println(f"${System.identityHashCode(o).toHexString}%8s: switching from ${c.getId()} to NEW ${c2.getId()}")
-            c2
-        }
-
-      o.setCondition(replaceWith)
-
-    }
-
-    private def updateSiderealTarget(t: SiderealTarget): Unit = {
-      t.setName(name)
-      t.setDegDeg {
-        val cs = new DegDegCoordinates
-        cs.setRa(BigDecimal(ra.toAngle.toDoubleDegrees).bigDecimal)
-        cs.setDec(BigDecimal(dec.toAngle.toDoubleDegrees).bigDecimal)
-        cs
-      }
-    }
-
-    private def updateTarget(t: Target): Unit =
-      if (t != null) {
-        t match {
-          case st: SiderealTarget => updateSiderealTarget(st)
-          case _ => () // TODO: log
-              // throw new ItacException(s"$hash: Edits to ToO and nonsidereal targets must be done in the PIT.")
-        }
-      }
-
-    def update(o: Observation, p: Proposal): Unit =
-      if (o != null) {
-        o.setBand(band)
-        updateCondition(o, p)
-        updateTarget(o.getTarget)
-        o.setEnabled(name != "DISABLE")
-      }
-
-  }
-
-  object Obs {
-
-    private def hashFromString(s: String): Either[String, String] =
-       Either.catchNonFatal(BigInt(s, 16)).leftMap(_ => s"Invalid hash: $s").as(s)
-
-    private def bandFromString(s: String): Either[String, Band] =
-      s match {
-        case "B1/2" => Right(Band.BAND_1_2)
-        case "B3"   => Right(Band.BAND_3)
-        case _      => Left(s"Invalid band: $s")
-      }
-
-    private def ccFromString(s: String): Either[String, CloudCover] =
-      PartialFunction.condOpt(s)(Map(
-        itac.CloudCover.CC50.toString  -> CloudCover.cc50,
-        itac.CloudCover.CC70.toString  -> CloudCover.cc70,
-        itac.CloudCover.CC80.toString  -> CloudCover.cc80,
-        itac.CloudCover.CCAny.toString -> CloudCover.cc100,
-      )).toRight(s"Invalid CC: $s")
-
-    private def iqFromString(s: String): Either[String, ImageQuality] =
-      PartialFunction.condOpt(s)(Map(
-        itac.ImageQuality.IQ20.toString  -> ImageQuality.iq20,
-        itac.ImageQuality.IQ70.toString  -> ImageQuality.iq70,
-        itac.ImageQuality.IQ85.toString  -> ImageQuality.iq85,
-        itac.ImageQuality.IQAny.toString -> ImageQuality.iq100,
-      )).toRight(s"Invalid IQ: $s")
-
-    private def sbFromString(s: String): Either[String, SkyBackground] =
-      PartialFunction.condOpt(s)(Map(
-        itac.SkyBackground.SB20.toString  -> SkyBackground.sb20,
-        itac.SkyBackground.SB50.toString  -> SkyBackground.sb50,
-        itac.SkyBackground.SB80.toString  -> SkyBackground.sb80,
-        itac.SkyBackground.SBAny.toString -> SkyBackground.sb100,
-      )).toRight(s"Invalid SB: $s")
-
-    private def wvFromString(s: String): Either[String, WaterVapor] =
-      PartialFunction.condOpt(s)(Map(
-        itac.WaterVapor.WV20.toString  -> WaterVapor.wv20,
-        itac.WaterVapor.WV50.toString  -> WaterVapor.wv50,
-        itac.WaterVapor.WV80.toString  -> WaterVapor.wv80,
-        itac.WaterVapor.WVAny.toString -> WaterVapor.wv100,
-      )).toRight(s"Invalid SB: $s")
-
-    //  bcecb5a8  B1/2    0.3h  CC70  SB70  SBAny WVAny    20:34:13.370299   28:09:50.826099  my name
-    def fromString(s: String): Either[String, Obs] =
-      s.trim.split("\\s+", 10) match {
-        case Array(hash, band, _, cc, iq, sb, wv, ra, dec, name) =>
-          for {
-            h <- hashFromString(hash)
-            b <- bandFromString(band)
-            c <- ccFromString(cc)
-            i <- iqFromString(iq)
-            s <- sbFromString(sb)
-            w <- wvFromString(wv)
-            r <- RightAscension.fromStringHMS.getOption(ra).toRight(s"Invalid RA: $ra")
-            d <- Declination.fromStringSignedDMS.getOption(dec).toRight(s"Invalid Dec: $dec")
-          } yield Obs(h, b, c, i, s, w, r, d, name)
-        case _ => Left("Not enough fields. Expected hash, band, time, cc, iq, sb, wv, ra, dec, name")
-      }
-
-    implicit val DecoderObs: Decoder[Obs] =
-      Decoder.decodeString.emap(fromString)
-
-  }
 
 }
 
