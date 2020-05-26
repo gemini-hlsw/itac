@@ -83,7 +83,7 @@ class TargetDuplicationChecker(proposals: List[Proposal], val tolerance: Angle =
 
     val infos: List[TargetInfo] =
       for {
-        p <- proposals
+        p <- proposals.groupBy(p => (p.piName, p.p1proposal.title)).values.map(_.head).toList
         t <- (p.obsList ++ p.band3Observations).map(_.target).distinct
         if (t.ra.mag != 0 || t.dec.mag != 0)
       } yield TargetInfo(p.id.reference, t)
