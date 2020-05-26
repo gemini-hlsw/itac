@@ -15,7 +15,6 @@ import cats.effect.Blocker
 import gsp.math.HourAngle
 import gsp.math.Angle
 import edu.gemini.tac.qengine.p1.Proposal
-import edu.gemini.tac.qengine.p1.Target
 import itac.util.Colors
 
 object Duplicates {
@@ -23,10 +22,11 @@ object Duplicates {
   def apply[F[_]: Sync: Parallel](tolerance: Angle): Operation[F] =
     new Operation[F] {
 
-      def printTarget(ref: String)(target: Target): Unit = {
+      def printTarget(key: TargetDuplicationChecker.ClusterKey)(member: TargetDuplicationChecker.ClusterMember): Unit = {
+        val target = member.target
         val ra     = HourAngle.HMS(Angle.hourAngle.get(Angle.fromDoubleDegrees(target.ra.mag))).format
         val dec    = Angle.DMS(Angle.fromDoubleDegrees(target.dec.mag)).format
-        println(f"$ref%-20s $ra%16s $dec%16s ${target.name.orEmpty}")
+        println(f"${key.reference}%-15s  ${key.pi.lastName.take(15)}%-20s  ${member.instrument.take(20)}%-20s  $ra%16s $dec%16s  ${target.name.orEmpty.take(20)}%-20s")
       }
 
       def checkForDuplicates(proposals: List[Proposal]): F[Unit] = {
@@ -34,9 +34,10 @@ object Duplicates {
         val dups = tdc.allClusters
         Sync[F].delay {
             println()
-            println(s"${Colors.BOLD}Target Duplication Report${Colors.RESET}")
-            println(s"Target clusters with minimal spanning tree edges ≤ ${Angle.fromStringDMS.reverseGet(tolerance)}.")
+            println(s"${Colors.BOLD}Target Duplication Report (tolerance ${Angle.fromStringDMS.reverseGet(tolerance)})${Colors.RESET}")
             println()
+            println(s"${Colors.BOLD}Reference        PI                    Blueprint              Coordinates                       Name${Colors.RESET}")
+                                  //CL-2020B-006     Kalari                Zorro Speckle (0.009   05:37:51.009999 290:50:26.100000  LMC_J053751.00-69093
         } *> dups.traverse_{ ds =>
           Sync[F].delay {
             ds.foreach { case (p, nec) =>

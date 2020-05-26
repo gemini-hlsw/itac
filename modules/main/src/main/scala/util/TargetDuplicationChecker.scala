@@ -11,6 +11,7 @@ import gsp.math.Angle
 import gsp.math.Coordinates
 import scala.collection.immutable.Queue
 import cats.data.NonEmptyChain
+import edu.gemini.model.p1.immutable.Investigator
 
 /**
  *
@@ -18,6 +19,7 @@ import cats.data.NonEmptyChain
  * one arcsecond).
  */
 class TargetDuplicationChecker(proposals: List[Proposal], val tolerance: Angle = Angle.arcseconds.reverseGet(10)) {
+  import TargetDuplicationChecker._
 
   // Sanity check
   assert(tolerance.toSignedDoubleDegrees >= 0.0, "Tolerance must be an angle within [0, 180)°")
@@ -41,13 +43,16 @@ class TargetDuplicationChecker(proposals: List[Proposal], val tolerance: Angle =
   def same(ti1: TargetInfo, ti2: TargetInfo): Boolean =
     same(ti1.target, ti2.target)
 
-  case class TargetInfo(proposalRef: String, target: Target)
+  case class TargetInfo(proposalRef: String, pi: Investigator, target: Target, instrument: String) {
+    def key: ClusterKey = ClusterKey(proposalRef, pi)
+    def member: ClusterMember = ClusterMember(target, instrument)
+  }
 
   /**
    * A cluster of targets, grouped by NTAC reference, in which all edges in the minimal spanning
    * tree are <= `tolerance`.
    */
-  type Cluster = Map[String, NonEmptyChain[Target]]
+  type Cluster = Map[ClusterKey, NonEmptyChain[ClusterMember]]
 
   /**
    * Find the members of the cluster that includes the `target`, taken from the list of candidates,
@@ -59,7 +64,7 @@ class TargetDuplicationChecker(proposals: List[Proposal], val tolerance: Angle =
     def go(queue: Queue[TargetInfo], members: List[TargetInfo], candidates: List[TargetInfo]): (Cluster, List[TargetInfo]) = {
       if (queue.isEmpty) {
         // This means there are no more nodes to expand, so the cluster is closed and we're done.
-        val cluster = members.foldMap(ti => Map(ti.proposalRef -> NonEmptyChain(ti.target)))
+        val cluster = members.foldMap(ti => Map(ti.key -> NonEmptyChain(ti.member)))
         (cluster, candidates)
       } else {
         //
@@ -71,9 +76,9 @@ class TargetDuplicationChecker(proposals: List[Proposal], val tolerance: Angle =
     go(Queue(target), Nil, candidates)
   }
 
-  def allClusters: List[Map[String, NonEmptyChain[Target]]] = {
+  def allClusters: List[Cluster] = {
 
-    def go(infos: List[TargetInfo], accum: List[Map[String, NonEmptyChain[Target]]] = Nil): List[Map[String, NonEmptyChain[Target]]] =
+    def go(infos: List[TargetInfo], accum: List[Cluster] = Nil): List[Cluster] =
       infos match {
         case Nil    => accum
         case h :: t =>
@@ -83,13 +88,22 @@ class TargetDuplicationChecker(proposals: List[Proposal], val tolerance: Angle =
 
     val infos: List[TargetInfo] =
       for {
-        p <- proposals.groupBy(p => (p.piName, p.p1proposal.title)).values.map(_.head).toList
-        t <- (p.obsList ++ p.band3Observations).map(_.target).distinct
+        p <- proposals
+        x <- (p.obsList ++ p.band3Observations).map(o => (o.target, o.p1Observation.blueprint.foldMap(_.name))).distinct
+        (t, b) = x
         if (t.ra.mag != 0 || t.dec.mag != 0)
-      } yield TargetInfo(p.id.reference, t)
+      } yield TargetInfo(p.id.reference, p.p1proposal.investigators.pi, t, b)
 
-    go(infos)
+    // Compute clusters and filter out those where they all have the same PI email.
+    go(infos).filterNot { c =>
+      c.keySet.map(_.pi.email).size == 1
+    }
 
   }
 
+}
+
+object TargetDuplicationChecker {
+  final case class ClusterKey(reference: String, pi: Investigator)
+  final case class ClusterMember(target: Target, instrument: String) // !
 }
