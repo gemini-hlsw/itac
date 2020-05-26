@@ -27,6 +27,29 @@ import edu.gemini.tac.qengine.ctx.Partner
 object Queue {
 
   /**
+   * Given a List[Proposal] yield a List[List[Proposal]] which groups proposals sharing the same
+   * pi and title. These are joint proposals. The position in the list is determined by the first
+   * occurrence.
+   */
+  def groupedJoints(ps: List[Proposal]): List[List[Proposal]] =
+    ps.groupBy(p => (p.piName, p.p1proposal.title)).values.toList.sortBy(_.head.ntac.ranking.num.orEmpty)
+
+  def printWithGroupBars[A](as: List[A]): Unit =
+    as match {
+      case Nil => ()
+      case a :: Nil => println(s" $a")
+      case a :: as  =>
+        println(s"┌$a") // first one
+        def printMany(xs: List[A]): Unit =
+          xs match {
+            case Nil => ()
+            case a :: Nil => println(s"└$a") // last one
+            case a :: xs  => println(s"│$a"); printMany(xs) // middle ones
+          }
+        printMany(as)
+    }
+
+  /**
     * @param siteConfig path to site-specific configuration file, which can be absolute or relative
     *   (in which case it will be resolved relative to the workspace directory).
     */
@@ -62,9 +85,10 @@ object Queue {
               println()
 
               println(separator)
+              val result = QueueResult(queueCalc)
 
               QueueBand.values.foreach { qb =>
-                val q = queueCalc.queue
+
                 println(s"${Colors.BOLD}The following proposals were accepted for Band ${qb.number}.${Colors.RESET}")
                 println(qb.number match {
                   case 1 => Colors.YELLOW
@@ -72,8 +96,11 @@ object Queue {
                   case 3 => Colors.BLUE
                   case 4 => Colors.RED
                 })
-                q.bandedQueue.get(qb).orEmpty.sortBy(_.ntac.ranking.num.orEmpty).foreach { p =>
-                    println(f"- ${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-15s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  ${q.programId(p).get}")
+                result.entries(qb).sortBy(_.proposals.head.ntac.ranking.num.orEmpty).foreach { case QueueResult.Entry(ps, pid) =>
+                  val ss = ps.map { p =>
+                    f"${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-15s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  $pid"
+                  }
+                  printWithGroupBars(ss.toList)
                 }
                 println(Colors.RESET)
               }
@@ -87,35 +114,41 @@ object Queue {
                 println(s"${Colors.BOLD}Partner Details for $p ${Colors.RESET}\n")
                 QueueBand.values.foreach { qb =>
                   val q = queueCalc.queue
-                  val color = qb.number match {
+
+
+                  print(qb.number match {
                     case 1 => Colors.YELLOW
                     case 2 => Colors.GREEN
                     case 3 => Colors.BLUE
                     case 4 => Colors.RED
+                  })
+                  result.entries(qb, p).sortBy(_.proposals.head.ntac.ranking.num.orEmpty).foreach { case QueueResult.Entry(ps, pid) =>
+                    val ss = ps.map { p =>
+                      f"${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-15s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  $pid"
+                    }
+                    printWithGroupBars(ss.toList)
                   }
-                  val included = q.bandedQueue.get(qb).orEmpty.filter(_.ntac.partner == p)
-                  included.sortBy(_.ntac.ranking.num.orEmpty).foreach { p =>
-                    println(f"$color- ${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-15s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  ${q.programId(p).get}${Colors.RESET}")
-                  }
+                  print(Colors.RESET)
+
                   if (qb.number < 4) {
                     val used  = q.usedTime(qb, p).toHours.value
                     val avail = q.queueTime(qb, p).toHours.value
                     val pct   = if (avail == 0) 0.0 else (used / avail) * 100
-                    println(f"                                   B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%%)")
+                    println(f"                                  B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%%)")
 
                     // After the Band2 total print an extra B1+B2 total.
                     if (qb == QueueBand.QBand2) {
                       val used  = (q.usedTime(QueueBand.QBand1, p) + q.usedTime(QueueBand.QBand2, p)).toHours.value
                       val avail = (q.queueTime(QueueBand.QBand1, p) + q.queueTime(QueueBand.QBand2, p)).toHours.value
                       val pct   = if (avail == 0) 0.0 else (used / avail) * 100
-                      println(f"                                B1+B2 Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%%)")
+                      println(f"                               B1+B2 Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%%)")
                     }
 
                     println()
 
                   } else {
                     val used = q.usedTime(qb, p).toHours.value
-                    println(f"                                   B${qb.number} Total: $used%5.1f h\n")
+                    println(f"                                  B${qb.number} Total: $used%5.1f h\n")
                   }
                 }
                 println()
