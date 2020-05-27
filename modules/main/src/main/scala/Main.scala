@@ -292,6 +292,12 @@ trait MainOpts { this: CommandIOApp =>
       header = "Summarize a proposal."
     )((Opts.argument[String]("reference"), summarizeFields, edit).mapN(Summarize(_, _, _)))
 
+  lazy val splits: Command[Operation[IO]] =
+    Command(
+      name   = "splits",
+      header = "List split/joint proposals."
+    )(Splits[IO].pure[Opts])
+
   lazy val duplicates: Command[Operation[IO]] =
     Command(
       name   = "duplicates",
@@ -308,7 +314,8 @@ trait MainOpts { this: CommandIOApp =>
       queue,
       summarize,
       duplicates,
-      export
+      export,
+      splits
     ).sortBy(_.name).map(Opts.subcommand(_)).foldK
 
 }
