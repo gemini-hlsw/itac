@@ -10,6 +10,7 @@ import edu.gemini.tac.qengine.p1.Observation
 import gsp.math.HourAngle
 import gsp.math.Angle
 import gsp.math.Declination
+import edu.gemini.spModel.core.Site
 
 case class Summary(slices: OneOrTwo[Proposal]) {
   import Summary.{ BandedObservation, Slice }
@@ -33,7 +34,7 @@ case class Summary(slices: OneOrTwo[Proposal]) {
   val rank      = slices.fst.ntac.ranking.num.orEmpty
   val too       = slices.fst.too
 
-  def yaml(implicit ev: Ordering[BandedObservation]) =
+  def yaml(disable: Option[Site])(implicit ev: Ordering[BandedObservation]) =
     f"""|
         |Reference: ${reference}
         |Mode:      ${mode}
@@ -44,7 +45,7 @@ case class Summary(slices: OneOrTwo[Proposal]) {
         |ToO:       ${too}
         |
         |Observations:
-        |${siteSummaries.foldMap(_.yaml)}
+        |${siteSummaries.foldMap(_.yaml(disable))}
         |""".stripMargin
 
 }
@@ -68,18 +69,18 @@ object Summary {
       proposal.band3Observations.map(BandedObservation("B3",   _))
     } .sorted
 
-    private def obsYaml(bo: BandedObservation): String = {
+    private def obsYaml(bo: BandedObservation, disable: Boolean): String = {
       val o     = bo.obs
       val id    = ObservationDigest.digest(o.p1Observation)
       val ra    = HourAngle.HMS(o.ra).format
       val dec   = Declination.fromAngle.getOption(o.dec).map(Declination.fromStringSignedDMS.reverseGet).getOrElse(sys.error(s"unpossible: invalid declination for $bo"))
       val conds = f"${o.conditions.cc}%-5s ${o.conditions.iq}%-5s ${o.conditions.sb}%-5s ${o.conditions.wv}%-5s "
       val hrs   = o.time.toHours.value
-      f"  - $id  ${bo.band}%-4s  $hrs%5.1fh  $conds  $ra%16s  $dec%16s  ${o.target.name.orEmpty}\n"
+      f"  - $id  ${bo.band}%-4s  $hrs%5.1fh  $conds  $ra%16s  $dec%16s  ${if (disable) "DISABLE" else o.target.name.orEmpty}\n"
     }
 
-    def yaml(implicit ev: Ordering[BandedObservation]): String =
-      f"  ${proposal.site.abbreviation}:\n${bandedObservations.foldMap(obsYaml)}\n"
+    def yaml(disable: Option[Site])(implicit ev: Ordering[BandedObservation]): String =
+      f"  ${proposal.site.abbreviation}:\n${bandedObservations.foldMap(obsYaml(_, disable.exists(_ == proposal.site)))}\n"
 
   }
 
