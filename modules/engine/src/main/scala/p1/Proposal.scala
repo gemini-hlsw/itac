@@ -89,6 +89,7 @@ sealed trait Proposal {
   def piEmail: Option[String]
 
   def p1proposal: edu.gemini.model.p1.immutable.Proposal
+  def p1mutableProposal: edu.gemini.model.p1.mutable.Proposal
 
 }
 
@@ -107,7 +108,8 @@ case class CoreProposal(
   isPoorWeather: Boolean = false,
   piName: Option[String] = None,
   piEmail: Option[String] = None,
-  p1proposal: edu.gemini.model.p1.immutable.Proposal = null // to avoid having to generate one for testcases that don't care
+  p1proposal: edu.gemini.model.p1.immutable.Proposal = null, // to avoid having to generate one for testcases that don't care
+  p1mutableProposal: edu.gemini.model.p1.mutable.Proposal = null // to avoid having to generate one for testcases that don't care
 ) extends Proposal {
   def core: CoreProposal = this
 }
@@ -152,6 +154,7 @@ case class JointProposalPart(
   def toJoint: JointProposal = JointProposal(jointIdValue, core, List(core.ntac))
 
   def p1proposal = core.p1proposal
+  def p1mutableProposal: edu.gemini.model.p1.mutable.Proposal = core.p1mutableProposal
 
 }
 
@@ -212,6 +215,8 @@ case class JointProposal(jointIdValue: String, core: CoreProposal, ntacs: List[N
     p1proposal.copy(proposalClass = newPC)
 
   }
+
+  def p1mutableProposal: edu.gemini.model.p1.mutable.Proposal = sys.error("should never get here, this class is to be removed")
 
 
 }

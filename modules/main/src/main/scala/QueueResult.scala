@@ -24,6 +24,7 @@ final case class QueueResult(queueCalc: QueueCalc) {
   private def groupJoints(ps: List[Proposal]): List[NonEmptyList[Proposal]] =
     ps.groupBy(p => (p.piName, p.p1proposal.title)).values.toList.map(NonEmptyList.fromList(_).get)
 
+  /** Get entries in the specified band, ordered by program id. */
   def entries(qb: QueueBand): List[Entry] = {
     val ps = queueCalc.queue.bandedQueue.getOrElse(qb, Nil)
     val gs = shuffle(groupJoints(ps))
@@ -32,6 +33,7 @@ final case class QueueResult(queueCalc: QueueCalc) {
     }
   }
 
+  /** Get entries in the specified band, per partner, ordered by program id. */
   def entries(qb: QueueBand, partner: Partner): List[Entry] =
     entries(qb).mapFilter { e =>
       e.proposals
