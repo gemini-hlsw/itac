@@ -25,6 +25,7 @@ import edu.gemini.tac.qengine.p1.CloudCover
 import edu.gemini.tac.qengine.p1.ImageQuality
 import edu.gemini.tac.qengine.p1.SkyBackground
 import edu.gemini.tac.qengine.p1.WaterVapor
+import edu.gemini.spModel.core.Site
 
 object Summarize {
 
@@ -62,7 +63,7 @@ object Summarize {
 
   }
 
-  def apply[F[_]: Sync](reference: String, fields: NonEmptyList[Field], edit: Boolean): Operation[F] =
+  def apply[F[_]: Sync](reference: String, fields: NonEmptyList[Field], edit: Boolean, disable: Option[Site]): Operation[F] =
     new Operation[F] {
 
       def summarize(ws: Workspace[F], ps: NonEmptyList[Proposal]): F[Unit] = {
@@ -92,10 +93,10 @@ object Summarize {
 
         if (edit) {
           val path = Paths.get(Workspace.EditsDir.toString, s"${summary.reference}.yaml")
-          val yaml = header + summary.yaml
+          val yaml = header + summary.yaml(disable)
           ws.writeText(path, yaml).void
         } else {
-          Sync[F].delay(println(summary.yaml))
+          Sync[F].delay(println(summary.yaml(None)))
         }
 
       }

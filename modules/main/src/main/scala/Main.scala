@@ -286,11 +286,28 @@ trait MainOpts { this: CommandIOApp =>
       help  = "Write the summary to the edits/ folder."
     ).orFalse
 
+  implicit lazy val ArgumentSite: Argument[Site] =
+    new Argument[Site] {
+      def read(string: String): ValidatedNel[String, Site] =
+        try Site.parse(string).validNel
+        catch {
+          case _: ParseException => "Invalid site. Try GN or GS.".invalidNel
+        }
+      def defaultMetavar: String = "site"
+    }
+
+  lazy val disable: Opts[Option[Site]] =
+    Opts.option[Site](
+      long  = "disable",
+      short = "d",
+      help  = "Use with -e to disable all observations at the specified site."
+    ) .orNone
+
   lazy val summarize: Command[Operation[IO]] =
     Command(
       name   = "summarize",
       header = "Summarize a proposal."
-    )((Opts.argument[String]("reference"), summarizeFields, edit).mapN(Summarize(_, _, _)))
+    )((Opts.argument[String]("reference"), summarizeFields, edit, disable).mapN(Summarize(_, _, _, _)))
 
   lazy val splits: Command[Operation[IO]] =
     Command(
