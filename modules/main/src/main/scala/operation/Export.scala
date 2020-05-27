@@ -4,6 +4,7 @@
 package itac
 package operation
 
+import edu.gemini.tac.qengine.p1.QueueBand
 import cats._
 import cats.effect._
 import cats.implicits._
@@ -29,13 +30,17 @@ object Export {
           Sync[F].delay {
             println("export!")
 
-            val q = qc.queue
+            val qr = QueueResult(qc)
 
-            qc.queue.toList.foreach { p =>
-              val pid = q.programId(p).get
-              println(s"Exporting $pid -- ${p.id.reference}")
+            QueueBand.values.foreach { qb =>
 
+              qr.entries(qb).foreach { e =>
 
+                println(s"- ${e.programId}")
+
+                Merge.merge(e.proposals.map(_.p1mutableProposal))
+
+              }
 
             }
 

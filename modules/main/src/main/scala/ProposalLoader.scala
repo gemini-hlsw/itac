@@ -54,7 +54,7 @@ object ProposalLoader {
         new Editor[F](edits, logger)
 
       // this does upconversion .. is it necessary?
-      def loadPhase1(f:File): F[I.Proposal] =
+      def loadPhase1(f:File): F[(I.Proposal, M.Proposal)] =
         // if (UpConvert) {
         //   Sync[F].delay(XML.loadFile(f)).map(UpConverter.upConvert).flatMap {
         //     case Failure(ss) => Sync[F].raiseError(new RuntimeException(ss.list.toList.mkString("\n")))
@@ -71,33 +71,33 @@ object ProposalLoader {
               // important to delay here! any time you look at a mutable value it's a side-effect!
               // see https://github.com/gemini-hlsw/itac/pull/29 :-(
               val pʹ = edu.gemini.model.p1.immutable.Proposal(p)
-              pʹ.copy(observations = pʹ.nonEmptyObservations)
+              (pʹ.copy(observations = pʹ.nonEmptyObservations), p)
             }
           }
         }
 
-      def loadManyPhase1(dir: File): F[List[(File, I.Proposal)]] =
+      def loadManyPhase1(dir: File): F[List[(File, I.Proposal, M.Proposal)]] =
         Sync[F].delay(Option(dir.listFiles)).flatMap {
-          case Some(arr) => arr.filter(_.getName().endsWith(".xml")).sortBy(_.getAbsolutePath).toList.traverse(f => loadPhase1(f).tupleLeft(f)) // TODO: parTraverse
+          case Some(arr) => arr.filter(_.getName().endsWith(".xml")).sortBy(_.getAbsolutePath).toList.traverse(f => loadPhase1(f).map { case (i, m) => (f, i, m) }) // TODO: parTraverse
           case None      => Sync[F].raiseError(new RuntimeException(s"Not a directory: $dir"))
         }
 
       val pio: ProposalIo =
         new ProposalIo(partners)
 
-      def read(proposal: I.Proposal): State[JointIdGen, EitherNel[String, NonEmptyList[Proposal]]] =
+      def read(proposal: I.Proposal, mproposal: M.Proposal): State[JointIdGen, EitherNel[String, NonEmptyList[Proposal]]] =
         State { jig =>
-          pio.read(proposal, when, jig) match {
+          pio.read(proposal, mproposal, when, jig) match {
             case scalaz.Failure(ss)         => (jig,  NonEmptyList(ss.head, ss.tail.toList).asLeft)
             case scalaz.Success((ps, jigʹ)) => (jigʹ, NonEmptyList(ps.head, ps.tail.toList).asRight)
           }
         }
 
       def load(file: File): F[(File, EitherNel[String, NonEmptyList[Proposal]])] =
-        loadPhase1(file).map(read(_).tupleLeft(file).runA(JointIdGen(1)).value)
+        loadPhase1(file).map { case (i, m) => read(i, m).tupleLeft(file).runA(JointIdGen(1)).value }
 
       def loadMany(dir: File): F[List[(File, EitherNel[String, NonEmptyList[Proposal]])]] =
-        loadManyPhase1(dir).map(_.traverse(a => read(a._2).tupleLeft(a._1)).runA(JointIdGen(1)).value)
+        loadManyPhase1(dir).map(_.traverse(a => read(a._2, a._3).tupleLeft(a._1)).runA(JointIdGen(1)).value)
 
       def loadByReference(dir: File, ref: String): F[(File, NonEmptyList[Proposal])] =
         Sync[F].delay(Option(dir.listFiles)).flatMap {

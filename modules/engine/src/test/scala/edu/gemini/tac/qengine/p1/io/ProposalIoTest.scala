@@ -92,7 +92,7 @@ class ProposalIoTest {
   @Test def testSingleProposal(): Unit = {
     val idGen = JointIdGen(0)
 
-    propIo.read((new ProposalFixture).proposal, when, idGen) match {
+    propIo.read((new ProposalFixture).proposal, null, when, idGen) match {
       case Success((NonEmptyList(prop, _), gen2)) =>
         assertEquals(1, gen2.next.count) // not advanced
         assertTrue(prop.piName.contains("Henderson"))
@@ -123,7 +123,7 @@ class ProposalIoTest {
         Left(List(ngoSubmission, sub2))
     }
 
-    propIo.read(p.proposal, when, idGen) match {
+    propIo.read(p.proposal, null, when, idGen) match {
       case Success((NonEmptyList(prop, _), gen2)) =>
         assertEquals(2, gen2.next.count)
         assertTrue(prop.jointId.contains("j0"))
@@ -153,7 +153,7 @@ class ProposalIoTest {
       override def observations = List(observation, nifsObservation)
     }
 
-    propIo.read(p.proposal, when, idGen) match {
+    propIo.read(p.proposal, null, when, idGen) match {
       case Success((NonEmptyList(prop0, prop1), gen2)) =>
         assertEquals(1, gen2.next.count)
         assertEquals(Set(Site.GN, Site.GS), Set(prop0.site, prop1.headOption.get.site))
