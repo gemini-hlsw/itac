@@ -18,7 +18,7 @@ import itac.util.Colors
  * which will always be new and will share no references with the constituent proposals. Some
  * properties that are unused at Phase 2 are omitted.
  */
-object Merge {
+object Merge extends MergeBlueprint {
 
   private lazy val context: JAXBContext =
     JAXBContext.newInstance((new ObjectFactory).createProposal.getClass)
@@ -38,24 +38,13 @@ object Merge {
   }
 
   /**
-   * Find the next id from a list of ids of the form prefix-<int>. Throws an exception if these
-   * expectations aren't met.
-   */
-  private def nextId(prefix: String, ids: Iterable[String]): String = {
-    val i: Int =
-      ids.map(_.split("-")).map { case Array(_, n) => n.toInt } match {
-        case Nil => 0
-        case ns  => ns.max + 1
-      }
-      s"$prefix-$i"
-    }
-
-  /**
    * Merge a list of proposals together, returning a *new* Proposal. The passed proposals are
    * left untouched.
    */
-  def merge(ps: NonEmptyList[Proposal]): Proposal =
-    ps.map(clone).reduceLeft(mergeInto(_, _)) // clone everything so we don't need to copy subtrees explicitly
+  def merge(ps: NonEmptyList[Proposal]): Proposal = {
+    val ret = ps.map(clone).reduceLeft((a, b) => mergeInto(b, a)) // clone everything so we don't need to copy subtrees explicitly
+    clone(ret) // as a sanity chech, run through the serializer again to ensure that all the ids resolve ok
+  }
 
   /** Find or destructively create matching `Condition` in `into` */
   def canonicalize(from: Condition, into: Proposal): Condition = {
@@ -70,7 +59,7 @@ object Merge {
     } match {
       case Some(conds) => conds
       case None        =>
-        from.setId(nextId("conditions", all.map(_.getId)))
+        from.setId(nextId("condition", all.map(_.getId)))
         col.add(from)
         from
     }
@@ -89,23 +78,6 @@ object Merge {
       case None    =>
         from.setId(nextId("target", all.map(_.getId)))
         col.add(from) // important!
-        from
-    }
-  }
-
-  /**
-   * Find or destructively create matching `BlueprintBase` in `into`. We're relying on matching
-   * them BY NAME because the PIT encodes the configuration in the name. This is probably not
-   * sufficient in general but let's start with it and see.
-   */
-  def canonicalize(from: BlueprintBase, into: Proposal): BlueprintBase = {
-    val col = into.getBlueprints().getFlamingos2OrGmosNOrGmosS
-    val all = col.asScala.map(_.asInstanceOf[BlueprintBase])
-    all.find { b => from.getName == b.getName } match {
-      case Some(b) => b
-      case None =>
-        from.setId(nextId("blueprint", all.map(_.getId)))
-        col.add(from)
         from
     }
   }
@@ -194,8 +166,8 @@ object Merge {
   /** Destructively merge the contents of `from` into `into`, yielding `into` */
   def mergeInto(from: Proposal, into: Proposal): Proposal = {
 
-    println(s"${Colors.GREEN}FROM ${SummaryDebug.summary(from)}${Colors.RESET}")
-    println(s"${Colors.YELLOW}INTO ${SummaryDebug.summary(into)}${Colors.RESET}")
+    println(s"${Colors.GREEN}FROM\n${SummaryDebug.summary(from)}${Colors.RESET}")
+    println(s"${Colors.YELLOW}INTO\n${SummaryDebug.summary(into)}${Colors.RESET}")
 
     // into.setAbstract        - we assume it's the same for all
     // into.setBlueprints      - done on the fly when merging observations
@@ -216,7 +188,7 @@ object Merge {
     // into.setTargets         - done on the fly when merging observations
     // into.setTitle           - we assume it's the same for all
 
-    println(s"${Colors.RED}RESULT ${SummaryDebug.summary(into)}${Colors.RESET}")
+    println(s"${Colors.RED}RESULT\n${SummaryDebug.summary(into)}${Colors.RESET}")
     println()
     println()
 
@@ -224,3 +196,4 @@ object Merge {
   }
 
 }
+

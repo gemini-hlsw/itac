@@ -34,9 +34,11 @@ object Export {
 
             QueueBand.values.foreach { qb =>
 
+              // qr.entries(qb).filter(_.programId.toString() == "GS-2020B-Q-114").foreach { e =>
               qr.entries(qb).foreach { e =>
 
                 println(s"- ${e.programId}")
+
 
                 Merge.merge(e.proposals.map(_.p1mutableProposal))
 
