@@ -29,32 +29,44 @@ object Export {
       def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
         computeQueue(ws).flatMap { case (_, qc) =>
           Sync[F].delay {
-            println("export!")
-
             val qr = QueueResult(qc)
-
             QueueBand.values.foreach { qb =>
 
               // qr.entries(qb).filter(_.programId.toString() == "GS-2020B-Q-114").foreach { e =>
               qr.entries(qb).foreach { e =>
 
                 println(s"- ${e.programId}")
-                Merge.merge(e.proposals.map(_.p1mutableProposal))
+                val p = Merge.merge(e.proposals.map(_.p1mutableProposal))
 
-                // now need to add ITAC node.
-                val itac = new Itac
-                itac.setAccept {
-                  val a = new ItacAccept
-                  // a.setAward() // need to get the total!
-                  a.setBand(qb.number)
-                  // a.setContact()
-                  // a.setEmail()
-                  a.setProgramId(e.programId.toString)
-                  // a.setRollover()
-                  a
+                // Find the ProposalClass and set the ITAC node.
+                {
+                  Option(p.getProposalClass.getClassical)      orElse
+                  Option(p.getProposalClass.getExchange)       orElse
+                  Option(p.getProposalClass.getFastTurnaround) orElse
+                  Option(p.getProposalClass.getLarge)          orElse
+                  Option(p.getProposalClass.getQueue)          orElse
+                  Option(p.getProposalClass.getSip)            orElse
+                  Option(p.getProposalClass.getSpecial)
+                } .foreach { pc =>
+                  pc.setItac {
+                    val itac = new Itac
+                    itac.setAccept {
+                      val a = new ItacAccept
+                      // a.setAward() // need to get the total!
+                      a.setBand(qb.number)
+                      // a.setContact()
+                      // a.setEmail()
+                      a.setProgramId(e.programId.toString) // it looks like this is the only bit we actually need
+                      // a.setRollover()
+                      a
+                    }
+                    itac
+                  }
                 }
 
               }
+
+              // TODO: also export classicals! they also need an ITAC node
 
             }
 
