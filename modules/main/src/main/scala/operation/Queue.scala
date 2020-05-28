@@ -2,7 +2,6 @@
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac
-
 package operation
 
 import edu.gemini.spModel.core.Site
@@ -19,7 +18,8 @@ import edu.gemini.tac.qengine.log.RejectPartnerOverAllocation
 import edu.gemini.tac.qengine.log.RejectNotBand3
 import edu.gemini.tac.qengine.log.RejectNoTime
 import java.nio.file.Path
-import _root_.edu.gemini.tac.qengine.log.RejectCategoryOverAllocation
+import edu.gemini.tac.qengine.log.RejectCategoryOverAllocation
+import edu.gemini.tac.qengine.log.RejectOverAllocation
 import edu.gemini.tac.qengine.log.RejectTarget
 import edu.gemini.tac.qengine.log.RejectConditions
 import edu.gemini.tac.qengine.ctx.Partner
@@ -171,7 +171,8 @@ object Queue {
                     case Some(m: RejectCategoryOverAllocation) => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Category overallocated:"}%-20s ${m.detail}")
                     case Some(m: RejectTarget)                 => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.raDecType + " bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
                     case Some(m: RejectConditions)             => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Conditions bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
-                    case Some(lm)                              => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Miscellaneous"}%-20s $lm")
+                    case Some(m: RejectOverAllocation)         => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Overallocation"}%-20s ${m.detail}")
+                    case Some(lm)                              => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Miscellaneous"}%-20s ${lm.getClass.getName}")
                   }
                 }
                 println()
