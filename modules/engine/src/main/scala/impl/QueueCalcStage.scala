@@ -98,7 +98,7 @@ object QueueCalcStage {
         }
       val hackedQueue = phase12queue.copy(queueTime = hackedQueueTime)
       val iter = BlockIterator(config.partners, phase12queue.queueTime.partnerQuanta, config.partnerSeq.sequence, grouped, _.band3Observations)
-      new Params(Category.B3, hackedQueue, iter, _.obsList, phase12bins.copy(cat = Category.B3), phase12log)
+      new Params(Category.B3, hackedQueue, iter, _.band3Observations, phase12bins.copy(cat = Category.B3), phase12log)
     }
 
   }
