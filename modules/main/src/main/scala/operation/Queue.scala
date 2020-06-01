@@ -167,19 +167,19 @@ object Queue {
 
               List(QueueBand.Category.B1_2, QueueBand.Category.B3).foreach { qc =>
                 println(s"${Colors.BOLD}The following proposals were rejected for $qc.${Colors.RESET}")
-                pids.foreach { pid =>
-                  val p = ps.find(_.id == pid).get
+                pids.toList.flatMap(pid => ps.find(_.id == pid)).sortBy(_.ntac.ranking.num).foreach { p=>
+                  val pid = p.id
                   log.get(pid, qc) match {
                     case None =>
                     case Some(AcceptMessage(_, _, _))          => //println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s 👍")
-                    case Some(m: RejectPartnerOverAllocation)  => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Partner full:"}%-20s ${m.detail}")
-                    case Some(m: RejectNotBand3)               => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Not band 3:"}%-20s ${m.detail}")
-                    case Some(m: RejectNoTime)                 => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"No time awarded:"}%-20s ${m.detail}")
-                    case Some(m: RejectCategoryOverAllocation) => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Category overallocated:"}%-20s ${m.detail}")
-                    case Some(m: RejectTarget)                 => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.raDecType + " bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
-                    case Some(m: RejectConditions)             => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Conditions bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
-                    case Some(m: RejectOverAllocation)         => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Overallocation"}%-20s ${m.detail}")
-                    case Some(lm)                              => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Miscellaneous"}%-20s ${lm.getClass.getName}")
+                    case Some(m: RejectPartnerOverAllocation)  => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Partner full:"}%-20s ${m.detail}")
+                    case Some(m: RejectNotBand3)               => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Not band 3:"}%-20s ${m.detail}")
+                    case Some(m: RejectNoTime)                 => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"No time awarded:"}%-20s ${m.detail}")
+                    case Some(m: RejectCategoryOverAllocation) => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Category overallocated:"}%-20s ${m.detail}")
+                    case Some(m: RejectTarget)                 => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.raDecType + " bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
+                    case Some(m: RejectConditions)             => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Conditions bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
+                    case Some(m: RejectOverAllocation)         => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Overallocation"}%-20s ${m.detail}")
+                    case Some(lm)                              => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Miscellaneous"}%-20s ${lm.getClass.getName}")
                   }
                 }
                 println()
