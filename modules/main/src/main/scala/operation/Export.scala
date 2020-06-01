@@ -35,7 +35,6 @@ object Export {
               // qr.entries(qb).filter(_.programId.toString() == "GS-2020B-Q-114").foreach { e =>
               qr.entries(qb).foreach { e =>
 
-                println(s"- ${e.programId}")
                 val p = Merge.merge(e.proposals.map(_.p1mutableProposal))
 
                 // Find the ProposalClass and set the ITAC node.
@@ -54,19 +53,24 @@ object Export {
                       val a = new ItacAccept
                       // a.setAward() // need to get the total!
                       a.setBand(qb.number)
-                      // a.setContact()
-                      // a.setEmail()
+                      // a.setContact() // gemini contact email!
+                      // a.setEmail() // what is this?
                       a.setProgramId(e.programId.toString) // it looks like this is the only bit we actually need
-                      // a.setRollover()
+                      // a.setRollover() // how do we know?
                       a
                     }
                     itac
                   }
                 }
 
+                println(s"${SummaryDebug.summary(p)}\n-----------------------\n")
+
+
               }
 
               // TODO: also export classicals! they also need an ITAC node
+              // Also need rejects!
+
 
             }
 

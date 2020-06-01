@@ -31,13 +31,19 @@ object SummaryDebug {
   def summary(sub: NgoSubmission): String =
     s"- ${sub.getPartner()} ${summary(sub.getResponse)}"
 
-  def summary(pc: QueueProposalClass): String =
-    s"""|- Band3Request: ${pc.getBand3Request}
-        |- TooOption: ${pc.getTooOption()}
-        |- Exchange: ${pc.getExchange()}
-        |- NGO: ${pc.getNgo().asScala.toList.map(summary).mkString("\n       ")}
-        |""".stripMargin
+  def summary(itac: Itac): String =
+    if (itac == null) "--"
+    else s"""|- Accept:  ${itac.getAccept()} / ${itac.getReject()}
+             |        - Comment: ${itac.getComment()}
+             |        - NGO:     ${itac.getNgoauthority()}
+             |""".stripMargin.trim
 
+  def summary(pc: QueueProposalClass): String =
+    s"""|- TooOption: ${pc.getTooOption()}
+        |- Exchange: ${pc.getExchange()}
+        |- NGO:  ${pc.getNgo().asScala.toList.map(summary).mkString("\n        ")}
+        |- ITAC: ${summary(pc.getItac())}
+        |""".stripMargin.trim
 
   def summary(pc: ProposalClassChoice): String = {
     Option(pc.getClassical)     .map(summary) <+>
