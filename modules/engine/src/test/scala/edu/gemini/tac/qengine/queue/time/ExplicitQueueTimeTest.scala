@@ -68,4 +68,11 @@ class ExplicitQueueTimeTest extends PropSpec with org.scalatestplus.scalacheck.C
       }
     }
   }
+
+  property("sum of 1 and 2 = cat1_2") {
+    check { (qt: QueueTime, p: Partner) =>
+      qt(QBand1, p) + qt(QBand2, p) == qt(Category.B1_2, p)
+    }
+  }
+
 }

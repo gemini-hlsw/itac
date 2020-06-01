@@ -34,12 +34,17 @@ final case class SemesterResource(
   // Determines whether including the indicated proposal will overallocate the
   // partner past the limit and allowance.
   private def partnerWouldBeOverallocated(block: Block, queue: ProposalQueueBuilder): Boolean =
-    queue.queueTime.partnerOverfillAllowance exists { perc =>
+    // RCN: the old logic (and many tests) depend on there being NO LIMIT to overfiling if this
+    //      isn't defined, so for now we're leaving this logic. We need to circle back and fix this.
+    queue.queueTime.overfillAllowance(cat).exists { perc =>
       val partner   = block.prop.ntac.partner
       val used      = queue.usedTime(cat, partner)
-      val allow     = queue.queueTime.fullPartnerTime(partner) * perc
-      val hardlimit = queue.queueTime(cat, partner) + allow
-      (used + block.prop.time) >= hardlimit
+      val softLimit = queue.queueTime(cat, partner)
+      val allowance = softLimit * perc // overfill is per category (B1_2 and B3 are what we're using)
+      val hardlimit = softLimit + allowance
+      val ret = (used + block.prop.time) >= hardlimit
+      // println(f"==> used ${used.toHours.value}%5.1f, available = ${softLimit.toHours.value}%5.1f, overfill = ${perc.value.toDouble}%5.1f, percentage = ${(used.toHours.value / softLimit.toHours.value) * 100.0}%5.1f, prop = ${block.prop.ntac.reference}, award = ${block.prop.time.toHours.value}%5.1f, partnerWouldBeOverallocated = ${ret}")
+      ret
     }
 
   private def partnerOverallocated(block: Block, queue: ProposalQueueBuilder): Boolean =

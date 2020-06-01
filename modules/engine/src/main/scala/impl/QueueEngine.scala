@@ -219,7 +219,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
 
           // Within a given partner we can map used time to band.
           def band(t: Time): QueueBand = {
-            val b1 = queueTime(QueueBand.QBand1, pa).percent(105)
+            val b1 = queueTime(QueueBand.QBand1, pa) // exactly. we never overfill band 1
 
             // NOTE: the following doesn't work because the engine sometimes overfills slightly past
             // the limit. In these cases we *can't* push the last proposal to B3 because it's using

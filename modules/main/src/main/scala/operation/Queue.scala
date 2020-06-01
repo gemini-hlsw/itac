@@ -115,7 +115,6 @@ object Queue {
                 QueueBand.values.foreach { qb =>
                   val q = queueCalc.queue
 
-
                   print(qb.number match {
                     case 1 => Colors.YELLOW
                     case 2 => Colors.GREEN
@@ -134,22 +133,30 @@ object Queue {
                     val used  = q.usedTime(qb, p).toHours.value
                     val avail = q.queueTime(qb, p).toHours.value
                     val pct   = if (avail == 0) 0.0 else (used / avail) * 100
-                    println(f"                                  B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%%)")
+
+                    if (qb != QueueBand.QBand3) {
+                      println(f"                                  B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%%)")
+                    }
 
                     // After the Band2 total print an extra B1+B2 total.
                     if (qb == QueueBand.QBand2) {
                       val used  = (q.usedTime(QueueBand.QBand1, p) + q.usedTime(QueueBand.QBand2, p)).toHours.value
                       val avail = (q.queueTime(QueueBand.QBand1, p) + q.queueTime(QueueBand.QBand2, p)).toHours.value
                       val pct   = if (avail == 0) 0.0 else (used / avail) * 100
-                      println(f"                               B1+B2 Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%%)")
+                      println(f"                               B1+B2 Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%% ≤ ${(queueCalc.queue.queueTime.overfillAllowance(QueueBand.Category.B1_2).foldMap(_.doubleValue) + 100.0)}%3.1f%%)")
                     }
 
-                    println()
+                    if (qb == QueueBand.QBand3) {
+                      println(f"                                  B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%% ≤ ${(queueCalc.queue.queueTime.overfillAllowance(QueueBand.Category.B3).foldMap(_.doubleValue) + 100.0)}%3.1f%%)")
+                    }
 
                   } else {
                     val used = q.usedTime(qb, p).toHours.value
                     println(f"                                  B${qb.number} Total: $used%5.1f h\n")
                   }
+
+                    println()
+
                 }
                 println()
               }
@@ -160,19 +167,19 @@ object Queue {
 
               List(QueueBand.Category.B1_2, QueueBand.Category.B3).foreach { qc =>
                 println(s"${Colors.BOLD}The following proposals were rejected for $qc.${Colors.RESET}")
-                pids.foreach { pid =>
-                  val p = ps.find(_.id == pid).get
+                pids.toList.flatMap(pid => ps.find(_.id == pid)).sortBy(_.ntac.ranking.num).foreach { p=>
+                  val pid = p.id
                   log.get(pid, qc) match {
                     case None =>
                     case Some(AcceptMessage(_, _, _))          => //println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s 👍")
-                    case Some(m: RejectPartnerOverAllocation)  => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Partner full:"}%-20s ${m.detail}")
-                    case Some(m: RejectNotBand3)               => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Not band 3:"}%-20s ${m.detail}")
-                    case Some(m: RejectNoTime)                 => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"No time awarded:"}%-20s ${m.detail}")
-                    case Some(m: RejectCategoryOverAllocation) => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Category overallocated:"}%-20s ${m.detail}")
-                    case Some(m: RejectTarget)                 => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.raDecType + " bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
-                    case Some(m: RejectConditions)             => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Conditions bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
-                    case Some(m: RejectOverAllocation)         => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Overallocation"}%-20s ${m.detail}")
-                    case Some(lm)                              => println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Miscellaneous"}%-20s ${lm.getClass.getName}")
+                    case Some(m: RejectPartnerOverAllocation)  => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Partner full:"}%-20s ${m.detail}")
+                    case Some(m: RejectNotBand3)               => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Not band 3:"}%-20s ${m.detail}")
+                    case Some(m: RejectNoTime)                 => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"No time awarded:"}%-20s ${m.detail}")
+                    case Some(m: RejectCategoryOverAllocation) => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Category overallocated:"}%-20s ${m.detail}")
+                    case Some(m: RejectTarget)                 => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.raDecType + " bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
+                    case Some(m: RejectConditions)             => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Conditions bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
+                    case Some(m: RejectOverAllocation)         => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Overallocation"}%-20s ${m.detail}")
+                    case Some(lm)                              => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Miscellaneous"}%-20s ${lm.getClass.getName}")
                   }
                 }
                 println()
