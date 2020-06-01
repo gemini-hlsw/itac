@@ -13,7 +13,7 @@ abstract sealed class QueueBand(val number: Int) extends Ordered[QueueBand] {
 
 object QueueBand {
 
-  abstract sealed class Category(val name: String, val order: Int) extends Ordered[Category] {
+  abstract sealed class Category(val name: String, val order: Int) extends Ordered[Category] with Product with Serializable {
     // Ordering is a bit arbitrary
     def compare(that: Category): Int = order - that.order
     override def toString: String = name
