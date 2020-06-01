@@ -110,7 +110,7 @@ object Queue {
               def hasProposals(p: Partner): Boolean = ps.exists(_.ntac.partner == p)
 
               // Partners that appear in the queue
-              partners.filter(p => queueCalc.queue.queueTime(p).toHours.value > 0 && hasProposals(p)) foreach { p =>
+              partners.sortBy(_.id).filter(p => queueCalc.queue.queueTime(p).toHours.value > 0 && hasProposals(p)) foreach { p =>
                 println(s"${Colors.BOLD}Partner Details for $p ${Colors.RESET}\n")
                 QueueBand.values.foreach { qb =>
                   val q = queueCalc.queue
