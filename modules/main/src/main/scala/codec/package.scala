@@ -17,5 +17,6 @@ package object codec {
        with DecBinSizeCodec
        with RolloverObservationCodec
        with RolloverReportCodec
+       with QueueBandCategoryCodec
 
 }

@@ -18,7 +18,7 @@ trait QueueTime {
 
   def bandPercentages: QueueBandPercentages
 
-  def partnerOverfillAllowance: Option[Percent]
+  def overfillAllowance(cat: QueueBand.Category): Option[Percent]
 
   /** Total time for queue observing including guaranteed time and poor weather.
    */
@@ -150,6 +150,9 @@ final class DerivedQueueTime(val site: Site,
                 val bandPercentages: QueueBandPercentages,
                 val partnerOverfillAllowance: Option[Percent]) extends QueueTime {
 
+  def overfillAllowance(cat: QueueBand.Category): Option[Percent] =
+    partnerOverfillAllowance
+
   override val full: Time =
     fullPartnerTime.total.toHours
 
@@ -191,10 +194,23 @@ final class DerivedQueueTime(val site: Site,
 /** Implementation of `QueueTime` derived from overall partner allocation and
   * band percentages.
   */
-final case class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), Time], val partnerOverfillAllowance: Option[Percent]) extends QueueTime {
+final case class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), Time], val partnerOverfillAllowance: Map[QueueBand.Category, Percent]) extends QueueTime {
+
+  // For backward-compatibilty only! Just to keep all the tests from blowing up
+  def this(categorizedTimes: Map[(Partner, QueueBand), Time], partnerOverfillAllowance: Option[Percent]) =
+    this(
+      categorizedTimes,
+      partnerOverfillAllowance match {
+        case None    => Map.empty[QueueBand.Category, Percent] // scala y u need type args here?
+        case Some(p) => QueueBand.Category.values.map(c => c -> p).toMap
+      }
+    )
 
   val allPartners: List[Partner] =
     categorizedTimes.keys.map(_._1).toList.distinct
+
+  def overfillAllowance(cat: QueueBand.Category): Option[Percent] =
+    partnerOverfillAllowance.get(cat)
 
   val bandTimes: Map[QueueBand, Time] =
     (Map.empty[QueueBand, Time].withDefaultValue(Time.Zero)/:categorizedTimes) { case (m,((_, b), t)) =>

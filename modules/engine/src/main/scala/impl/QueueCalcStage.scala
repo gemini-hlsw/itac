@@ -67,7 +67,7 @@ object QueueCalcStage {
           val delegate = phase12queue.queueTime
           def fullPartnerTime: PartnerTime = delegate.fullPartnerTime
           def bandPercentages: QueueBandPercentages = delegate.bandPercentages
-          def partnerOverfillAllowance: Option[Percent] = delegate.partnerOverfillAllowance
+          def overfillAllowance(cat: QueueBand.Category) = delegate.overfillAllowance(cat)
           def full: Time = delegate.full
           def band1End: Time = phase12queue.usedTime(QueueBand.QBand1)
           def band2End: Time = phase12queue.usedTime(Category.B1_2)
