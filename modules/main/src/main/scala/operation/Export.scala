@@ -4,7 +4,6 @@
 package itac
 package operation
 
-import edu.gemini.model.p1.mutable._
 import edu.gemini.tac.qengine.p1.QueueBand
 import cats._
 import cats.effect._
@@ -36,32 +35,6 @@ object Export {
               qr.entries(qb).foreach { e =>
 
                 val p = Merge.merge(e.proposals.map(_.p1mutableProposal))
-
-                // Find the ProposalClass and set the ITAC node.
-                {
-                  Option(p.getProposalClass.getClassical)      orElse
-                  Option(p.getProposalClass.getExchange)       orElse
-                  Option(p.getProposalClass.getFastTurnaround) orElse
-                  Option(p.getProposalClass.getLarge)          orElse
-                  Option(p.getProposalClass.getQueue)          orElse
-                  Option(p.getProposalClass.getSip)            orElse
-                  Option(p.getProposalClass.getSpecial)
-                } .foreach { pc =>
-                  pc.setItac {
-                    val itac = new Itac
-                    itac.setAccept {
-                      val a = new ItacAccept
-                      // a.setAward() // need to get the total!
-                      a.setBand(qb.number)
-                      // a.setContact() // gemini contact email!
-                      // a.setEmail() // what is this?
-                      a.setProgramId(e.programId.toString) // it looks like this is the only bit we actually need
-                      // a.setRollover() // how do we know?
-                      a
-                    }
-                    itac
-                  }
-                }
 
                 println(s"${SummaryDebug.summary(p)}\n-----------------------\n")
 
