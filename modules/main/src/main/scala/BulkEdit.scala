@@ -143,7 +143,7 @@ final case class BulkEdit(
       update(pc.getFastTurnaround, disp)
     }
 
-  private def update(p: Proposal, disp: Disposition): Unit =
+  def unsafeApplyUpdate(p: Proposal, disp: Disposition): Unit =
     try {
       update(p.getProposalClass(), disp)
     } catch {
@@ -152,7 +152,7 @@ final case class BulkEdit(
 
 
   def applyUpdate[F[_]: Sync](p: Proposal, disp: Disposition): F[Unit] =
-    Sync[F].delay(update(p, disp))
+    Sync[F].delay(unsafeApplyUpdate(p, disp))
 
 }
 

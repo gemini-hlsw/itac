@@ -19,30 +19,48 @@ object SummaryDebug {
 
   def summary(acc: SubmissionAccept): String =
     if (acc == null) ""
-    else f"${acc.getRecommend.getValue().doubleValue()}%5.1f ${acc.getRecommend().getUnits()}   Rank ${acc.getRanking()}"
+    else f"Accept:   ${acc.getRecommend.getValue().doubleValue()}%5.1f ${acc.getRecommend().getUnits()} at rank ${acc.getRanking()}, contact ${acc.getEmail()}"
 
   def summary(rej: SubmissionReject): String =
     if (rej == null) "" else "Reject"
 
   def summary(res: SubmissionResponse): String =
-    if (res == null) "--"
-    else f"${res.getReceipt.getId}%-15s ${summary(res.getAccept())}${summary(res.getReject())} "
+    if (res == null) ""
+    else f"""|
+             |      Reference: ${res.getReceipt.getId}%-15s
+             |      ${summary(res.getAccept())}${summary(res.getReject())}
+             |      Comment:   ${res.getComment()}""".stripMargin
 
   def summary(sub: NgoSubmission): String =
-    s"- ${sub.getPartner()} ${summary(sub.getResponse)}"
+    s"""|- ${sub.getPartner()}:
+        |    Lead:    ${sub.getPartnerLead().getLastName()} ... ${System.identityHashCode(sub.getPartnerLead())}
+        |    Response:${summary(sub.getResponse)}""".stripMargin
+
+  def summary(rej: ItacReject): String =
+    if (rej == null) "" else "Reject"
+
+  def summary(acc: ItacAccept): String =
+    s"""|Accept:
+        |      Award:     ${acc.getAward().getValue()} ${acc.getAward().getUnits()}
+        |      Band:      ${acc.getBand()}
+        |      Contact:   ${acc.getContact()}
+        |      Email:     ${acc.getEmail()}
+        |      ProgramId: ${acc.getProgramId()}
+        |""".stripMargin.trim
 
   def summary(itac: Itac): String =
     if (itac == null) "--"
-    else s"""|- Accept:  ${itac.getAccept()} / ${itac.getReject()}
-             |        - Comment: ${itac.getComment()}
-             |        - NGO:     ${itac.getNgoauthority()}
+    else s"""|${summary(itac.getAccept())}${summary(itac.getReject())}
+             |    Comment: ${itac.getComment()}
              |""".stripMargin.trim
 
   def summary(pc: QueueProposalClass): String =
-    s"""|- TooOption: ${pc.getTooOption()}
-        |- Exchange: ${pc.getExchange()}
-        |- NGO:  ${pc.getNgo().asScala.toList.map(summary).mkString("\n        ")}
-        |- ITAC: ${summary(pc.getItac())}
+    s"""|  TooOption: ${pc.getTooOption()}
+        |  Exchange:  ${pc.getExchange()}
+        |  NGO:
+        |  ${pc.getNgo().asScala.toList.map(summary).mkString("\n  ")}
+        |  ITAC:
+        |    ${summary(pc.getItac())}
         |""".stripMargin.trim
 
   def summary(pc: ProposalClassChoice): String = {
@@ -81,8 +99,10 @@ object SummaryDebug {
     f"* ${b.getId}%-15s ${b.getName}"
 
   def summary(p: Proposal): String = {
-    f"""|ProposalClass:
-        |${summary(p.getProposalClass)}
+    f"""|PI: ${p.getInvestigators.getPi.getLastName()} ... ${System.identityHashCode(p.getInvestigators.getPi)}
+        |
+        |ProposalClass:
+        |  ${summary(p.getProposalClass)}
         |
         |Conditions:
         |${p.getConditions.getCondition.asScala.map(summary).mkString("\n")}

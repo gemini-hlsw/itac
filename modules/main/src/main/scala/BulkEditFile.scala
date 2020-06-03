@@ -83,7 +83,7 @@ object BulkEditFile {
         sh.setColumnWidth(StaffEmail,    256 * 20)
         sh.setColumnWidth(NtacComment,   256 * 64)
         sh.setColumnWidth(ItacComment,   256 * 64)
-        sh.createFreezePane(0, 1, 0, 1);
+        sh.createFreezePane(3, 1, 3, 1);
         sh.setZoom(120)
         wb.write(file)
       }
@@ -126,7 +126,7 @@ object BulkEditFile {
       newR.createCell(Reference    ).setCellValue(p.ntac.reference)
       newR.createCell(Site         ).setCellValue(p.site.abbreviation)
       newR.createCell(Pi           ).setCellValue(p.piName.orEmpty)
-      newR.createCell(NgoEmail     ).setBlank()
+      newR.createCell(NgoEmail     ).setCellValue(p.ntac.ngoEmail.orEmpty)
       newR.createCell(StaffEmail   ).setBlank()
       newR.createCell(NtacComment  ).setCellValue(p.ntac.comment.orEmpty)
       newR.createCell(ItacComment  ).setBlank()
