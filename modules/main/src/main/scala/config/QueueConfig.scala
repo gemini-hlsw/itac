@@ -19,7 +19,8 @@ final case class QueueConfig(
   overfill:   Map[QueueBand.Category, Percent],
   raBinSize:  RaBinSize,
   decBinSize: DecBinSize,
-  hours:      Map[Partner, BandTimes]
+  hours:      Map[Partner, BandTimes],
+  explicitAssignments: Option[Map[String, QueueBand]] // to allow missing in YAML
 ) {
 
   object engine {
@@ -49,6 +50,12 @@ final case class QueueConfig(
 
 object QueueConfig {
   import itac.codec.all._
+
+  implicit val DecoderQueueBand: Decoder[QueueBand] =
+    Decoder[Int].emap { n =>
+      QueueBand.values.find(_.number == n).toRight(s"No such queue band: $n")
+    }
+
   implicit val DecoderQueue: Decoder[QueueConfig] = deriveDecoder
 }
 
