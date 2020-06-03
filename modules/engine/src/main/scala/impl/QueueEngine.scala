@@ -248,17 +248,17 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
       val bandedQueueʹ   = stageWithBands123.queue.bandedQueue ++ band12map
       val bandedQueueʹʹ  = bandedQueueʹ + (QueueBand.QBand4 -> band4)
       val bandedQueueʹʹʹ = bandedQueueʹʹ.map { case (k, v) => (k, v.sortBy(_.piName.reverse)) }
-      val finalQueue     = new FinalProposalQueue(queueTime, bandedQueueʹʹʹ)
 
-      // println(s"proposals: ${proposals.find(_.id.reference == "CA-2020B-006").map(_.id.reference)}")
-      // println(s"initialCandidates: ${initialCandidates.propList.find(_.id.reference == "CA-2020B-006").map(_.id.reference)}")
-      // println(s"b3candidates: ${b3candidates.propList.find(_.id.reference == "CA-2020B-006").map(_.id.reference)}")
-      // println(s"finalQueue: ${finalQueue.toList.find(_.id.reference == "CA-2020B-006").map(_.id.reference)}")
-      // stageWithBands123.log.toList.find { e => e.key.id.reference == "CA-2020B-006" } .foreach(s => println(s.msg.getClass()))
-      // sys.exit(-1)
+      // One last adjustment, move some proposals to specific bands.
+      val bandedQueueʹʹʹʹ = config.explicitQueueAssignments.toList.foldRight(bandedQueueʹʹʹ) { case ((ref, band), bq) =>
+        // remove proposal from current queue, wherever it is
+        bq.map { case (k, v) => k -> v.filterNot(_.ntac.reference == ref) } |+|
+        // and put it in the explicit band (if we can find it)
+        Map(band -> proposals.filter(_.ntac.reference == ref))
+      }
 
       // Done!
-      finalQueue
+      new FinalProposalQueue(queueTime, bandedQueueʹʹʹʹ)
 
     }
 
