@@ -39,21 +39,22 @@ lazy val main = project
   .settings(
     name := "itac-main",
     libraryDependencies ++= Seq(
-      "com.monovore"       %% "decline-effect"         % "1.0.0",
-      "com.monovore"       %% "decline"                % "1.0.0",
-      "edu.gemini"         %% "gsp-math"               % "0.1.10",
-      "io.chrisdavenport"  %% "log4cats-slf4j"         % "1.0.1",
-      "io.circe"           %% "circe-core"             % "0.11.1",
-      "io.circe"           %% "circe-generic"          % "0.11.1",
-      "io.circe"           %% "circe-parser"           % "0.11.1",
-      "io.circe"           %% "circe-yaml"             % "0.10.0",
-      "javax.mail"          % "javax.mail-api"         % "1.6.2",
-      "org.apache.velocity" % "velocity-engine-core"   % "2.2",    // save me jeebus
-      "org.slf4j"           % "slf4j-simple"           % "1.7.28",
-      "org.tpolecat"       %% "atto-core"              % "0.7.1",
-      "org.typelevel"      %% "cats-effect"            % "2.0.0",
-      "org.typelevel"      %% "cats-testkit"           % "2.0.0"     % "test",
-      "org.typelevel"      %% "cats-testkit-scalatest" % "1.0.0-RC1" % "test",
+      "com.monovore"         %% "decline-effect"         % "1.0.0",
+      "com.monovore"         %% "decline"                % "1.0.0",
+      "edu.gemini"           %% "gsp-math"               % "0.1.10",
+      "io.chrisdavenport"    %% "log4cats-slf4j"         % "1.0.1",
+      "io.circe"             %% "circe-core"             % "0.11.1",
+      "io.circe"             %% "circe-generic"          % "0.11.1",
+      "io.circe"             %% "circe-parser"           % "0.11.1",
+      "io.circe"             %% "circe-yaml"             % "0.10.0",
+      "javax.mail"            % "javax.mail-api"         % "1.6.2",
+      "org.apache.velocity"   % "velocity-engine-core"   % "2.2",    // save me jeebus
+      "org.slf4j"             % "slf4j-simple"           % "1.7.28",
+      "org.tpolecat"         %% "atto-core"              % "0.7.1",
+      "org.typelevel"        %% "cats-effect"            % "2.0.0",
+      "com.github.davidmoten" % "word-wrap"              % "0.1.6",
+      "org.typelevel"        %% "cats-testkit"           % "2.0.0"     % "test",
+      "org.typelevel"        %% "cats-testkit-scalatest" % "1.0.0-RC1" % "test",
     ),
     sourceGenerators in Compile += Def.task {
       val outDir = (sourceManaged in Compile).value / "scala" / "itac"

@@ -18,7 +18,7 @@ class Editor[F[_]: Sync: Logger](edits: Map[String, SummaryEdit], log: Logger[F]
     edits.get(p.id) match {
       case Some(e) =>
 
-        log.warn(s"There are edits for ${p.id}/${file.getName}") *>
+        log.trace(s"There are edits for ${p.id}/${file.getName}") *>
         e.applyUpdate(p)
 
       case None    => log.trace(s"No edits for ${p.id}/${file.getName}")
