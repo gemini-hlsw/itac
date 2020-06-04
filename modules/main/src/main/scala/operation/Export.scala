@@ -41,6 +41,11 @@ object Export {
                 // Before merging we need to apply bulk updates. When we merge we will get a random
                 // ITAC node ... which one do we pick? We need to merge them together and add their
                 // times and pick a primary NGO!
+
+                // NGO contact is determined by the PI's institution.
+
+                // We use the ITAC node where the ngo lead == proposal pi.
+
                 e.proposals.toList.foreach { p =>
                   bes.get(p.ntac.reference) match {
                     case Some(be) => be.unsafeApplyUpdate(p.p1mutableProposal, itac.BulkEdit.Accept(e.programId, qb.number, {
@@ -55,7 +60,15 @@ object Export {
 
                 val p = Merge.merge(e.proposals.map(_.p1mutableProposal))
 
-                println(s"${SummaryDebug.summary(p)}\n-----------------------\n")
+
+                // import io.circe.yaml.syntax._
+                // import io.circe.yaml.Printer
+                val pr = io.circe.yaml.Printer(
+                  preserveOrder = true,
+                  dropNullKeys = true,
+                  // mappingStyle = Printer.FlowStyle.Block
+                )
+                println(s"${pr.pretty(SummaryDebugJson.EncoderProposal(p))}\n-----------------------\n")
 
 
               }

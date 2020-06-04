@@ -8,24 +8,23 @@ import cats.data.Validated
 import cats.data.ValidatedNel
 import cats.effect._
 import cats.implicits._
+import cats.instances.short
+import com.monovore.decline.Argument
 import com.monovore.decline.Command
 import com.monovore.decline.effect.CommandIOApp
 import com.monovore.decline.Opts
+import edu.gemini.spModel.core.Semester
+import edu.gemini.spModel.core.Site
+import edu.gemini.tac.qengine.impl.QueueEngine
+import gsp.math.Angle
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import itac.operation._
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.text.ParseException
-import scala.util.control.NonFatal
-import edu.gemini.tac.qengine.impl.QueueEngine
-import edu.gemini.spModel.core.Semester
-import edu.gemini.spModel.core.Site
 import org.slf4j.impl.ColoredSimpleLogger
-import gsp.math.Angle
-import cats.instances.short
-import com.monovore.decline.Argument
-
+import scala.util.control.NonFatal
 // object Stub {
 //   def main(args: Array[String]): Unit =
 //     Main.main(Array("-d", "hawaii", "summarize", "CL-2020B-014"))
