@@ -189,6 +189,12 @@ trait MainOpts { this: CommandIOApp =>
       header = "Scheduling report."
     )((siteConfig, rolloverReport).mapN((sc, rr) => Scheduling[IO](QueueEngine, sc, rr)))
 
+  lazy val blueprints: Command[Operation[IO]] =
+    Command(
+      name   = "blueprints",
+      header = "Blueprints report."
+    )((siteConfig, rolloverReport).mapN((sc, rr) => Blueprints[IO](QueueEngine, sc, rr)))
+
   lazy val gn: Opts[Site.GN.type] = Opts.flag(
     short = "n",
     long  = "north",
@@ -340,6 +346,7 @@ trait MainOpts { this: CommandIOApp =>
       export,
       splits,
       scheduling,
+      blueprints,
     ).sortBy(_.name).map(Opts.subcommand(_)).foldK
 
 }
