@@ -7,7 +7,6 @@ import cats.effect._
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import itac._
-import java.io.File
 
 object BulkEdit {
 
@@ -17,7 +16,8 @@ object BulkEdit {
       def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
         for {
           ps  <- ws.proposals
-          _   <- BulkEditFile.createOrUpdate(new File("/tmp/test.xls"), ps)
+          f   <- ws.cwd.map(_.resolve("bulk_edit.xls"))
+          _   <- BulkEditFile.createOrUpdate(f.toFile, ps)
         } yield ExitCode.Success
 
   }

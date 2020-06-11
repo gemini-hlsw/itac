@@ -3,12 +3,13 @@
 
 package itac
 
+
 package operation
 
+import edu.gemini.tac.qengine.api.QueueCalc
 import edu.gemini.model.p1.mutable.TimeUnit
 import edu.gemini.model.p1.mutable.TimeAmount
 import edu.gemini.tac.qengine.p1.QueueBand
-import java.io.File
 import cats._
 import cats.effect._
 import cats.implicits._
@@ -29,10 +30,8 @@ object Export {
   ): Operation[F] =
     new AbstractQueueOperation[F](qe, siteConfig, rolloverReport) {
 
-      def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
-        BulkEditFile.read(new File("/tmp/test.xls")).flatMap { bes =>
-        computeQueue(ws).flatMap { case (_, qc) =>
-          Sync[F].delay {
+      def doExport(qc: QueueCalc, bes: Map[String, BulkEdit]): F[ExitCode] =
+        Sync[F].delay {
             val qr = QueueResult(qc)
             QueueBand.values.foreach { qb =>
 
@@ -79,12 +78,16 @@ object Export {
 
             }
 
-
-
             ExitCode.Success
           }
-        }
-      }
+
+      def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
+        for {
+          p  <- computeQueue(ws)
+          (ps, qc) = p
+          be <- ws.bulkEdits(ps)
+          e  <- doExport(qc, be)
+        } yield e
 
   }
 

@@ -84,6 +84,8 @@ trait Workspace[F[_]] {
 
   def progIdHash: F[ProgIdHash]
 
+  def bulkEdits(ps: List[Proposal]): F[Map[String, BulkEdit]]
+
 }
 
 object Workspace {
@@ -91,6 +93,7 @@ object Workspace {
   val EmailTemplateDir = Paths.get("email_templates")
   val ProposalDir      = Paths.get("proposals")
   val EditsDir         = Paths.get("edits")
+  val BulkEditsFile    = Paths.get("bulk_edits.xls")
 
   val WorkspaceDirs: List[Path] =
     List(EmailTemplateDir, ProposalDir, EditsDir)
@@ -248,6 +251,14 @@ object Workspace {
         def edits: F[Map[String, SummaryEdit]] =
           readAll[SummaryEdit](EditsDir).map(_.map(e => (e.reference -> e)).toMap)
 
+        def bulkEdits(ps: List[Proposal]): F[Map[String, BulkEdit]] =
+          for {
+            f <- cwd.map(_.resolve(BulkEditsFile).toFile.getAbsoluteFile)
+            _ <- log.debug(s"Creating/updating and then reading bulk edits from ${f.getAbsoluteFile()}")
+            _ <- BulkEditFile.createOrUpdate(f, ps)
+            m <- BulkEditFile.read(f)
+          } yield m
+
         def proposals: F[List[Proposal]] =
           for {
             cwd  <- cwd
@@ -261,7 +272,9 @@ object Workspace {
             _    <- ps.traverse { case (f, Left(es)) => log.warn(s"$f: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
             psʹ   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
             _    <- log.debug(s"Read ${ps.length} proposals.")
-          } yield ps.collect { case (_, Right(ps)) => ps.toList } .flatten
+            ret   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
+            _    <- bulkEdits(ret)
+          } yield ret
 
         def proposal(ref: String): F[(File, NonEmptyList[Proposal])] =
           for {

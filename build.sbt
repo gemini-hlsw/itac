@@ -98,6 +98,9 @@ lazy val channel = project
             |  ],
             |  "dependencies": [
             |    "edu.gemini:itac-main_2.12:${version.value}"
+            |  ],
+            |  "javaOptions": [
+            |    "-Djava.awt.headless=true"
             |  ]
             |}
             |""".stripMargin)
