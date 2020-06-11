@@ -53,6 +53,7 @@ lazy val main = project
       "org.tpolecat"         %% "atto-core"              % "0.7.1",
       "org.typelevel"        %% "cats-effect"            % "2.0.0",
       "com.github.davidmoten" % "word-wrap"              % "0.1.6",
+      "org.apache.poi"        % "poi"                    % "4.1.2",  // over here too jeebus
       "org.typelevel"        %% "cats-testkit"           % "2.0.0"     % "test",
       "org.typelevel"        %% "cats-testkit-scalatest" % "1.0.0-RC1" % "test",
     ),
