@@ -26,24 +26,24 @@ object NtacIo {
   def UNKNOWN_PARTNER_ID(id: String): String =
     s"Unrecognized partner id in proposal submission: $id"
 
-  private case class Response(ref: String, rank: Rank, awardedTime: Time, poorWeather: Boolean)
+  private case class Response(ref: String, rank: Rank, awardedTime: Time, poorWeather: Boolean, comment: Option[String], ngoEmail: Option[String])
 
   private val EmptyResponse = none[Response].successNel[String]
 
   private def response(sub: im.Submission, partnerId: String): ValidationNel[String, Option[Response]] =
     sub.response.fold(EmptyResponse) {
-      case im.SubmissionResponse(im.SubmissionReceipt(pid, _, _), decision, _) =>
+      case im.SubmissionResponse(im.SubmissionReceipt(pid, _, _), decision, comment) =>
         decision.fold(EmptyResponse) {
           case im.SubmissionDecision(Right(sa)) =>
             sa.recommended.nonNegativeQueueEngineTime(s"$partnerId recommended time").map { awarded =>
-              Some(Response(pid, Rank(sa.ranking), awarded, sa.poorWeather))
+              Some(Response(pid, Rank(sa.ranking), awarded, sa.poorWeather, comment, Option(sa.email)))
             }
           case _ => EmptyResponse
         }
     }
 
   private def mkNtac(lead: Option[String], submission: im.Submission)(p: Partner)(response: Option[Response]): Option[Ntac] =
-    response.map { r => Ntac(p, r.ref, r.rank, r.awardedTime, r.poorWeather, lead, None, submission) }
+    response.map { r => Ntac(p, r.ref, r.rank, r.awardedTime, r.poorWeather, lead, response.flatMap(_.comment), submission, None, response.flatMap(_.ngoEmail)) }
 
   private val NoneAccepted = NONE_ACCEPTED.failureNel[NonEmptyList[Ntac]]
 

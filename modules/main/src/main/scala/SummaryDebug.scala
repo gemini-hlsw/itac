@@ -3,6 +3,7 @@
 
 package itac
 
+import cats.implicits._
 import scala.collection.JavaConverters._
 import edu.gemini.model.p1.mutable._
 import gsp.math._
@@ -13,19 +14,78 @@ import gsp.math._
  */
 object SummaryDebug {
 
+  def summary(pc: ProposalClass): String =
+    pc.getClass.getName
+
+  def summary(acc: SubmissionAccept): String =
+    if (acc == null) ""
+    else f"Accept:   ${acc.getRecommend.getValue().doubleValue()}%5.1f ${acc.getRecommend().getUnits()} at rank ${acc.getRanking()}, contact ${acc.getEmail()}"
+
+  def summary(rej: SubmissionReject): String =
+    if (rej == null) "" else "Reject"
+
+  def summary(res: SubmissionResponse): String =
+    if (res == null) ""
+    else f"""|
+             |      Reference: ${res.getReceipt.getId}%-15s
+             |      ${summary(res.getAccept())}${summary(res.getReject())}
+             |      Comment:   ${res.getComment()}""".stripMargin
+
+  def summary(sub: NgoSubmission): String =
+    s"""|- ${sub.getPartner()}:
+        |    Lead:    ${sub.getPartnerLead().getLastName()} ... ${System.identityHashCode(sub.getPartnerLead())}
+        |    Response:${summary(sub.getResponse)}""".stripMargin
+
+  def summary(rej: ItacReject): String =
+    if (rej == null) "" else "Reject"
+
+  def summary(acc: ItacAccept): String =
+    s"""|Accept:
+        |      Award:     ${acc.getAward().getValue()} ${acc.getAward().getUnits()}
+        |      Band:      ${acc.getBand()}
+        |      Contact:   ${acc.getContact()}
+        |      Email:     ${acc.getEmail()}
+        |      ProgramId: ${acc.getProgramId()}
+        |""".stripMargin.trim
+
+  def summary(itac: Itac): String =
+    if (itac == null) "--"
+    else s"""|${summary(itac.getAccept())}${summary(itac.getReject())}
+             |    Comment: ${itac.getComment()}
+             |""".stripMargin.trim
+
+  def summary(pc: QueueProposalClass): String =
+    s"""|  TooOption: ${pc.getTooOption()}
+        |  Exchange:  ${pc.getExchange()}
+        |  NGO:
+        |  ${pc.getNgo().asScala.toList.map(summary).mkString("\n  ")}
+        |  ITAC:
+        |    ${summary(pc.getItac())}
+        |""".stripMargin.trim
+
+  def summary(pc: ProposalClassChoice): String = {
+    Option(pc.getClassical)     .map(summary) <+>
+    Option(pc.getExchange)      .map(summary) <+>
+    Option(pc.getFastTurnaround).map(summary) <+>
+    Option(pc.getLarge)         .map(summary) <+>
+    Option(pc.getQueue)         .map(summary) <+>
+    Option(pc.getSip)           .map(summary) <+>
+    Option(pc.getSpecial)       .map(summary)
+  } .get
+
   def summary(c: Condition): String = {
-    f"- ${c.getId()}%-12s ${c.getCc()}%-5s ${c.getIq()}%-5s ${c.getSb()}%-5s ${c.getWv()}%-5s"
+    f"- ${c.getId}%-12s ${c.getCc}%-5s ${c.getIq}%-5s ${c.getSb}%-5s ${c.getWv}%-5s"
   }
 
   def summary(d: DegDegCoordinates): String = {
-    val ra  = HourAngle.HMS(Angle.hourAngle.get(Angle.fromDoubleDegrees(d.getRa().doubleValue))).format
-    val dec = Declination.fromAngle.getOption(Angle.fromDoubleDegrees(d.getDec().doubleValue())).map(Declination.fromStringSignedDMS.reverseGet).getOrElse(sys.error(s"unpossible: invalid declination"))
+    val ra  = HourAngle.HMS(Angle.hourAngle.get(Angle.fromDoubleDegrees(d.getRa.doubleValue))).format
+    val dec = Declination.fromAngle.getOption(Angle.fromDoubleDegrees(d.getDec.doubleValue)).map(Declination.fromStringSignedDMS.reverseGet).getOrElse(sys.error(s"unpossible: invalid declination"))
     s"$ra $dec"
   }
 
   def summary(t: Target): String = {
     t match {
-      case t: SiderealTarget    => f"- ${t.getId}%-12s ${summary(t.getDegDeg())} ${t.getName}"
+      case t: SiderealTarget    => f"- ${t.getId}%-12s ${summary(t.getDegDeg)} ${t.getName}"
       case t: NonSiderealTarget => f"- ${t.getId}%-12s <Non-Sidereal>                   ${t.getName}"
       case t: TooTarget         => f"- ${t.getId}%-12s <ToO>                            ${t.getName}"
     }
@@ -35,15 +95,26 @@ object SummaryDebug {
     f"* ${o.getBand}%-8s ${summary(o.getCondition)} ${summary(o.getTarget)}"
   }
 
+  def summary(b: BlueprintBase): String =
+    f"* ${b.getId}%-15s ${b.getName}"
+
   def summary(p: Proposal): String = {
-    f"""|Conditions:
-        |${p.getConditions().getCondition().asScala.map(summary).mkString("\n")}
+    f"""|PI: ${p.getInvestigators.getPi.getLastName()} ... ${System.identityHashCode(p.getInvestigators.getPi)}
+        |
+        |ProposalClass:
+        |  ${summary(p.getProposalClass)}
+        |
+        |Conditions:
+        |${p.getConditions.getCondition.asScala.map(summary).mkString("\n")}
         |
         |Targets:
-        |${p.getTargets().getSiderealOrNonsiderealOrToo().asScala.map(summary).mkString("\n")}
+        |${p.getTargets.getSiderealOrNonsiderealOrToo.asScala.map(summary).mkString("\n")}
+        |
+        |Blueprints:
+        |${Merge.allBlueprints(p).map(summary).mkString("\n")}
         |
         |Observations:
-        |${p.getObservations().getObservation().asScala.map(summary).mkString("\n")}
+        |${p.getObservations.getObservation.asScala.map(summary).mkString("\n")}
         |""".stripMargin
   }
 

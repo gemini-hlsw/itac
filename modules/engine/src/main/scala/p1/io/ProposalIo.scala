@@ -65,6 +65,7 @@ class ProposalIo(partners: Map[String, Partner]) {
     */
   def read(
       p: im.Proposal,
+      mp: m.Proposal,
       when: Long,
       jointIdGen: JointIdGen
   ): ValidationNel[String, (NonEmptyList[Proposal], JointIdGen)] = {
@@ -182,7 +183,8 @@ class ProposalIo(partners: Map[String, Partner]) {
             ntac.poorWeather,
             piName(p),
             piEmail(p),
-            p
+            p,
+            mp
           )
 
           // If there are more ntacs, it is a Joint, otherwise just this core.
