@@ -80,7 +80,7 @@ object Queue {
 
               println(separator)
 
-              println(s"${Colors.BOLD}RA/Conditions Bucket Allocations:                                                    Limit      Used     Rem${Colors.RESET}")
+              println(s"${Colors.BOLD}RA/Conditions Bucket Allocations:                                                    Limit    Used   Avail${Colors.RESET}")
               println(queueCalc.bucketsAllocation.raTablesANSI)
               println()
 
