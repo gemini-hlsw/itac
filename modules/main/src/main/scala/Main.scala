@@ -182,6 +182,12 @@ trait MainOpts { this: CommandIOApp =>
       header = "Export proposals."
     )((siteConfig, rolloverReport).mapN((sc, rr) => Export[IO](QueueEngine, sc, rr)))
 
+  lazy val chartData: Command[Operation[IO]] =
+    Command(
+      name   = "chart-data",
+      header = "Create chart data for the specified queue."
+    )((siteConfig, rolloverReport).mapN((sc, rr) => ChartData[IO](QueueEngine, sc, rr)))
+
   lazy val scheduling: Command[Operation[IO]] =
     Command(
       name   = "scheduling",
@@ -346,6 +352,7 @@ trait MainOpts { this: CommandIOApp =>
       splits,
       scheduling,
       blueprints,
+      chartData,
     ).sortBy(_.name).map(Opts.subcommand(_)).foldK
 
 }
