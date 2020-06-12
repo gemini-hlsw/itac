@@ -5,7 +5,6 @@ import edu.gemini.tac.qengine.log.ProposalLog
 import edu.gemini.tac.qengine.ctx.Context
 
 trait BucketsAllocation {
-  def raTables: String
   def raTablesANSI: String
 }
 

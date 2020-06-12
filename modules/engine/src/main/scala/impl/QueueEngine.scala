@@ -29,7 +29,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
   case class BucketsAllocationImpl(raBins: List[RaResource]) extends BucketsAllocation {
 
     sealed trait Row extends Product with Serializable
-    case class RaRow(h: String, r: Double, l: Double) extends Row
+    case class RaRow(h: String, remaining: Double, used: Double, limit: Double) extends Row
     case class ConditionsRow(t: ConditionsCategory, u: Double, r: Double, l: Double) extends Row
 
     val hPerBin  = 24 / raBins.length
@@ -37,17 +37,23 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
     val raRanges = binHours.map(h => s"$h-${h + hPerBin} h")
     val report = raRanges.zip(raBins).toList.map {
       case (h, b) =>
+
+        val binUsedMins: Double =
+          b.condsRes.bins.bins.values.map(_.used.toMinutes.value).sum
+
         val ra = RaRow(
           h,
           math.round(b.remaining.toMinutes.value) / 60.0,
+          math.round(binUsedMins) / 60.0,
           math.round(b.limit.toMinutes.value) / 60.0
         )
+
         val conds = b.condsRes.bins.bins.toList.sortBy(_._1.name).map {
           case (c, t) =>
             ConditionsRow(
               c,
               math.round(t.used.toMinutes.value) / 60.0,
-              math.round(t.remaining.toMinutes.value) / 60.0,
+              (math.round(t.remaining.toMinutes.value) / 60.0) min ra.remaining,
               math.round(t.limit.toMinutes.value) / 60.0
             )
         }
@@ -61,40 +67,17 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
       //System.exit(0)
     }
 
-    override val raTables = {
-      <table>
-        <tr><th colspan="4">RA/Conditions Bins (remaining/limit)</th></tr>
-        <tr><td><b>Bin type</b></td><td><b>Remaining</b></td><td><b>Limit</b></td></tr>
-        {
-        report.flatten.collect {
-          case RaRow(h: String, r: Double, l: Double) =>
-            <tr border="2px">
-                <td style="text-align:right">RA: {h}</td>
-                <td style="text-align:right">{f"$r%1.2f"} hrs</td>
-                <td style="text-align:right">{f"$l%1.2f"} hrs</td>
-              </tr>
-          case ConditionsRow(t: ConditionsCategory, _, r: Double, l: Double) =>
-            <tr>
-                <td style="text-align:right">Conditions: {t}</td>
-                <td style="text-align:right">{f"$r%1.2f"} hrs</td>
-                <td style="text-align:right">{f"$l%1.2f"} hrs</td>
-              </tr>
-        }
-      }
-      </table>
-    }.toString
-
     // Annoying, we need to turn off ANSI color if output is being redirected. In the `main` project
     // we have a `Colors` module for this but in `engine` there's no such thing we we'll just hack
     // it in again.
     def embolden(s: String): String =
-      if (System.console == null) s
-      else s"${Console.BOLD}$s${Console.RESET}"
+      if (System.console != null || sys.props.get("force-color").isDefined) s"${Console.BOLD}$s${Console.RESET}"
+      else s
 
     val raTablesANSI: String =
       report.flatten.map {
-        case x @ RaRow(h, r, l)         => embolden(f"\nRA: $h%-78s  $l%6.2f  - ?????? = $r%6.2f")
-        case ConditionsRow(t, u, r, l) => f"Conditions: $t%-70s  $l%6.2f  - $u%6.2f = $r%6.2f "
+        case x @ RaRow(h, r, u, l)         => embolden(f"\nRA: $h%-78s  $l%6.2f  $u%6.2f  $r%6.2f")
+        case ConditionsRow(t, u, r, l) => f"Conditions: $t%-70s  $l%6.2f  $u%6.2f  $r%6.2f "
       } .mkString("\n")
 
   }
