@@ -21,11 +21,12 @@ object BulkEditFile {
   object Column {
     val Reference     = 0
     val Site          = 1
-    val Pi            = 2
-    val NgoEmail      = 3
-    val StaffEmail    = 4
-    val NtacComment   = 5
-    val ItacComment   = 6
+    val Instrument    = 2
+    val Pi            = 3
+    val NgoEmail      = 4
+    val StaffEmail    = 5
+    val NtacComment   = 6
+    val ItacComment   = 7
   }
 
   def createOrUpdate[F[_]: Sync](file: File, ps: List[Proposal]): F[Unit] =
@@ -78,6 +79,7 @@ object BulkEditFile {
         // only do this when we initially write the file
         sh.setColumnWidth(Reference,     256 * 20)
         sh.setColumnWidth(Site,          256 * 5)
+        sh.setColumnWidth(Instrument,     256 * 20)
         sh.setColumnWidth(Pi,            256 * 20)
         sh.setColumnWidth(NgoEmail,      256 * 20)
         sh.setColumnWidth(StaffEmail,    256 * 20)
@@ -113,6 +115,7 @@ object BulkEditFile {
       // Create them all!
       create(Reference,     "Reference")
       create(Site,          "Site")
+      create(Instrument,    "Instrument")
       create(Pi,            "PI")
       create(NgoEmail,      "NGO Email")
       create(StaffEmail,    "Staff Email")
@@ -121,11 +124,19 @@ object BulkEditFile {
 
     }
 
+    def instruments(p: Proposal): String =
+      (p.obsList ++ p.band3Observations)
+        .map { o => o.p1Observation.blueprint.fold("None")(_.name.takeWhile(_ != ' ')) }
+        .distinct
+        .sorted
+        .mkString(", ")
+
     def addNewRowAt(sh: Sheet, row: Int, p: Proposal): Unit = {
       val newR = sh.createRow(row)
       newR.createCell(Reference    ).setCellValue(p.ntac.reference)
       newR.createCell(Site         ).setCellValue(p.site.abbreviation)
       newR.createCell(Pi           ).setCellValue(p.piName.orEmpty)
+      newR.createCell(Instrument   ).setCellValue(instruments(p))
       newR.createCell(NgoEmail     ).setCellValue(p.ntac.ngoEmail.orEmpty)
       newR.createCell(StaffEmail   ).setBlank()
       newR.createCell(NtacComment  ).setCellValue(p.ntac.comment.orEmpty)
