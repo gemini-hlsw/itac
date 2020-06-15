@@ -8,6 +8,7 @@ import cats._
 import cats.effect._
 import cats.implicits._
 import edu.gemini.tac.qengine.api.QueueEngine
+import edu.gemini.model.p1.immutable.TooTarget
 import io.chrisdavenport.log4cats.Logger
 import java.nio.file.Path
 import itac.util.Colors
@@ -36,7 +37,7 @@ object ChartData {
 
                 os.foldMap { o =>
                   val scaledTime = o.time.toHours.value * ratio
-                  val hour       = o.target.ra.toHr.mag.toInt
+                  val hour       = o.p1Observation.target match { case Some(TooTarget(_, _)) => -1; case _ => o.target.ra.toHr.mag.toInt }
                   val instrument = o.p1Observation.blueprint.foldMap(_.name.takeWhile(_ != ' ')) // muhahaha
 
                   Map((instrument, hour) -> scaledTime)
@@ -54,11 +55,11 @@ object ChartData {
                         |toolbar). Under Chart Type select the stacked column chart.
                         |""".stripMargin)
 
-            println((0 to 23)
+            println((-1 to 23)
                 .map(d => f"$d%7d").mkString("Hour        ", "", ""))
 
             for (i <- hoursByRAandInstrument.keys.map(_._1).toList.distinct.sorted) {
-              val times = (0 to 23)
+              val times = (-1 to 23)
                 .map { h => hoursByRAandInstrument.getOrElse((i, h), 0.0) }
                 .map(d => f"$d%7.2f").mkString(i.padTo(12, ' '), "", "")
               println(times)
@@ -73,7 +74,7 @@ object ChartData {
                         |""".stripMargin)
 
             for (i <- hoursByRAandInstrument.keys.map(_._1).toList.distinct.sorted) {
-              val time = (0 to 23).toList.foldMap { h => hoursByRAandInstrument.getOrElse((i, h), 0.0) }
+              val time = (-1 to 23).toList.foldMap { h => hoursByRAandInstrument.getOrElse((i, h), 0.0) }
               println(f"${i}%-12s $time%7.2f")
             }
 
