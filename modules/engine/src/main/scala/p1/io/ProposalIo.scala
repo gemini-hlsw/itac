@@ -165,7 +165,7 @@ class ProposalIo(partners: Map[String, Partner]) {
           // println(ntacs.map(n => f"${n.partner.id}:${n.awardedTime.toHours.value}%5.1f").list.toList.mkString(", "))
 
           if (totalAwardHere.isZero) {
-            LoggerFactory.getLogger("edu.gemini.itac").warn(s"Proposal ${ntac.reference} has observatiosn at $site but no awarded time is usable there. Award was ${ntacs.map(n => s"${n.partner.id}: ${n.awardedTime.toHours}").toList.mkString(", ")}.")
+            LoggerFactory.getLogger("edu.gemini.itac").warn(s"Proposal ${ntac.reference} has observations at $site but no awarded time is usable there. Award was ${ntacs.map(n => s"${n.partner.id}: ${n.awardedTime.toHours}").toList.mkString(", ")}.")
           }
 
           val ntacʹ = ntac.copy(awardedTime = totalAwardHere, undividedTime = Some(ntac.awardedTime))
