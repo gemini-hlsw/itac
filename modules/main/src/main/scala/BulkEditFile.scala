@@ -79,7 +79,7 @@ object BulkEditFile {
         // only do this when we initially write the file
         sh.setColumnWidth(Reference,     256 * 20)
         sh.setColumnWidth(Site,          256 * 5)
-        sh.setColumnWidth(Instrument,     256 * 20)
+        sh.setColumnWidth(Instrument,    256 * 20)
         sh.setColumnWidth(Pi,            256 * 20)
         sh.setColumnWidth(NgoEmail,      256 * 20)
         sh.setColumnWidth(StaffEmail,    256 * 20)
@@ -144,6 +144,38 @@ object BulkEditFile {
     }
 
     def updateSheet(sh: Sheet, ps: List[Proposal]): Unit = {
+
+      // If the sheet only has 7 columns it's from an earlier version and we need to add and
+      // populate the instrument column. N.B. cell number is 1-based
+      if (sh.getRow(0).getLastCellNum == 7) {
+
+        // Move everything over
+        sh.shiftColumns(Instrument, Instrument, 1)
+
+        // A bold font!
+        val font = sh.getWorkbook.createFont
+        font.setBold(true)
+
+        // A bold style!
+        val style = sh.getWorkbook.createCellStyle
+        style.setFont(font)
+
+        // Add the header
+        val c = sh.getRow(0).createCell(Instrument)
+        c.setCellStyle(style)
+        c.setCellValue("Instrument")
+
+        // Add data
+        sh.rowIterator().asScala.drop(1).foreach { r =>
+          val c = r.createCell(Instrument)
+          val ref = r.getCell(Reference).getStringCellValue()
+          ps.find(_.ntac.reference == ref).foreach { p =>
+            c.setCellValue(instruments(p))
+          }
+        }
+
+      }
+
       ps.sortBy(_.ntac.reference).foldLeft(1) { (row, p) =>
 
         // Try to add `p` at `row` and yield the new value for `row`
