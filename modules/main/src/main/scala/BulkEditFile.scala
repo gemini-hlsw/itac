@@ -15,6 +15,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import scala.collection.JavaConverters._
 import cats.effect.Sync
+import edu.gemini.model.p1.immutable.VisitorBlueprint
 
 object BulkEditFile {
 
@@ -126,7 +127,12 @@ object BulkEditFile {
 
     def instruments(p: Proposal): String =
       (p.obsList ++ p.band3Observations)
-        .map { o => o.p1Observation.blueprint.fold("None")(_.name.takeWhile(_ != ' ')) }
+        .map { o =>
+          o.p1Observation.blueprint.foldMap {
+            case VisitorBlueprint(_, name) => name.trim
+            case b                         => b.name.takeWhile(_ != ' ')
+          }
+        }
         .distinct
         .sorted
         .mkString(", ")

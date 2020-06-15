@@ -9,6 +9,7 @@ import cats.effect._
 import cats.implicits._
 import edu.gemini.tac.qengine.api.QueueEngine
 import edu.gemini.model.p1.immutable.TooTarget
+import edu.gemini.model.p1.immutable.VisitorBlueprint
 import io.chrisdavenport.log4cats.Logger
 import java.nio.file.Path
 import itac.util.Colors
@@ -38,8 +39,10 @@ object ChartData {
                 os.foldMap { o =>
                   val scaledTime = o.time.toHours.value * ratio
                   val hour       = o.p1Observation.target match { case Some(TooTarget(_, _)) => -1; case _ => o.target.ra.toHr.mag.toInt }
-                  val instrument = o.p1Observation.blueprint.foldMap(_.name.takeWhile(_ != ' ')) // muhahaha
-
+                  val instrument = o.p1Observation.blueprint.foldMap {
+                    case VisitorBlueprint(_, name) => name.trim
+                    case b                         => b.name.takeWhile(_ != ' ')
+                   }
                   Map((instrument, hour) -> scaledTime)
                 }
 
