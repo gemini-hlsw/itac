@@ -10,6 +10,7 @@ import gsp.math.Declination
 import edu.gemini.tac.qengine.{ p1 => itac }
 import io.circe.Decoder
 import scala.collection.JavaConverters._
+import org.slf4j.LoggerFactory
 
 /**
  * Used by `SummaryEdit` to deal with observations, which is where most of the complications lie.
@@ -74,7 +75,7 @@ case class SummaryObsEdit(
   /*
    * The logic here is the same as in updateConditions above. We never change a value in-place.
    */
-  def updateTarget(o: Observation, p: Proposal): Unit = {
+  def updateTarget(o: Observation, p: Proposal, ref: String): Unit = {
 
     // Get current target and list of all sidereal targets, which will include `t`. Be sneaky and
     // filter out other target types, and exit early unless `t` is sidereal.
@@ -103,6 +104,14 @@ case class SummaryObsEdit(
           // else println(f"${System.identityHashCode(o).toHexString}%8s: switching from ${t.getId()} ${t.getName()} to ${t2.getId()} ${t2.getName()}")
           t2
         case None =>
+
+          // Warn in the case where we're clobbering something that's not a SiderealTarget
+          o.getTarget match {
+            case _: SiderealTarget => () // ok
+            case _: TooTarget | _: NonSiderealTarget =>
+              LoggerFactory.getLogger("edu.gemini.itac").warn(s"$ref: replacing ${o.getTarget.getClass.getSimpleName} '${o.getTarget.getName}' with a sidereal target.")
+          }
+
           val t2 = new SiderealTarget()
           t2.setDegDeg {
             val dd = new DegDegCoordinates
@@ -121,11 +130,11 @@ case class SummaryObsEdit(
 
   }
 
-  def update(o: Observation, p: Proposal): Unit =
+  def update(o: Observation, p: Proposal, ref: String): Unit =
     if (o != null) {
       o.setBand(band)
       updateCondition(o, p)
-      updateTarget(o, p)
+      updateTarget(o, p, ref)
       o.setEnabled(name != "DISABLE")
     }
 
