@@ -85,19 +85,19 @@ object ProposalLoader {
       val pio: ProposalIo =
         new ProposalIo(partners)
 
-      def read(proposal: I.Proposal, mproposal: M.Proposal): State[JointIdGen, EitherNel[String, NonEmptyList[Proposal]]] =
+      def read(proposal: I.Proposal, mproposal: M.Proposal, p1xml: File): State[JointIdGen, EitherNel[String, NonEmptyList[Proposal]]] =
         State { jig =>
-          pio.read(proposal, mproposal, when, jig) match {
+          pio.read(proposal, mproposal, when, jig, p1xml) match {
             case scalaz.Failure(ss)         => (jig,  NonEmptyList(ss.head, ss.tail.toList).asLeft)
             case scalaz.Success((ps, jigʹ)) => (jigʹ, NonEmptyList(ps.head, ps.tail.toList).asRight)
           }
         }
 
       def load(file: File): F[(File, EitherNel[String, NonEmptyList[Proposal]])] =
-        loadPhase1(file).map { case (i, m) => read(i, m).tupleLeft(file).runA(JointIdGen(1)).value }
+        loadPhase1(file).map { case (i, m) => read(i, m, file).tupleLeft(file).runA(JointIdGen(1)).value }
 
       def loadMany(dir: File): F[List[(File, EitherNel[String, NonEmptyList[Proposal]])]] =
-        loadManyPhase1(dir).map(_.traverse(a => read(a._2, a._3).tupleLeft(a._1)).runA(JointIdGen(1)).value)
+        loadManyPhase1(dir).map(_.traverse(a => read(a._2, a._3, a._1).tupleLeft(a._1)).runA(JointIdGen(1)).value)
 
       def loadByReference(dir: File, ref: String): F[(File, NonEmptyList[Proposal])] =
         Sync[F].delay(Option(dir.listFiles)).flatMap {

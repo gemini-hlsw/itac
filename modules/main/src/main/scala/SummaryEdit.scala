@@ -29,7 +29,7 @@ case class SummaryEdit(
     os.forEach { o =>
       val digest = ObservationDigest.digest(im.Observation(o))
       obsEdits.find(_.hash == digest) match {
-        case Some(e) => e.update(o, p)
+        case Some(e) => e.update(o, p, reference)
         case None => println(s"No digest for $o")
       }
     }

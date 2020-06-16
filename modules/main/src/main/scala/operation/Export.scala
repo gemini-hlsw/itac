@@ -67,8 +67,10 @@ object Export {
                   dropNullKeys = true,
                   // mappingStyle = Printer.FlowStyle.Block
                 )
-                println(s"${pr.pretty(SummaryDebugJson.EncoderProposal(p))}\n-----------------------\n")
 
+                println(s"[An] input file is ${e.proposals.head.p1xmlFile.getName} and the PDF file is ${e.proposals.head.p1pdfFile.getName}.")
+
+                println(s"${pr.pretty(SummaryDebugJson.EncoderProposal(p))}\n-----------------------\n")
 
               }
 
