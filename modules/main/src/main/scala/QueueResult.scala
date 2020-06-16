@@ -29,7 +29,7 @@ final case class QueueResult(queueCalc: QueueCalc) {
     val ps = queueCalc.queue.bandedQueue.getOrElse(qb, Nil)
     val gs = shuffle(groupJoints(ps))
     gs.zipWithIndex.map { case (nel, n) =>
-      Entry(nel, ProgramId.parse(s"${site.abbreviation}-${semester}-Q-${100 * qb.number + (n + 1)}"))
+      Entry(nel, ProgramId.parse(s"${site.abbreviation}-${semester}-${nel.head.mode.programId}-${100 * qb.number + (n + 1)}"))
     }
   }
 
