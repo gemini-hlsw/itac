@@ -16,6 +16,7 @@ import edu.gemini.model.p1.immutable.FastTurnaroundProgramClass
 import edu.gemini.model.p1.immutable.ClassicalProposalClass
 import edu.gemini.model.p1.immutable.QueueProposalClass
 import edu.gemini.model.p1.immutable.ProposalClass
+import java.io.File
 
 /**
  * The Proposal trait defines the information associated with a proposal for the purpose
@@ -91,6 +92,20 @@ sealed trait Proposal {
   def p1proposal: edu.gemini.model.p1.immutable.Proposal
   def p1mutableProposal: edu.gemini.model.p1.mutable.Proposal
 
+  def p1xmlFile: File
+
+  def p1pdfFile: File =
+    // p1xmlFile can be null because we need to retrofit old tests
+    Option(p1xmlFile).map { f =>
+      val name     = f.getName
+      val baseName =
+        name.lastIndexOf('.') match {
+          case -1 => name
+          case  n => name.substring(0, n)
+        }
+      new File(f.getParentFile, s"$baseName.pdf")
+    }.orNull
+
 }
 
 /**
@@ -109,7 +124,8 @@ case class CoreProposal(
   piName: Option[String] = None,
   piEmail: Option[String] = None,
   p1proposal: edu.gemini.model.p1.immutable.Proposal = null, // to avoid having to generate one for testcases that don't care
-  p1mutableProposal: edu.gemini.model.p1.mutable.Proposal = null // to avoid having to generate one for testcases that don't care
+  p1mutableProposal: edu.gemini.model.p1.mutable.Proposal = null, // to avoid having to generate one for testcases that don't care
+  p1xmlFile: File = null, // to avoid having to generate one for testcases that don't care
 ) extends Proposal {
   def core: CoreProposal = this
 }
@@ -155,6 +171,7 @@ case class JointProposalPart(
 
   def p1proposal = core.p1proposal
   def p1mutableProposal: edu.gemini.model.p1.mutable.Proposal = core.p1mutableProposal
+  def p1xmlFile = core.p1xmlFile
 
 }
 
@@ -218,6 +235,7 @@ case class JointProposal(jointIdValue: String, core: CoreProposal, ntacs: List[N
 
   def p1mutableProposal: edu.gemini.model.p1.mutable.Proposal = sys.error("should never get here, this class is to be removed")
 
+  def p1xmlFile: File = sys.error("should never get here, this class is to be removed")
 
 }
 

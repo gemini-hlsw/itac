@@ -14,6 +14,7 @@ import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.util.Percent
 import edu.gemini.tac.qengine.util.Time
 import org.slf4j.LoggerFactory
+import java.io.File
 
 /**
   * Immutable Phase1 proposal
@@ -67,7 +68,8 @@ class ProposalIo(partners: Map[String, Partner]) {
       p: im.Proposal,
       mp: m.Proposal,
       when: Long,
-      jointIdGen: JointIdGen
+      jointIdGen: JointIdGen,
+      p1xml: File
   ): ValidationNel[String, (NonEmptyList[Proposal], JointIdGen)] = {
 
     def read(
@@ -184,7 +186,8 @@ class ProposalIo(partners: Map[String, Partner]) {
             piName(p),
             piEmail(p),
             p,
-            mp
+            mp,
+            p1xml
           )
 
           // If there are more ntacs, it is a Joint, otherwise just this core.
