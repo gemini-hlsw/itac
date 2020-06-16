@@ -336,7 +336,7 @@ trait MainOpts { this: CommandIOApp =>
     Command(
       name   = "duplicates",
       header = "Search for duplicate targets."
-    )(tolerance.map(Duplicates[IO](_)))
+    )((siteConfig, rolloverReport, tolerance).mapN((sc, rr, t) => Duplicates[IO](QueueEngine, sc, rr, t)))
 
   lazy val ops: Opts[Operation[IO]] =
     List(
