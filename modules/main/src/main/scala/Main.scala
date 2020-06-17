@@ -25,6 +25,7 @@ import java.nio.file.Paths
 import java.text.ParseException
 import org.slf4j.impl.ColoredSimpleLogger
 import scala.util.control.NonFatal
+import itac.config.PerSite
 // object Stub {
 //   def main(args: Array[String]): Unit =
 //     Main.main(Array("-d", "hawaii", "summarize", "CL-2020B-014"))
@@ -175,6 +176,12 @@ trait MainOpts { this: CommandIOApp =>
       name   = "queue",
       header = "Generate a queue."
     )((siteConfig, rolloverReport).mapN((sc, rr) => Queue[IO](QueueEngine, sc, rr)))
+
+  lazy val staffEmailSpreadsheet: Command[Operation[IO]] =
+    Command(
+      name   = "staff-email-spreadsheet",
+      header = "Generate the staff email spreadsheet."
+    )(StaffEmailSpreadsheet[IO](QueueEngine, PerSite.unfold(Workspace.Default.queueConfigFile), PerSite.unfold(Workspace.Default.rolloverReport)).pure[Opts])
 
   lazy val export: Command[Operation[IO]] =
     Command(
@@ -353,6 +360,7 @@ trait MainOpts { this: CommandIOApp =>
       scheduling,
       blueprints,
       chartData,
+      staffEmailSpreadsheet
     ).sortBy(_.name).map(Opts.subcommand(_)).foldK
 
 }
