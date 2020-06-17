@@ -101,6 +101,7 @@ object Workspace {
   object Default {
     val CommonConfigFile = Paths.get("common.yaml")
     def queueConfigFile(site: Site) = Paths.get(s"${site.abbreviation.toLowerCase}-queue.yaml")
+    def rolloverReport(site: Site) = Paths.get(s"${site.abbreviation.toLowerCase}-rollovers.yaml")
   }
 
   val printer: Printer =
