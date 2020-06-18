@@ -103,8 +103,8 @@ case class SummaryObsEdit(
 
         case _: NonSiderealTarget =>
 
-          // We never match a NonSiderealTarget. Always replace with a sidereal target if there
-          // is any edit to the observation.
+          // We never match a NonSiderealTarget. Always replace with a sidereal target if it is
+          // mentioned in the edits file.
           false
 
       }
