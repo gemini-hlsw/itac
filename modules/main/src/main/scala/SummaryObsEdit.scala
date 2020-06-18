@@ -77,27 +77,39 @@ case class SummaryObsEdit(
    */
   def updateTarget(o: Observation, p: Proposal, ref: String): Unit = {
 
-    // Get current target and list of all sidereal targets, which will include `t`. Be sneaky and
-    // filter out other target types, and exit early unless `t` is sidereal.
-    // val t = Option(o.getTarget).collect { case st: SiderealTarget => st }.getOrElse(return) // !!
     val allTargets = p.getTargets().getSiderealOrNonsiderealOrToo().asScala
-    val allSiderealTargets = allTargets.collect { case st: SiderealTarget => st }
 
-    val existing: Option[SiderealTarget] =
-      allSiderealTargets.find { t2 =>
+    // are these angular values within 0.0001 of a degree?
+    implicit class DoubleOps(a: Double) {
+      def ~=(b: Double): Boolean =
+        (a - b).doubleValue.abs <= 0.0001
+    }
 
-        // are these angular values within 0.0001 of a degree?
-        def close(a: Double, b: Double): Boolean =
-          (a - b).doubleValue.abs <= 0.0001
+    val existing: Option[Target] =
+      allTargets.find {
+        case t2: SiderealTarget =>
 
-        // in principle we should check other properties but in practice this is good enough
-        close(t2.getDegDeg.getRa.doubleValue, ra.toAngle.toDoubleDegrees)         &&
-        close(t2.getDegDeg.getDec.doubleValue, dec.toAngle.toSignedDoubleDegrees) &&
-        t2.getName == name
+          // We match a SiderealTarget if it has[very] similar coordinates and the same name.
+          (t2.getDegDeg.getRa.doubleValue  ~= ra.toAngle.toDoubleDegrees)        &&
+          (t2.getDegDeg.getDec.doubleValue ~= dec.toAngle.toSignedDoubleDegrees) &&
+          (t2.getName                      == name)
+
+        case t2: TooTarget =>
+
+          // We match a TooTarget if it has zero coordinates and the same name.
+          (t2.getName == name)                &&
+          (ra         == RightAscension.Zero) &&
+          (dec        == Declination.Zero)
+
+        case _: NonSiderealTarget =>
+
+          // We never match a NonSiderealTarget. Always replace with a sidereal target if there
+          // is any edit to the observation.
+          false
 
       }
 
-    val replaceWith: SiderealTarget =
+    val replaceWith: Target =
       existing match {
         case Some(t2) =>
           // if (t.getId() == t2.getId()) println(f"${System.identityHashCode(o).toHexString}%8s: keeping ${t.getId()} ${t.getName()}.")
@@ -130,12 +142,16 @@ case class SummaryObsEdit(
 
   }
 
+  // Appy this edit to the specified observation.
   def update(o: Observation, p: Proposal, ref: String): Unit =
     if (o != null) {
-      o.setBand(band)
-      updateCondition(o, p)
-      updateTarget(o, p, ref)
-      o.setEnabled(name != "DISABLE")
+      if (name == "DISABLE") {
+        o.setEnabled(false)
+      } else {
+        o.setBand(band)
+        updateCondition(o, p)
+        updateTarget(o, p, ref)
+      }
     }
 
 }
