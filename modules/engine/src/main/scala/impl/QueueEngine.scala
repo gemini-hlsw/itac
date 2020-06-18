@@ -230,9 +230,11 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
       // within each band since at this point they're all created equal.
       val bandedQueueʹ   = stageWithBands123.queue.bandedQueue ++ band12map
       val bandedQueueʹʹ  = bandedQueueʹ + (QueueBand.QBand4 -> band4)
-      val bandedQueueʹʹʹ = bandedQueueʹʹ.map { case (k, v) => (k, v.sortBy(_.piName.reverse)) }
 
-      // One last adjustment, move some proposals to specific bands.
+      // We're going to wait until QueueResult to scramble and assign program IDs.
+      val bandedQueueʹʹʹ = bandedQueueʹʹ // .map { case (k, v) => (k, QueueOrdering.scramble(v)) }
+
+      // One last adjustment, move some proposals to [the end of] specific bands.
       val bandedQueueʹʹʹʹ = config.explicitQueueAssignments.toList.foldRight(bandedQueueʹʹʹ) { case ((ref, band), bq) =>
         // remove proposal from current queue, wherever it is
         bq.map { case (k, v) => k -> v.filterNot(_.ntac.reference == ref) } |+|

@@ -16,20 +16,17 @@ final case class QueueResult(queueCalc: QueueCalc) {
   import QueueResult.Entry
   import queueCalc.context.{ site, semester }
 
-  /** Sort by PI last name, reversed, using TAC references as a tie-breaker. */
-  private def shuffle(ps: List[NonEmptyList[Proposal]]): List[NonEmptyList[Proposal]] =
-    ps.sortBy { nel => (nel.head.piName.orEmpty.reverse, nel.head.id.reference) }
-
-  /** Group joints together by finding proposals with the same PI and title. */
+  /** Group joints together by finding proposals with the same PI and title, sorting each group by rank. */
   private def groupJoints(ps: List[Proposal]): List[NonEmptyList[Proposal]] =
-    ps.groupBy(p => (p.piName, p.p1proposal.title)).values.toList.map(NonEmptyList.fromList(_).get)
+    ps.groupBy(p => (p.piName, p.p1proposal.title)).values.toList.map(ps => NonEmptyList.fromList(ps.sortBy(_.ntac.ranking.num.getOrElse(0.0))).get)
 
   /** Get entries in the specified band, ordered by program id. */
   def entries(qb: QueueBand): List[Entry] = {
     val ps = queueCalc.queue.bandedQueue.getOrElse(qb, Nil)
-    val gs = shuffle(groupJoints(ps))
+    val gs = groupJoints(ps).sortBy(_.head.piName.fold("")(_.reverse))
     gs.zipWithIndex.map { case (nel, n) =>
-      Entry(nel, ProgramId.parse(s"${site.abbreviation}-${semester}-${nel.head.mode.programId}-${100 * qb.number + (n + 1)}"))
+      val num = explicitNumber(nel.head.ntac.reference).getOrElse(100 * qb.number + (n + 1))
+      Entry(nel, ProgramId.parse(s"${site.abbreviation}-${semester}-${nel.head.mode.programId}-$num"))
     }
   }
 
@@ -40,6 +37,14 @@ final case class QueueResult(queueCalc: QueueCalc) {
        .filter(_.ntac.partner == partner)
        .toNel
        .map(Entry(_, e.programId))
+    }
+
+  /** LP program numbers are given in the reference. */
+  private def explicitNumber(ref: String): Option[Int] =
+    ref.split("-") match {
+      case Array("LP", _, num)    => Either.catchOnly[NumberFormatException](num.toInt).toOption
+      case Array("LP", _, num, _) => Either.catchOnly[NumberFormatException](num.toInt).toOption
+      case _ => None
     }
 
 }
