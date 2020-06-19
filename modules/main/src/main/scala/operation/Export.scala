@@ -2,8 +2,6 @@
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac
-
-
 package operation
 
 import edu.gemini.tac.qengine.api.QueueCalc
@@ -32,19 +30,16 @@ object Export {
 
       def doExport(qc: QueueCalc, bes: Map[String, BulkEdit]): F[ExitCode] =
         Sync[F].delay {
+
+          // we need to do BOTH queues here
+
             val qr = QueueResult(qc)
             QueueBand.values.foreach { qb =>
 
+              // Queue Proposals
               qr.entries(qb).foreach { e =>
 
-                // Before merging we need to apply bulk updates. When we merge we will get a random
-                // ITAC node ... which one do we pick? We need to merge them together and add their
-                // times and pick a primary NGO!
-
-                // NGO contact is determined by the PI's institution.
-
-                // We use the ITAC node where the ngo lead == proposal pi.
-
+                // Add ITAC Accept nodes to each.
                 e.proposals.toList.foreach { p =>
                   bes.get(p.ntac.reference) match {
                     case Some(be) => be.unsafeApplyUpdate(p.p1mutableProposal, itac.BulkEdit.Accept(e.programId, qb.number, {
@@ -57,28 +52,24 @@ object Export {
                   }
                 }
 
+                // Merge joints.
                 val p = Merge.merge(e.proposals.map(_.p1mutableProposal))
 
-
-                // import io.circe.yaml.syntax._
-                // import io.circe.yaml.Printer
-                val pr = io.circe.yaml.Printer(
-                  preserveOrder = true,
-                  dropNullKeys = true,
-                  // mappingStyle = Printer.FlowStyle.Block
-                )
-
+                // debug print the proposal
+                println("─" * 100)
                 println(s"[An] input file is ${e.proposals.head.p1xmlFile.getName} and the PDF file is ${e.proposals.head.p1pdfFile.getName}.")
+                println(SummaryDebug.summary(p))
 
-                println(s"${pr.pretty(SummaryDebugJson.EncoderProposal(p))}\n-----------------------\n")
+                // TODO: write the file out, copy the PDF file
 
               }
 
-              // TODO: also export classicals! they also need an ITAC node
-              // Also need rejects!
-
-
             }
+
+            // Non-Queue Proposals - classical + subaru. program is ordinals will be given in queue-config.
+            // these really should be fed into the queue engine and placed in the proper bands.
+
+            // Workbooks for NGOs
 
             ExitCode.Success
           }

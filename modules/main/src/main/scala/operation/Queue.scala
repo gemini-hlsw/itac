@@ -98,7 +98,7 @@ object Queue {
                 })
                 result.entries(qb).sortBy(_.proposals.head.ntac.ranking.num.orEmpty).foreach { case QueueResult.Entry(ps, pid) =>
                   val ss = ps.map { p =>
-                    f"${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-15s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  $pid"
+                    f"${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-17s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  $pid"
                   }
                   printWithGroupBars(ss.toList)
                 }
@@ -107,10 +107,10 @@ object Queue {
 
               println(separator)
 
-              def hasProposals(p: Partner): Boolean = ps.exists(_.ntac.partner == p)
+              def hasProposals(p: Partner): Boolean = queueCalc.queue.toList.exists(_.ntac.partner == p)
 
               // Partners that appear in the queue
-              partners.sortBy(_.id).filter(p => queueCalc.queue.queueTime(p).toHours.value > 0 && hasProposals(p)) foreach { p =>
+              partners.sortBy(_.id).filter(hasProposals) foreach { p =>
                 println(s"${Colors.BOLD}Partner Details for $p ${Colors.RESET}\n")
                 QueueBand.values.foreach { qb =>
                   val q = queueCalc.queue
@@ -123,7 +123,7 @@ object Queue {
                   })
                   result.entries(qb, p).sortBy(_.proposals.head.ntac.ranking.num.orEmpty).foreach { case QueueResult.Entry(ps, pid) =>
                     val ss = ps.map { p =>
-                      f"${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-15s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  $pid"
+                      f"${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-17s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  $pid"
                     }
                     printWithGroupBars(ss.toList)
                   }
@@ -190,7 +190,7 @@ object Queue {
                 val b12msg = log.get(p.id, QueueBand.Category.B1_2)
                 val b3msg  = log.get(p.id, QueueBand.Category.B3)
                 if (p.site == queueCalc.context.site && b12msg.isEmpty && b3msg.isEmpty) {
-                  println(f"- ${p.id.reference}%-15s ${p.piName.orEmpty}%-20s  ${p.time.toHours.value}%5.1f h")
+                  println(f"- ${p.id.reference}%-17s ${p.piName.orEmpty}%-20s  ${p.time.toHours.value}%5.1f h")
                 }
               }
               println()

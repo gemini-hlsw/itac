@@ -16,5 +16,7 @@ final case class QueueEngineConfig(
   partnerSeq: PartnerSequence,
   rollover: RolloverReport,
   restrictedBinConfig: RestrictionConfig = RestrictionConfig(),
-  explicitQueueAssignments: Map[String, QueueBand] = Map.empty
+  explicitQueueAssignments: Map[String, QueueBand] = Map.empty,
+  extrasAssignments: Map[String, QueueBand] = Map.empty,
+  extrasNotSubmittedAssignments: Map[String, QueueBand] = Map.empty,
 )

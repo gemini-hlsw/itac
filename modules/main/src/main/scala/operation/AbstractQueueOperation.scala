@@ -36,6 +36,7 @@ abstract class AbstractQueueOperation[F[_]](
       qc <- ws.queueConfig(siteConfig)
       rr <- ws.readRolloverReport(rolloverReport.getOrElse(s"${qc.site.abbreviation.toLowerCase}-rollovers.yaml"))
       ps <- ws.proposals
+      es <- ws.extras
 
       // Compute the queue
       partners  = cc.engine.partners
@@ -46,7 +47,7 @@ abstract class AbstractQueueOperation[F[_]](
         partners  = partners,
         config    = QueueEngineConfig(
           partners   = partners,
-        partnerSeq = cc.engine.partnerSequence(qc.site),
+          partnerSeq = cc.engine.partnerSequence(qc.site),
           rollover   = rr,
           binConfig  = createConfig(
             ctx        = Context(qc.site, cc.semester),
@@ -60,11 +61,14 @@ abstract class AbstractQueueOperation[F[_]](
             absoluteTimeRestrictions = Nil, // TODO
             bandRestrictions         = Nil, // TODO
           ),
-          explicitQueueAssignments = qc.explicitAssignments.getOrElse(Map.empty)
+          explicitQueueAssignments      = qc.explicitAssignments.getOrElse(Map.empty),
+          extrasAssignments             = qc.extrasAssignments.getOrElse(Map.empty),
+          extrasNotSubmittedAssignments = qc.extrasNotSubmittedAssignments.getOrElse(Map.empty),
         ),
+        extras = es,
       )
 
-    } yield (ps, queueCalc)
+    } yield (ps ++ es, queueCalc)
 
   // These methods were lifted from the ITAC web application.
 

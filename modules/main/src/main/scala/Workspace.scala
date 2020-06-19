@@ -68,6 +68,9 @@ trait Workspace[F[_]] {
   def queueConfig(path: Path): F[QueueConfig]
 
   def proposals: F[List[Proposal]]
+  def extras: F[List[Proposal]]
+  def extrasNotSubmitted: F[List[Proposal]]
+  def removed: F[List[Proposal]]
 
   def proposal(ref: String): F[(File, NonEmptyList[Proposal])]
 
@@ -90,13 +93,16 @@ trait Workspace[F[_]] {
 
 object Workspace {
 
-  val EmailTemplateDir = Paths.get("email_templates")
-  val ProposalDir      = Paths.get("proposals")
-  val EditsDir         = Paths.get("edits")
-  val BulkEditsFile    = Paths.get("bulk_edits.xls")
+  val EmailTemplateDir      = Paths.get("email_templates")
+  val ProposalDir           = Paths.get("proposals")
+  val ExtrasDir             = Paths.get("extras")
+  val ExtrasNotSubmittedDir = Paths.get("extras_not_submitted")
+  val RemovedDir            = Paths.get("removed")
+  val EditsDir              = Paths.get("edits")
+  val BulkEditsFile         = Paths.get("bulk_edits.xls")
 
   val WorkspaceDirs: List[Path] =
-    List(EmailTemplateDir, ProposalDir, EditsDir)
+    List(EmailTemplateDir, ProposalDir, ExtrasDir, ExtrasNotSubmittedDir, RemovedDir, EditsDir)
 
   object Default {
     val CommonConfigFile = Paths.get("common.yaml")
@@ -260,11 +266,11 @@ object Workspace {
             m <- BulkEditFile.read(f)
           } yield m
 
-        def proposals: F[List[Proposal]] =
+        def loadProposals(dir: Path): F[List[Proposal]] =
           for {
             cwd  <- cwd
             conf <- commonConfig
-            p     = cwd.resolve(ProposalDir)
+            p     = cwd.resolve(dir)
             pas   = conf.engine.partners.map { p => (p.id, p) } .toMap
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
@@ -276,6 +282,11 @@ object Workspace {
             ret   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
             _    <- bulkEdits(ret)
           } yield ret
+
+        def proposals: F[List[Proposal]] = loadProposals(ProposalDir)
+        def extras: F[List[Proposal]] = loadProposals(ExtrasDir)
+        def extrasNotSubmitted: F[List[Proposal]] = loadProposals(ExtrasNotSubmittedDir)
+        def removed: F[List[Proposal]] = loadProposals(RemovedDir)
 
         def proposal(ref: String): F[(File, NonEmptyList[Proposal])] =
           for {
