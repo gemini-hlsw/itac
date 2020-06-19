@@ -15,7 +15,7 @@ class Editor[F[_]: Sync: Logger](edits: Map[String, SummaryEdit], log: Logger[F]
   import EditorOps._
 
   def applyEdits(file: File, p: Proposal): F[Unit] =
-    edits.get(p.id) match {
+    p.id.flatMap(edits.get) match {
       case Some(e) =>
 
         log.debug(s"There are edits for ${p.id}/${file.getName}") *>
@@ -35,20 +35,20 @@ object EditorOps {
 
   implicit class ProposalOps(self: im.Proposal) {
 
-    def id: String =
+    def id: Option[String] =
       self.proposalClass match {
 
         case pc: im.GeminiNormalProposalClass =>
-          (pc.subs match {
+          pc.subs match {
             case Left(ss)  => ss.flatMap(_.response.map(_.receipt.id)).headOption
             case Right(s)  => s.response.map(_.receipt.id)
-          }).getOrElse(sys.error(s"Can't get id from ${pc.subs}"))
+          }
 
         case pc: im.ExchangeProposalClass =>
-          pc.subs.flatMap(_.response.map(_.receipt.id)).headOption.getOrElse(sys.error(s"Can't get id from ${pc.subs}"))
+          pc.subs.flatMap(_.response.map(_.receipt.id)).headOption
 
         case lp: im.LargeProgramClass =>
-          lp.sub.response.map(_.receipt.id).headOption.getOrElse(sys.error(s"Can't get id from ${lp.sub}"))
+          lp.sub.response.map(_.receipt.id).headOption
 
         case pc => sys.error(s"Unsupported proposal class: $pc")
       }

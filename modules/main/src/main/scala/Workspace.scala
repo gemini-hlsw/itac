@@ -266,7 +266,7 @@ object Workspace {
             m <- BulkEditFile.read(f)
           } yield m
 
-        def loadProposals(dir: Path): F[List[Proposal]] =
+        def loadProposals(dir: Path, mutator: (File, edu.gemini.model.p1.mutable.Proposal) => F[Unit] = (_, _) => ().pure[F]): F[List[Proposal]] =
           for {
             cwd  <- cwd
             conf <- commonConfig
@@ -275,7 +275,7 @@ object Workspace {
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
             es   <- edits
-            ps   <- ProposalLoader[F](pas, when, es, log).loadMany(p.toFile.getAbsoluteFile)
+            ps   <- ProposalLoader[F](pas, when, es, log, mutator).loadMany(p.toFile.getAbsoluteFile)
             _    <- ps.traverse { case (f, Left(es)) => log.warn(s"$f: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
             psʹ   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
             _    <- log.debug(s"Read ${ps.length} proposals.")
@@ -285,8 +285,15 @@ object Workspace {
 
         def proposals: F[List[Proposal]] = loadProposals(ProposalDir)
         def extras: F[List[Proposal]] = loadProposals(ExtrasDir)
-        def extrasNotSubmitted: F[List[Proposal]] = loadProposals(ExtrasNotSubmittedDir)
+
+        def extrasNotSubmitted: F[List[Proposal]] =
+          loadProposals(ExtrasNotSubmittedDir, addAcceptance)
+
         def removed: F[List[Proposal]] = loadProposals(RemovedDir)
+
+        def addAcceptance(f: File, p: edu.gemini.model.p1.mutable.Proposal): F[Unit] =
+          log.warn(s"Adding LP acceptance for ${f.getName} - ${p.getInvestigators().getPi().getLastName()}") *>
+          Sync[F].delay(NonSubmitted.addAcceptance(f, p))
 
         def proposal(ref: String): F[(File, NonEmptyList[Proposal])] =
           for {
@@ -297,7 +304,7 @@ object Workspace {
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
             es   <- edits
-            p    <- ProposalLoader[F](pas, when, es, log).loadByReference(p.toFile.getAbsoluteFile, ref)
+            p    <- ProposalLoader[F](pas, when, es, log, (_, _) => ().pure[F]).loadByReference(p.toFile.getAbsoluteFile, ref)
           } yield p
 
         def newQueueFolder(site: Site): F[Path] =

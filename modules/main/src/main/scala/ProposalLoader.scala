@@ -43,7 +43,8 @@ object ProposalLoader {
     partners: Map[String, Partner],
     when: Long,
     edits: Map[String, SummaryEdit],
-    logger: Logger[F]
+    logger: Logger[F],
+    mutator: (File, edu.gemini.model.p1.mutable.Proposal) => F[Unit]
   ): ProposalLoader[F] =
     new ProposalLoader[F] {
 
@@ -65,7 +66,8 @@ object ProposalLoader {
           // This can fail if there is a problem in the XML, so we need to raise a useful error here
           // and catch it in the load methods below; or return Either here.
           context.createUnmarshaller.unmarshal(f).asInstanceOf[M.Proposal]
-        } .flatMap { p =>
+        } .flatTap(mutator(f, _))
+          .flatMap { p =>
           editor.applyEdits(f, p).flatMap { _ =>
             Sync[F].delay {
               // important to delay here! any time you look at a mutable value it's a side-effect!

@@ -36,9 +36,9 @@ object SummaryDebug {
 
   implicit val EncoderSubmissionAccept: Encoder[SubmissionAccept] = acc =>
     Json.obj(
-      "Recommend" -> acc.getRecommend.asJson,
-      "Email"     -> acc.getEmail.asJson,
-      "Ranking"   -> acc.getRanking.asJson,
+      "Recommend" -> Option(acc.getRecommend).asJson,
+      "Email"     -> Option(acc.getEmail).asJson,
+      "Ranking"   -> Option(acc.getRanking).asJson,
     )
 
   implicit val EncoderSubmissionReject: Encoder[SubmissionReject] = _ =>
@@ -96,6 +96,13 @@ object SummaryDebug {
       "Response"    -> Option(sub.getResponse).asJson,
     )
 
+  implicit val EncoderLargeProgramSubmission: Encoder[LargeProgramSubmission] = sub =>
+    Json.obj(
+      // "Request"     -> Option(sub.getRequest).asJson,
+      "Response"    -> Option(sub.getResponse).asJson,
+    )
+
+
   implicit val EncoderItacReject: Encoder[ItacReject] = _ =>
     "Reject".asJson
 
@@ -126,12 +133,18 @@ object SummaryDebug {
       "Itac"         -> Option(pc.getItac).asJson,
     )
 
+  implicit val EncoderLargeProgramClass: Encoder[LargeProgramClass] = pc =>
+    Json.obj(
+      "TooOption"    -> Option(pc.getTooOption).asJson,
+      "Submission"   -> Option(pc.getSubmission).asJson
+    )
+
   implicit val EncoderProposalClassChoice: Encoder[ProposalClassChoice] = pc =>
     Json.obj(
       "Classical"      -> Option(pc.getClassical).widen[ProposalClass].asJson,
       "Exchange"       -> Option(pc.getExchange).widen[ProposalClass].asJson,
       "FastTurnaround" -> Option(pc.getFastTurnaround).widen[ProposalClass].asJson,
-      "Large"          -> Option(pc.getLarge).widen[ProposalClass].asJson,
+      "Large"          -> Option(pc.getLarge).asJson,
       "Queue"          -> Option(pc.getQueue).asJson, // only specialized one right now
       "Sip"            -> Option(pc.getSip).widen[ProposalClass].asJson,
       "Special"        -> Option(pc.getSpecial).widen[ProposalClass].asJson,

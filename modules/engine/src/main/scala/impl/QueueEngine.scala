@@ -233,7 +233,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
       val bandedQueue3 = {
         filterProposals(extras, config).foldRight(bandedQueue2) { (p, q) =>
           config.extrasAssignments.get(p.ntac.reference) match {
-            case None => sys.error("No extrasAssignments element was specified for ${p.ntac.reference}, check your Gx-queue.yaml file.")
+            case None => sys.error(s"No extrasAssignments element was specified for ${p.ntac.reference}, check your Gx-queue.yaml file.")
             case Some(b) => q |+| Map(b -> List(p))
           }
         }
