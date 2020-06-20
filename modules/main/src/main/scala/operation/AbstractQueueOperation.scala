@@ -62,9 +62,7 @@ abstract class AbstractQueueOperation[F[_]](
             absoluteTimeRestrictions = Nil, // TODO
             bandRestrictions         = Nil, // TODO
           ),
-          explicitQueueAssignments      = qc.explicitAssignments.getOrElse(Map.empty),
-          extrasAssignments  = qc.extrasAssignments.getOrElse(Map.empty),
-          extrasNotSubmittedAssignments  = qc.extrasNotSubmittedAssignments.getOrElse(Map.empty),
+          explicitQueueAssignments = qc.explicitAssignments.getOrElse(Map.empty)
         ),
         extras = es ++ xs,
       )

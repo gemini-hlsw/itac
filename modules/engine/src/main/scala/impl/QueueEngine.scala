@@ -224,27 +224,28 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
       // Band4 is a simple calculation
       val band4 = PoorWeatherCalc(initialCandidates.remove(stageWithBands123.queue.toList).propList)
 
-      // Ok so *replace* bands 1/2 and then add band 4 then [deterministically] scramble the proposals
-      // within each band since at this point they're all created equal.
+      // Ok so *replace* bands 1/2 and then add band 4.
       val bandedQueue1  = stageWithBands123.queue.bandedQueue ++ band12map
       val bandedQueue2  = bandedQueue1 + (QueueBand.QBand4 -> band4)
 
-      // Add extras to the queue.
-      val bandedQueue3 = {
-        filterProposals(extras, config).foldRight(bandedQueue2) { (p, q) =>
-          config.extrasAssignments.get(p.ntac.reference) match {
-            case None => sys.error(s"No extrasAssignments element was specified for ${p.ntac.reference}, check your Gx-queue.yaml file.")
-            case Some(b) => q |+| Map(b -> List(p))
-          }
-        }
-      }
-
-      // One last adjustment, move some proposals to [the end of] specific bands.
-      val bandedQueue4 = config.explicitQueueAssignments.toList.foldRight(bandedQueue3) { case ((ref, band), bq) =>
-        // remove proposal from current queue, wherever it is
+      // Some proposals end up in the wrong bands and we want to override this. So those that are
+      // mentioned in explicitQueueAssignments will get moved here.
+      val bandedQueue3 = config.explicitQueueAssignments.toList.foldRight(bandedQueue2) { case ((ref, band), bq) =>
+        // remove proposal from current queue, wherever it is, if it's there at all
         bq.map { case (k, v) => k -> v.filterNot(_.ntac.reference == ref) } |+|
         // and put it in the explicit band (if we can find it)
         Map(band -> proposals.filter(_.ntac.reference == ref))
+      }
+
+      // Finally, add extras to the queue. These are proposals that don't go through the queue
+      // process but we know where they're supposed to end up.
+      val bandedQueue4 = {
+        filterProposals(extras, config).foldRight(bandedQueue3) { (p, q) =>
+          config.explicitQueueAssignments.get(p.ntac.reference) match {
+            case None => sys.error(s"No explicitQueueAssignments element was specified for ${p.ntac.reference}, check your Gx-queue.yaml file.")
+            case Some(b) => q |+| Map(b -> List(p))
+          }
+        }
       }
 
       // Done!

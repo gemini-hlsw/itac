@@ -20,10 +20,7 @@ final case class QueueConfig(
   raBinSize:  RaBinSize,
   decBinSize: DecBinSize,
   hours:      Map[Partner, BandTimes],
-  // these are options to allow missing in YAML
-  explicitAssignments: Option[Map[String, QueueBand]],
-  extrasAssignments: Option[Map[String, QueueBand]],
-  extrasNotSubmittedAssignments: Option[Map[String, QueueBand]],
+  explicitAssignments: Option[Map[String, QueueBand]] // to allow missing in YAML
 ) {
 
   object engine {
