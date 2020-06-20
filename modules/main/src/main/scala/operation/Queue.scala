@@ -98,7 +98,7 @@ object Queue {
                 })
                 result.entries(qb).sortBy(_.proposals.head.ntac.ranking.num.orEmpty).foreach { case QueueResult.Entry(ps, pid) =>
                   val ss = ps.map { p =>
-                    f"${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-15s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  $pid"
+                    f"${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-30s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  $pid"
                   }
                   printWithGroupBars(ss.toList)
                 }
@@ -107,11 +107,11 @@ object Queue {
 
               println(separator)
 
-              def hasProposals(p: Partner): Boolean = ps.exists(_.ntac.partner == p)
+              def hasProposals(p: Partner): Boolean = queueCalc.queue.toList.exists(_.ntac.partner == p)
 
               // Partners that appear in the queue
-              partners.sortBy(_.id).filter(p => queueCalc.queue.queueTime(p).toHours.value > 0 && hasProposals(p)) foreach { p =>
-                println(s"${Colors.BOLD}Partner Details for $p ${Colors.RESET}\n")
+              partners.sortBy(_.id).filter(hasProposals) foreach { p =>
+                println(s"${Colors.BOLD}Partner Details for ${if (p.id == "CFH") "GT" else p.toString} ${Colors.RESET}\n")
                 QueueBand.values.foreach { qb =>
                   val q = queueCalc.queue
 
@@ -123,7 +123,7 @@ object Queue {
                   })
                   result.entries(qb, p).sortBy(_.proposals.head.ntac.ranking.num.orEmpty).foreach { case QueueResult.Entry(ps, pid) =>
                     val ss = ps.map { p =>
-                      f"${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-15s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  $pid"
+                      f"${p.ntac.ranking.num.orEmpty}%5.1f ${p.id.reference}%-30s ${p.piName.orEmpty.take(20)}%-20s ${p.time.toHours.value}%5.1f h  $pid"
                     }
                     printWithGroupBars(ss.toList)
                   }
@@ -135,7 +135,7 @@ object Queue {
                     val pct   = if (avail == 0) 0.0 else (used / avail) * 100
 
                     if (qb != QueueBand.QBand3) {
-                      println(f"                                  B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%%)")
+                      println(f"                                                 B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%%)")
                     }
 
                     // After the Band2 total print an extra B1+B2 total.
@@ -143,16 +143,16 @@ object Queue {
                       val used  = (q.usedTime(QueueBand.QBand1, p) + q.usedTime(QueueBand.QBand2, p)).toHours.value
                       val avail = (q.queueTime(QueueBand.QBand1, p) + q.queueTime(QueueBand.QBand2, p)).toHours.value
                       val pct   = if (avail == 0) 0.0 else (used / avail) * 100
-                      println(f"                               B1+B2 Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%% ≤ ${(queueCalc.queue.queueTime.overfillAllowance(QueueBand.Category.B1_2).foldMap(_.doubleValue) + 100.0)}%3.1f%%)")
+                      println(f"                                              B1+B2 Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%% ≤ ${(queueCalc.queue.queueTime.overfillAllowance(QueueBand.Category.B1_2).foldMap(_.doubleValue) + 100.0)}%3.1f%%)")
                     }
 
                     if (qb == QueueBand.QBand3) {
-                      println(f"                                  B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%% ≤ ${(queueCalc.queue.queueTime.overfillAllowance(QueueBand.Category.B3).foldMap(_.doubleValue) + 100.0)}%3.1f%%)")
+                      println(f"                                                 B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%% ≤ ${(queueCalc.queue.queueTime.overfillAllowance(QueueBand.Category.B3).foldMap(_.doubleValue) + 100.0)}%3.1f%%)")
                     }
 
                   } else {
                     val used = q.usedTime(qb, p).toHours.value
-                    println(f"                                  B${qb.number} Total: $used%5.1f h\n")
+                    println(f"                                                 B${qb.number} Total: $used%5.1f h\n")
                   }
 
                     println()
@@ -190,7 +190,7 @@ object Queue {
                 val b12msg = log.get(p.id, QueueBand.Category.B1_2)
                 val b3msg  = log.get(p.id, QueueBand.Category.B3)
                 if (p.site == queueCalc.context.site && b12msg.isEmpty && b3msg.isEmpty) {
-                  println(f"- ${p.id.reference}%-15s ${p.piName.orEmpty}%-20s  ${p.time.toHours.value}%5.1f h")
+                  println(f"- ${p.id.reference}%-30s ${p.piName.orEmpty}%-20s  ${p.time.toHours.value}%5.1f h")
                 }
               }
               println()

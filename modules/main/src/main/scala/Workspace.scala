@@ -68,6 +68,9 @@ trait Workspace[F[_]] {
   def queueConfig(path: Path): F[QueueConfig]
 
   def proposals: F[List[Proposal]]
+  def extras: F[List[Proposal]]
+  def extrasNotSubmitted: F[List[Proposal]]
+  def removed: F[List[Proposal]]
 
   def proposal(ref: String): F[(File, NonEmptyList[Proposal])]
 
@@ -90,13 +93,16 @@ trait Workspace[F[_]] {
 
 object Workspace {
 
-  val EmailTemplateDir = Paths.get("email_templates")
-  val ProposalDir      = Paths.get("proposals")
-  val EditsDir         = Paths.get("edits")
-  val BulkEditsFile    = Paths.get("bulk_edits.xls")
+  val EmailTemplateDir      = Paths.get("email_templates")
+  val ProposalDir           = Paths.get("proposals")
+  val ExtrasDir             = Paths.get("extras")
+  val ExtrasNotSubmittedDir = Paths.get("extras_not_submitted")
+  val RemovedDir            = Paths.get("removed")
+  val EditsDir              = Paths.get("edits")
+  val BulkEditsFile         = Paths.get("bulk_edits.xls")
 
   val WorkspaceDirs: List[Path] =
-    List(EmailTemplateDir, ProposalDir, EditsDir)
+    List(EmailTemplateDir, ProposalDir, ExtrasDir, ExtrasNotSubmittedDir, RemovedDir, EditsDir)
 
   object Default {
     val CommonConfigFile = Paths.get("common.yaml")
@@ -260,22 +266,34 @@ object Workspace {
             m <- BulkEditFile.read(f)
           } yield m
 
-        def proposals: F[List[Proposal]] =
+        def loadProposals(dir: Path, mutator: (File, edu.gemini.model.p1.mutable.Proposal) => F[Unit] = (_, _) => ().pure[F]): F[List[Proposal]] =
           for {
             cwd  <- cwd
             conf <- commonConfig
-            p     = cwd.resolve(ProposalDir)
+            p     = cwd.resolve(dir)
             pas   = conf.engine.partners.map { p => (p.id, p) } .toMap
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
             es   <- edits
-            ps   <- ProposalLoader[F](pas, when, es, log).loadMany(p.toFile.getAbsoluteFile)
+            ps   <- ProposalLoader[F](pas, when, es, log, mutator).loadMany(p.toFile.getAbsoluteFile)
             _    <- ps.traverse { case (f, Left(es)) => log.warn(s"$f: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
             psʹ   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
             _    <- log.debug(s"Read ${ps.length} proposals.")
             ret   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
             _    <- bulkEdits(ret)
           } yield ret
+
+        def proposals: F[List[Proposal]] = loadProposals(ProposalDir)
+        def extras: F[List[Proposal]] = loadProposals(ExtrasDir)
+
+        def extrasNotSubmitted: F[List[Proposal]] =
+          loadProposals(ExtrasNotSubmittedDir, addAcceptance)
+
+        def removed: F[List[Proposal]] = loadProposals(RemovedDir)
+
+        def addAcceptance(f: File, p: edu.gemini.model.p1.mutable.Proposal): F[Unit] =
+          log.warn(s"Adding LP acceptance for ${f.getName} - ${p.getInvestigators().getPi().getLastName()}") *>
+          Sync[F].delay(NonSubmitted.addAcceptance(f, p))
 
         def proposal(ref: String): F[(File, NonEmptyList[Proposal])] =
           for {
@@ -286,7 +304,7 @@ object Workspace {
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
             es   <- edits
-            p    <- ProposalLoader[F](pas, when, es, log).loadByReference(p.toFile.getAbsoluteFile, ref)
+            p    <- ProposalLoader[F](pas, when, es, log, (_, _) => ().pure[F]).loadByReference(p.toFile.getAbsoluteFile, ref)
           } yield p
 
         def newQueueFolder(site: Site): F[Path] =

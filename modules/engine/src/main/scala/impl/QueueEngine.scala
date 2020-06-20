@@ -108,20 +108,18 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
   def apply(propList: List[Proposal], queueTime: QueueTime, config: QueueEngineConfig, partners: List[Partner]): QueueCalc =
     calc(propList, queueTime, config, partners)
 
+  def filterProposals(proposals: List[Proposal], config: QueueEngineConfig): List[Proposal] = {
+    proposals.filter(p => p.site == config.binConfig.site && p.mode.schedule) // remove non-site and non-queue
+  }
+
   /**
    * Filters out proposals from the other site. Initializes bins using that list. *Then* removes non-queue proposals.
    * Note that this means that the RaResourceGroup returned is initialized from non-queue and queue proposals
    */
   def filterProposalsAndInitializeBins(proposals: List[Proposal], config: QueueEngineConfig): (List[Proposal], RaResourceGroup) = {
-    // Remove any proposals for the opposite site w/o polluting the log.
-    val siteProps = proposals.filter(_.site == config.binConfig.site)
-
-    // Compute the initial resource bins, pre-reserving rollover and classical
-    // time in the corresponding categories.
+    val siteProps = filterProposals(proposals, config) // filter out non-site and non-queue (classical time has already been subtracted)
     val bins = initBins(config, siteProps)
-
-    // Remove any non-queue proposals.
-    (siteProps.filter(_.mode.schedule), bins)
+    (siteProps, bins)
   }
 
   /** Log the time availability and usage for a stage. */
@@ -140,7 +138,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
     Log.info(s"${Console.GREEN}-----------------------------------${Console.RESET}")
   }
 
-  def calc(proposals: List[Proposal], queueTime: QueueTime, config: QueueEngineConfig, partners : List[Partner]): QueueCalc = {
+  def calc(proposals: List[Proposal], queueTime: QueueTime, config: QueueEngineConfig, partners : List[Partner], extras: List[Proposal]): QueueCalc = {
 
     // (helper) run and log a queue calculation stage, using our local config.
     def stage(params: QueueCalcStage.Params): QueueCalcStage = {
@@ -226,24 +224,32 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
       // Band4 is a simple calculation
       val band4 = PoorWeatherCalc(initialCandidates.remove(stageWithBands123.queue.toList).propList)
 
-      // Ok so *replace* bands 1/2 and then add band 4 then [deterministically] scramble the proposals
-      // within each band since at this point they're all created equal.
-      val bandedQueueʹ   = stageWithBands123.queue.bandedQueue ++ band12map
-      val bandedQueueʹʹ  = bandedQueueʹ + (QueueBand.QBand4 -> band4)
+      // Ok so *replace* bands 1/2 and then add band 4.
+      val bandedQueue1  = stageWithBands123.queue.bandedQueue ++ band12map
+      val bandedQueue2  = bandedQueue1 + (QueueBand.QBand4 -> band4)
 
-      // We're going to wait until QueueResult to scramble and assign program IDs.
-      val bandedQueueʹʹʹ = bandedQueueʹʹ // .map { case (k, v) => (k, QueueOrdering.scramble(v)) }
-
-      // One last adjustment, move some proposals to [the end of] specific bands.
-      val bandedQueueʹʹʹʹ = config.explicitQueueAssignments.toList.foldRight(bandedQueueʹʹʹ) { case ((ref, band), bq) =>
-        // remove proposal from current queue, wherever it is
+      // Some proposals end up in the wrong bands and we want to override this. So those that are
+      // mentioned in explicitQueueAssignments will get moved here.
+      val bandedQueue3 = config.explicitQueueAssignments.toList.foldRight(bandedQueue2) { case ((ref, band), bq) =>
+        // remove proposal from current queue, wherever it is, if it's there at all
         bq.map { case (k, v) => k -> v.filterNot(_.ntac.reference == ref) } |+|
         // and put it in the explicit band (if we can find it)
         Map(band -> proposals.filter(_.ntac.reference == ref))
       }
 
+      // Finally, add extras to the queue. These are proposals that don't go through the queue
+      // process but we know where they're supposed to end up.
+      val bandedQueue4 = {
+        filterProposals(extras, config).foldRight(bandedQueue3) { (p, q) =>
+          config.explicitQueueAssignments.get(p.ntac.reference) match {
+            case None => sys.error(s"No explicitQueueAssignments element was specified for ${p.ntac.reference}, check your Gx-queue.yaml file.")
+            case Some(b) => q |+| Map(b -> List(p))
+          }
+        }
+      }
+
       // Done!
-      new FinalProposalQueue(queueTime, bandedQueueʹʹʹʹ)
+      new FinalProposalQueue(queueTime, bandedQueue4)
 
     }
 
