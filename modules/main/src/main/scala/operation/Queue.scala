@@ -190,7 +190,7 @@ object Queue {
                 val b12msg = log.get(p.id, QueueBand.Category.B1_2)
                 val b3msg  = log.get(p.id, QueueBand.Category.B3)
                 if (p.site == queueCalc.context.site && b12msg.isEmpty && b3msg.isEmpty) {
-                  println(f"- ${p.id.reference}%-30s ${p.piName.orEmpty}%-20s  ${p.time.toHours.value}%5.1f h")
+                  println(f"- ${p.id.reference}%-30s ${p.piName.orEmpty}%-20s  ${p.time.toHours.value}%5.1f h (${p.mode})")
                 }
               }
               println()

@@ -1,10 +1,14 @@
 // Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
-package itac
-package operation
+package itac.operation
 
-import edu.gemini.tac.qengine.api.QueueCalc
+import itac._
+import java.io.File
+import edu.gemini.spModel.core.ProgramType
+import edu.gemini.spModel.core.ProgramId
+import edu.gemini.tac.qengine.p1.Mode
+import edu.gemini.tac.qengine.p1.Proposal
 import edu.gemini.model.p1.mutable.TimeUnit
 import edu.gemini.model.p1.mutable.TimeAmount
 import edu.gemini.tac.qengine.p1.QueueBand
@@ -14,8 +18,19 @@ import cats.implicits._
 import edu.gemini.tac.qengine.api.QueueEngine
 import io.chrisdavenport.log4cats.Logger
 import java.nio.file.Path
+import sttp.client._
+import javax.xml.bind.{ JAXBContext, Marshaller }
+import edu.gemini.model.p1.mutable.ObjectFactory
+import java.io.ByteArrayOutputStream
+import java.io.ByteArrayInputStream
 
 object Export {
+
+  private lazy val context: JAXBContext =
+    JAXBContext.newInstance((new ObjectFactory).createProposal.getClass)
+
+  private lazy val marshaller: Marshaller =
+    context.createMarshaller
 
   /**
     * @param siteConfig path to site-specific configuration file, which can be absolute or relative
@@ -28,46 +43,92 @@ object Export {
   ): Operation[F] =
     new AbstractQueueOperation[F](qe, siteConfig, rolloverReport) {
 
-      def doExport(qc: QueueCalc, bes: Map[String, BulkEdit]): F[ExitCode] =
+      // we need to do BOTH queues here!!!
+
+      def doExport(ps: List[Proposal], qr: QueueResult, bes: Map[String, BulkEdit]): F[ExitCode] =
         Sync[F].delay {
 
-          // we need to do BOTH queues here
+          def addItacNode(p: Proposal, pid: ProgramId, band: QueueBand): Unit =
+            bes.get(p.ntac.reference) match {
+              case Some(be) => be.unsafeApplyUpdate(p.p1mutableProposal, itac.BulkEdit.Accept(pid, band.number, {
+                val ta = new TimeAmount
+                ta.setUnits(TimeUnit.HR)
+                ta.setValue(new java.math.BigDecimal(p.time.toHours.value))
+                ta
+              }))
+              case None =>
+                // This should never happen because we update the bulk-edit file every run
+                sys.error(s"Proposal ${p.ntac.reference} is not present in the bulk edits file. Cannot create ITAC node.")
+            }
 
-            val qr = QueueResult(qc)
-            QueueBand.values.foreach { qb =>
+          def export(p: edu.gemini.model.p1.mutable.Proposal, pdfFile: File, pid: ProgramId): Unit = {
+            print(s"==> exporting <#${System.identityHashCode(p).toHexString}> ${pid} with ${pdfFile.getName} ... ")
+
+            // Serialize the proposal to XML.
+            val baos = new ByteArrayOutputStream
+            marshaller.marshal(p, baos)
+            baos.flush()
+            val xmlStream = new ByteArrayInputStream(baos.toByteArray)
+
+            // for now we don't have the PDFs, so use a dummy
+            val dummy = new File("hello.pdf")
+
+            // ok need an http client here that can do multipart
+            implicit val backend = HttpURLConnectionBackend()
+            val req = basicRequest.multipartBody(
+              multipart("proposal", xmlStream).contentType("text/xml"),
+              multipartFile("attachment", dummy).contentType("application/pdf")
+            ).get(uri"http://localhost:8442/skeleton?convert=true")
+
+            val res = req.send()
+
+            println(res.code.code)
+            if (res.code.code >= 300)
+              println(res.body)
+
+          }
+
+          QueueBand.values.foreach { qb =>
+
+              // Non-Queue Proposals ...
+              val nonQueue =
+                ps.filter(_.site == qr.queueCalc.context.site)     // are at this site
+                  .filterNot(p => qr.queueCalc.proposalLog.proposalIds(p.id)) // but don't appear in the log
+
+              // These *should* all be classical. Let's be sure though.
+              if (nonQueue.exists(_.mode != Mode.Classical)) {
+                nonQueue.foreach { p =>
+                  println(s"${p.ntac.reference} is not classical and is not in the queue!")
+                }
+                throw new ItacException("Non-classical program somehow escaped the queue!")
+              }
+
+              // Add itac node. Number proposals by first sorting by ranking.
+              nonQueue.sortBy(_.ntac.ranking.num.orEmpty).zipWithIndex.foreach { case (p, n) =>
+                val pid = ProgramId.Science(p.site, qr.queueCalc.context.semester, ProgramType.C, n + 1)
+                addItacNode(p, pid, QueueBand.QBand1)
+                export(p.p1mutableProposal, p.p1pdfFile, pid)
+              }
 
               // Queue Proposals
               qr.entries(qb).foreach { e =>
 
-                // Add ITAC Accept nodes to each.
-                e.proposals.toList.foreach { p =>
-                  bes.get(p.ntac.reference) match {
-                    case Some(be) => be.unsafeApplyUpdate(p.p1mutableProposal, itac.BulkEdit.Accept(e.programId, qb.number, {
-                      val ta = new TimeAmount
-                      ta.setUnits(TimeUnit.HR)
-                      ta.setValue(new java.math.BigDecimal(p.time.toHours.value))
-                      ta
-                    }))
-                    case None => sys.error(s"Proposal ${p.ntac.reference} is not present in the bulk edits file. Cannot create ITAC node.")
-                  }
-                }
+                // Add ITAC Accept nodes to each proposal in this queue entry.
+                e.proposals.toList.foreach(addItacNode(_, e.programId, qb))
 
                 // Merge joints.
                 val p = Merge.merge(e.proposals.map(_.p1mutableProposal))
 
                 // debug print the proposal
-                println("─" * 100)
-                println(s"[An] input file is ${e.proposals.head.p1xmlFile.getName} and the PDF file is ${e.proposals.head.p1pdfFile.getName}.")
-                println(SummaryDebug.summary(p))
+                // println("─" * 100)
+                // println(s"[An] input file is ${e.proposals.head.p1xmlFile.getName} and the PDF file is ${e.proposals.head.p1pdfFile.getName}.")
+                // println(SummaryDebug.summary(p))
 
-                // TODO: write the file out, copy the PDF file
+                export(p, e.proposals.head.p1pdfFile, e.programId)
 
               }
 
             }
-
-            // Non-Queue Proposals - classical + subaru. program is ordinals will be given in queue-config.
-            // these really should be fed into the queue engine and placed in the proper bands.
 
             // Workbooks for NGOs
 
@@ -79,7 +140,7 @@ object Export {
           p  <- computeQueue(ws)
           (ps, qc) = p
           be <- ws.bulkEdits(ps)
-          e  <- doExport(qc, be)
+          e  <- doExport(ps, QueueResult(qc), be)
         } yield e
 
   }

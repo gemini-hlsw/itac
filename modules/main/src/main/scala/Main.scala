@@ -68,7 +68,7 @@ object Main extends CommandIOApp(
     (cwd, commonConfig, logger[IO], force, ops).mapN { (cwd, commonConfig, log, force, cmd) =>
       Blocker[IO].use { b =>
         for {
-          _  <- IO(System.setProperty("edu.gemini.model.p1.schemaVersion", "2020.1.1")) // how do we figure out what to do here?
+          _  <- IO(System.setProperty("edu.gemini.model.p1.schemaVersion", "2020.2.1")) // how do we figure out what to do here?
           _  <- log.debug(s"main: workspace directory is ${cwd.toAbsolutePath}")
           c  <- Workspace[IO](cwd, commonConfig, log, force).flatMap(cmd.run(_, log, b)).handleErrorWith {
                   case ItacException(msg) => log.error(msg).as(ExitCode.Error)

@@ -11,7 +11,7 @@ import java.io.ByteArrayOutputStream
 import java.io.ByteArrayInputStream
 import scala.collection.JavaConverters._
 import java.{util => ju}
-import itac.util.Colors
+// import itac.util.Colors
 
 /**
  * Merge a list of MUTABLE phase-1 proposals (typically joint parts) into a single phase-1 proposal,
@@ -166,8 +166,8 @@ object Merge extends MergeBlueprint {
   /** Destructively merge the contents of `from` into `into`, yielding `into` */
   def mergeInto(from: Proposal, into: Proposal): Proposal = {
 
-    println(s"${Colors.GREEN}FROM\n${SummaryDebug.summary(from)}${Colors.RESET}")
-    println(s"${Colors.YELLOW}INTO\n${SummaryDebug.summary(into)}${Colors.RESET}")
+    // println(s"${Colors.GREEN}FROM\n${SummaryDebug.summary(from)}${Colors.RESET}")
+    // println(s"${Colors.YELLOW}INTO\n${SummaryDebug.summary(into)}${Colors.RESET}")
 
     // into.setAbstract        - we assume it's the same for all
     // into.setBlueprints      - done on the fly when merging observations
@@ -188,9 +188,9 @@ object Merge extends MergeBlueprint {
     // into.setTargets         - done on the fly when merging observations
     // into.setTitle           - we assume it's the same for all
 
-    println(s"${Colors.RED}RESULT\n${SummaryDebug.summary(into)}${Colors.RESET}")
-    println()
-    println()
+    // println(s"${Colors.RED}RESULT\n${SummaryDebug.summary(into)}${Colors.RESET}")
+    // println()
+    // println()
 
     into
   }
