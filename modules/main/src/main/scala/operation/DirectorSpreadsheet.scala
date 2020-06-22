@@ -56,6 +56,7 @@ object DirectorSpreadsheet {
   val PIName      = 3
   val Time        = 4
   val Instrument  = 5
+  val Title       = 6
 
   def addSheet[F[_]: Sync](
     wb:             Workbook,
@@ -96,6 +97,7 @@ object DirectorSpreadsheet {
             create(PIName, "PI Name", 25)
             create(Time, "Time", 5)
             create(Instrument, "Instrument", 20)
+            create(Title, "Title", 100)
 
             // A style for each band
             val bandStyles: QueueBand => CellStyle =
@@ -146,6 +148,7 @@ object DirectorSpreadsheet {
                 addCell(ProgId, e.programId.toString)
                 addCell(PIName, p.piName.orEmpty)
                 addCell(Time, (e.proposals.foldMap(_.time)).toHours.value)
+                addCell(Title, p.p1proposal.title)
 
                 val insts = e.proposals.toList.flatMap { p =>
                   p.obsListFor(b).map { o =>
