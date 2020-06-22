@@ -39,11 +39,11 @@ object Export {
   def apply[F[_]: Sync: Parallel](
     qe:             QueueEngine,
     siteConfig:     Path,
-    rolloverReport: Option[Path]
+    rolloverReport: Option[Path],
+    odbHost:        String,
+    odbPort:        Int
   ): Operation[F] =
     new AbstractQueueOperation[F](qe, siteConfig, rolloverReport) {
-
-      // we need to do BOTH queues here!!!
 
       def doExport(ps: List[Proposal], qr: QueueResult, bes: Map[String, BulkEdit]): F[ExitCode] =
         Sync[F].delay {
@@ -78,7 +78,7 @@ object Export {
             val req = basicRequest.multipartBody(
               multipart("proposal", xmlStream).contentType("text/xml"),
               multipartFile("attachment", dummy).contentType("application/pdf")
-            ).get(uri"http://localhost:8442/skeleton?convert=true")
+            ).get(uri"http://$odbHost:$odbPort/skeleton?convert=true")
 
             val res = req.send()
 

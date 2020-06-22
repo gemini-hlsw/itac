@@ -194,12 +194,27 @@ trait MainOpts { this: CommandIOApp =>
       name   = "director-spreadsheet",
       header = "Generate Director spreadsheet."
     )(DirectorSpreadsheet[IO](QueueEngine, PerSite.unfold(Workspace.Default.queueConfigFile), PerSite.unfold(Workspace.Default.rolloverReport)).pure[Opts])
+  lazy val host: Opts[String] =
+    Opts.option[String](
+      long = "host",
+      short = "h",
+      help = "ODB hostname, like gnodb.hi.gemini.edu"
+    )
+
+  lazy val DefaultOdbPort = 8442
+
+  lazy val port: Opts[Int] =
+    Opts.option[Int](
+      long = "port",
+      short = "p",
+      help = s"ODB port number, default = $DefaultOdbPort"
+    ).withDefault(DefaultOdbPort)
 
   lazy val export: Command[Operation[IO]] =
     Command(
       name   = "export",
-      header = "Export proposals."
-    )((siteConfig, rolloverReport).mapN((sc, rr) => Export[IO](QueueEngine, sc, rr)))
+      header = "Export proposals to the specified ODB. You can re-run this if necessary (programs will be replaced)."
+    )((siteConfig, rolloverReport, host, port).mapN(Export[IO](QueueEngine, _, _, _, _)))
 
   lazy val bulkEdits: Command[Operation[IO]] =
     Command(
@@ -211,13 +226,13 @@ trait MainOpts { this: CommandIOApp =>
     Command(
       name   = "chart-data",
       header = "Create chart data for the specified queue."
-    )((siteConfig, rolloverReport).mapN((sc, rr) => ChartData[IO](QueueEngine, sc, rr)))
+    )((siteConfig, rolloverReport).mapN(ChartData[IO](QueueEngine, _, _)))
 
   lazy val scheduling: Command[Operation[IO]] =
     Command(
       name   = "scheduling",
       header = "Scheduling report."
-    )((siteConfig, rolloverReport).mapN((sc, rr) => Scheduling[IO](QueueEngine, sc, rr)))
+    )((siteConfig, rolloverReport).mapN(Scheduling[IO](QueueEngine, _, _)))
 
   lazy val blueprints: Command[Operation[IO]] =
     Command(
