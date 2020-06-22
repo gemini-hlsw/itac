@@ -280,7 +280,6 @@ object Workspace {
             psʹ   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
             _    <- log.debug(s"Read ${ps.length} proposals.")
             ret   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
-            _    <- bulkEdits(ret)
           } yield ret
 
         def proposals: F[List[Proposal]] = loadProposals(ProposalDir)

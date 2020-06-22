@@ -201,6 +201,12 @@ trait MainOpts { this: CommandIOApp =>
       header = "Export proposals."
     )((siteConfig, rolloverReport).mapN((sc, rr) => Export[IO](QueueEngine, sc, rr)))
 
+  lazy val bulkEdits: Command[Operation[IO]] =
+    Command(
+      name = "bulk-edits",
+      header = "Create bulk-edits.xml"
+    )(BulkEdits[IO].pure[Opts])
+
   lazy val chartData: Command[Operation[IO]] =
     Command(
       name   = "chart-data",
@@ -374,7 +380,9 @@ trait MainOpts { this: CommandIOApp =>
       chartData,
       staffEmailSpreadsheet,
       ngoSpreadsheet,
-      directorSpreadsheet
+      directorSpreadsheet,
+      bulkEdits
     ).sortBy(_.name).map(Opts.subcommand(_)).foldK
 
 }
+
