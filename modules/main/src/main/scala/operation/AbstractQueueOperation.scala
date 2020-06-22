@@ -38,6 +38,7 @@ abstract class AbstractQueueOperation[F[_]](
       ps <- ws.proposals
       es <- ws.extras
       xs <- ws.extrasNotSubmitted
+      rs <- ws.removed
 
       // Compute the queue
       partners  = cc.engine.partners
@@ -67,7 +68,7 @@ abstract class AbstractQueueOperation[F[_]](
         extras = es ++ xs,
       )
 
-    } yield (ps ++ es ++ xs, queueCalc)
+    } yield (ps ++ es ++ xs ++ rs, queueCalc)
 
   // These methods were lifted from the ITAC web application.
 

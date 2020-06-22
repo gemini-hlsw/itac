@@ -183,6 +183,18 @@ trait MainOpts { this: CommandIOApp =>
       header = "Generate the staff email spreadsheet."
     )(StaffEmailSpreadsheet[IO](QueueEngine, PerSite.unfold(Workspace.Default.queueConfigFile), PerSite.unfold(Workspace.Default.rolloverReport)).pure[Opts])
 
+  lazy val ngoSpreadsheet: Command[Operation[IO]] =
+    Command(
+      name   = "ngo-spreadsheets",
+      header = "Generate NGO spreadsheets."
+    )(NgoSpreadsheet[IO](QueueEngine, PerSite.unfold(Workspace.Default.queueConfigFile), PerSite.unfold(Workspace.Default.rolloverReport)).pure[Opts])
+
+  lazy val directorSpreadsheet: Command[Operation[IO]] =
+    Command(
+      name   = "director-spreadsheet",
+      header = "Generate Director spreadsheet."
+    )(DirectorSpreadsheet[IO](QueueEngine, PerSite.unfold(Workspace.Default.queueConfigFile), PerSite.unfold(Workspace.Default.rolloverReport)).pure[Opts])
+
   lazy val export: Command[Operation[IO]] =
     Command(
       name   = "export",
@@ -360,7 +372,9 @@ trait MainOpts { this: CommandIOApp =>
       scheduling,
       blueprints,
       chartData,
-      staffEmailSpreadsheet
+      staffEmailSpreadsheet,
+      ngoSpreadsheet,
+      directorSpreadsheet
     ).sortBy(_.name).map(Opts.subcommand(_)).foldK
 
 }

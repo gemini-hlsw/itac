@@ -10,6 +10,7 @@ import edu.gemini.tac.qengine.p1.Proposal
 import edu.gemini.spModel.core.ProgramId
 import edu.gemini.tac.qengine.p1.QueueBand
 import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.tac.qengine.p1.Mode
 
 /** The final queue result, with joint proposal grouped and program IDs assigned. */
 final case class QueueResult(queueCalc: QueueCalc) {
@@ -38,6 +39,33 @@ final case class QueueResult(queueCalc: QueueCalc) {
        .toNel
        .map(Entry(_, e.programId))
     }
+
+  def classical(candidates: List[Proposal]): List[Entry] = // no support for joints, may not be needed
+    candidates
+      .filter(p => p.site == queueCalc.context.site && p.mode == Mode.Classical)
+      .sortBy(p => (p.ntac.ranking.num.orEmpty, p.piName.foldMap(_.reverse)))
+      .zipWithIndex
+      .map { case (p, n) =>
+        Entry(NonEmptyList.of(p), ProgramId.parse(s"${site.abbreviation}-${semester}-${p.mode.programId}-${n + 1}"))
+      }
+
+  def classical(candidates: List[Proposal], partner: Partner): List[Entry] =
+    classical(candidates).mapFilter { e =>
+      e.proposals
+       .filter(_.ntac.partner == partner)
+       .toNel
+       .map(Entry(_, e.programId))
+    }
+
+  def unsuccessful(candidates: List[Proposal]): List[Proposal] = {
+    lazy val accepted = queueCalc.queue.toList.map(_.ntac.reference).toSet
+    candidates
+      .filter(p => p.site == queueCalc.context.site && p.mode == Mode.Queue)
+      .filter(p => !accepted(p.ntac.reference))
+  }
+
+  def unsuccessful(candidates: List[Proposal], partner: Partner): List[Proposal] =
+    unsuccessful(candidates).filter(_.ntac.partner == partner)
 
   /** LP program numbers are given in the reference. */
   private def explicitNumber(ref: String): Option[Int] =
