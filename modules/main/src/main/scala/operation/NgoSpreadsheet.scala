@@ -25,6 +25,7 @@ import cats.implicits._
 import java.nio.file.Paths
 import scala.math.BigDecimal.RoundingMode
 import edu.gemini.tac.qengine.p1.Proposal
+import _root_.operation.ProgramPartnerTime
 
 
 object NgoSpreadsheet {
@@ -48,7 +49,7 @@ object NgoSpreadsheet {
     new Operation[F] {
       def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
         for {
-          ps <- ws.commonConfig.map(_.engine.partners)
+          ps  <- ws.commonConfig.map(_.engine.partners)
           wbs <- ps.traverse(p => Sync[F].delay((p, HSSFWorkbookFactory.createWorkbook))) // List[(Partner, Workbook)]
           _   <- Site.values.toList.traverse_(s => addSheetsForSite(wbs, qe, siteConfig.forSite(s), Some(rolloverReport.forSite(s))).run(ws, log, b))
           cwd <- ws.cwd
@@ -66,9 +67,10 @@ object NgoSpreadsheet {
       def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
         for {
           // TODO: include removed proposals
-          p  <- computeQueue(ws)
+          p   <- computeQueue(ws)
           (ps, qc) = p
-          _  <- wbs.traverse { case (p, wb) => Sync[F].delay(writeSheet(wb, p, ps, QueueResult(qc))) }
+          bes <- ws.bulkEdits(ps)
+          _   <- wbs.traverse { case (p, wb) => Sync[F].delay(writeSheet(wb, p, bes, ps, QueueResult(qc))) }
         } yield ExitCode.Success
     }
 
@@ -84,7 +86,7 @@ object NgoSpreadsheet {
   val ItacComment =  9 // ITAC Feedback: @ITAC_COMMENTS@
   val Title       = 10 // Program Title: @PROG_TITLE@
 
-  def writeSheet(wb: Workbook, p: Partner, ps: List[Proposal], qr: QueueResult): Unit = {
+  def writeSheet(wb: Workbook, p: Partner, bes: Map[String, BulkEdit], ps: List[Proposal], qr: QueueResult): Unit = {
     val sh = wb.createSheet(qr.queueCalc.context.site.displayName)
 
     // A bold font!
@@ -111,12 +113,12 @@ object NgoSpreadsheet {
     // Create header cells
     create(ProgId, "Gemini Id", 18)
     create(Band, "Band", 5)
-    create(Reference, "Reference", 17)
+    create(Reference, "NGO Reference", 17)
     create(Rank, "Rank", 5)
     create(PIName, "PI Name", 25)
-    create(Time, "Time Awarded", 10)
-    create(ProgTime, "Program Time", 10)
-    create(PartTime, "Partner Time", 10)
+    create(Time, "Time Awarded", 15)
+    create(ProgTime, "Program Time", 15)
+    create(PartTime, "Partner Cal Time", 15)
     create(PiEmail, "PI Email", 25)
     create(ItacComment, "ITAC Comment", 100)
     create(Title, "Title", 100)
@@ -165,6 +167,7 @@ object NgoSpreadsheet {
         }
 
         val pi = p.p1proposal.investigators.pi
+        val (progTime, partTime) = ProgramPartnerTime.programAndPartnerTime(p, b)
 
         addCell(Reference, p.ntac.reference)
         addCell(Rank, p.ntac.ranking.num.orEmpty)
@@ -173,9 +176,9 @@ object NgoSpreadsheet {
         addCell(PIName, s"${pi.firstName} ${pi.lastName}")
         addCell(PiEmail, p.p1proposal.investigators.pi.email)
         addCell(Time, (e.proposals.foldMap(_.time)).toHours.value)
-        addCell(ProgTime, "")
-        addCell(PartTime, "")
-        addCell(ItacComment, "")
+        addCell(ProgTime, progTime.toHours.value)
+        addCell(PartTime, partTime.toHours.value)
+        addCell(ItacComment, bes.get(p.ntac.reference).flatMap(_.itacComment).orEmpty)
         addCell(Title, p.p1proposal.title)
         n += 1
 
