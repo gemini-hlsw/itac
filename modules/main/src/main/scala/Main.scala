@@ -26,6 +26,7 @@ import java.text.ParseException
 import org.slf4j.impl.ColoredSimpleLogger
 import scala.util.control.NonFatal
 import itac.config.PerSite
+import edu.gemini.spModel.core.ProgramId
 // object Stub {
 //   def main(args: Array[String]): Unit =
 //     Main.main(Array("-d", "hawaii", "summarize", "CL-2020B-014"))
@@ -210,11 +211,16 @@ trait MainOpts { this: CommandIOApp =>
       help = s"ODB port number, default = $DefaultOdbPort"
     ).withDefault(DefaultOdbPort)
 
+  lazy val progids: Opts[List[ProgramId]] =
+    Opts.arguments[String](
+      metavar = "program-id"
+    ).map(_.map(ProgramId.parse)).orEmpty
+
   lazy val export: Command[Operation[IO]] =
     Command(
       name   = "export",
       header = "Export proposals to the specified ODB. You can re-run this if necessary (programs will be replaced)."
-    )((siteConfig, rolloverReport, host, port).mapN(Export[IO](QueueEngine, _, _, _, _)))
+    )((siteConfig, rolloverReport, host, port, progids).mapN(Export[IO](QueueEngine, _, _, _, _, _)))
 
   lazy val bulkEdits: Command[Operation[IO]] =
     Command(

@@ -94,7 +94,7 @@ sealed trait Proposal {
 
   def p1xmlFile: File
 
-  def p1pdfFile: File =
+  def p1pdfFile: String =
     // p1xmlFile can be null because we need to retrofit old tests
     Option(p1xmlFile).map { f =>
       val name     = f.getName
@@ -103,7 +103,7 @@ sealed trait Proposal {
           case -1 => name
           case  n => name.substring(0, n)
         }
-      new File(f.getParentFile, s"$baseName.pdf")
+      s"$baseName.pdf"
     }.orNull
 
 }

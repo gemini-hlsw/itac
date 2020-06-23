@@ -5,7 +5,6 @@ package itac.operation
 
 import itac._
 import java.io.File
-import edu.gemini.spModel.core.ProgramType
 import edu.gemini.spModel.core.ProgramId
 import edu.gemini.tac.qengine.p1.Mode
 import edu.gemini.tac.qengine.p1.Proposal
@@ -41,11 +40,12 @@ object Export {
     siteConfig:     Path,
     rolloverReport: Option[Path],
     odbHost:        String,
-    odbPort:        Int
+    odbPort:        Int,
+    progids:        List[ProgramId]
   ): Operation[F] =
     new AbstractQueueOperation[F](qe, siteConfig, rolloverReport) {
 
-      def doExport(ps: List[Proposal], qr: QueueResult, bes: Map[String, BulkEdit]): F[ExitCode] =
+      def doExport(ps: List[Proposal], qr: QueueResult, bes: Map[String, BulkEdit], cwd: Path): F[ExitCode] =
         Sync[F].delay {
 
           def addItacNode(p: Proposal, pid: ProgramId, band: QueueBand): Unit =
@@ -62,7 +62,12 @@ object Export {
             }
 
           def export(p: edu.gemini.model.p1.mutable.Proposal, pdfFile: File, pid: ProgramId): Unit = {
-            print(s"==> exporting <#${System.identityHashCode(p).toHexString}> ${pid} with ${pdfFile.getName} ... ")
+
+            // If we gave an explicit list of progids, make sure pid is in it
+            if (progids.nonEmpty && !progids.contains(pid))
+              return; //
+
+            println(s"==> exporting <#${System.identityHashCode(p).toHexString}> ${pid} with ${pdfFile.getName} ... ")
 
             // Serialize the proposal to XML.
             val baos = new ByteArrayOutputStream
@@ -70,14 +75,17 @@ object Export {
             baos.flush()
             val xmlStream = new ByteArrayInputStream(baos.toByteArray)
 
-            // for now we don't have the PDFs, so use a dummy
-            val dummy = new File("hello.pdf")
+            // Skip if no PDF file
+            if (!pdfFile.exists()) {
+              println(s"${Console.RED}    NO PDF FILE!${Console.RESET}")
+              return
+            }
 
             // ok need an http client here that can do multipart
             implicit val backend = HttpURLConnectionBackend()
             val req = basicRequest.multipartBody(
               multipart("proposal", xmlStream).contentType("text/xml"),
-              multipartFile("attachment", dummy).contentType("application/pdf")
+              multipartFile("attachment", pdfFile).contentType("application/pdf")
             ).get(uri"http://$odbHost:$odbPort/skeleton?convert=true")
 
             val res = req.send()
@@ -106,11 +114,14 @@ object Export {
                 throw new ItacException("Non-classical program somehow escaped the queue!")
               }
 
-              // Add itac node to classical proposals. Number proposals by first sorting by ranking.
-              classical.sortBy(_.ntac.ranking.num.orEmpty).zipWithIndex.foreach { case (p, n) =>
-                val pid = ProgramId.Science(p.site, qr.queueCalc.context.semester, ProgramType.C, n + 1)
-                addItacNode(p, pid, QueueBand.QBand1)
-                export(p.p1mutableProposal, p.p1pdfFile, pid)
+              def pdfFile(name: String): File =
+                cwd.resolve(s"pdfs/$name").toAbsolutePath.toFile
+
+              // Get classical *entries* and then add them.
+              qr.classical(classical).foreach { e =>
+                val p = e.proposals.head // don't handle joints yet, may not matter
+                addItacNode(p, e.programId, QueueBand.QBand1)
+                export(p.p1mutableProposal, pdfFile(p.p1pdfFile), e.programId)
               }
 
               // Queue Proposals
@@ -127,7 +138,7 @@ object Export {
                 // println(s"[An] input file is ${e.proposals.head.p1xmlFile.getName} and the PDF file is ${e.proposals.head.p1pdfFile.getName}.")
                 // println(SummaryDebug.summary(p))
 
-                export(p, e.proposals.head.p1pdfFile, e.programId)
+                export(p, pdfFile(e.proposals.head.p1pdfFile), e.programId)
 
               }
 
@@ -140,10 +151,10 @@ object Export {
 
       def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
         for {
-          p  <- computeQueue(ws)
-          (ps, qc) = p
-          be <- ws.bulkEdits(ps)
-          e  <- doExport(ps, QueueResult(qc), be)
+          p   <- computeQueue(ws); (ps, qc) = p
+          be  <- ws.bulkEdits(ps)
+          cwd <- ws.cwd
+          e   <- doExport(ps, QueueResult(qc), be, cwd)
         } yield e
 
   }
