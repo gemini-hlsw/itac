@@ -1,5 +1,0 @@
-Example invocation to import all proposals inside of a specific directory.
-mvn -o exec:java -Dexec.mainClass="edu.gemini.tac.itac.database.utils.ImportProposals" -Dexec.args="-i /Users/ddawson/Downloads/itac-proposals/hierarchy" 
-mvn -o -e exec:java -Dexec.mainClass="edu.gemini.tac.itac.database.utils.ExportProposals" -Dexec.args="-c all -o /tmp/export" 
-mvn -o -e exec:java -Dexec.mainClass="edu.gemini.tac.itac.database.utils.CreateCommitteeFromProposal" -Dexec.args="-c 2010A -i /Users/ddawson/Downloads/itac-proposals/hierarchy/2010A -d itac_dev"
-
