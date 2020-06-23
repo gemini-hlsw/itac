@@ -21,6 +21,8 @@ import edu.gemini.tac.qengine.util.BoundedTime
 import org.slf4j.LoggerFactory
 import edu.gemini.tac.qengine.util.Time
 import scalaz._, Scalaz._
+import edu.gemini.tac.qengine.log.AcceptMessage
+import edu.gemini.tac.qengine.log.RejectMessage
 
 object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
   private val Log = LoggerFactory.getLogger("edu.gemini.itac")
@@ -138,7 +140,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
     Log.info(s"${Console.GREEN}-----------------------------------${Console.RESET}")
   }
 
-  def calc(proposals: List[Proposal], queueTime: QueueTime, config: QueueEngineConfig, partners : List[Partner], extras: List[Proposal]): QueueCalc = {
+  def calc(proposals: List[Proposal], queueTime: QueueTime, config: QueueEngineConfig, partners : List[Partner], extras: List[Proposal], removed: List[Proposal]): QueueCalc = {
 
     // (helper) run and log a queue calculation stage, using our local config.
     def stage(params: QueueCalcStage.Params): QueueCalcStage = {
@@ -186,7 +188,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
     }
 
     // Construct our final queue, which requires a bit of rejiggering.
-    val finalQueue = {
+    val (finalQueue, finalLog) = {
 
       // The band 1/2 boundary is wrong using the old strategy so we'll regroup them. First collect
       // the band 1/2 programs IN ORDER.
@@ -238,18 +240,24 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
       }
 
       // Finally, add extras to the queue. These are proposals that don't go through the queue
-      // process but we know where they're supposed to end up.
-      val bandedQueue4 = {
-        filterProposals(extras, config).foldRight(bandedQueue3) { (p, q) =>
+      // process but we know where they're supposed to end up. We also need to add them to the log!
+      val (bandedQueue4, finalLog) = {
+        filterProposals(extras, config).foldRight((bandedQueue3, stageWithBands123.log)) { case (p, (q, log)) =>
           config.explicitQueueAssignments.get(p.ntac.reference) match {
             case None => sys.error(s"No explicitQueueAssignments element was specified for ${p.ntac.reference}, check your Gx-queue.yaml file.")
-            case Some(b) => q |+| Map(b -> List(p))
+            case Some(b) => (q |+| Map(b -> List(p)), log.updated(p.id, b.logCategory, AcceptMessage(p, BoundedTime(Time.Zero), BoundedTime(Time.Zero))))
           }
         }
       }
 
+      // Add `removed` propodals to the log so they show up as rejects instead of as orphans. This
+      // makes it clear we didn't forget about them.
+      val finalLog2 = removed.foldLeft(finalLog) { (log, p) =>
+        log.updated(p.id, QueueBand.Category.B1_2, RemovedRejectMessage(p))
+      }
+
       // Done!
-      new FinalProposalQueue(queueTime, bandedQueue4)
+      (new FinalProposalQueue(queueTime, bandedQueue4), finalLog2)
 
     }
 
@@ -257,10 +265,15 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
     new QueueCalcImpl(
       context           = config.binConfig.context,
       queue             = finalQueue,
-      proposalLog       = stageWithBands123.log,
+      proposalLog       = finalLog,
       bucketsAllocation = BucketsAllocationImpl(stageWithBands123.resource.ra.grp.bins.toList)
     )
 
+  }
+
+  case class RemovedRejectMessage(prop: Proposal) extends RejectMessage {
+    def reason: String = "Unknown."
+    def detail: String = "Proposal was removed from consideration."
   }
 
 }

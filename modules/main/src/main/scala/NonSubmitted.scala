@@ -10,6 +10,8 @@ import edu.gemini.model.p1.mutable.SubmissionReceipt
 import edu.gemini.model.p1.mutable.SubmissionAccept
 import javax.xml.datatype.DatatypeFactory
 import edu.gemini.model.p1.mutable.QueueProposalClass
+import java.time.LocalDateTime
+import scala.collection.JavaConverters._
 
 /**
  * One-off hack for 2020B to make non-submitted GT programs with accidental LP requests kind-of
@@ -34,7 +36,18 @@ object NonSubmitted {
             val res = new SubmissionResponse
             res.setReceipt {
               val rec = new SubmissionReceipt
-              rec.setTimestamp(DatatypeFactory.newInstance.newXMLGregorianCalendar)
+              rec.setTimestamp {
+                val c = DatatypeFactory.newInstance.newXMLGregorianCalendar
+                val now = LocalDateTime.now
+                c.setYear(now.getYear)
+                c.setMonth(now.getMonth.getValue)
+                c.setDay(now.getDayOfMonth)
+                c.setHour(now.getHour())
+                c.setMinute(now.getMinute())
+                c.setSecond(now.getSecond())
+                c.setMillisecond(0)
+                c
+              }
               rec.setId(f.getName.takeWhile(_ != '.').replace('_', '-'))
               rec
             }
@@ -51,8 +64,27 @@ object NonSubmitted {
         }
         qpc
       }
+
+      // Make copies of every observation in band 3 because some of these proposals end up there.
+      // Otherwise import will fail.
+      p.getObservations.getObservation.asScala.toList /* force a copy! */.foreach { o =>
+        val obs = new Observation
+        obs.setBand(Band.BAND_3)
+        obs.setBlueprint(o.getBlueprint)
+        obs.setCondition(o.getCondition)
+        obs.setEnabled(o.isEnabled)
+        obs.setGuide(o.getGuide)
+        obs.setMeta(o.getMeta)
+        obs.setPartTime(o.getPartTime)
+        obs.setProgTime(o.getProgTime)
+        obs.setTarget(o.getTarget)
+        obs.setTime(o.getTime)
+        p.getObservations.getObservation.add(obs)
+      }
+
+
     } catch {
       case _: NullPointerException => throw new ItacException(s"${f.getName} does not have an LP submission.")
     }
 
-}
+  }

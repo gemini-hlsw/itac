@@ -11,7 +11,7 @@ import java.io.ByteArrayOutputStream
 import java.io.ByteArrayInputStream
 import scala.collection.JavaConverters._
 import java.{util => ju}
-import itac.util.Colors
+// import itac.util.Colors
 
 /**
  * Merge a list of MUTABLE phase-1 proposals (typically joint parts) into a single phase-1 proposal,
@@ -127,14 +127,33 @@ object Merge extends MergeBlueprint {
     }
   }
 
-  def mergeInto(from: ClassicalProposalClass, into: ClassicalProposalClass): Unit =
+  def mergeInto(from: ItacAccept, into: ItacAccept): Unit = {
+    into.setAward {
+      val ta = new TimeAmount
+      ta.setUnits(into.getAward.getUnits)
+      // assume same units in both
+      ta.setValue(into.getAward.getValue add from.getAward.getValue)
+      ta
+    }
+  }
+
+  def mergeInto(from: Itac, into: Itac): Unit =
+    mergeInto(from.getAccept, into.getAccept) // we assume this is here for now
+
+  def mergeInto(from: ClassicalProposalClass, into: ClassicalProposalClass): Unit = {
+    mergeInto(from.getItac, into.getItac)
     mergeInto(from.getNgo, into.getNgo)
+  }
 
-  def mergeInto(from: ExchangeProposalClass, into: ExchangeProposalClass): Unit =
-    mergeInto(from.getNgo(), into.getNgo())
+  def mergeInto(from: ExchangeProposalClass, into: ExchangeProposalClass): Unit = {
+    mergeInto(from.getItac, into.getItac)
+    mergeInto(from.getNgo, into.getNgo)
+  }
 
-  def mergeInto(from: QueueProposalClass, into: QueueProposalClass): Unit =
-    mergeInto(from.getNgo(), into.getNgo())
+  def mergeInto(from: QueueProposalClass, into: QueueProposalClass): Unit = {
+    mergeInto(from.getItac, into.getItac)
+    mergeInto(from.getNgo, into.getNgo)
+  }
 
   /**
    * Destructively merge the contents of `from` into `into`. This is how we combine NTAC
@@ -166,8 +185,9 @@ object Merge extends MergeBlueprint {
   /** Destructively merge the contents of `from` into `into`, yielding `into` */
   def mergeInto(from: Proposal, into: Proposal): Proposal = {
 
-    println(s"${Colors.GREEN}FROM\n${SummaryDebug.summary(from)}${Colors.RESET}")
-    println(s"${Colors.YELLOW}INTO\n${SummaryDebug.summary(into)}${Colors.RESET}")
+    // import itac.util.Colors
+    // println(s"${Colors.GREEN}FROM\n${SummaryDebug.summary(from)}${Colors.RESET}")
+    // println(s"${Colors.YELLOW}INTO\n${SummaryDebug.summary(into)}${Colors.RESET}")
 
     // into.setAbstract        - we assume it's the same for all
     // into.setBlueprints      - done on the fly when merging observations
@@ -188,9 +208,9 @@ object Merge extends MergeBlueprint {
     // into.setTargets         - done on the fly when merging observations
     // into.setTitle           - we assume it's the same for all
 
-    println(s"${Colors.RED}RESULT\n${SummaryDebug.summary(into)}${Colors.RESET}")
-    println()
-    println()
+    // println(s"${Colors.RED}RESULT\n${SummaryDebug.summary(into)}${Colors.RESET}")
+    // println()
+    // println()
 
     into
   }

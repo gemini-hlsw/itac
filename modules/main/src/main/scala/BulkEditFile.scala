@@ -47,8 +47,8 @@ object BulkEditFile {
     def read(file: File): Map[String, BulkEdit] = {
       val wb = HSSFWorkbookFactory.createWorkbook(new POIFSFileSystem(file, false).getRoot)
       val sh = wb.getSheet("Proposals")
-      val it = sh.rowIterator()
-      it.asScala.drop(1).map { r =>
+      val it = sh.rowIterator.asScala.takeWhile(_.getCell(Reference) != null)
+      it.drop(1).map { r =>
         val ref         = r.getCell(Reference).getStringCellValue()
         val ngoEmail    = r.getCell(NgoEmail).safeGetStringCellValue
         val staffEmail  = r.getCell(StaffEmail).safeGetStringCellValue

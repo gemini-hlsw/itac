@@ -26,6 +26,7 @@ import java.text.ParseException
 import org.slf4j.impl.ColoredSimpleLogger
 import scala.util.control.NonFatal
 import itac.config.PerSite
+import edu.gemini.spModel.core.ProgramId
 // object Stub {
 //   def main(args: Array[String]): Unit =
 //     Main.main(Array("-d", "hawaii", "summarize", "CL-2020B-014"))
@@ -68,7 +69,7 @@ object Main extends CommandIOApp(
     (cwd, commonConfig, logger[IO], force, ops).mapN { (cwd, commonConfig, log, force, cmd) =>
       Blocker[IO].use { b =>
         for {
-          _  <- IO(System.setProperty("edu.gemini.model.p1.schemaVersion", "2020.1.1")) // how do we figure out what to do here?
+          _  <- IO(System.setProperty("edu.gemini.model.p1.schemaVersion", "2020.2.1")) // how do we figure out what to do here?
           _  <- log.debug(s"main: workspace directory is ${cwd.toAbsolutePath}")
           c  <- Workspace[IO](cwd, commonConfig, log, force).flatMap(cmd.run(_, log, b)).handleErrorWith {
                   case ItacException(msg) => log.error(msg).as(ExitCode.Error)
@@ -194,12 +195,32 @@ trait MainOpts { this: CommandIOApp =>
       name   = "director-spreadsheet",
       header = "Generate Director spreadsheet."
     )(DirectorSpreadsheet[IO](QueueEngine, PerSite.unfold(Workspace.Default.queueConfigFile), PerSite.unfold(Workspace.Default.rolloverReport)).pure[Opts])
+  lazy val host: Opts[String] =
+    Opts.option[String](
+      long = "host",
+      short = "h",
+      help = "ODB hostname, like gnodb.hi.gemini.edu"
+    )
+
+  lazy val DefaultOdbPort = 8442
+
+  lazy val port: Opts[Int] =
+    Opts.option[Int](
+      long = "port",
+      short = "p",
+      help = s"ODB port number, default = $DefaultOdbPort"
+    ).withDefault(DefaultOdbPort)
+
+  lazy val progids: Opts[List[ProgramId]] =
+    Opts.arguments[String](
+      metavar = "program-id"
+    ).map(_.map(ProgramId.parse)).orEmpty
 
   lazy val export: Command[Operation[IO]] =
     Command(
       name   = "export",
-      header = "Export proposals."
-    )((siteConfig, rolloverReport).mapN((sc, rr) => Export[IO](QueueEngine, sc, rr)))
+      header = "Export proposals to the specified ODB. You can re-run this if necessary (programs will be replaced)."
+    )((siteConfig, rolloverReport, host, port, progids).mapN(Export[IO](QueueEngine, _, _, _, _, _)))
 
   lazy val bulkEdits: Command[Operation[IO]] =
     Command(
@@ -211,13 +232,13 @@ trait MainOpts { this: CommandIOApp =>
     Command(
       name   = "chart-data",
       header = "Create chart data for the specified queue."
-    )((siteConfig, rolloverReport).mapN((sc, rr) => ChartData[IO](QueueEngine, sc, rr)))
+    )((siteConfig, rolloverReport).mapN(ChartData[IO](QueueEngine, _, _)))
 
   lazy val scheduling: Command[Operation[IO]] =
     Command(
       name   = "scheduling",
       header = "Scheduling report."
-    )((siteConfig, rolloverReport).mapN((sc, rr) => Scheduling[IO](QueueEngine, sc, rr)))
+    )((siteConfig, rolloverReport).mapN(Scheduling[IO](QueueEngine, _, _)))
 
   lazy val blueprints: Command[Operation[IO]] =
     Command(
