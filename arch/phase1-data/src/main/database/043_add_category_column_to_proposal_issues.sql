@@ -1,1 +1,0 @@
-alter table proposal_issues add column category text;

@@ -1,9 +1,0 @@
-				<div id="configure-sort" class="span-19 last clear">
-					<form action="#" style="float: right">
-						<input type="radio" name="sort" value="band" onclick="reorder(band_sort())" checked="checked">Band</input>
-						<input type="radio" name="sort" value="partner" onclick="reorder(partner_sort())">Partner</input>
-						<input type="radio" name="sort" value="reference" onclick="reorder(reference_sort())">Partner Reference</input>
-						<input type="radio" name="sort" value="address" onclick="reorder(address_sort())">Address</input>
-						<input type="radio" name="sort" value="failed" onclick="reorder(failed_sort())">Failed</input>
-					</form>
-				</div>

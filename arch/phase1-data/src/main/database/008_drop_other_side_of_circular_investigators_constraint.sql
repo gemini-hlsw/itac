@@ -1,1 +1,0 @@
-alter table p1_investigators drop CONSTRAINT p1_investigators_investigators_container_id_fkey;
