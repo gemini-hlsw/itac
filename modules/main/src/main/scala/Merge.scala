@@ -127,14 +127,33 @@ object Merge extends MergeBlueprint {
     }
   }
 
-  def mergeInto(from: ClassicalProposalClass, into: ClassicalProposalClass): Unit =
+  def mergeInto(from: ItacAccept, into: ItacAccept): Unit = {
+    into.setAward {
+      val ta = new TimeAmount
+      ta.setUnits(into.getAward.getUnits)
+      // assume same units in both
+      ta.setValue(into.getAward.getValue add from.getAward.getValue)
+      ta
+    }
+  }
+
+  def mergeInto(from: Itac, into: Itac): Unit =
+    mergeInto(from.getAccept, into.getAccept) // we assume this is here for now
+
+  def mergeInto(from: ClassicalProposalClass, into: ClassicalProposalClass): Unit = {
+    mergeInto(from.getItac, into.getItac)
     mergeInto(from.getNgo, into.getNgo)
+  }
 
-  def mergeInto(from: ExchangeProposalClass, into: ExchangeProposalClass): Unit =
-    mergeInto(from.getNgo(), into.getNgo())
+  def mergeInto(from: ExchangeProposalClass, into: ExchangeProposalClass): Unit = {
+    mergeInto(from.getItac, into.getItac)
+    mergeInto(from.getNgo, into.getNgo)
+  }
 
-  def mergeInto(from: QueueProposalClass, into: QueueProposalClass): Unit =
-    mergeInto(from.getNgo(), into.getNgo())
+  def mergeInto(from: QueueProposalClass, into: QueueProposalClass): Unit = {
+    mergeInto(from.getItac, into.getItac)
+    mergeInto(from.getNgo, into.getNgo)
+  }
 
   /**
    * Destructively merge the contents of `from` into `into`. This is how we combine NTAC
@@ -166,6 +185,7 @@ object Merge extends MergeBlueprint {
   /** Destructively merge the contents of `from` into `into`, yielding `into` */
   def mergeInto(from: Proposal, into: Proposal): Proposal = {
 
+    // import itac.util.Colors
     // println(s"${Colors.GREEN}FROM\n${SummaryDebug.summary(from)}${Colors.RESET}")
     // println(s"${Colors.YELLOW}INTO\n${SummaryDebug.summary(into)}${Colors.RESET}")
 

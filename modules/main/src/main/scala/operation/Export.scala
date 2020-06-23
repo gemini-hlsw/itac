@@ -22,6 +22,8 @@ import javax.xml.bind.{ JAXBContext, Marshaller }
 import edu.gemini.model.p1.mutable.ObjectFactory
 import java.io.ByteArrayOutputStream
 import java.io.ByteArrayInputStream
+import itac.PrimaryNgo.Info
+import cats.data.NonEmptyList
 
 object Export {
 
@@ -130,8 +132,17 @@ object Export {
                 // Add ITAC Accept nodes to each proposal in this queue entry.
                 e.proposals.toList.foreach(addItacNode(_, e.programId, qb))
 
-                // Merge joints.
-                val p = Merge.merge(e.proposals.map(_.p1mutableProposal))
+                // Move the one with the primary NGO to the head. We merge everything into it.
+                val parts = PrimaryNgo.find(e.proposals.head.p1mutableProposal) match {
+                  case None => e.proposals // hope for the best
+                  case Some(Info(p, _)) =>
+                    val (a, b) = e.proposals.toList.partition(_.ntac.partner.id == p.name)
+                    // println(s"primary ngo is $p, part ngos are ${e.proposals.toList.map(_.ntac.partner.id)} ... ${a.length} + ${b.length}")
+                    NonEmptyList.fromList(a ++ b).getOrElse(sys.error("unpossible!"))
+                }
+
+                 // Merge joints.
+                val p = Merge.merge(parts.map(_.p1mutableProposal))
 
                 // debug print the proposal
                 // println("─" * 100)
