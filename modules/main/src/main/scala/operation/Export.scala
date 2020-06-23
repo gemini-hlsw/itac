@@ -92,19 +92,22 @@ object Export {
 
               // Non-Queue Proposals ...
               val nonQueue =
-                ps.filter(_.site == qr.queueCalc.context.site)     // are at this site
+                ps.filter(_.site == qr.queueCalc.context.site)                // are at this site
                   .filterNot(p => qr.queueCalc.proposalLog.proposalIds(p.id)) // but don't appear in the log
 
+              // Pick out classicals and those that shouldn't be here
+              val (classical, orphans) = nonQueue.partition(_.mode == Mode.Classical)
+
               // These *should* all be classical. Let's be sure though.
-              if (nonQueue.exists(_.mode != Mode.Classical)) {
-                nonQueue.foreach { p =>
-                  println(s"${p.ntac.reference} is not classical and is not in the queue!")
+              if (orphans.nonEmpty) {
+                orphans.foreach { p =>
+                  println(s"${p.ntac.reference} is ${p.mode} and is not in the queue!")
                 }
                 throw new ItacException("Non-classical program somehow escaped the queue!")
               }
 
-              // Add itac node. Number proposals by first sorting by ranking.
-              nonQueue.sortBy(_.ntac.ranking.num.orEmpty).zipWithIndex.foreach { case (p, n) =>
+              // Add itac node to classical proposals. Number proposals by first sorting by ranking.
+              classical.sortBy(_.ntac.ranking.num.orEmpty).zipWithIndex.foreach { case (p, n) =>
                 val pid = ProgramId.Science(p.site, qr.queueCalc.context.semester, ProgramType.C, n + 1)
                 addItacNode(p, pid, QueueBand.QBand1)
                 export(p.p1mutableProposal, p.p1pdfFile, pid)

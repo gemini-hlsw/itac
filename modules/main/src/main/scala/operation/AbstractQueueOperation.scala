@@ -65,7 +65,8 @@ abstract class AbstractQueueOperation[F[_]](
           ),
           explicitQueueAssignments = qc.explicitAssignments.getOrElse(Map.empty)
         ),
-        extras = es ++ xs,
+        extras  = es ++ xs,
+        removed = rs,
       )
 
     } yield (ps ++ es ++ xs ++ rs, queueCalc)

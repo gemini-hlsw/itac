@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory
 import edu.gemini.tac.qengine.util.Time
 import scalaz._, Scalaz._
 import edu.gemini.tac.qengine.log.AcceptMessage
+import edu.gemini.tac.qengine.log.RejectMessage
 
 object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
   private val Log = LoggerFactory.getLogger("edu.gemini.itac")
@@ -139,7 +140,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
     Log.info(s"${Console.GREEN}-----------------------------------${Console.RESET}")
   }
 
-  def calc(proposals: List[Proposal], queueTime: QueueTime, config: QueueEngineConfig, partners : List[Partner], extras: List[Proposal]): QueueCalc = {
+  def calc(proposals: List[Proposal], queueTime: QueueTime, config: QueueEngineConfig, partners : List[Partner], extras: List[Proposal], removed: List[Proposal]): QueueCalc = {
 
     // (helper) run and log a queue calculation stage, using our local config.
     def stage(params: QueueCalcStage.Params): QueueCalcStage = {
@@ -249,8 +250,14 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
         }
       }
 
+      // Add `removed` propodals to the log so they show up as rejects instead of as orphans. This
+      // makes it clear we didn't forget about them.
+      val finalLog2 = removed.foldLeft(finalLog) { (log, p) =>
+        log.updated(p.id, QueueBand.Category.B1_2, RemovedRejectMessage(p))
+      }
+
       // Done!
-      (new FinalProposalQueue(queueTime, bandedQueue4), finalLog)
+      (new FinalProposalQueue(queueTime, bandedQueue4), finalLog2)
 
     }
 
@@ -262,6 +269,11 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
       bucketsAllocation = BucketsAllocationImpl(stageWithBands123.resource.ra.grp.bins.toList)
     )
 
+  }
+
+  case class RemovedRejectMessage(prop: Proposal) extends RejectMessage {
+    def reason: String = "Unknown."
+    def detail: String = "Proposal was removed from consideration."
   }
 
 }

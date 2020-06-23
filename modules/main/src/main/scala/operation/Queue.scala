@@ -4,6 +4,7 @@
 package itac
 package operation
 
+import edu.gemini.tac.qengine.impl.QueueEngine.RemovedRejectMessage
 import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.p1.Proposal
 import itac.util.Colors
@@ -179,6 +180,7 @@ object Queue {
                     case Some(m: RejectTarget)                 => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.raDecType + " bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
                     case Some(m: RejectConditions)             => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Conditions bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
                     case Some(m: RejectOverAllocation)         => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Overallocation"}%-20s ${m.detail}")
+                    case Some(m: RemovedRejectMessage)         => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Unknown"}%-20s ${m.detail}")
                     case Some(lm)                              => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Miscellaneous"}%-20s ${lm.getClass.getName}")
                   }
                 }
