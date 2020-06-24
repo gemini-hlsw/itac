@@ -316,7 +316,7 @@ object Workspace {
           } yield p
 
         def progIdHash: F[ProgIdHash] =
-          new ProgIdHash("x").pure[F]
+          commonConfig.map(c => new ProgIdHash(c.emailConfig.hashKey))
 
       }
     }

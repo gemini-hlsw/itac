@@ -68,7 +68,7 @@ object PrimaryNgo {
            "US"                       |
            "UNITED STATES OF AMERICA" => Some(Info(NgoPartner.US, None))
       case s =>
-        LoggerFactory.getLogger("edu.gemini.itac").warn(s"No NGO partner for ${s}.")
+        LoggerFactory.getLogger("edu.gemini.itac").debug(s"No NGO partner for ${s}.")
         None
     }
 
