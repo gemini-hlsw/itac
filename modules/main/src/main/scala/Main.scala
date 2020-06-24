@@ -222,6 +222,12 @@ trait MainOpts { this: CommandIOApp =>
       header = "Export proposals to the specified ODB. You can re-run this if necessary (programs will be replaced)."
     )((siteConfig, rolloverReport, host, port, progids).mapN(Export[IO](QueueEngine, _, _, _, _, _)))
 
+  lazy val email: Command[Operation[IO]] =
+    Command(
+      name   = "email",
+      header = "Create PI emails for successful proposals."
+    )((siteConfig, rolloverReport, progids).mapN(Email[IO](QueueEngine, _, _, _)))
+
   lazy val bulkEdits: Command[Operation[IO]] =
     Command(
       name = "bulk-edits",
@@ -290,12 +296,6 @@ trait MainOpts { this: CommandIOApp =>
       name = name,
       header = s"Placeholder for $name, which is not yet implemented."
     )(Placeholder.pure[Opts])
-
-  lazy val email: Command[Operation[IO]] =
-    Command(
-      name   = "email",
-      header = "Generate queue emails."
-    )((siteConfig, rolloverReport).mapN((sc, rr) => Email[IO](QueueEngine, sc, rr)))
 
   lazy val reference: Opts[String] =
     Opts.argument[String]("semester")

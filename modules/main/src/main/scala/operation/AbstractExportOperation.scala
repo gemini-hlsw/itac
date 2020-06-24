@@ -43,67 +43,65 @@ abstract class AbstractExportOperation[F[_]: Sync](
                 sys.error(s"Proposal ${p.ntac.reference} is not present in the bulk edits file. Cannot create ITAC node.")
             }
 
+          // Non-Queue Proposals ...
+          val nonQueue =
+            ps.filter(_.site == qr.queueCalc.context.site)                // are at this site
+              .filterNot(p => qr.queueCalc.proposalLog.proposalIds(p.id)) // but don't appear in the log
+
+          // Pick out classicals and those that shouldn't be here
+          val (classical, orphans) = nonQueue.partition(_.mode == Mode.Classical)
+
+          // These *should* all be classical. Let's be sure though.
+          if (orphans.nonEmpty) {
+            orphans.foreach { p =>
+              println(s"${p.ntac.reference} is ${p.mode} and is not in the queue!")
+            }
+            throw new ItacException("Non-classical program somehow escaped the queue!")
+          }
+
+          def pdfFile(name: String): File =
+            cwd.resolve(s"pdfs/$name").toAbsolutePath.toFile
+
+          // Get classical *entries* and then add them.
+          qr.classical(classical).foreach { e =>
+            val p = e.proposals.head // don't handle joints yet, may not matter
+            addItacNode(p, e.programId, QueueBand.QBand1)
+            export(p.p1mutableProposal, pdfFile(p.p1pdfFile), e.programId)
+          }
+
           QueueBand.values.foreach { qb =>
 
-              // Non-Queue Proposals ...
-              val nonQueue =
-                ps.filter(_.site == qr.queueCalc.context.site)                // are at this site
-                  .filterNot(p => qr.queueCalc.proposalLog.proposalIds(p.id)) // but don't appear in the log
+            // Queue Proposals
+            qr.entries(qb).foreach { e =>
 
-              // Pick out classicals and those that shouldn't be here
-              val (classical, orphans) = nonQueue.partition(_.mode == Mode.Classical)
+              // Add ITAC Accept nodes to each proposal in this queue entry.
+              e.proposals.toList.foreach(addItacNode(_, e.programId, qb))
 
-              // These *should* all be classical. Let's be sure though.
-              if (orphans.nonEmpty) {
-                orphans.foreach { p =>
-                  println(s"${p.ntac.reference} is ${p.mode} and is not in the queue!")
-                }
-                throw new ItacException("Non-classical program somehow escaped the queue!")
+              // Move the one with the primary NGO to the head. We merge everything into it.
+              val parts = PrimaryNgo.find(e.proposals.head.p1mutableProposal) match {
+                case None => e.proposals // hope for the best
+                case Some(Info(p, _)) =>
+                  val (a, b) = e.proposals.toList.partition(_.ntac.partner.id == p.name)
+                  // println(s"primary ngo is $p, part ngos are ${e.proposals.toList.map(_.ntac.partner.id)} ... ${a.length} + ${b.length}")
+                  NonEmptyList.fromList(a ++ b).getOrElse(sys.error("unpossible!"))
               }
 
-              def pdfFile(name: String): File =
-                cwd.resolve(s"pdfs/$name").toAbsolutePath.toFile
+                // Merge joints.
+              val p = Merge.merge(parts.map(_.p1mutableProposal))
 
-              // Get classical *entries* and then add them.
-              qr.classical(classical).foreach { e =>
-                val p = e.proposals.head // don't handle joints yet, may not matter
-                addItacNode(p, e.programId, QueueBand.QBand1)
-                export(p.p1mutableProposal, pdfFile(p.p1pdfFile), e.programId)
-              }
+              // debug print the proposal
+              // println("─" * 100)
+              // println(s"[An] input file is ${e.proposals.head.p1xmlFile.getName} and the PDF file is ${e.proposals.head.p1pdfFile.getName}.")
+              // println(SummaryDebug.summary(p))
 
-              // Queue Proposals
-              qr.entries(qb).foreach { e =>
-
-                // Add ITAC Accept nodes to each proposal in this queue entry.
-                e.proposals.toList.foreach(addItacNode(_, e.programId, qb))
-
-                // Move the one with the primary NGO to the head. We merge everything into it.
-                val parts = PrimaryNgo.find(e.proposals.head.p1mutableProposal) match {
-                  case None => e.proposals // hope for the best
-                  case Some(Info(p, _)) =>
-                    val (a, b) = e.proposals.toList.partition(_.ntac.partner.id == p.name)
-                    // println(s"primary ngo is $p, part ngos are ${e.proposals.toList.map(_.ntac.partner.id)} ... ${a.length} + ${b.length}")
-                    NonEmptyList.fromList(a ++ b).getOrElse(sys.error("unpossible!"))
-                }
-
-                 // Merge joints.
-                val p = Merge.merge(parts.map(_.p1mutableProposal))
-
-                // debug print the proposal
-                // println("─" * 100)
-                // println(s"[An] input file is ${e.proposals.head.p1xmlFile.getName} and the PDF file is ${e.proposals.head.p1pdfFile.getName}.")
-                // println(SummaryDebug.summary(p))
-
-                export(p, pdfFile(e.proposals.head.p1pdfFile), e.programId)
-
-              }
+              export(p, pdfFile(e.proposals.head.p1pdfFile), e.programId)
 
             }
 
-            // Workbooks for NGOs
-
-            ExitCode.Success
           }
+
+          ExitCode.Success
+      }
 
       def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
         for {

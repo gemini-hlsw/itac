@@ -3,351 +3,197 @@
 
 package itac.operation
 
-import cats._
 import cats.implicits._
-import itac.config.QueueConfig
-import edu.gemini.tac.qengine.p1.Proposal
-import edu.gemini.tac.qengine.p1.Mode
-import edu.gemini.tac.qengine.p1.CoreProposal
-import edu.gemini.tac.qengine.p1._
-import org.apache.velocity.VelocityContext
-import java.io.StringWriter
-import scala.collection.JavaConverters._
-import cats.effect.Sync
-import cats.Parallel
-import itac.Operation
-import cats.effect.{Blocker, ExitCode}
-import _root_.io.chrisdavenport.log4cats.Logger
-import itac.Workspace
-import java.nio.file.Path
-import edu.gemini.spModel.core.Site
-import itac.EmailTemplateRef
-import edu.gemini.spModel.core.Semester
-import org.apache.velocity.app.VelocityEngine
+import itac._
+import java.io.File
+import edu.gemini.spModel.core.ProgramId
+import cats._
+import cats.effect._
 import edu.gemini.tac.qengine.api.QueueEngine
-import edu.gemini.tac.qengine.api.queue.ProposalQueue
-import edu.gemini.util.security.auth.ProgIdHash
-import edu.gemini.model.p1.immutable.TimeAmount
-import edu.gemini.tac.qengine.util.Time
-import edu.gemini.tac.qengine.p1.QueueBand.QBand1
-import edu.gemini.tac.qengine.p1.QueueBand.QBand2
-import edu.gemini.tac.qengine.p1.Mode
+import java.nio.file.Path
+import edu.gemini.model.p1.mutable._
+import java.math.RoundingMode
+import edu.gemini.model.p1.mutable.NgoPartner.US
+import edu.gemini.model.p1.mutable.NgoPartner.CA
+import edu.gemini.model.p1.mutable.NgoPartner.UH
+import edu.gemini.model.p1.mutable.NgoPartner.AU
+import edu.gemini.model.p1.mutable.NgoPartner.KR
+import edu.gemini.model.p1.mutable.NgoPartner.BR
+import edu.gemini.model.p1.mutable.NgoPartner.AR
+import edu.gemini.model.p1.mutable.NgoPartner.CL
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import org.davidmoten.text.utils.WordWrap
 
-/**
- * @see Velocity documentation https://velocity.apache.org/engine/2.2/developer-guide.html
- */
 object Email {
 
-  // We have this instance in scalaz but we need the cats one here
-  implicit val m: Monoid[TimeAmount] =
-    new Monoid[TimeAmount] {
-      def combine(x: TimeAmount, y: TimeAmount): TimeAmount = x |+| y
-      def empty: TimeAmount = TimeAmount.empty
+  implicit class ProposalOps(p: Proposal) {
+
+    def getActualProposalClass: ProposalClass = {
+      val pcc = p.getProposalClass
+      (
+        none[ProposalClass]           <+>
+        Option(pcc.getClassical)      <+>
+        Option(pcc.getExchange)       <+>
+        Option(pcc.getFastTurnaround) <+>
+        Option(pcc.getLarge)          <+>
+        Option(pcc.getQueue)          <+>
+        Option(pcc.getSip)            <+>
+        Option(pcc.getSpecial)
+      ).getOrElse(sys.error("No proposal class."))
     }
 
-  implicit class TimeOps(self: Time) {
-    def toPrettyString: String =
-      f"${self.value}%.2f ${self.unit}%s"
+    def getItac: Itac =
+      getActualProposalClass.getItac
+
+    def getItacAccept: ItacAccept =
+      getItac.getAccept
+
   }
 
-  // This one's easiest if we uncurry everything.
   def apply[F[_]: Sync: Parallel](
     qe:             QueueEngine,
     siteConfig:     Path,
-    rolloverReport: Option[Path]
+    rolloverReport: Option[Path],
+    progids:        List[ProgramId]
   ): Operation[F] =
-    new AbstractQueueOperation[F](qe, siteConfig, rolloverReport) {
+    new AbstractExportOperation[F](qe, siteConfig, rolloverReport) {
 
-      // The entry
-      def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] = {
+      def export(p: Proposal, pdfFile: File, pid: ProgramId): Unit = {
 
-        // Velocity engine, which takes a bit of work to set up but the computation as a whole is pure.
-        val velocity: VelocityEngine = {
+        // If we gave an explicit list of progids, make sure pid is in it
+        if (progids.nonEmpty && !progids.contains(pid))
+          return; //
 
-          // I feel bad about this but it's the best I could figure out. I need the underlying
-          // side-effecting logger from `log` so I can make stupid Velocity use it, but there's no
-          // direct accessor. So we will try to pull it out and if it fails we get the normal logger
-          // and well, too bad that's what we get. The underlying class is probably
-          // io.chrisdavenport.log4cats.slf4j.internal.Slf4jLoggerInternal.Slf4jLogger, which has a
-          // `logger` member (and generated accessor `logger()`). In the future maybe someone will
-          // use something else, in which case they'll find this comment and work something out.
-          val sideEffectingLogger: Option[org.slf4j.Logger] =
-            Either.catchNonFatal {
-              val getter     = log.getClass.getDeclaredMethod("logger")
-              val underlying = getter.invoke(log).asInstanceOf[org.slf4j.Logger]
-              underlying
-            } .toOption
+        val (prog, part) =
+          ProgramPartnerTimeMutable.programAndPartnerTime(p)
 
-          val ve = new VelocityEngine
-          ve.setProperty("runtime.strict_math",        true)
-          ve.setProperty("runtime.strict_mode.enable", true)
-          sideEffectingLogger.foreach(ve.setProperty("runtime.log.instance", _))
-          ve
+        val (sub, body) =
+          emailSubjectAndBody(
+            deadline =            LocalDate.ofYearDay(2020, 175),
+            instructionsUrl =     "http://www.gemini.edu/node/21275",
+            semester =            p.getSemester,
+            progTitle =           p.getTitle,
+            piName =              p.getInvestigators.getPi,
+            progId =              p.getItacAccept.getProgramId,
+            timeAwarded =         p.getItacAccept.getAward,
+            programTime =         prog,
+            partnerTime =         part,
+            queueBand =           p.getItacAccept.getBand,
+            country =             PrimaryNgo.find(p).map(_.partner).foldMap(partnerName),
+            ntacSupportEmail =    Option(p.getItacAccept.getEmail).getOrElse("(none)"),
+            geminiContactEmail =  Option(p.getItacAccept.getContact).getOrElse("(none)"),
+            progKey =             "TODO",
+            eavesdroppingLink =   "TODO",
+            itacComments =        Option(p.getItac.getComment).getOrElse("(none)"),
+          )
 
-        }
-
-        for {
-          q  <- computeQueue(ws)
-          (ps, qc) = q
-          c <- ws.queueConfig(siteConfig)
-          // _  <- createSuccessfulEmailsForClassical(velocity, ws, ps, c, qc.queue)
-          _  <- createSuccessfulEmailsForQueue(velocity, ws, ps, c, qc.queue)
-          // TODO: more!
-        } yield ExitCode.Success
-
-      }
-
-      // For now
-      type MailMessage = String
-
-      /** Some convenience operations for filtering a list of proposals. */
-      implicit class ProposalListOps(ps: List[Proposal]) {
-
-        def classicalProposalsForSite(site: Site): List[Proposal] =
-          ps.filter { p =>
-              p.site == site           &&
-              p.mode == Mode.Classical &&
-            !p.isJointComponent
-          }
-
-        def successfulQueueProposalsForSite(site: Site, pq: ProposalQueue): List[Proposal] =
-          ps.filter { p =>
-             pq.positionOf(p).isDefined &&
-             p.site == site       &&
-             p.mode == Mode.Queue &&
-            !p.isJointComponent
-          }
-
-      }
-
-      def createPiEmail(velocity: VelocityEngine,ws: Workspace[F], p: Proposal, pq: ProposalQueue): F[MailMessage] = {
-        // We have no types to ensure these things, so let's assert to be sure.
-        assert(!p.isJointComponent, "Program must not be a joint component.")
-        // TODO: assert that p is successful
-        for {
-          s  <- ws.commonConfig.map(_.semester)
-          t  <- ws.readEmailTemplate(EmailTemplateRef.PiSuccessful)
-          h  <- ws.progIdHash
-          ps  = velocityBindings(p, s, pq, h)
-          _  <- Sync[F].delay(ps.foreach(println))
-          tit = merge(velocity, t.name, t.titleTemplate, ps)
-          _  <- Sync[F].delay(println(tit))
-          bod = merge(velocity, t.name, t.bodyTemplate, ps)
-          _  <- Sync[F].delay(println(bod))
-        } yield "ok"
-      }
-
-      def createNgoEmails(p: Proposal): F[List[MailMessage]] = {
-        p match {
-          case c: CoreProposal      => List(s"<email for ${c.ntac.partner.id}>")
-          case j: JointProposal     => j.ntacs.map(n =>s"<email for ${n.partner.id}>")
-          case _: JointProposalPart => Nil // Don't create mails for joint parts
-        }
-      } .pure[F]
-
-      // def createSuccessfulEmailsForClassical(velocity: VelocityEngine, ws: Workspace[F], ps: List[Proposal], qc: QueueConfig, pq: ProposalQueue): F[List[MailMessage]] =
-      //   ps.classicalProposalsForSite(qc.site).parFlatTraverse { cp =>
-      //     (createPiEmail(velocity, ws, cp, pq), createNgoEmails(cp)).parMapN(_ :: _)
-      //   }
-
-      def createSuccessfulEmailsForQueue(velocity: VelocityEngine, ws: Workspace[F], ps: List[Proposal], qc: QueueConfig, pq: ProposalQueue): F[List[MailMessage]] =
-        ps.successfulQueueProposalsForSite(qc.site, pq).flatTraverse { cp => // TODO: parFlatTraverse
-          (createPiEmail(velocity, ws, cp, pq), createNgoEmails(cp)).parMapN(_ :: _)
-        }
-
-      /**
-       * Given a Velocity template and a map of bindings, evaluate the template and return the
-       * generated text, or an indication of why it failed.
-       */
-      def merge(velocity: VelocityEngine, templateName: String, template: String, bindings: Map[String, AnyRef]): Either[Throwable, String] =
-        Either.catchNonFatal {
-          val ctx = new VelocityContext(bindings.asJava)
-          val out = new StringWriter
-          if (!velocity.evaluate(ctx, out, templateName, template)) {
-            // It's not at all clear when we get `false` here rather than a thrown exception. It
-            // has never come up in testing. But this is here just in case.
-            throw new RuntimeException("Velocity evaluation failed (see the log, or re-run with -v debug if there is none!).")
-          }
-          out.toString
-        }
-
-      /**
-       * Construct a map of key/value pairs that will be bound to the Velocity context. Our strategy
-       * is to define only the keys where values are available (rather than using `null`) and then
-       * running in strict reference mode. What this means is, undefined references will throw an
-       * exception as Satan intended. Templates can use `#if` to determine whether a key is defined or
-       * not, before attempting a dereference.
-       * @see strict reference mode https://velocity.apache.org/engine/1.7/user-guide.html#strict-reference-mode
-       */
-      def velocityBindings(p: Proposal, s: Semester, q: ProposalQueue, pih: ProgIdHash): Map[String, AnyRef] = {
-
-        // println(s"==> ${p.id.reference} - ${q.programId(p).map(_.toString).orEmpty}")
-
-        var mut = scala.collection.mutable.Map.empty[String, AnyRef]
-        mut = mut // defeat bogus unused warning
-
-        // bindings that are always present
-        mut += "semester"  -> s.toString
-
-        p.piEmail     .foreach(v => mut += "piMail"       -> v)
-        p.piName      .foreach(v => mut += "piName"       -> v)
-
-        //     // proposals that made it that far must have an itac part, accepted ones must have an accept part
-        //     Validate.notNull(proposal.getPhaseIProposal());
-        //     Validate.notNull(proposal.getItac());
-
-        //     // get some of the important objects
-        //     PhaseIProposal doc = proposal.getPhaseIProposal();
-        //     Itac itac = proposal.getItac();
-        val itac = p.p1proposal.proposalClass.itac
-        //     Investigator pi = doc.getInvestigators().getPi();
-        //     Submission partnerSubmission = doc.getPrimary();
-
-        //     this.geminiComment = itac.getGeminiComment() != null ? itac.getGeminiComment() : "";
-        mut += "geminiComment" -> "" // TODO
-        //     this.itacComments =  itac.getComment() != null ? itac.getComment() : "";
-        itac.map(_.comment.orEmpty).foreach(v => mut += "itacComments" -> v)
-
-        //     if (itac.getRejected() || itac.getAccept() == null) {
-        //         // either rejected or no accept part yet: set empty values
-        //         this.progId = "";
-        //         this.progKey = "";
-        //         this.geminiContactEmail = "";
-        //         this.timeAwarded = "";
-        //     } else {
-        //         this.progId = itac.getAccept().getProgramId();
-        q.programId(p).foreach(v => mut += "progId" -> v)
-        //         this.progKey = ProgIdHash.pass(this.progId);
-        q.programId(p).foreach(v => mut += "progKey" -> pih.pass(v.toString))
-        //         this.geminiContactEmail = itac.getAccept().getContact();
-        itac.flatMap(_.decision.flatMap(_.toOption)).flatMap(_.contact).foreach(v => mut += "geminiContactEmail" -> v)
-        //         this.timeAwarded = itac.getAccept().getAward().toPrettyString();
-        itac.flatMap(_.decision.map(_.foldMap(_.award))).foreach(v => mut += "timeAwarded" -> v.toHours.format()) // handles both accept and reject below
-        //     }
-
-        //     if (!successful) {
-        //         // ITAC-70: use original partner time, the partner time might have been edited by ITAC to "optimize" queue
-        //         this.timeAwarded = "0.0 " + ntacExtension.getRequest().getTime().getUnits();
-        //     }
-        // ^^ handled above
-
-        //     if (proposal.isJoint()) {
-        //         StringBuffer info = new StringBuffer();
-        //         StringBuffer time = new StringBuffer();
-        //         for(Submission submission : doc.getSubmissions()){
-        //             NgoSubmission ngoSubmission = (NgoSubmission) submission;
-        //             info.append(ngoSubmission.getPartner().getName());
-        //             info.append(" ");
-        //             info.append(ngoSubmission.getReceipt().getReceiptId());
-        //             info.append(" ");
-        //             info.append(ngoSubmission.getPartner().getNgoFeedbackEmail()); //TODO: Confirm -- not sure
-        //             info.append("\n");
-        //             time.append(ngoSubmission.getPartner().getName() + ": " + ngoSubmission.getAccept().getRecommend().toPrettyString());
-        //             time.append("\n");
-        //         }
-        //         this.jointInfo = info.toString();
-        //         this.jointTimeContribs = time.toString();
-        //     }
-
-        //     // ITAC-70 & ITAC-583: use original recommended time, the awarded time might have been edited by ITAC to optimize queue
-        //     TimeAmount time = ntacExtension.getAccept().getRecommend();
-        //     this.country = ntacExtension.getPartner().getName();
-        mut += "country"             -> p.ntac.partner.fullName
-        //     this.ntacComment = ntacExtension.getComment() != null ? ntacExtension.getComment() : "";
-        mut += "ntacComment"         -> p.ntac.comment.orEmpty
-        //     this.ntacRanking = ntacExtension.getAccept().getRanking().toString();
-        mut += "ntacRanking"         -> p.ntac.ranking
-        //     this.ntacRecommendedTime = time.toPrettyString();
-        mut += "ntacRecommendedTime" -> p.ntac.awardedTime.toHours.toString
-        //     this.ntacRefNumber = ntacExtension.getReceipt().getReceiptId();
-        mut += "ntacRefNumber"       -> p.ntac.reference
-        //     this.ntacSupportEmail = ntacExtension.getAccept().getEmail();
-        mut += "ntacSupportEmail"    -> p.ntac.partner.email
-        //     // We'll match the total time to the time awarded and scale
-        //     // the program and partner time to fit
-
-        //     // Find the correct set of observations. Note that they return the active observations already
-        //     List<Observation> bandObservations = null;
-        //     if (banding != null && banding.getBand().equals(ScienceBand.BAND_THREE)) {
-        //       bandObservations = proposal.getPhaseIProposal().getBand3Observations();
-        //     } else {
-        //       bandObservations = proposal.getPhaseIProposal().getBand1Band2ActiveObservations();
-        //     }
-        val bandObservations: List[edu.gemini.model.p1.immutable.Observation] =
-          q.positionOf(p).map { pos => p.obsListFor(pos.band).map(_.p1Observation) } .get
-
-        //     if (successful) {
-        //         TimeAmount progTime = new TimeAmount(0, TimeUnit.HR);
-        //         TimeAmount partTime = new TimeAmount(0, TimeUnit.HR);
-        //         for (Observation o : bandObservations) {
-        //             progTime = progTime.sum(o.getProgTime());
-        //             partTime = partTime.sum(o.getPartTime());
-        //         }
-        val (progTime, partTime): (TimeAmount, TimeAmount) =
-          bandObservations.foldMap(o => (o.progTime.orEmpty, o.partTime.orEmpty))
-
-        //         // Total time for program and partner
-        //         TimeAmount sumTime = progTime.sum(partTime);
-        val sumTime: TimeAmount =
-          progTime |+| partTime
-
-        //         // Scale factor with respect to the awarded time
-        //         double ratio = progTime.getValueInHours().doubleValue() / sumTime.getValueInHours().doubleValue();
-        val ratio: Double =
-          progTime.toNights.value / sumTime.toNights.value
-
-        //         // Scale the prog and program time
-        //         this.progTime = TimeAmount.fromMillis(itac.getAccept().getAward().getDoubleValueInMillis() * ratio).toPrettyString();
-        //         this.partnerTime = TimeAmount.fromMillis(itac.getAccept().getAward().getDoubleValueInMillis() * (1.0 - ratio)).toPrettyString();
-        mut += "programTime" -> Time.millisecs((p.time.ms * ratio).toLong).toHours.toPrettyString
-        mut += "partnerTime" -> Time.millisecs((p.time.ms * (1.0 - ratio)).toLong).toHours.toPrettyString
-
-        //     } else {
-        //         this.partnerTime = "0.0 " + ntacExtension.getRequest().getTime().getUnits();
-        //         this.progTime = "0.0 " + ntacExtension.getRequest().getTime().getUnits();
-        //     }
-
-        //     // Merging of PIs: first names and last names will be concatenated separated by '/',
-        //     // emails will be concatenated to a list separated by semi-colons
-        //     this.piMail = pi.getEmail();
-        //     this.piName = pi.getFirstName() + " " + pi.getLastName();
-        val pi = p.p1proposal.investigators.pi
-        mut += "piMail"       -> s"${pi.firstName} ${pi.lastName}"
-        mut += "piName"       -> pi.email
-
-        //     if (doc.getTitle() != null) {
-        //         this.progTitle = doc.getTitle();
-        //     }
-        mut += "progTitle"    -> p.p1proposal.title
-
-        //     if (banding != null) {
-        //         this.queueBand = banding.getBand().getDescription();
-        //     } else if (proposal.isClassical()) {
-        //         this.queueBand = "classical";
-        //     } else {
-        //         this.queueBand = N_A;
-        //     }
-        p.mode match {
-          case Mode.Queue        => q.positionOf(p).foreach(pos => mut += "queueBand" -> s"Band ${pos.band.number}")
-          case Mode.Classical    => mut += "queueBand" -> "classical"
-          case Mode.LargeProgram => mut += "queueBand" -> "N/A"
-        }
-
-        val eavesdroppingLink: String =
-          q.positionOf(p).map(_.band) match {
-            case Some(QBand1 | QBand2) => "<link>" // TODO
-            case _                     => "N/A"
-          }
-
-        mut += "eavesdroppingLink" -> eavesdroppingLink
-
-        // Done
-        mut.toMap
+        println("-----")
+        println(s"#$sub")
+        println(body)
 
       }
 
     }
 
+  def partnerName(p: NgoPartner): String =
+    p match {
+      case US => "United States"
+      case CA => "Canada"
+      case UH => "University of Hawaii"
+      case AU => "Australia"
+      case KR => "Republic of Korea"
+      case BR => "Brazil"
+      case AR => "Argentina"
+      case CL => "Chile"
+    }
+
+  implicit val ShowSemester:   Show[Semester]   = s => s"${s.getYear}${s.getHalf}"
+  implicit val ShowTimeAmount: Show[TimeAmount] = ta => s"${ta.getValue.setScale(1, RoundingMode.HALF_UP)} ${ta.getUnits.name.toLowerCase}"
+  implicit val ShowPrincipalInvestigator: Show[PrincipalInvestigator] = pi => s"${pi.getFirstName} ${pi.getLastName}"
+  implicit val ShowLocalDate:   Show[LocalDate]   = DateTimeFormatter.ofPattern("MMM dd YYYY").format(_).toUpperCase
+
+  def emailSubjectAndBody(
+    deadline:           LocalDate,
+    instructionsUrl:    String,
+    semester:           Semester,
+    progTitle:          String,
+    piName:             PrincipalInvestigator,
+    progId:             String,
+    timeAwarded:        TimeAmount,
+    programTime:        TimeAmount,
+    partnerTime:        TimeAmount,
+    queueBand:          Int,
+    country:            String,
+    ntacSupportEmail:   String,
+    geminiContactEmail: String,
+    progKey:            String,
+    eavesdroppingLink:  String,
+    itacComments:       String
+  ): (String, String) = (
+    show"$semester Gemini PI Notification",
+    show"""|Dear $semester Gemini Principal Investigator,
+           |
+           |Congratulations! You are receiving this email because your proposal for time on Gemini was
+           |successful.  This email contains important information concerning the Phase II definition of
+           |your program.
+           |
+           |!!!THE GENERAL DEADLINE FOR COMPLETING YOUR PHASE II IS $deadline!!!
+           |
+           |Step by step instructions for completing the Phase II Science Programs for all Gemini North and
+           |Gemini South instruments as well as detailed information about Eavesdropping, and Classical and
+           |Priority Visitor Observer programs are given at the following link:
+           |
+           |  $instructionsUrl
+           |
+           |PROGRAM SUMMARY
+           |-----------------------
+           |
+           |Program Title:                       ${WordWrap.from(progTitle).maxWidth(55).newLine("\n                                     ").wrap()}
+           |Principal Investigator:              $piName
+           |Gemini Program ID:                   $progId
+           |Total Time Awarded:                  $timeAwarded
+           |Program Time Awarded:                $programTime
+           |Partner Calibration Time Awarded:    $partnerTime
+           |Scientific Ranking Band:             $queueBand
+           |Gemini Participant Phase II support: $country
+           |Principal Support:                   $ntacSupportEmail
+           |Additional Support:                  $geminiContactEmail
+           |Program Key Password:                $progKey
+           |
+           |Remote Eavesdropping Google Spreadsheet link (Band 1 and 2 only):
+           |
+           |  $eavesdroppingLink
+           |
+           |!!! Your program key password is necessary for accessing both your Phase II program using the
+           |Observing Tool and your data in the Gemini Observatory Archive!!!
+           |
+           |Your awarded time has been split into program and partner (baseline calibration) components.
+           |In the OT you will see only the awarded program time. During Phase II you will create the
+           |observations to fill this time.
+           |
+           |You will be the single point of contact for Phase II preparation and notification of data
+           |availability.  If you wish to change or add contact information for your program, please
+           |contact your support scientists (Principal or Additional Support).  A Gemini Contact Scientist
+           |will be able to make the necessary changes.
+           |
+           |ITAC FEEDBACK
+           |------------------
+           |
+           |You may receive feedback concerning your proposal from your National TAC or NGO. In addition,
+           |the following comment (if any) comes from the International Time Allocation Committee (ITAC):
+           |
+           |  ${WordWrap.from(itacComments).maxWidth(80).newLine("\n  ").wrap()}
+           |
+           |Thank you for your prompt attention to your Phase II submission and we wish you well in your
+           |investigations.
+           |
+           |Regards,
+           |
+           |Marie Lemoine-Busserolle, ITAC Chair (mbussero@gemini.edu)
+           |Atsuko Nitta, Gemini North Head of Science Operations (anitta@gemini.edu)
+           |Rene Rutten, Gemini South Head of Science Operations (rrutten@gemini.edu)
+           |""".stripMargin
+  )
+
 }
-
-
