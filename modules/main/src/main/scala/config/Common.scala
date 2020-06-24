@@ -11,13 +11,15 @@ import java.{util => ju}
 import java.time.LocalDate
 import edu.gemini.tac.qengine.api.config.ConditionsBin
 import edu.gemini.tac.qengine.api.config.ConditionsBinGroup
+import itac.config.Common.EmailConfig
 
 final case class Common(
   semester: Semester,
   shutdown: PerSite[List[LocalDateRange]],
   partners: Partner => PartnerConfig,
   sequence: PerSite[List[Partner]],
-  conditionsBins: List[ConditionsBin[Percent]]
+  conditionsBins: List[ConditionsBin[Percent]],
+  emailConfig: EmailConfig
 ) { self =>
 
   object engine {
@@ -72,5 +74,15 @@ object Common {
 
   implicit val encoderCommon: Encoder[Common] = deriveEncoder
   implicit val decoderCommon: Decoder[Common] = deriveDecoder
+
+  case class EmailConfig(
+    deadline: LocalDate,
+    instructionsURL: String,
+    eavesdroppingURL: String,
+  )
+  object EmailConfig {
+    implicit val encoderEmailConfig: Encoder[EmailConfig] = deriveEncoder
+    implicit val decoderEmailConfig: Decoder[EmailConfig] = deriveDecoder
+  }
 
 }

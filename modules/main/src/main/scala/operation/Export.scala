@@ -16,6 +16,7 @@ import edu.gemini.model.p1.mutable.ObjectFactory
 import java.io.ByteArrayOutputStream
 import java.io.ByteArrayInputStream
 import edu.gemini.model.p1.mutable.Proposal
+import itac.config.Common
 
 object Export {
 
@@ -35,7 +36,7 @@ object Export {
   ): Operation[F] =
     new AbstractExportOperation[F](qe, siteConfig, rolloverReport) {
 
-      def export(p: Proposal, pdfFile: File, pid: ProgramId): Unit = {
+      def export(p: Proposal, pdfFile: File, pid: ProgramId, cc: Common): Unit = {
 
         // If we gave an explicit list of progids, make sure pid is in it
         if (progids.nonEmpty && !progids.contains(pid))

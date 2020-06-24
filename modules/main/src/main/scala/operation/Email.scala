@@ -24,6 +24,7 @@ import edu.gemini.model.p1.mutable.NgoPartner.CL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import org.davidmoten.text.utils.WordWrap
+import itac.config.Common
 
 object Email {
 
@@ -59,7 +60,7 @@ object Email {
   ): Operation[F] =
     new AbstractExportOperation[F](qe, siteConfig, rolloverReport) {
 
-      def export(p: Proposal, pdfFile: File, pid: ProgramId): Unit = {
+      def export(p: Proposal, pdfFile: File, pid: ProgramId, cc: Common): Unit = {
 
         // If we gave an explicit list of progids, make sure pid is in it
         if (progids.nonEmpty && !progids.contains(pid))
@@ -70,8 +71,8 @@ object Email {
 
         val (sub, body) =
           emailSubjectAndBody(
-            deadline =            LocalDate.ofYearDay(2020, 175),
-            instructionsUrl =     "http://www.gemini.edu/node/21275",
+            deadline =            cc.emailConfig.deadline,
+            instructionsUrl =     cc.emailConfig.instructionsURL,
             semester =            p.getSemester,
             progTitle =           p.getTitle,
             piName =              p.getInvestigators.getPi,
@@ -84,7 +85,7 @@ object Email {
             ntacSupportEmail =    Option(p.getItacAccept.getEmail).getOrElse("(none)"),
             geminiContactEmail =  Option(p.getItacAccept.getContact).getOrElse("(none)"),
             progKey =             "TODO",
-            eavesdroppingLink =   "TODO",
+            eavesdroppingLink =   cc.emailConfig.eavesdroppingURL,
             itacComments =        Option(p.getItac.getComment).getOrElse("(none)"),
           )
 
@@ -111,7 +112,7 @@ object Email {
   implicit val ShowSemester:   Show[Semester]   = s => s"${s.getYear}${s.getHalf}"
   implicit val ShowTimeAmount: Show[TimeAmount] = ta => s"${ta.getValue.setScale(1, RoundingMode.HALF_UP)} ${ta.getUnits.name.toLowerCase}"
   implicit val ShowPrincipalInvestigator: Show[PrincipalInvestigator] = pi => s"${pi.getFirstName} ${pi.getLastName}"
-  implicit val ShowLocalDate:   Show[LocalDate]   = DateTimeFormatter.ofPattern("MMM dd YYYY").format(_).toUpperCase
+  implicit val ShowLocalDate:   Show[LocalDate]   = DateTimeFormatter.ofPattern("MMM d YYYY").format(_).toUpperCase
 
   def emailSubjectAndBody(
     deadline:           LocalDate,

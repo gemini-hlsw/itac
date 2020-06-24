@@ -18,6 +18,7 @@ import io.chrisdavenport.log4cats.Logger
 import java.nio.file.Path
 import itac.PrimaryNgo.Info
 import cats.data.NonEmptyList
+import itac.config.Common
 
 abstract class AbstractExportOperation[F[_]: Sync](
   qe:             QueueEngine,
@@ -25,9 +26,9 @@ abstract class AbstractExportOperation[F[_]: Sync](
   rolloverReport: Option[Path]
 ) extends AbstractQueueOperation[F](qe, siteConfig, rolloverReport) {
 
-      def export(p: edu.gemini.model.p1.mutable.Proposal, pdfFile: File, pid: ProgramId): Unit
+      def export(p: edu.gemini.model.p1.mutable.Proposal, pdfFile: File, pid: ProgramId, cc: Common): Unit
 
-      def doExport(ps: List[Proposal], qr: QueueResult, bes: Map[String, BulkEdit], cwd: Path): F[ExitCode] =
+      def doExport(ps: List[Proposal], qr: QueueResult, bes: Map[String, BulkEdit], cwd: Path, cc: Common): F[ExitCode] =
         Sync[F].delay {
 
           def addItacNode(p: Proposal, pid: ProgramId, band: QueueBand): Unit =
@@ -66,7 +67,7 @@ abstract class AbstractExportOperation[F[_]: Sync](
           qr.classical(classical).foreach { e =>
             val p = e.proposals.head // don't handle joints yet, may not matter
             addItacNode(p, e.programId, QueueBand.QBand1)
-            export(p.p1mutableProposal, pdfFile(p.p1pdfFile), e.programId)
+            export(p.p1mutableProposal, pdfFile(p.p1pdfFile), e.programId, cc)
           }
 
           QueueBand.values.foreach { qb =>
@@ -94,7 +95,7 @@ abstract class AbstractExportOperation[F[_]: Sync](
               // println(s"[An] input file is ${e.proposals.head.p1xmlFile.getName} and the PDF file is ${e.proposals.head.p1pdfFile.getName}.")
               // println(SummaryDebug.summary(p))
 
-              export(p, pdfFile(e.proposals.head.p1pdfFile), e.programId)
+              export(p, pdfFile(e.proposals.head.p1pdfFile), e.programId, cc)
 
             }
 
@@ -108,7 +109,8 @@ abstract class AbstractExportOperation[F[_]: Sync](
           p   <- computeQueue(ws); (ps, qc) = p
           be  <- ws.bulkEdits(ps)
           cwd <- ws.cwd
-          e   <- doExport(ps, QueueResult(qc), be, cwd)
+          cc  <- ws.commonConfig
+          e   <- doExport(ps, QueueResult(qc), be, cwd, cc)
         } yield e
 
   }
