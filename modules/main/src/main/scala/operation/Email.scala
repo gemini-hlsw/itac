@@ -25,6 +25,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import org.davidmoten.text.utils.WordWrap
 import itac.config.Common
+import edu.gemini.util.security.auth.ProgIdHash
+import java.nio.file.Files
 
 object Email {
 
@@ -60,7 +62,7 @@ object Email {
   ): Operation[F] =
     new AbstractExportOperation[F](qe, siteConfig, rolloverReport) {
 
-      def export(p: Proposal, pdfFile: File, pid: ProgramId, cc: Common): Unit = {
+      def export(p: Proposal, pdfFile: File, pid: ProgramId, cc: Common, pih: ProgIdHash): Unit = {
 
         // If we gave an explicit list of progids, make sure pid is in it
         if (progids.nonEmpty && !progids.contains(pid))
@@ -84,14 +86,24 @@ object Email {
             country =             PrimaryNgo.find(p).map(_.partner).foldMap(partnerName),
             ntacSupportEmail =    Option(p.getItacAccept.getEmail).getOrElse("(none)"),
             geminiContactEmail =  Option(p.getItacAccept.getContact).getOrElse("(none)"),
-            progKey =             "TODO",
+            progKey =             pih.pass(pid.toString),
             eavesdroppingLink =   cc.emailConfig.eavesdroppingURL,
             itacComments =        Option(p.getItac.getComment).getOrElse("(none)"),
           )
 
-        println("-----")
-        println(s"#$sub")
-        println(body)
+        // this is gross but we'll come back and clean up
+        val emailFolder = new File(pdfFile.getParentFile.getParentFile, "emails")
+        val emailFile   = new File(emailFolder, s"${p.getItacAccept.getProgramId}.txt")
+        val text =
+          s"""|TO:      ${p.getInvestigators().getPi().getEmail()}
+              |SUBJECT: $sub
+              |
+              |$body
+              |""".stripMargin
+
+        emailFolder.mkdir
+        Files.write(emailFile.toPath, text.getBytes("UTF-8"))
+        println(s"Wrote ${emailFile}")
 
       }
 
@@ -132,7 +144,7 @@ object Email {
     eavesdroppingLink:  String,
     itacComments:       String
   ): (String, String) = (
-    show"$semester Gemini PI Notification",
+    show"$progId Gemini PI Notification",
     show"""|Dear $semester Gemini Principal Investigator,
            |
            |Congratulations! You are receiving this email because your proposal for time on Gemini was

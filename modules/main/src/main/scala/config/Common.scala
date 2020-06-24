@@ -79,6 +79,7 @@ object Common {
     deadline: LocalDate,
     instructionsURL: String,
     eavesdroppingURL: String,
+    hashKey: String
   )
   object EmailConfig {
     implicit val encoderEmailConfig: Encoder[EmailConfig] = deriveEncoder

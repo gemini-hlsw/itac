@@ -222,9 +222,9 @@ trait MainOpts { this: CommandIOApp =>
       header = "Export proposals to the specified ODB. You can re-run this if necessary (programs will be replaced)."
     )((siteConfig, rolloverReport, host, port, progids).mapN(Export[IO](QueueEngine, _, _, _, _, _)))
 
-  lazy val email: Command[Operation[IO]] =
+  lazy val emailGen: Command[Operation[IO]] =
     Command(
-      name   = "email",
+      name   = "gen-emails",
       header = "Create PI emails for successful proposals."
     )((siteConfig, rolloverReport, progids).mapN(Email[IO](QueueEngine, _, _, _)))
 
@@ -386,7 +386,7 @@ trait MainOpts { this: CommandIOApp =>
 
   lazy val ops: Opts[Operation[IO]] =
     List(
-      email,
+      emailGen,
       placeholder("skeleton"),
       init,
       ls,
