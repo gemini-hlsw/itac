@@ -16,7 +16,7 @@ object MailerTest extends IOApp {
   def run(args: List[String]): IO[ExitCode] =
     Mailer.forProduction[IO]("smtp.hi.gemini.edu").sendText(
       from    = new InternetAddress("announcements@gemini.edu"),
-      to      = NonEmptyList.of(new InternetAddress("rnorris@mac.com")),
+      to      = NonEmptyList.of(new InternetAddress("rob_norris@mac.com")),
       subject = "Butter",
       message = "Hello from Scala."
     ).as(ExitCode.Success)
