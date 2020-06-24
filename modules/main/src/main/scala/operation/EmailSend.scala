@@ -28,7 +28,7 @@ import itac.config.Common
 import edu.gemini.util.security.auth.ProgIdHash
 import java.nio.file.Files
 
-object Email {
+object EmailSend {
 
   implicit class ProposalOps(p: Proposal) {
 

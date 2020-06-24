@@ -47,7 +47,7 @@ lazy val main = project
       "io.circe"             %% "circe-generic"          % "0.11.1",
       "io.circe"             %% "circe-parser"           % "0.11.1",
       "io.circe"             %% "circe-yaml"             % "0.10.0",
-      "javax.mail"            % "javax.mail-api"         % "1.6.2",
+      "com.sun.mail"            % "javax.mail"         % "1.6.0",
       "org.apache.velocity"   % "velocity-engine-core"   % "2.2",    // save me jeebus
       "org.slf4j"             % "slf4j-simple"           % "1.7.28",
       "org.tpolecat"         %% "atto-core"              % "0.7.1",

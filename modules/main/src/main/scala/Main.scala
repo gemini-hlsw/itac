@@ -226,7 +226,7 @@ trait MainOpts { this: CommandIOApp =>
     Command(
       name   = "gen-emails",
       header = "Create PI emails for successful proposals."
-    )((siteConfig, rolloverReport, progids).mapN(Email[IO](QueueEngine, _, _, _)))
+    )((siteConfig, rolloverReport, progids).mapN(EmailGen[IO](QueueEngine, _, _, _)))
 
   lazy val bulkEdits: Command[Operation[IO]] =
     Command(
