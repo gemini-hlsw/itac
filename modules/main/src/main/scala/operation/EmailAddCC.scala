@@ -16,6 +16,7 @@ import edu.gemini.util.security.auth.ProgIdHash
 import java.nio.file.Files
 import scala.collection.JavaConverters._
 import scala.collection.immutable.Nil
+import java.nio.charset.Charset
 
 // fix for 2020B emails that had no CC
 object EmailAddCC {
@@ -50,7 +51,7 @@ object EmailAddCC {
 
         // Update the file if it exists.
         if (emailFile.toFile.exists) {
-          Files.readAllLines(emailFile).asScala.toList match {
+          Files.readAllLines(emailFile, Charset.forName("UTF-8")).asScala.toList match {
             case Nil => sys.error(s"$emailFile is empty!")
             case h :: t =>
               val newText = (h :: lineToInsert :: t).mkString("\n")

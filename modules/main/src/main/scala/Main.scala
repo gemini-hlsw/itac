@@ -384,6 +384,12 @@ trait MainOpts { this: CommandIOApp =>
       header = "List split/joint proposals."
     )(Splits[IO].pure[Opts])
 
+  lazy val emailSend: Command[Operation[IO]] =
+    Command(
+      name   = "send-emails",
+      header = "Sends all emails in the emails/ folder."
+    )(EmailSend[IO].pure[Opts])
+
   lazy val duplicates: Command[Operation[IO]] =
     Command(
       name   = "duplicates",
@@ -410,6 +416,7 @@ trait MainOpts { this: CommandIOApp =>
       directorSpreadsheet,
       bulkEdits,
       emailFix,
+      emailSend,
     ).sortBy(_.name).map(Opts.subcommand(_)).foldK
 
 }
