@@ -52,7 +52,7 @@ object Mailer {
 
       override def send(m: SafeMimeMessage): F[Unit] = {
         Sync[F].delay(Transport.send(m.toMimeMessage(session))) *>
-        log.info(s"""Successfully sent "${m.subject}" to ${m.toAddressString}.""")
+        log.warn(s"""Successfully sent "${m.subject}" to ${m.toAddressString}.""")
       } .handleErrorWith(t => log.warn(t)(s"""Failed to send "${m.subject}" to ${m.toAddressString}."""))
 
     }

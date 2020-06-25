@@ -13,16 +13,19 @@ import cats.data.NonEmptyList
 // monkey test (not a unit test)
 object MailerTest extends IOApp {
 
-  implicit val log: Logger[IO] =
+  val log: Logger[IO] =
     Slf4jLogger.getLoggerFromName(getClass.getName)
 
-  def run(args: List[String]): IO[ExitCode] =
-    Mailer.forProduction[IO]("hbfitac-lv1").sendText(
+  val mail = Mailer.SafeMimeMessage(
       from    = new InternetAddress("announcements@gemini.edu"),
       to      = NonEmptyList.of(new InternetAddress("rob_norris@mac.com")),
+      cc      = List(new InternetAddress("rnorris@gemini.edu")),
       subject = "Butter",
-      message = "Hello from Scala."
-    ).as(ExitCode.Success)
+      content = "Hello from Scala."
+  )
+
+  def run(args: List[String]): IO[ExitCode] =
+    Mailer.forProduction[IO](log, "hbfitac-lv1").send(mail).replicateA(3).as(ExitCode.Success)
 
 }
 
