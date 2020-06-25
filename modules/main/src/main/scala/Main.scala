@@ -228,6 +228,12 @@ trait MainOpts { this: CommandIOApp =>
       header = "Create PI emails for successful proposals."
     )((siteConfig, rolloverReport, progids).mapN(EmailGen[IO](QueueEngine, _, _, _)))
 
+  lazy val emailFix: Command[Operation[IO]] =
+    Command(
+      name   = "fix-emails",
+      header = "Add CC line to emails."
+    )((siteConfig, rolloverReport, progids).mapN(EmailAddCC[IO](QueueEngine, _, _, _)))
+
   lazy val bulkEdits: Command[Operation[IO]] =
     Command(
       name = "bulk-edits",
@@ -402,7 +408,8 @@ trait MainOpts { this: CommandIOApp =>
       staffEmailSpreadsheet,
       ngoSpreadsheet,
       directorSpreadsheet,
-      bulkEdits
+      bulkEdits,
+      emailFix,
     ).sortBy(_.name).map(Opts.subcommand(_)).foldK
 
 }
