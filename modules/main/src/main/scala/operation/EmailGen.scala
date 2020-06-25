@@ -91,11 +91,15 @@ object EmailGen {
             itacComments =        Option(p.getItac.getComment).getOrElse("(none)"),
           )
 
+        val ccAddrs: List[String] =
+          Option(p.getItacAccept.getEmail).toList ++ Option(p.getItacAccept.getContact).toList
+
         // this is gross but we'll come back and clean up
         val emailFolder = new File(pdfFile.getParentFile.getParentFile, "emails")
         val emailFile   = new File(emailFolder, s"${p.getItacAccept.getProgramId}.txt")
         val text =
           s"""|TO:      ${p.getInvestigators().getPi().getEmail()}
+              |CC:      ${ccAddrs.mkString(", ")}
               |SUBJECT: $sub
               |
               |$body
