@@ -56,7 +56,7 @@ class ProposalQueueBuilder(
   private def addGuaranteedTimeFor(prop: Proposal): PartnerTime =
     prop match {
       case joint: JointProposal =>
-        (usedGuaranteed/:joint.toParts) {
+        joint.toParts.foldLeft(usedGuaranteed) {
           case (cur, part) => cur.add(part.ntac.partner, part.time)
         }
       case _ =>

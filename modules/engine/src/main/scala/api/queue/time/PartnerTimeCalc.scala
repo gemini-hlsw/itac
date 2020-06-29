@@ -7,8 +7,6 @@ import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.tac.qengine.p2.rollover.RolloverReport
 import java.util.logging.{Level, Logger}
 
-import scala.collection.JavaConverters._
-
 /**
  * Contains calculations of various PartnerTime categories that go into the
  * final QueueTime.
@@ -42,7 +40,7 @@ object PartnerTimeCalc {
 
      // Sum the awarded times, converting the map into a Map[Partner, Time]
     def sumtime(t: Time, p: Proposal): Time = p.ntac.awardedTime + t
-    val timemap = cmap.mapValues { plst => (Time.ZeroHours/:plst)(sumtime) }
+    val timemap = cmap.mapValues { plst => plst.foldLeft(Time.ZeroHours)(sumtime) }
 
     // Create a PartnerTime from the map.
     PartnerTime(partners, timemap)
@@ -70,7 +68,7 @@ object PartnerTimeCalc {
    * where negative times are left at zero.
    */
   def net(base: PartnerTime, partners: List[Partner],  deductions: PartnerTime*): PartnerTime = {
-    val totalDeductions = (PartnerTime.empty(partners) /:deductions)(_ + _)
+    val totalDeductions = deductions.foldLeft(PartnerTime.empty(partners))(_ + _)
     val tmp = base - totalDeductions
     tmp.mapTimes((_: Partner, t: Time) => Time.max(Time.ZeroHours, t))
   }

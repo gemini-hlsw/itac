@@ -203,7 +203,7 @@ final class Angle(private val theta: Double, val unit: Unit) extends Ordered[Ang
    * the given angle <code>theta</code> expressed in <code>this</code> angle's
    * units
    */
-  def add(theta: Double, u: Unit): Angle = this + new Angle(theta, unit)
+  def add(theta: Double): Angle = this + new Angle(theta, unit)
 
   /**
    * Compares two angles taking into account the units in which they are

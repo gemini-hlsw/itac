@@ -8,13 +8,13 @@ import resource._
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
 import edu.gemini.tac.qengine.log.{RejectCategoryOverAllocation, ProposalLog}
 import edu.gemini.tac.qengine.api.config.QueueEngineConfig
-import edu.gemini.tac.qengine.util.BoundedTime._
+// import edu.gemini.tac.qengine.util.BoundedTime._
 import edu.gemini.tac.qengine.util.BoundedTime
 import edu.gemini.tac.qengine.api.queue.time.{PartnerTime, QueueTime}
 import edu.gemini.tac.qengine.ctx.Partner
-import java.util.logging.{Level, Logger}
+// import java.util.logging.{Level, Logger}
 import edu.gemini.tac.qengine.util.Time
-import edu.gemini.tac.qengine.api.queue.time.ExplicitQueueTime
+// import edu.gemini.tac.qengine.api.queue.time.ExplicitQueueTime
 import edu.gemini.tac.qengine.api.config.QueueBandPercentages
 import edu.gemini.tac.qengine.util.Percent
 import edu.gemini.tac.qengine.p1.QueueBand.QBand1

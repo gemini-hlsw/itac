@@ -76,7 +76,7 @@ object CsvToPartnerSequenceParser {
     def lookupFailure(token: String, e: CsvParse): CsvParse =
       Left(e.left.getOrElse(Set.empty) + token)
 
-    (tokens:\zero) { (t,e) =>
+    tokens.foldRight(zero) { (t,e) =>
       partnerMap.get(t).fold(lookupFailure(t,e))(p => e.right.map(lst => p :: lst))
     }
   }

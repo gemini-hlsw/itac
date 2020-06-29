@@ -29,7 +29,7 @@ object LazyMergeStrategy extends MergeStrategy {
     private def awarded(prop: Proposal): Double = prop.ntac.awardedTime.toHours.value
 
     private def totalHrs(lst: List[(Proposal, Double)]): Double =
-      (0.0/:lst)((time, tup) => time + awarded(tup._1))
+      lst.foldLeft(0.0)((time, tup) => time + awarded(tup._1))
 
     private def weightedHrs(lst: List[(Proposal, Double)]): Double =
       lst.foldLeft(0.0) { (hrs, tup) => hrs + awarded(tup._1) * tup._2 }

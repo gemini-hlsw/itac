@@ -65,20 +65,20 @@ object CoordinateFields {
   def parse(s: String): Option[CoordinateFields] =
     s match {
       // hours/deg min sec.ss
-      case Full(signStr, hdStr, mStr, sStr, fStr) => {
+      case Full(signStr, hdStr, mStr, sStr, _) => {
         val sign = parseSign(signStr)
         Some(CoordinateFields(sign, hdStr.toInt, mStr.toInt, sStr.toDouble))
       }
 
       // hours/deg min.mm
-      case NoSec(signStr, hdStr, mStr, fStr) => {
+      case NoSec(signStr, hdStr, mStr, _) => {
         val sign = parseSign(signStr)
         val (min, sec) = split(mStr.toDouble)
         Some(CoordinateFields(sign, hdStr.toInt, min, sec))
       }
 
       // hours.hh
-      case NoMin(signStr, hdStr,fStr) => {
+      case NoMin(signStr, hdStr,_) => {
         val sign = parseSign(signStr)
         val (hrs, minD) = split(hdStr.toDouble)
         val (min, sec) = split(minD)

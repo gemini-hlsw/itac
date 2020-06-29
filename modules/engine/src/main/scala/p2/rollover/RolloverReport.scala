@@ -5,7 +5,6 @@ package edu.gemini.tac.qengine.p2.rollover
 
 import scalaz._, Scalaz._
 import edu.gemini.spModel.core.{ Semester, Site }
-import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.tac.qengine.util.Time
 import java.time.Instant
 import scala.util.Try
@@ -55,7 +54,7 @@ object RolloverReport {
    *
    * @return a RolloverReport, or a message on failure.
    */
-  def fromXml(rollover: Node, partners: List[Partner]): Either[String, RolloverReport] =
+  def fromXml(rollover: Node): Either[String, RolloverReport] =
     Try {
       val site = Site.parse(rollover \@ "site")
       val sem  = Semester.parse(rollover \@ "semester")

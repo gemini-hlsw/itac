@@ -1,7 +1,6 @@
 package edu.gemini.tac.qengine.impl
 
 
-import java.io.StringWriter
 import org.slf4j.LoggerFactory
 
 object QueueCalculationLog{

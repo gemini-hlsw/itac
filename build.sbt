@@ -29,7 +29,7 @@ lazy val engine = project
       "org.scalatest"           %% "scalatest"                   % "3.1.1"   % "test",
       "org.scalatestplus"       %% "scalacheck-1-14"             % "3.1.1.1" % "test"
      ),
-    scalacOptions := Nil, // don't worry about warnings right now
+    Test / compile / scalacOptions := Nil, // don't worry about warnings right now
   )
 
 lazy val main = project

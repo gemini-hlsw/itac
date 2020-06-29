@@ -41,7 +41,7 @@ object Percent {
     require(precision >= 0)
 
     val sum   = num.toDouble(ts.sum)
-    val total = pow(10, 2 + precision).toInt
+    val total = pow(10, 2.0 + precision).toInt
 
     def nonZeroPercents: List[Percent] = {
 

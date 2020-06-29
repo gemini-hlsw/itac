@@ -31,7 +31,7 @@ case class RaResourceGroup(val grp: RaBinGroup[RaResource]) extends Resource {
   private def reserveToo(block: Block, queue: ProposalQueueBuilder): RejectMessage Either RaResourceGroup =
     tooBlocks(block) match {
         case None => {
-          val sum = (Time.hours(0)/:grp.bins)(_ + _.remaining(block.obs.conditions))
+          val sum = grp.bins.foldLeft(Time.hours(0))(_ + _.remaining(block.obs.conditions))
           Left(new RejectToo(block.prop, block.obs, queue.band, sum))
         }
         case Some(s) =>
@@ -63,11 +63,11 @@ case class RaResourceGroup(val grp: RaBinGroup[RaResource]) extends Resource {
     (new RaResourceGroup(grp.updated(target.ra, bin)), rem)
   }
 
-  def reserveAvailable[T <% CategorizedTime](reduction: T): (RaResourceGroup, Time) =
+  def reserveAvailable[U <% CategorizedTime](reduction: U): (RaResourceGroup, Time) =
     reserveAvailable(reduction.time, reduction.target, reduction.conditions)
 
-  def reserveAvailable[T <% CategorizedTime](reductions: List[T]): (RaResourceGroup, Time) = {
-    ((this,Time.Zero)/:reductions) {
+  def reserveAvailable[U <% CategorizedTime](reductions: List[U]): (RaResourceGroup, Time) = {
+    reductions.foldLeft((this,Time.Zero)) {
       case ((grp0, time), reduction) =>
         grp0.reserveAvailable(reduction) match {
           case (newGrp, leftover) => (newGrp, leftover+time)

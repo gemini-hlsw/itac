@@ -15,7 +15,7 @@ class PartnerTime private(val partners: List[Partner], val map: Map[Partner, Tim
   /**
    * Total of all contained time values.
    */
-  lazy val total: Time = (Time.ZeroHours /: map)(_ + _._2)
+  lazy val total: Time = map.foldLeft(Time.ZeroHours)(_ + _._2)
 
   private def timeOp(f: (Time, Time) => Time, that: PartnerTime): PartnerTime =
     mapTimes((p, t) => f(t, that(p)))

@@ -14,8 +14,7 @@ import edu.gemini.tac.qengine.api.config.{ConditionsCategory, QueueEngineConfig,
 import edu.gemini.tac.qengine.p2.rollover.RolloverObservation
 
 import collection.immutable.List._
-import edu.gemini.tac.qengine.api.queue.time.{PartnerTime, QueueTime}
-import java.util.logging.{Level, Logger}
+import edu.gemini.tac.qengine.api.queue.time.QueueTime
 
 import edu.gemini.tac.qengine.util.BoundedTime
 import org.slf4j.LoggerFactory
@@ -78,7 +77,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
 
     val raTablesANSI: String =
       report.flatten.map {
-        case x @ RaRow(h, r, u, l)         => embolden(f"\nRA: $h%-78s  $l%6.2f  $u%6.2f  $r%6.2f")
+        case RaRow(h, r, u, l)         => embolden(f"\nRA: $h%-78s  $l%6.2f  $u%6.2f  $r%6.2f")
         case ConditionsRow(t, u, r, l) => f"Conditions: $t%-70s  $l%6.2f  $u%6.2f  $r%6.2f "
       } .mkString("\n")
 
@@ -130,7 +129,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
     Log.info(s"${Console.GREEN}Partner       Band 1/2       Band 3${Console.RESET}")
     config.partners.foreach { p =>
       val q   = s.queue
-      val t0  = q.queueTime(p).toHours.value
+      // val t0  = q.queueTime(p).toHours.value
       val b12Aval = q.queueTime(QueueBand.Category.B1_2, p).toHours.value
       val b12Used = q.usedTime(QueueBand.Category.B1_2, p).toHours.value
       val b3Aval = q.queueTime(QueueBand.Category.B3, p).toHours.value

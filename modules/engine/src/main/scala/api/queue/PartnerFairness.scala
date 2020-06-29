@@ -22,7 +22,7 @@ class PartnerFairness(remainingTime: Partner => Time, availableTime: Partner => 
     partners.map(p => p -> calcErrorPercent(p)).toMap
 
   private def avg(f: Partner => Double): Double =
-    (0.0/:partners) { _ + f(_) } / partners.length
+    partners.foldLeft(0.0) { _ + f(_) } / partners.length
 
   val minErrorPercent: Double  = errorPercent.values.min
   val maxErrorPercent: Double  = errorPercent.values.min

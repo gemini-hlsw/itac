@@ -8,8 +8,6 @@ import edu.gemini.tac.qengine.p1.QueueBand
 import edu.gemini.tac.qengine.p1.QueueBand._
 import edu.gemini.tac.qengine.util.{Percent, Time}
 
-import java.util.logging.{Logger, Level}
-
 /** Record of queue times for each partner.  Provides access to the total queue
   * time and the size of the time quantum for each partner.
   */
@@ -123,7 +121,6 @@ trait QueueTime {
 
 
 object QueueTime {
-  private val Log = Logger.getLogger("edu.gemini.itac")
 
   /** Number of hours in each "cycle" of 100 Partner countries. */
   val CycleTimeConstant = 300
@@ -139,8 +136,6 @@ object QueueTime {
   def apply(s: Site, pt: PartnerTime, bp: QueueBandPercentages, poa: Option[Percent]): QueueTime =
     new DerivedQueueTime(s, pt, bp, poa)
 }
-
-import QueueTime.Log
 
 /** Implementation of `QueueTime` derived from overall partner allocation and
   * band percentages.
@@ -213,17 +208,17 @@ final case class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), T
     partnerOverfillAllowance.get(cat)
 
   val bandTimes: Map[QueueBand, Time] =
-    (Map.empty[QueueBand, Time].withDefaultValue(Time.Zero)/:categorizedTimes) { case (m,((_, b), t)) =>
+    categorizedTimes.foldLeft(Map.empty[QueueBand, Time].withDefaultValue(Time.Zero)) { case (m,((_, b), t)) =>
       m.updated(b, m(b) + t)
     }
 
   val partnerTimes: Map[Partner, Time] =
-    (Map.empty[Partner, Time].withDefaultValue(Time.Zero)/:categorizedTimes) { case (m, ((p, _), t)) =>
+    categorizedTimes.foldLeft(Map.empty[Partner, Time].withDefaultValue(Time.Zero)) { case (m, ((p, _), t)) =>
       m.updated(p, m(p) + t)
     }
 
   private def sum(filter: ((Partner, QueueBand)) => Boolean): Time =
-    (Time.Zero/:categorizedTimes) { case (sum, (pb, t)) =>
+    categorizedTimes.foldLeft(Time.Zero) { case (sum, (pb, t)) =>
       sum + (if (filter(pb)) t else Time.Zero)
     }
 

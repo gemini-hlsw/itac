@@ -30,7 +30,7 @@ class FinalProposalQueue(val queueTime: QueueTime, bandMap: Map[QueueBand, List[
     val bandedList  = bandedQueue.toList.sortBy { case (band,_) => band.number }
     val emptyZipped = List.empty[(Proposal, ProposalPosition)]
 
-    val (res, _, _) = ((emptyZipped, 0, Time.ZeroHours)/:bandedList) {
+    val (res, _, _) = bandedList.foldLeft((emptyZipped, 0, Time.ZeroHours)) {
       case ((curZipped, startIndex, startTime), (band, propList)) =>
         val (bandZipped, endIndex, endTime) = zipBandWithPosition(startIndex, startTime, band, propList)
         (curZipped ++ bandZipped, endIndex, endTime)

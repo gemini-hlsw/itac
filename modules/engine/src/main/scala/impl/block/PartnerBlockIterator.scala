@@ -81,14 +81,14 @@ trait PartnerBlockIterator{
   def skip(activeList : Proposal => List[Observation]): PartnerBlockIterator = advanceProp(activeList)
 
   private def advanceProp(activeList : Proposal => List[Observation]): PartnerBlockIterator = remainingProposals match {
-    case curProp :: nextProp :: tail =>
+    case _ :: nextProp :: tail =>
       mkIterator(nextProp :: tail, activeList(nextProp),
         Observation.relativeObsTime(activeList(nextProp).head, nextProp.time, activeList(nextProp)), isStartOfBlock = true)
     case _ => PartnerBlockIterator.Empty
   }
 
   private def advanceObs(activeList : Proposal => List[Observation]): PartnerBlockIterator = remainingObservationsInActiveList match {
-    case curObs :: nextObs :: tail =>
+    case _ :: nextObs :: tail =>
       mkIterator(remainingProposals, nextObs :: tail,
         Observation.relativeObsTime(nextObs, currentProposal.time, activeList(currentProposal)), isStartOfBlock = false)
     case _ => advanceProp(activeList)
