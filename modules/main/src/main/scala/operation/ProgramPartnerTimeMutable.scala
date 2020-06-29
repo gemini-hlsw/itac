@@ -12,7 +12,7 @@ import scala.collection.JavaConverters._
 import java.math.MathContext
 
 object ProgramPartnerTimeMutable {
-  import Email.ProposalOps
+  import EmailGen.ProposalOps
 
   private val HrPerNight = new BigDecimal(10)
 

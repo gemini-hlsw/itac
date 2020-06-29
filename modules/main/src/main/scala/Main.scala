@@ -190,6 +190,12 @@ trait MainOpts { this: CommandIOApp =>
       header = "Generate NGO spreadsheets."
     )(NgoSpreadsheet[IO](QueueEngine, PerSite.unfold(Workspace.Default.queueConfigFile), PerSite.unfold(Workspace.Default.rolloverReport)).pure[Opts])
 
+  lazy val instrumentSpreadsheet: Command[Operation[IO]] =
+    Command(
+      name   = "instrument-spreadsheets",
+      header = "Generate instrument scientist spreadsheets."
+    )(InstrumentScientistSpreadsheet[IO](QueueEngine, PerSite.unfold(Workspace.Default.queueConfigFile), PerSite.unfold(Workspace.Default.rolloverReport)).pure[Opts])
+
   lazy val directorSpreadsheet: Command[Operation[IO]] =
     Command(
       name   = "director-spreadsheet",
@@ -226,7 +232,13 @@ trait MainOpts { this: CommandIOApp =>
     Command(
       name   = "gen-emails",
       header = "Create PI emails for successful proposals."
-    )((siteConfig, rolloverReport, progids).mapN(Email[IO](QueueEngine, _, _, _)))
+    )((siteConfig, rolloverReport, progids).mapN(EmailGen[IO](QueueEngine, _, _, _)))
+
+  lazy val emailFix: Command[Operation[IO]] =
+    Command(
+      name   = "fix-emails",
+      header = "Add CC line to emails."
+    )((siteConfig, rolloverReport, progids).mapN(EmailAddCC[IO](QueueEngine, _, _, _)))
 
   lazy val bulkEdits: Command[Operation[IO]] =
     Command(
@@ -378,6 +390,12 @@ trait MainOpts { this: CommandIOApp =>
       header = "List split/joint proposals."
     )(Splits[IO].pure[Opts])
 
+  lazy val emailSend: Command[Operation[IO]] =
+    Command(
+      name   = "send-emails",
+      header = "Sends all emails in the emails/ folder."
+    )(EmailSend[IO].pure[Opts])
+
   lazy val duplicates: Command[Operation[IO]] =
     Command(
       name   = "duplicates",
@@ -401,8 +419,11 @@ trait MainOpts { this: CommandIOApp =>
       chartData,
       staffEmailSpreadsheet,
       ngoSpreadsheet,
+      instrumentSpreadsheet,
       directorSpreadsheet,
-      bulkEdits
+      bulkEdits,
+      emailFix,
+      emailSend,
     ).sortBy(_.name).map(Opts.subcommand(_)).foldK
 
 }
