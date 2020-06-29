@@ -2,7 +2,6 @@ package edu.gemini.tac.qengine.api.config
 
 import edu.gemini.tac.qengine.util.Angle
 import edu.gemini.tac.qengine.p1.Target
-import xml.Elem
 
 object DecBinGroup {
   val TotalDeg = 180
@@ -66,11 +65,5 @@ case class DecBinGroup[T] private (val bins: IndexedSeq[DecBin[T]]) {
   def map[U](f: T => U): DecBinGroup[U] = {
     new DecBinGroup[U](bins.map(bin => DecBin[U](bin.range, f(bin.binValue))))
   }
-
-  def toXML : Elem = <DecBinGroup>
-      <bins>
-        { bins.map(_.toXML) }
-      </bins>
-    </DecBinGroup>
 
 }

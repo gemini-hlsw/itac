@@ -71,6 +71,4 @@ final class QueueFrame(val queue: ProposalQueueBuilder, val iter: BlockIterator,
       false
     }
   }
-
-  def toXML = <QueueFrame/>
 }

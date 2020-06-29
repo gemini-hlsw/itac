@@ -125,10 +125,6 @@ trait ProposalLog {
   def |+|(other: ProposalLog): ProposalLog =
     mkProposalLog(log ++ other.log)
 
-  def toXML =
-    <ProposalLog>
-      { log.reverse.map(_.msg.toXML) }
-    </ProposalLog>
 }
 
 object ProposalLog {

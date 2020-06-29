@@ -13,6 +13,4 @@ object RejectNotBand3 {
 final case class RejectNotBand3(prop: Proposal) extends RejectMessage {
   def reason: String = RejectNotBand3.name
   def detail: String = RejectNotBand3.description
-
-  override def toXML = <RejectBand3><RejectedProposal>{ prop.toXML }</RejectedProposal></RejectBand3>
 }

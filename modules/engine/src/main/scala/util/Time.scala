@@ -127,6 +127,4 @@ final class Time private (val ms: Long, val unit: Units) extends Ordered[Time] w
 //  def -(amt: Double): Time = Time(ms - unit.toMs(amt), unit)
 //  def /(amt: Double): Time = Time((ms.toDouble / unit.toMs(amt).toDouble).round, unit)
 
-  def toXML = <Time unit="minutes">{ this.toMinutes.value }</Time>
-
 }

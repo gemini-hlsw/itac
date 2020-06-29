@@ -19,17 +19,3 @@ class CompoundOrdering[T](orderings: Ordering[T]*) extends Ordering[T] {
 
   def compare(t1: T, t2: T): Int = recCompare(t1, t2, orderings)
 }
-
-    // Does the same using dropWhile.  Requires running the compare twice on the
-    // definitive comparison.
-//      orderings.dropWhile(_.compare(t1, t2)) match {
-//        case Nil => 0
-//        case head :: tail => head.compare(t1, t2)
-//      }
-
-    // Does the same with a fold.  Requires traversing all the elements every
-    // time.
-//      (0/:orderings)((res, ord) => res match {
-//        case 0 => ord.compare(t1, t2)
-//        case _ => res
-//      })

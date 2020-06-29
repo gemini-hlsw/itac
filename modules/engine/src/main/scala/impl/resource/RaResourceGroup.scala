@@ -75,7 +75,4 @@ case class RaResourceGroup(val grp: RaBinGroup[RaResource]) extends Resource {
     }
   }
 
-  def toXML = <RaResourceGroup>
-    { grp.toXML }
-    </RaResourceGroup>
 }

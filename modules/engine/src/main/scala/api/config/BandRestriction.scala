@@ -3,13 +3,8 @@ package edu.gemini.tac.qengine.api.config
 import edu.gemini.tac.qengine.p1.ImageQuality.IQ20
 import edu.gemini.tac.qengine.p1.{Mode, Too, QueueBand, Proposal}
 import edu.gemini.tac.qengine.p1.QueueBand._
-import xml.Elem
 
-case class BandRestriction(name: String, bands: Set[QueueBand])(val matches: Proposal => Boolean){
-  def toXML : Elem = <BandRestriction name={ name }>
-    <!-- { bands.map(_.toXML) }  -->
-    </BandRestriction>
-}
+case class BandRestriction(name: String, bands: Set[QueueBand])(val matches: Proposal => Boolean)
 
 object BandRestriction {
   def name(base: String): String = base // "%s Band Restriction".format(base)

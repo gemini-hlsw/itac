@@ -95,12 +95,6 @@ final case class BoundedTime(limit: Time, used: Time = Time.Zero) {
    */
   def release(time: Time): Option[BoundedTime] = reserve(-time)
 
-//  private def reserveNotFull(time: Time): (BoundedTime, Time) = {
-//    val tmp = used + time
-//    val newUsed = if (tmp > limit) limit else tmp
-//    (BoundedTime(limit, newCur), Time.max(limit.unit.zero, tmp - limit))
-//  }
-
   /**
    * Reserves all the given time together with the amount of time in this
    * instance into a new BoundedTime instance (up to the limit).  Any left
@@ -129,9 +123,4 @@ final case class BoundedTime(limit: Time, used: Time = Time.Zero) {
    */
   def releaseAvailable(time: Time): (BoundedTime, Time) = reserveAvailable(-time)
 
-  def toXML =
-    <BoundedTime>
-      <Limit>{ limit.toXML }</Limit>
-      <Used>{ used.toXML }</Used>
-    </BoundedTime>
 }

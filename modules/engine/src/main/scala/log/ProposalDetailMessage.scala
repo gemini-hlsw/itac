@@ -7,9 +7,4 @@ package edu.gemini.tac.qengine.log
 trait ProposalDetailMessage extends LogMessage {
   def reason: String
   def detail: String
-
-  override def subToXML = <ProposalDetailMessage>
-      <Reason>{reason}</Reason>
-      <Detail>{detail}</Detail>
-    </ProposalDetailMessage>
 }

@@ -19,9 +19,6 @@ case class TimeRestriction[T](name: String, value: T)(val matches: (Proposal, Ob
   def updated(newValue: T): TimeRestriction[T] =
     new TimeRestriction[T](name, newValue)(matches)
 
-   def toXML = <TimeRestriction name={ name } >
-    { value.toString }  <!-- toXML? -->
-    </TimeRestriction>
 }
 
 object TimeRestriction {

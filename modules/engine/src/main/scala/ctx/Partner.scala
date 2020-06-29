@@ -1,25 +1,7 @@
 package edu.gemini.tac.qengine.ctx
 
-import xml.Elem
 import edu.gemini.tac.qengine.util.Percent
 import edu.gemini.spModel.core.Site
-
-//object Partner {
-//
-//  // Wraps a value containing a Set of both sites.  This is a bit odd, and I'm
-//  // not sure why it was needed, but a simple private val (not wrapped in a
-//  // singleton) would not work.
-//  private object Sites {
-//    val Both = Set(Site.north, Site.south)
-//  }
-//
-//  //Forward to the Partners instance
-//  def parse(s : String) = partners.parse(s)
-//
-//  def mkMap[T](f: Partner => T) =  partners.mkMap(f)
-//
-//  def mkMap[T](pf: PartialFunction[Partner, T], default: T) = partners.mkMap(pf, default)
-//}
 
 /**
  * Phase 1 partner options.
@@ -36,16 +18,6 @@ case class Partner(id: String, fullName: String, share: Percent, sites: Set[Site
 
   override def toString: String = id
 
-  def toXML : Elem = <Partner id={id}>
-      <fullName>{fullName}</fullName>
-      <absPercent>{"%.2f".format(share.doubleValue)}</absPercent>
-      <sites>
-        { sites.map{ s =>
-            <Site>{s.abbreviation}</Site>
-          }
-        }
-      </sites>
-    </Partner>
 }
 
 object Partner {

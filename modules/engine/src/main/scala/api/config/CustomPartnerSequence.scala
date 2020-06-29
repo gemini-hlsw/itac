@@ -2,7 +2,6 @@ package edu.gemini.tac.qengine.api.config
 
 import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.ctx.Partner
-import xml.Elem
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -32,10 +31,6 @@ class CustomPartnerSequence(val seq : List[Partner],
    }
    partnerStream.dropWhile(p => p != initialPick)
  }
-
- def configuration: Elem = <CustomPartnerSequence name={name} repeating={maybeUseAfterFirstCycle.isEmpty.toString}>
-   { seq.map(_.toXML) }
- </CustomPartnerSequence>
 
  /* --------------------------- */
   private def filter(site: Site, seq : List[Partner]) = seq.filter(_.sites.contains(site))

@@ -77,10 +77,6 @@ sealed trait Proposal {
    */
   def containsId(that: Proposal.Id): Boolean = id == that
 
-  def toXML =
-    <Proposal id={id.toString}>
-      <PI>{piName}</PI>
-    </Proposal>
 
   // these aren't required by the engine but are needed for generating emails
   // easiest solution is to just add them here

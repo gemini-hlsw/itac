@@ -88,10 +88,5 @@ final case class SemesterResource(
     (new SemesterResource(newRa, this.time, band, cat), rem)
   }
 
-  def toXML = <SemesterResource>
-    { ra.toXML }
-    { time.toXML }
-    { band.toXML }
-    </SemesterResource>
 
 }

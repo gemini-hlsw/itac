@@ -65,12 +65,5 @@ case class RaBinGroup[T ] private (val bins: IndexedSeq[T]) {
   def apply(t: Target): T = apply(t.ra)
 
   def map[U](f: T => U): RaBinGroup[U] = new RaBinGroup[U](bins.map(f))
-
-  def toXML = <RaBinGroup>
-    { bins.map{ b =>
-        <Bin>{b.toString}</Bin>
-      }
-    }
-    </RaBinGroup>
 }
 

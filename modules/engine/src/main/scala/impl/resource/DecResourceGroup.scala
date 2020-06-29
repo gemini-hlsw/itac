@@ -91,7 +91,4 @@ final case class DecResourceGroup(val bins: DecBinGroup[BoundedTime]) extends Re
     }
   }
 
-  def toXML = <DecResourceGroup>
-    {bins.toXML}
-    </DecResourceGroup>
 }

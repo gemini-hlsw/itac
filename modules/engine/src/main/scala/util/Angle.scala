@@ -230,5 +230,4 @@ final class Angle(private val theta: Double, val unit: Unit) extends Ordered[Ang
   }
   override def hashCode: Int = toDeg.toPositive.mag.hashCode
 
-  def toXml = <Angle units={this.unit.toString}>{this.mag}</Angle>
 }

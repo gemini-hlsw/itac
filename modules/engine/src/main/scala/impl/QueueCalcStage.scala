@@ -54,7 +54,6 @@ object QueueCalcStage {
       val time = new TimeResourceGroup(rbins.map(new TimeResource(_)))
       val band = new BandResource(config.restrictedBinConfig.bandRestrictions)
       val semRes = new SemesterResource(bins, time, band, Category.B1_2)
-      Log.trace( semRes.toXML.toString())
 
       new Params(cat, queue, iter, _.obsList, semRes, log)
     }
@@ -131,7 +130,6 @@ object QueueCalcStage {
   //
   @tailrec private def compute(cat: Category, stack: List[QueueFrame], log: ProposalLog, activeList : Proposal=>List[Observation]): Result = {
     val stackHead = stack.head
-    Log.trace( stackHead.toXML.toString())
     if (stackHead.emptyOrOtherCategory(cat)) {
       Log.trace( "Stack is empty [" + ! stackHead.hasNext + "] or in other category [Expected : " + cat + " Actual: " + stackHead.queue.band + "]")
       (stackHead, log.updated(stackHead.iter.remPropList, cat, RejectCategoryOverAllocation(_, cat)))

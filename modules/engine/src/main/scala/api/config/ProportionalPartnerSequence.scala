@@ -2,7 +2,6 @@ package edu.gemini.tac.qengine.api.config
 
 import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.ctx.Partner
-import xml.Elem
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -83,10 +82,6 @@ class ProportionalPartnerSequence(seq: List[Partner], val site: Site, val initia
     val none = proportions.mapValues(_ => 0.0)
     proportionalStream(proportions, none).dropWhile(p => p != initialPick)
   }
-
-  def configuration: Elem = <ProportionalPartnerSequence name="ProportionalPartnerSequence" initialPick={initialPick.id}>
-    {seq.map(_.toXML)}
-  </ProportionalPartnerSequence>
 
   override def toString = sequence.take(100).toList.mkString(",")
 }
