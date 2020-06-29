@@ -121,7 +121,7 @@ trait BlockIterator {
         moreSeq.isEmpty match {
           case true => LOGGER.debug("End of sequence")
           case false => {
-            val nextPartner = moreSeq.head
+            // val nextPartner = moreSeq.head
             // LOGGER.debug(<Event source="BlockIterator" event="advancePartner">
             //   {nextPartner.fullName}
             // </Event>.toString)
@@ -202,7 +202,7 @@ object BlockIterator {
     val iterMap = genIterMap(allPartners, propLists, activeList)
 
     init(quantaMapʹ, iterMap, seq, validpartners(allPartners, quantaMapʹ)) match {
-      case (s, t) if s.isEmpty => new Empty(allPartners)
+      case (s, _) if s.isEmpty => new Empty(allPartners)
       case (partnerSeq, remainingTime) => {
         new BlockIteratorImpl(allPartners, quantaMapʹ, partnerSeq, remainingTime, iterMap)
       }

@@ -93,7 +93,7 @@ class ConditionsBinGroupTest {
       grp.updated(ConditionsCategory(Eq(CC50), Eq(IQ20)), Percent(99))
       fail
     } catch {
-      case ex: IllegalArgumentException => // ok
+      case _: IllegalArgumentException => // ok
     }
   }
 
@@ -103,7 +103,7 @@ class ConditionsBinGroupTest {
       grp.updated(List((cat0, Percent(1)), (cat4, Percent(99))))
       fail
     } catch {
-      case ex: IllegalArgumentException => // ok
+      case _: IllegalArgumentException => // ok
     }
 
   }

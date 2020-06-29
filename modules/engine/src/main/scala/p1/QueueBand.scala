@@ -1,14 +1,10 @@
 package edu.gemini.tac.qengine.p1
 
-import xml.Elem
-
 abstract sealed class QueueBand(val number: Int) extends Ordered[QueueBand] {
   def compare(that: QueueBand): Int = number - that.number
   def categories: Set[QueueBand.Category]
   def isIn(category: QueueBand.Category): Boolean = categories.contains(category)
   def logCategory: QueueBand.Category
-
-  def toXML : Elem
 }
 
 object QueueBand {
@@ -40,29 +36,21 @@ object QueueBand {
   case object QBand1 extends QueueBand(1) {
     def categories  = Set(Category.B1_2, Category.Guaranteed)
     def logCategory = Category.B1_2
-
-    override def toXML : Elem = <QBand1/>
   }
 
   case object QBand2 extends QueueBand(2) {
     def categories  = Set(Category.B1_2, Category.Guaranteed)
     def logCategory = Category.B1_2
-
-    override def toXML : Elem = <QBand2/>
   }
 
   case object QBand3 extends QueueBand(3) {
     def categories  = Set(Category.B3, Category.Guaranteed)
     def logCategory = Category.B3
-
-    override def toXML : Elem = <QBand3/>
   }
 
   case object QBand4 extends QueueBand(4) {
     def categories  = Set(Category.PoorWeather)
     def logCategory = Category.PoorWeather
-
-    override def toXML : Elem = <QBand4/>
   }
 
   val values = List(QBand1, QBand2, QBand3, QBand4)

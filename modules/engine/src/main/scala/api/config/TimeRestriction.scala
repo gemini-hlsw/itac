@@ -19,9 +19,6 @@ case class TimeRestriction[T](name: String, value: T)(val matches: (Proposal, Ob
   def updated(newValue: T): TimeRestriction[T] =
     new TimeRestriction[T](name, newValue)(matches)
 
-   def toXML = <TimeRestriction name={ name } >
-    { value.toString }  <!-- toXML? -->
-    </TimeRestriction>
 }
 
 object TimeRestriction {
@@ -29,7 +26,7 @@ object TimeRestriction {
 
   def wv(limit: Percent, wv: WaterVapor) =
     TimeRestriction("WV Queue Time Limit", limit) {
-       (prop, obs, band) => obs.conditions.wv <= wv
+       (_, obs, _) => obs.conditions.wv <= wv
     }
 
   def lgs(limit: Time) =

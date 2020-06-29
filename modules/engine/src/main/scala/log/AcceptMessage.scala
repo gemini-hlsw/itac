@@ -18,15 +18,4 @@ object AcceptMessage {
 case class AcceptMessage(prop: Proposal, partnerBounds: BoundedTime, totalBounds: BoundedTime) extends LogMessage with ProposalDetailMessage {
   val reason: String = "Accepted"
   val detail: String = AcceptMessage.detail(prop, partnerBounds, totalBounds)
-
-  override def subToXML =
-    <AcceptMessage>
-      <Reason>Accepted</Reason>
-      <Detail>{AcceptMessage.detail(prop, partnerBounds, totalBounds)}</Detail>
-      <AcceptedProposal>
-        <Ranking partner={prop.ntac.partner.toString}>{ prop.ntac.ranking.format }</Ranking>
-        { prop.toXML }</AcceptedProposal>
-      <PartnerBounds>{ partnerBounds.toXML }</PartnerBounds>
-      <TotalBounds>{ totalBounds.toXML }</TotalBounds>
-  </AcceptMessage>
 }

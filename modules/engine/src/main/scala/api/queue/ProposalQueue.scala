@@ -147,17 +147,4 @@ trait ProposalQueue {
       ProgramId.parse(str) // sorry
     }
 
-  /**
-   * Gets a partner time distribution fairness evaluation for the queue
-   * category.
-   */
-  def partnerFairness(cat: QueueBand.Category, partners: List[Partner]) =
-    new PartnerFairness(remainingTime(cat, _), queueTime(cat, _), partners)
-
-  /**
-   * Gets a partner time distribution fairness evaluation for a particular queue
-   * band.
-   */
-  def partnerFairness(band: QueueBand, partners: List[Partner]): PartnerFairness =
-    new PartnerFairness(remainingTime(band, _), queueTime(band, _), partners)
 }

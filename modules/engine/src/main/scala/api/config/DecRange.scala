@@ -3,7 +3,6 @@ package edu.gemini.tac.qengine.api.config
 
 import edu.gemini.tac.qengine.p1.Target
 import edu.gemini.tac.qengine.util.Angle
-import xml.Elem
 
 /**
  * Defines a range of Declinations (interpreted as degrees).  DecRanges include
@@ -50,7 +49,6 @@ class DecRange(val startDeg: Int, val endDeg: Int) {
 
   override def toString: String = "(%d, %d]".format(startDeg, endDeg)
 
-  def toXML : Elem = <DecRange start = { startDeg.toString} end = { endDeg.toString } />
 }
 
 object DecRange {

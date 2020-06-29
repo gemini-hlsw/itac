@@ -1,7 +1,5 @@
 package edu.gemini.tac.qengine.api.config
 
-import xml.Elem
-
 
 object DecBin {
   def apply[T](startDeg: Int, endDeg: Int, binValue: T): DecBin[T] =
@@ -29,9 +27,4 @@ final case class DecBin[T](range: DecRange, binValue: T) {
 
   def map[U](f: T => U): DecBin[U] = DecBin(range, f(binValue))
   def updated(newValue: T): DecBin[T] = DecBin[T](range, newValue)
-
-  def toXML : Elem = <DecBin>
-    { range.toXML }
-    <!-- binValue toXML or string? -->
-    </DecBin>
 }

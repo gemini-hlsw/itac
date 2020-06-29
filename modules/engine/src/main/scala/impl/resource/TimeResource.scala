@@ -39,7 +39,4 @@ final class TimeResource(val bin: TimeRestriction[BoundedTime]) extends Resource
         case _ => Left(new RejectRestrictedBin(block.prop, block.obs, queue.band, bin.name, bin.value.used, bin.value.limit))
       }
 
-  def toXML = <TimeResource>
-    { bin.toXML }
-    </TimeResource>
 }

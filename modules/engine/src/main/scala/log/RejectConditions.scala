@@ -18,8 +18,4 @@ object RejectConditions extends TimeBinMessageFormatter {
 final case class RejectConditions(prop: Proposal, obs: Observation, band: QueueBand, cur: Time, max: Time) extends ObsRejectMessage {
   def reason: String = RejectConditions.name
   def detail: String = RejectConditions.detail(prop, obs, band, cur, max)
-
-  override def toXML = <RejectConditions>
-      <RejectedProposal>{ prop }</RejectedProposal>
-    </RejectConditions>
 }

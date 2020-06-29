@@ -4,7 +4,6 @@
 package edu.gemini.tac.qengine.p2.rollover
 
 import edu.gemini.spModel.core.Site
-import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.tac.qengine.p1._
 import edu.gemini.tac.qengine.p1.{CategorizedTime, ObservingConditions, Target}
 import edu.gemini.tac.qengine.util.Angle

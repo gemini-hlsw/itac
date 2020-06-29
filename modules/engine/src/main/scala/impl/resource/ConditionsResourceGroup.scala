@@ -7,7 +7,6 @@ import edu.gemini.tac.qengine.impl.block.Block
 import edu.gemini.tac.qengine.util.{BoundedTime, Percent, Time}
 import edu.gemini.tac.qengine.p1.ObservingConditions
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
-import xml.Elem
 
 object ConditionsResourceGroup {
 
@@ -44,14 +43,14 @@ final class ConditionsResourceGroup private (val bins: ConditionsBinGroup[Bounde
 
   private def sum(c: ObservingConditions, f: (BoundedTime => Time)): Time = {
     val cats = bins.searchPath(c)
-    (Time.Minutes.zero/:cats)((t: Time, cat: Cat) => t + f(bins(cat)))
+    cats.foldLeft(Time.Minutes.zero)((t: Time, cat: Cat) => t + f(bins(cat)))
   }
 
   def limit(c: ObservingConditions): Time = sum(c, _.limit)
   def remaining(c: ObservingConditions): Time = sum(c, _.remaining)
   def isFull(c: ObservingConditions): Boolean = remaining(c).isZero
 
-  private def conds(block: Block, queue: ProposalQueueBuilder): ObservingConditions =
+  private def conds(block: Block): ObservingConditions =
     block.obs.conditions
 
 
@@ -61,7 +60,7 @@ final class ConditionsResourceGroup private (val bins: ConditionsBinGroup[Bounde
    * observation's time, or else an error.
    */
   override def reserve(block: Block, queue: ProposalQueueBuilder): RejectMessage Either ConditionsResourceGroup = {
-    val c = conds(block, queue)
+    val c = conds(block)
     reserveAvailable(block.time, c) match {
       case (newGrp, t) if t.isZero => Right(newGrp)
       case _                       => Left(rejectConditions(block.prop, block.obs, queue.band, sum(c, _.used), sum(c, _.limit)))

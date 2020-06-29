@@ -57,8 +57,8 @@ final case class DecResourceGroup(val bins: DecBinGroup[BoundedTime]) extends Re
         Right(new DecResourceGroup(DecBinGroup.fromBins(updatedBins: _*)))
       }
       case _ =>
-        val cur = (Time.ZeroHours/:bins.bins)(_ + _.binValue.used)
-        val max = (Time.ZeroHours/:bins.bins)(_ + _.binValue.limit)
+        val cur = bins.bins.foldLeft(Time.ZeroHours)(_ + _.binValue.used)
+        val max = bins.bins.foldLeft(Time.ZeroHours)(_ + _.binValue.limit)
         Left(RejectTarget(block.prop, block.obs, band, RejectTarget.Dec, cur, max))
     }
 
@@ -91,7 +91,4 @@ final case class DecResourceGroup(val bins: DecBinGroup[BoundedTime]) extends Re
     }
   }
 
-  def toXML = <DecResourceGroup>
-    {bins.toXML}
-    </DecResourceGroup>
 }

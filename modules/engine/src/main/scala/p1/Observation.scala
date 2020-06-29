@@ -5,7 +5,7 @@ import edu.gemini.tac.qengine.util.Time
 case class Observation(p1Observation: edu.gemini.model.p1.immutable.Observation, target: Target, conditions: ObservingConditions, time: Time, lgs: Boolean = false) extends CategorizedTime
 
 object Observation {
-  def sumObsTime(lst: List[Observation]): Time = (Time.Zero/:lst)(_ + _.time)
+  def sumObsTime(lst: List[Observation]): Time = lst.foldLeft(Time.Zero)(_ + _.time)
 
   private def percentOfSum(obs: Observation, lst: List[Observation]): Double =
     obs.time.ms / sumObsTime(lst).ms.toDouble
@@ -15,7 +15,7 @@ object Observation {
    * observations in the proposal.
    */
   def relativeObsTime(obs: Observation, time: Time, lst: List[Observation]): Time =
-    Time.millisecs((percentOfSum(obs, lst) * time.ms).round.toInt).to(obs.time.unit)
+    Time.millisecs((percentOfSum(obs, lst) * time.ms).round.toLong).to(obs.time.unit)
 
   /**
    * Gets the observation list with their times adjusted to be relative to

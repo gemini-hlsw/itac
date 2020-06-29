@@ -8,13 +8,13 @@ import resource._
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
 import edu.gemini.tac.qengine.log.{RejectCategoryOverAllocation, ProposalLog}
 import edu.gemini.tac.qengine.api.config.QueueEngineConfig
-import edu.gemini.tac.qengine.util.BoundedTime._
+// import edu.gemini.tac.qengine.util.BoundedTime._
 import edu.gemini.tac.qengine.util.BoundedTime
 import edu.gemini.tac.qengine.api.queue.time.{PartnerTime, QueueTime}
 import edu.gemini.tac.qengine.ctx.Partner
-import java.util.logging.{Level, Logger}
+// import java.util.logging.{Level, Logger}
 import edu.gemini.tac.qengine.util.Time
-import edu.gemini.tac.qengine.api.queue.time.ExplicitQueueTime
+// import edu.gemini.tac.qengine.api.queue.time.ExplicitQueueTime
 import edu.gemini.tac.qengine.api.config.QueueBandPercentages
 import edu.gemini.tac.qengine.util.Percent
 import edu.gemini.tac.qengine.p1.QueueBand.QBand1
@@ -54,7 +54,6 @@ object QueueCalcStage {
       val time = new TimeResourceGroup(rbins.map(new TimeResource(_)))
       val band = new BandResource(config.restrictedBinConfig.bandRestrictions)
       val semRes = new SemesterResource(bins, time, band, Category.B1_2)
-      Log.trace( semRes.toXML.toString())
 
       new Params(cat, queue, iter, _.obsList, semRes, log)
     }
@@ -131,7 +130,6 @@ object QueueCalcStage {
   //
   @tailrec private def compute(cat: Category, stack: List[QueueFrame], log: ProposalLog, activeList : Proposal=>List[Observation]): Result = {
     val stackHead = stack.head
-    Log.trace( stackHead.toXML.toString())
     if (stackHead.emptyOrOtherCategory(cat)) {
       Log.trace( "Stack is empty [" + ! stackHead.hasNext + "] or in other category [Expected : " + cat + " Actual: " + stackHead.queue.band + "]")
       (stackHead, log.updated(stackHead.iter.remPropList, cat, RejectCategoryOverAllocation(_, cat)))

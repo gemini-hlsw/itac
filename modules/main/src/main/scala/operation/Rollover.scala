@@ -33,9 +33,7 @@ object Rollover {
         }
 
         val fetchRolloverReport: F[Either[String, RolloverReport]] =
-          (ws.commonConfig, fetchXml).parMapN { (cc, xml) =>
-            RolloverReport.fromXml(xml, cc.engine.partners)
-          }
+          fetchXml.map(RolloverReport.fromXml)
 
         fetchRolloverReport.flatMap {
           case Left(msg) => Sync[F].raiseError(ItacException(msg))

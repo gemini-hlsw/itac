@@ -3,7 +3,7 @@ package edu.gemini.tac.qengine.impl.resource
 import edu.gemini.tac.qengine.impl.block.Block
 import edu.gemini.tac.qengine.util.Time
 import edu.gemini.tac.qengine.log.{RejectOverAllocation, RejectMessage, RejectPartnerOverAllocation}
-import edu.gemini.tac.qengine.p1.QueueBand.Category.Guaranteed
+// import edu.gemini.tac.qengine.p1.QueueBand.Category.Guaranteed
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
 import edu.gemini.tac.qengine.p1.{ObservingConditions, Target}
 import org.slf4j.LoggerFactory
@@ -88,10 +88,5 @@ final case class SemesterResource(
     (new SemesterResource(newRa, this.time, band, cat), rem)
   }
 
-  def toXML = <SemesterResource>
-    { ra.toXML }
-    { time.toXML }
-    { band.toXML }
-    </SemesterResource>
 
 }

@@ -49,7 +49,7 @@ object ShutdownCalc {
     val lsts  = shutdowns.map { timePerRa(_, size) }
     val zeros = List.fill(size.getBinCount)(Time.ZeroHours)
 
-    (zeros/:lsts) {
+    lsts.foldLeft(zeros) {
       (sum, cur) => sum.zip(cur).map { case (t1, t2) => t1 + t2 }
     }
   }
@@ -65,7 +65,7 @@ object ShutdownCalc {
       lst.sorted match {
         case Nil          => true
         case head :: tail =>
-          val (_, res) = ((head,true)/:tail) {
+          val (_, res) = tail.foldLeft((head,true)) {
             case ((last, result), cur) =>
               (cur, result && (last.end.getTime <= cur.start.getTime))
           }

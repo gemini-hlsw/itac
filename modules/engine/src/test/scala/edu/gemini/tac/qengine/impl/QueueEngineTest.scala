@@ -218,7 +218,6 @@ class QueueEngineTest {
 
       val logs = stage.log.toList
       //Assert.assertEquals(31, logs.size)
-      logs.map(l => println(l.msg.toXML))
       val q = stage.queue.toList
       //Assert.assertEquals(18, q.size)
       //Assert.assertEquals("US(欁료숰뽓驴ɚ)", first.id.toString)

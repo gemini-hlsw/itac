@@ -88,7 +88,7 @@ trait ProposalLog {
    * in the ProposalLog.
    */
   def proposalIds: SortedSet[Proposal.Id] =
-    (SortedSet.empty[Proposal.Id]/:log) {
+    log.foldLeft(SortedSet.empty[Proposal.Id]) {
       (s,e) => s + e.key.id
     }
 
@@ -113,7 +113,7 @@ trait ProposalLog {
    * function.
    */
   def updated(propList: List[Proposal], cat: TimeCat, f: Proposal => LogMessage): ProposalLog =
-    mkProposalLog((log/:propList) {
+    mkProposalLog(propList.foldLeft(log) {
       (lst, prop) => Entry(Key(prop.id, cat), f(prop)) :: lst
     })
 
@@ -125,10 +125,6 @@ trait ProposalLog {
   def |+|(other: ProposalLog): ProposalLog =
     mkProposalLog(log ++ other.log)
 
-  def toXML =
-    <ProposalLog>
-      { log.reverse.map(_.msg.toXML) }
-    </ProposalLog>
 }
 
 object ProposalLog {
@@ -168,7 +164,7 @@ object ProposalLog {
     // Note: reverses the log entries as it goes leaving them in insertion
     // order and selecting only the final entry per key (which is the first
     // one to show up in the reversed list).
-    (empty /: reverseLst) {
+    reverseLst.foldLeft(empty) {
       (res, entry) =>
         if (res.keys.contains(entry.key))
           res // skip this one

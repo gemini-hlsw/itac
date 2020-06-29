@@ -2,8 +2,6 @@ package edu.gemini.tac.qengine.api.config
 
 import edu.gemini.tac.qengine.util.Angle
 import edu.gemini.tac.qengine.p1.Target
-import xml._
-
 
 
 object RaBinGroup {
@@ -67,12 +65,5 @@ case class RaBinGroup[T ] private (val bins: IndexedSeq[T]) {
   def apply(t: Target): T = apply(t.ra)
 
   def map[U](f: T => U): RaBinGroup[U] = new RaBinGroup[U](bins.map(f))
-
-  def toXML = <RaBinGroup>
-    { bins.map{ b =>
-        <Bin>{b.toString}</Bin>
-      }
-    }
-    </RaBinGroup>
 }
 

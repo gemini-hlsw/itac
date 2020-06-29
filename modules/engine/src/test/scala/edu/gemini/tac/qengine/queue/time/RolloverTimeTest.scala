@@ -6,7 +6,6 @@ import Assert._
 import edu.gemini.tac.qengine.api.queue.time.PartnerTimeCalc._
 import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.p2.rollover.{RolloverObservation, RolloverReport}
-import edu.gemini.tac.qengine.p2.ObservationId
 import edu.gemini.tac.qengine.p1.{ObservingConditions, Target}
 import edu.gemini.tac.qengine.util.Time
 

@@ -12,7 +12,6 @@ import scalaz._
 import Scalaz._
 import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.util.Percent
-import edu.gemini.tac.qengine.util.Time
 import org.slf4j.LoggerFactory
 import java.io.File
 

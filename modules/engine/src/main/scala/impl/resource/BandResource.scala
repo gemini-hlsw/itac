@@ -7,7 +7,6 @@ import edu.gemini.tac.qengine.log.{ProposalLog, RejectBand, RejectMessage}
 import edu.gemini.tac.qengine.p1.{JointProposal, JointProposalPart, Proposal, QueueBand}
 import edu.gemini.tac.qengine.util.Percent
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
-import xml.Elem
 
 /**
  * Wraps BandRestrictions in a Resource interface.  The restrictions are not
@@ -29,7 +28,7 @@ final class BandResource(val lst: List[BandRestriction]) extends Resource {
     }
 
   def bandAndPercent(queue: ProposalQueueBuilder): (QueueBand, Percent) = {
-    val perc = Percent((queue.usedTime.toHours.value / queue.queueTime.full.toHours.value * 100).round.toInt)
+    val perc = Percent((queue.usedTime.toHours.value / queue.queueTime.full.toHours.value * 100).round.toDouble)
     (queue.band, perc)
   }
 
@@ -82,7 +81,7 @@ final class BandResource(val lst: List[BandRestriction]) extends Resource {
     bandViolation(prop, pos).isEmpty
 
   private def logMessage(prop: Proposal, pos: ProposalPosition, queue: ProposalQueueBuilder, r: BandRestriction): RejectBand = {
-    val perc = Percent((pos.time.toHours.value / queue.queueTime.full.toHours.value * 100).round.toInt)
+    val perc = Percent((pos.time.toHours.value / queue.queueTime.full.toHours.value * 100).round.toDouble)
     RejectBand(prop, r.name, pos.band, perc)
   }
 
@@ -115,8 +114,4 @@ final class BandResource(val lst: List[BandRestriction]) extends Resource {
     val newLog   = updatedLog(queue, log, invalid)
     (newQueue, newLog)
   }
-
-  def toXML : Elem = <BandResource>
-    { lst.map(_.toXML) }
-    </BandResource>
 }

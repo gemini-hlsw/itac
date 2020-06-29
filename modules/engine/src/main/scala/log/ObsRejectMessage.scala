@@ -17,7 +17,7 @@ trait ObsRejectMessage extends RejectMessage {
   }
 
   def percentTimeMerged(b: QueueBand): Int = {
-    val totalTime = (0l/:prop.obsListFor(b))(_ + _.time.ms)
+    val totalTime = prop.obsListFor(b).foldLeft(0L)(_ + _.time.ms)
     ((obs.time.ms / totalTime.toDouble) * 100).round.toInt
   }
 }

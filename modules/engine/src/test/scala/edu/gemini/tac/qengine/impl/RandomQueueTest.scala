@@ -114,29 +114,29 @@ class RandomQueueTest {
 
     println(m.mkString("\n"))
 */
-    println("------------------------ Partner Fairness -----------------------")
-    QueueBand.values.init.foreach(band => {
-      println("\n--- Band: " + band + " ---")
-      val bf = calc.queue.partnerFairness(band, partners)
-      partners.foreach(p => {
-        println("%s -> rem = %6.2f hrs, total = %7.2f hrs, pecent error = %5.1f%%".format(p, hrs(calc.queue.remainingTime(band, p)), hrs(calc.queue.queueTime(band, p)), bf.errorPercent(p)))
-      })
-      println("Total rem = %6.2f hrs, total = %7.2f hrs".format(hrs(calc.queue.remainingTime(band)), hrs(calc.queue.queueTime(band))))
-      println("Std. Dev. = %5.2f".format(bf.standardDeviation))
-    })
+    // println("------------------------ Partner Fairness -----------------------")
+    // QueueBand.values.init.foreach(band => {
+    //   println("\n--- Band: " + band + " ---")
+    //   val bf = calc.queue.partnerFairness(band, partners)
+    //   partners.foreach(p => {
+    //     println("%s -> rem = %6.2f hrs, total = %7.2f hrs, pecent error = %5.1f%%".format(p, hrs(calc.queue.remainingTime(band, p)), hrs(calc.queue.queueTime(band, p)), bf.errorPercent(p)))
+    //   })
+    //   println("Total rem = %6.2f hrs, total = %7.2f hrs".format(hrs(calc.queue.remainingTime(band)), hrs(calc.queue.queueTime(band))))
+    //   println("Std. Dev. = %5.2f".format(bf.standardDeviation))
+    // })
 
-    println("\n--- Total ---")
-    val f = calc.queue.partnerFairness(Guaranteed, partners)
-    partners.foreach(p => {
-      println("%s -> rem = %6.2f hrs, total = %7.2f hrs, pecent error = %5.1f%%".format(p, hrs(calc.queue.remainingTime(Guaranteed, p)), hrs(calc.queue.queueTime(Guaranteed, p)), f.errorPercent(p)))
-    })
-    println("Total rem = %6.2f hrs, total = %7.2f hrs".format(hrs(calc.queue.remainingTime(Guaranteed)), hrs(calc.queue.queueTime(Guaranteed))))
+    // println("\n--- Total ---")
+    // val f = calc.queue.partnerFairness(Guaranteed, partners)
+    // partners.foreach(p => {
+    //   println("%s -> rem = %6.2f hrs, total = %7.2f hrs, pecent error = %5.1f%%".format(p, hrs(calc.queue.remainingTime(Guaranteed, p)), hrs(calc.queue.queueTime(Guaranteed, p)), f.errorPercent(p)))
+    // })
+    // println("Total rem = %6.2f hrs, total = %7.2f hrs".format(hrs(calc.queue.remainingTime(Guaranteed)), hrs(calc.queue.queueTime(Guaranteed))))
 
-    println("Std. Dev. = %5.2f".format(f.standardDeviation))
-    println("-----------------------------------------------------------------")
+    // println("Std. Dev. = %5.2f".format(f.standardDeviation))
+    // println("-----------------------------------------------------------------")
 
 
-    println("Execution Time = " + Time.millisecs(endTime-startTime).toSeconds)
+    // println("Execution Time = " + Time.millisecs(endTime-startTime).toSeconds)
   }
 
 }

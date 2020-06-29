@@ -10,10 +10,4 @@ object Target {
     new Target(new Angle(raDeg, Angle.Deg), new Angle(decDeg, Angle.Deg))
 }
 
-case class Target(ra: Angle, dec: Angle, name: Option[String] = None) {
-  def toXml = <Target>
-    <Name>{name}</Name>
-    <RA>{ra.toXml}</RA>
-    <Dec>{dec.toXml}</Dec>
-    </Target>
-}
+case class Target(ra: Angle, dec: Angle, name: Option[String] = None)
