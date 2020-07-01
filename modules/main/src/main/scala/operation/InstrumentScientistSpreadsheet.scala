@@ -32,6 +32,7 @@ import edu.gemini.spModel.core.ProgramId
 import scala.language.reflectiveCalls
 import org.apache.poi.ss.usermodel.Workbook
 import edu.gemini.tac.qengine.util.Time
+import edu.gemini.tac.qengine.p1.QueueBand.QBand3
 object InstrumentScientistSpreadsheet {
 
   // ffs
@@ -333,7 +334,11 @@ object InstrumentScientistSpreadsheet {
       }
 
       def computeForProgram(i: Instrument, p: MProposal, b: QueueBand, t: Time): List[Props] = {
-        val bps = p.getObservations().getObservation().asScala.toList.map(_.getBlueprint()).distinct.filter(Instrument.forBlueprint(_) == i)
+        val p1b = b match {
+          case QBand3 => Band.BAND_3
+          case _ => Band.BAND_1_2
+        }
+        val bps = p.getObservations().getObservation().asScala.toList.filter(_.getBand == p1b).map(_.getBlueprint()).distinct.filter(Instrument.forBlueprint(_) == i)
         bps.map(props(_) ++ Props(Key.Band -> b.number, Key.Time -> t.toHours.value))
       }
 
