@@ -18,5 +18,6 @@ package object codec {
        with RolloverObservationCodec
        with RolloverReportCodec
        with QueueBandCategoryCodec
+       with PartnerCodec
 
 }

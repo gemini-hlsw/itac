@@ -9,7 +9,7 @@ import io.circe._
 import io.circe.generic.semiauto._
 import edu.gemini.qengine.skycalc.RaBinSize
 import edu.gemini.qengine.skycalc.DecBinSize
-import edu.gemini.tac.qengine.ctx.{ Partner => ItacPartner }
+import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.tac.qengine.api.queue.time.ExplicitQueueTime
 import edu.gemini.tac.qengine.p1.QueueBand
 
@@ -25,19 +25,15 @@ final case class QueueConfig(
 
   object engine {
 
-    def explicitQueueTime(allPartners: List[ItacPartner]): ExplicitQueueTime = {
+    val explicitQueueTime: ExplicitQueueTime = {
 
-      val categorizedTimes: Map[(ItacPartner, QueueBand), Time] =
+      val categorizedTimes: Map[(Partner, QueueBand), Time] =
         hours.toList.flatMap { case (p, BandTimes(b1, b2, b3)) =>
-          allPartners.find(_.id == p.id) match {
-            case None => Nil
-            case Some(pʹ) =>
-              List(
-                (pʹ, QueueBand.QBand1) -> b1,
-                (pʹ, QueueBand.QBand2) -> b2,
-                (pʹ, QueueBand.QBand3) -> b3,
-              )
-          }
+          List(
+            (p, QueueBand.QBand1) -> b1,
+            (p, QueueBand.QBand2) -> b2,
+            (p, QueueBand.QBand3) -> b3,
+          )
         } .toMap
 
       new ExplicitQueueTime(categorizedTimes, overfill)

@@ -2,7 +2,6 @@ package edu.gemini.tac.qengine.api.queue.time
 
 import edu.gemini.tac.qengine.util.{Percent, Time}
 import edu.gemini.tac.qengine.ctx.Partner
-import edu.gemini.spModel.core.Site
 import org.slf4j.LoggerFactory
 
 /**
@@ -81,18 +80,6 @@ object PartnerTime {
    * Creates a PartnerTime object with a constant Time value for all partners.
    */
   def constant(t: Time, participants: List[Partner]): PartnerTime = calc(participants, _ => t)
-
-  /**
-   * Creates a PartnerTime object by distributing the given time amount across
-   * all partners according to their relative time share.
-   */
-  def distribute(total: Time, site: Site, partners: List[Partner]): PartnerTime = {
-    val timeByPartner = partners.map { p =>
-      p -> Time.hours(total.toHours.value * p.percentDoubleAt(site) / 100.0)
-    }.toMap
-    LOGGER.debug("PartnerTime.distribute: " + timeByPartner)
-    new PartnerTime(partners, timeByPartner)
-  }
 
   /**
    * Creates a PartnerTime with zero hours for all partners.

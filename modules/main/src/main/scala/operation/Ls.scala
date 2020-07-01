@@ -30,17 +30,16 @@ object Ls {
       def format(p: Proposal): String =
         f"${p.id.reference}%-20s  ${p.site.abbreviation}    ${p.piName.orEmpty}%-20s  ${p.ntac.ranking}%4s  ${p.ntac.partner.id}%6s  ${p.ntac.awardedTime.toHours.value}%5.1f h"
 
-      def findPartner(partners: List[Partner])(name: String): F[Partner] =
-        partners.find(_.id.equalsIgnoreCase(name)) match {
+      def findPartner(name: String): F[Partner] =
+        Partner.all.find(_.id.equalsIgnoreCase(name)) match {
           case Some(p) => p.pure[F]
-          case None    => new ItacException(s"No such partner: $name. Try one or more of ${partners.map(_.id).mkString(",")}").raiseError[F, Partner]
+          case None    => new ItacException(s"No such partner: $name. Try one or more of ${Partner.all.map(_.id).mkString(",")}").raiseError[F, Partner]
         }
 
       def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] = {
         for {
-          cc <- ws.commonConfig
-          ns <- if (partnerNames.isEmpty) cc.engine.partners.pure[F]
-                else partnerNames.traverse(findPartner(cc.engine.partners))
+          ns <- if (partnerNames.isEmpty) Partner.all.pure[F]
+                else partnerNames.traverse(findPartner)
           ps <- ws.proposals.map(_.filter(p => ns.toSet(p.ntac.partner)).sorted(order.toOrdering))
           _  <- Sync[F].delay(println(header))
           _  <- ps.traverse_(p => Sync[F].delay(println(format(p))))

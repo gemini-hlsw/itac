@@ -49,8 +49,7 @@ object NgoSpreadsheet {
     new Operation[F] {
       def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
         for {
-          ps  <- ws.commonConfig.map(_.engine.partners)
-          wbs <- ps.traverse(p => Sync[F].delay((p, HSSFWorkbookFactory.createWorkbook))) // List[(Partner, Workbook)]
+          wbs <- Partner.all.traverse(p => Sync[F].delay((p, HSSFWorkbookFactory.createWorkbook))) // List[(Partner, Workbook)]
           _   <- Site.values.toList.traverse_(s => addSheetsForSite(wbs, qe, siteConfig.forSite(s), Some(rolloverReport.forSite(s))).run(ws, log, b))
           cwd <- ws.cwd
           _   <- wbs.traverse { case (p, wb) => Sync[F].delay(wb.write(cwd.resolve(Paths.get(s"itac-results-${p.id}.xls")).toFile)) }

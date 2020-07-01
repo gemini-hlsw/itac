@@ -2,9 +2,9 @@
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac
-
 package operation
 
+import edu.gemini.tac.qengine.ctx.Partner
 import cats._
 import cats.implicits._
 import edu.gemini.tac.qengine.api.config._
@@ -41,14 +41,13 @@ abstract class AbstractQueueOperation[F[_]](
       rs <- ws.removed
 
       // Compute the queue
-      partners  = cc.engine.partners
       queueCalc = qe.calc(
         proposals = ps,
         // queueTime = qc.engine.queueTime(partners),
-        queueTime = qc.engine.explicitQueueTime(partners),
-        partners  = partners,
+        queueTime = qc.engine.explicitQueueTime,
+        partners  = Partner.all,
         config    = QueueEngineConfig(
-          partners   = partners,
+          partners   = Partner.all,
           partnerSeq = cc.engine.partnerSequence(qc.site),
           rollover   = rr,
           binConfig  = createConfig(

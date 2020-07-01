@@ -3,7 +3,6 @@ package edu.gemini.tac.qengine.api.queue.time
 
 import edu.gemini.tac.qengine.api.config.QueueBandPercentages
 import edu.gemini.tac.qengine.ctx.Partner
-import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.p1.QueueBand
 import edu.gemini.tac.qengine.p1.QueueBand._
 import edu.gemini.tac.qengine.util.{Percent, Time}
@@ -121,69 +120,9 @@ trait QueueTime {
 
 
 object QueueTime {
-
   /** Number of hours in each "cycle" of 100 Partner countries. */
   val CycleTimeConstant = 300
-
   val DefaultPartnerOverfillAllowance = Percent(5)
-
-  def apply(s: Site, m: Map[Partner, Time], partners: List[Partner]): QueueTime =
-    apply(s, PartnerTime(partners, m))
-
-  def apply(s: Site, pt: PartnerTime): QueueTime =
-    apply(s, pt, QueueBandPercentages(), Some(QueueTime.DefaultPartnerOverfillAllowance))
-
-  def apply(s: Site, pt: PartnerTime, bp: QueueBandPercentages, poa: Option[Percent]): QueueTime =
-    new DerivedQueueTime(s, pt, bp, poa)
-}
-
-/** Implementation of `QueueTime` derived from overall partner allocation and
-  * band percentages.
-  */
-final class DerivedQueueTime(val site: Site,
-                val fullPartnerTime: PartnerTime,
-                val bandPercentages: QueueBandPercentages,
-                val partnerOverfillAllowance: Option[Percent]) extends QueueTime {
-
-  def overfillAllowance(cat: QueueBand.Category): Option[Percent] =
-    partnerOverfillAllowance
-
-  override val full: Time =
-    fullPartnerTime.total.toHours
-
-  override val band1End: Time =
-    full * bandPercentages(QBand1)
-
-  override val band2End: Time =
-    full * bandPercentages(Category.B1_2)
-
-  override val band3End: Time =
-    full * bandPercentages(Category.Guaranteed)
-
-  override def partnerTime(band: QueueBand): PartnerTime =
-    fullPartnerTime * bandPercentages(band)
-
-  override def partnerTime(cat: Category): PartnerTime   =
-    fullPartnerTime * bandPercentages(cat)
-
-  override def apply(partner: Partner): Time =
-    fullPartnerTime(partner)
-
-  override def apply(band: QueueBand): Time =
-    full * bandPercentages(band)
-
-  override def apply(cat: Category): Time =
-    full * bandPercentages(cat)
-
-  override def apply(band: QueueBand, p: Partner): Time =
-    fullPartnerTime(p) * bandPercentages(band)
-
-  override def apply(cat: Category, p: Partner): Time =
-    fullPartnerTime(p) * bandPercentages(cat)
-
-  override def partnerPercent(p: Partner): Percent =
-    p.percentAt(site)
-
 }
 
 /** Implementation of `QueueTime` derived from overall partner allocation and
@@ -269,13 +208,8 @@ final case class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), T
   override def apply(cat: Category, p: Partner): Time =
     sum { case (p0, b) => p == p0 && b.categories(cat) }
 
-  private val percs: Map[Partner, Percent] = {
-    val (ps, ts) = partnerTimes.mapValues(_.ms).toList.unzip
-    ps.zip(Percent.relativePercentages(ts)).toMap.withDefaultValue(Percent.Zero)
-  }
-
-  override def partnerPercent(p: Partner): Percent =
-    percs(p)
+  def partnerPercent(p: Partner): Percent =
+    Percent(100.0 * fullPartnerTime(p).toHours.value / full.toHours.value)
 
 }
 

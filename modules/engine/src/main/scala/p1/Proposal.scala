@@ -282,15 +282,6 @@ object Proposal {
     override def toString: String = "%s(%s)".format(partner, reference)
   }
 
-  /**
-   *  An ordering based upon awarded time (descending) followed by partner
-   * percentage (ascending).
-   */
-  object MasterOrdering extends Ordering[Proposal] {
-    def compare(x: Proposal, y: Proposal): Int =
-      Ntac.MasterOrdering.compare(x.ntac, y.ntac)
-  }
-
   @tailrec
   private def expandJoints(rem: List[Proposal], out: List[Proposal]): List[Proposal] =
     rem match {

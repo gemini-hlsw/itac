@@ -2,7 +2,6 @@ package edu.gemini.tac.qengine.p1.io
 
 import edu.gemini.model.p1.{immutable => im}
 import edu.gemini.tac.qengine.ctx.Partner
-import edu.gemini.tac.qengine.ctx.Partner.LargeProgramId
 import edu.gemini.tac.qengine.p1.Ntac
 import edu.gemini.tac.qengine.p1.Ntac.Rank
 import edu.gemini.tac.qengine.util.Time
@@ -79,7 +78,7 @@ class NtacIo(partners: Map[String, Partner]) {
     ntac(sub, partnerId, sub.partnerLead(p).map(_.lastName))
 
   private def lpNtacs(p: im.Proposal, sub: im.LargeProgramSubmission): ValidationNel[String, NonEmptyList[Ntac]] =
-    singletonNtac(ntac(sub, LargeProgramId, Some(p.investigators.pi.lastName)))
+    singletonNtac(ntac(sub, Partner.LP.id, Some(p.investigators.pi.lastName)))
 
   private def ntac(sub: im.Submission, partnerId: String, lead: Option[String]): ValidationNel[String, Option[Ntac]] = {
     val partner = partners.get(partnerId).toSuccess(UNKNOWN_PARTNER_ID(partnerId).wrapNel)

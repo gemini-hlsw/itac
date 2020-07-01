@@ -34,6 +34,7 @@ import edu.gemini.util.security.auth.ProgIdHash
 import java.io.File
 import cats.data.NonEmptyList
 import scala.collection.JavaConverters._
+import edu.gemini.tac.qengine.ctx.Partner
 
 /** Interface for some Workspace operations. */
 trait Workspace[F[_]] {
@@ -271,7 +272,7 @@ object Workspace {
             cwd  <- cwd
             conf <- commonConfig
             p     = cwd.resolve(dir)
-            pas   = conf.engine.partners.map { p => (p.id, p) } .toMap
+            pas   = Partner.all.map { p => (p.id, p) } .toMap
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
             es   <- edits
@@ -299,7 +300,7 @@ object Workspace {
             cwd  <- cwd
             conf <- commonConfig
             p     = cwd.resolve(ProposalDir)
-            pas   = conf.engine.partners.map { p => (p.id, p) } .toMap
+            pas   = Partner.all.map { p => (p.id, p) } .toMap
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
             es   <- edits
