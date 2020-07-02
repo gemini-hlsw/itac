@@ -50,13 +50,13 @@ object ProposalIo {
 
 import ProposalIo._
 
-class ProposalIo(partners: Map[String, Partner]) {
-  val ntacIo = new NtacIo(partners)
+class ProposalIo {
+  val ntacIo = new NtacIo
 
   // We need to split up the partners based on the sites where they are active.
-  val gnPartners   = partners.values.filter(_.sites == Set(Site.GN)).toSet
-  val gsPartners   = partners.values.filter(_.sites == Set(Site.GS)).toSet
-  val dualPartners = partners.values.filter(_.sites.size == 2).toSet
+  val gnPartners   = Partner.all.filter(_.sites == Set(Site.GN)).toSet
+  val gsPartners   = Partner.all.filter(_.sites == Set(Site.GS)).toSet
+  val dualPartners = Partner.all.filter(_.sites.size == 2).toSet
 
   /**
     * Extracts Queue Engine proposal information from the immutable proposal.

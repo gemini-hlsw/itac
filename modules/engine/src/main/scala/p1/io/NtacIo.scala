@@ -52,7 +52,7 @@ object NtacIo {
 
 import NtacIo._
 
-class NtacIo(partners: Map[String, Partner]) {
+class NtacIo {
 
   def read(p: im.Proposal): ValidationNel[String, NonEmptyList[Ntac]] =
     p.proposalClass match {
@@ -81,7 +81,7 @@ class NtacIo(partners: Map[String, Partner]) {
     singletonNtac(ntac(sub, Partner.LP.id, Some(p.investigators.pi.lastName)))
 
   private def ntac(sub: im.Submission, partnerId: String, lead: Option[String]): ValidationNel[String, Option[Ntac]] = {
-    val partner = partners.get(partnerId).toSuccess(UNKNOWN_PARTNER_ID(partnerId).wrapNel)
+    val partner = Partner.fromString(partnerId).toSuccess(UNKNOWN_PARTNER_ID(partnerId).wrapNel)
     response(sub, partnerId) <*> partner.map(mkNtac(lead, sub))
   }
 }

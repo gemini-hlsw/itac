@@ -13,7 +13,6 @@ import javax.xml.bind.JAXBContext
 import edu.gemini.tac.qengine.p1.Proposal
 import edu.gemini.tac.qengine.p1.io.ProposalIo
 import edu.gemini.tac.qengine.p1.io.JointIdGen
-import edu.gemini.tac.qengine.ctx.Partner
 import scala.xml.XML
 import io.chrisdavenport.log4cats.Logger
 
@@ -40,7 +39,6 @@ object ProposalLoader {
   }
 
   def apply[F[_]: Sync: Parallel: Logger](
-    partners: Map[String, Partner],
     when: Long,
     edits: Map[String, SummaryEdit],
     logger: Logger[F],
@@ -85,7 +83,7 @@ object ProposalLoader {
         }
 
       val pio: ProposalIo =
-        new ProposalIo(partners)
+        new ProposalIo
 
       def read(proposal: I.Proposal, mproposal: M.Proposal, p1xml: File): State[JointIdGen, EitherNel[String, NonEmptyList[Proposal]]] =
         State { jig =>

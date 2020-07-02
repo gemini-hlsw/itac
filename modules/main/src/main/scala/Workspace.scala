@@ -34,7 +34,6 @@ import edu.gemini.util.security.auth.ProgIdHash
 import java.io.File
 import cats.data.NonEmptyList
 import scala.collection.JavaConverters._
-import edu.gemini.tac.qengine.ctx.Partner
 
 /** Interface for some Workspace operations. */
 trait Workspace[F[_]] {
@@ -272,11 +271,10 @@ object Workspace {
             cwd  <- cwd
             conf <- commonConfig
             p     = cwd.resolve(dir)
-            pas   = Partner.all.map { p => (p.id, p) } .toMap
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
             es   <- edits
-            ps   <- ProposalLoader[F](pas, when, es, log, mutator).loadMany(p.toFile.getAbsoluteFile)
+            ps   <- ProposalLoader[F](when, es, log, mutator).loadMany(p.toFile.getAbsoluteFile)
             _    <- ps.traverse { case (f, Left(es)) => log.warn(s"$f: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
             psʹ   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
             _    <- log.debug(s"Read ${ps.length} proposals.")
@@ -300,11 +298,10 @@ object Workspace {
             cwd  <- cwd
             conf <- commonConfig
             p     = cwd.resolve(ProposalDir)
-            pas   = Partner.all.map { p => (p.id, p) } .toMap
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
             es   <- edits
-            p    <- ProposalLoader[F](pas, when, es, log, (_, _) => ().pure[F]).loadByReference(p.toFile.getAbsoluteFile, ref)
+            p    <- ProposalLoader[F](when, es, log, (_, _) => ().pure[F]).loadByReference(p.toFile.getAbsoluteFile, ref)
           } yield p
 
         def newQueueFolder(site: Site): F[Path] =
