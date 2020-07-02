@@ -14,21 +14,21 @@ sealed abstract class Partner(
 object Partner {
   import Site.{ GN, GS }
 
-  case object KR     extends Partner("KR",     Set(GN, GS))
-  case object SUBARU extends Partner("SUBARU", Set(GN, GS))
+  case object AR     extends Partner("AR",     Set(GN, GS))
+  case object AU     extends Partner("AU",     Set(GN, GS))
+  case object BR     extends Partner("BR",     Set(GN, GS))
+  case object CA     extends Partner("CA",     Set(GN, GS))
   case object CFH    extends Partner("CFH",    Set(GN, GS))
   case object CL     extends Partner("CL",     Set(GS))
   case object KECK   extends Partner("KECK",   Set(GN, GS))
-  case object BR     extends Partner("BR",     Set(GN, GS))
-  case object AU     extends Partner("AU",     Set(GN, GS))
-  case object CA     extends Partner("CA",     Set(GN, GS))
-  case object UH     extends Partner("UH",     Set(GN))
-  case object AR     extends Partner("AR",     Set(GN, GS))
-  case object US     extends Partner("US",     Set(GN, GS))
+  case object KR     extends Partner("KR",     Set(GN, GS))
   case object LP     extends Partner("LP",     Set(GN, GS))
+  case object SUBARU extends Partner("SUBARU", Set(GN, GS))
+  case object UH     extends Partner("UH",     Set(GN))
+  case object US     extends Partner("US",     Set(GN, GS))
 
   def all: List[Partner] =
-    List(KR, SUBARU, CFH, CL, KECK, BR, AU, CA, UH, AR, US, LP)
+    List(AR, AU, BR, CA, CFH, CL, KECK, KR, LP, SUBARU, UH, US)
 
   def fromString(id: String): Option[Partner] =
     all.find(_.id == id)
