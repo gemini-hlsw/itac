@@ -18,8 +18,6 @@ import org.slf4j.LoggerFactory
 trait BlockIterator {
   private val LOGGER : Logger = LoggerFactory.getLogger("edu.gemini.itac")
 
-  val allPartners: List[Partner]
-
   /**
    * Maps a Partner to the length of its time quantum.
    */
@@ -46,7 +44,7 @@ trait BlockIterator {
    * Computes the list of remaining proposals in the iterator.
    */
   def remPropList: List[Proposal] =
-    allPartners.flatMap(p => iterMap(p).remainingProposals)
+    Partner.all.flatMap(p => iterMap(p).remainingProposals)
 
   /**
    *  The partner that occupies the current time quantum.
@@ -106,11 +104,11 @@ trait BlockIterator {
   private def advancePartner(m: IMap): BlockIterator =
     advancePartner(seq.tail, m)
 
-  private def advancePartner(s: Seq[Partner], blockIteratorByPartner: IMap, remaining: Set[Partner] = BlockIterator.validpartners(allPartners, quantaMap)): BlockIterator = {
+  private def advancePartner(s: Seq[Partner], blockIteratorByPartner: IMap, remaining: Set[Partner] = BlockIterator.validpartners(quantaMap)): BlockIterator = {
     if (remaining.isEmpty || s.isEmpty){
       //QueueCalculationLog.logger.log(Level.trace, "BlockIterator.empty()")
       LOGGER.debug(<Event source="BlockIterator" event="Empty"/>.toString())
-      new BlockIterator.Empty(allPartners)
+      BlockIterator.Empty
     } else {
       val hasNext1 = blockIteratorByPartner(s.head).hasNext
       val hasQuantaTime = !quantaMap(s.head).isZero
@@ -139,8 +137,8 @@ trait BlockIterator {
 object BlockIterator {
   type IMap = Map[Partner, PartnerBlockIterator]
 
-  private class Empty(val allPartners: List[Partner]) extends BlockIterator {
-    val quantaMap: PartnerTime = PartnerTime.empty(allPartners)
+  object Empty extends BlockIterator {
+    val quantaMap: PartnerTime = PartnerTime.empty
     val seq: Seq[Partner] = Seq.empty
     val remTime: Time = Time.Zero
     val iterMap: IMap = Map.empty
@@ -181,8 +179,8 @@ object BlockIterator {
 
   // Calculates an initial set of valid partners.  It trims any partners
   // without a time quanta.  These partners should not appear in the sequence.
-  private def validpartners(allPartners: List[Partner], quantaMap: PartnerTime): Set[Partner] =
-    allPartners.filter(!quantaMap(_).isZero).toSet
+  private def validpartners(quantaMap: PartnerTime): Set[Partner] =
+    Partner.all.filter(!quantaMap(_).isZero).toSet
 
   /**
    * Constructs the TimeBlockIterator for the appropriate queue band category,
@@ -201,8 +199,8 @@ object BlockIterator {
 
     val iterMap = genIterMap(allPartners, propLists, activeList)
 
-    init(quantaMapʹ, iterMap, seq, validpartners(allPartners, quantaMapʹ)) match {
-      case (s, _) if s.isEmpty => new Empty(allPartners)
+    init(quantaMapʹ, iterMap, seq, validpartners(quantaMapʹ)) match {
+      case (s, _) if s.isEmpty => Empty
       case (partnerSeq, remainingTime) => {
         new BlockIteratorImpl(allPartners, quantaMapʹ, partnerSeq, remainingTime, iterMap)
       }

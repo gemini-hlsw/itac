@@ -29,7 +29,7 @@ object ProposalQueueBuilder {
    * band percentages and merge strategy are optional.
    */
   def apply(queueTime: QueueTime): ProposalQueueBuilder =
-    new ProposalQueueBuilder(queueTime.fullPartnerTime.partners, new Config(queueTime), PartnerTime.empty(queueTime.fullPartnerTime.partners))
+    new ProposalQueueBuilder(Partner.all, new Config(queueTime), PartnerTime.empty)
 }
 
 class ProposalQueueBuilder(
@@ -178,7 +178,7 @@ class ProposalQueueBuilder(
         val filtered = proposals.filterNot(prop => ids.contains(prop.id))
 
         // Rebuild the queue with just the filtered proposals.
-        new ProposalQueueBuilder(partners, config, PartnerTime.empty(partners)) ++ filtered.reverse
+        new ProposalQueueBuilder(partners, config, PartnerTime.empty) ++ filtered.reverse
       }
     }
 

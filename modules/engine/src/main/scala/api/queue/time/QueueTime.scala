@@ -80,11 +80,8 @@ trait QueueTime {
 
   /** Gets a map of Partner -> Time quantum with keys for all partners.
     */
-  def partnerQuanta: PartnerTime = {
-    val ps = fullPartnerTime.partners
-    PartnerTime(ps, ps.map { p => p -> quantum(p) }: _*)
-  }
-
+  def partnerQuanta: PartnerTime =
+    PartnerTime.fromFunction(quantum)
 
   /** Computes the amount of time that is nominally designated for the given
     * partner (independent of band, category, etc).  The actual amount of time
@@ -159,7 +156,7 @@ final case class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), T
     }
 
   override val fullPartnerTime: PartnerTime =
-    PartnerTime(allPartners, partnerTimes)
+    PartnerTime.fromMap(partnerTimes)
 
   override val full: Time =
     sum(Function.const(true))
@@ -175,7 +172,7 @@ final case class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), T
 
   private def bandFilteredPartnerTime(f: QueueBand => Boolean): PartnerTime = {
     val m = categorizedTimes.collect { case ((p, b), t) if f(b) => p -> t }.toMap
-    PartnerTime(allPartners, m)
+    PartnerTime.fromMap(m)
   }
 
   override def partnerTime(band: QueueBand): PartnerTime =
