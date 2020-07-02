@@ -15,7 +15,7 @@ import edu.gemini.tac.qengine.ctx.Partner
 // import java.util.logging.{Level, Logger}
 import edu.gemini.tac.qengine.util.Time
 // import edu.gemini.tac.qengine.api.queue.time.ExplicitQueueTime
-import edu.gemini.tac.qengine.api.config.QueueBandPercentages
+// import edu.gemini.tac.qengine.api.config.QueueBandPercentages
 import edu.gemini.tac.qengine.util.Percent
 import edu.gemini.tac.qengine.p1.QueueBand.QBand1
 import edu.gemini.tac.qengine.p1.QueueBand.QBand2
@@ -65,7 +65,7 @@ object QueueCalcStage {
         new QueueTime {
           val delegate = phase12queue.queueTime
           def fullPartnerTime: PartnerTime = delegate.fullPartnerTime
-          def bandPercentages: QueueBandPercentages = delegate.bandPercentages
+          // def bandPercentages: QueueBandPercentages = delegate.bandPercentages
           def overfillAllowance(cat: QueueBand.Category) = delegate.overfillAllowance(cat)
           def full: Time = delegate.full
           def band1End: Time = phase12queue.usedTime(QueueBand.QBand1)

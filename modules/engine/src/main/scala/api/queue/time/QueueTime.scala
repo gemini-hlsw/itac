@@ -1,7 +1,6 @@
 package edu.gemini.tac.qengine.api.queue.time
 
 
-import edu.gemini.tac.qengine.api.config.QueueBandPercentages
 import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.tac.qengine.p1.QueueBand
 import edu.gemini.tac.qengine.p1.QueueBand._
@@ -12,8 +11,6 @@ import edu.gemini.tac.qengine.util.{Percent, Time}
   */
 trait QueueTime {
   def fullPartnerTime: PartnerTime
-
-  def bandPercentages: QueueBandPercentages
 
   def overfillAllowance(cat: QueueBand.Category): Option[Percent]
 
@@ -163,12 +160,6 @@ final case class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), T
 
   override val fullPartnerTime: PartnerTime =
     PartnerTime(allPartners, partnerTimes)
-
-  override val bandPercentages: QueueBandPercentages =
-    Percent.relativePercentages(QueueBand.values.init.map(b => bandTimes(b).ms)) match {
-      case (b1 :: b2 :: b3 :: Nil) => QueueBandPercentages(b1, b2, b3)
-      case _                       => QueueBandPercentages()
-    }
 
   override val full: Time =
     sum(Function.const(true))
