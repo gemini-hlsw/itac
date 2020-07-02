@@ -3,22 +3,12 @@
 
 package test.arbitrary
 import org.scalacheck._
-import org.scalacheck.Arbitrary.arbitrary
-import edu.gemini.tac.qengine.util.Percent
 import edu.gemini.tac.qengine.ctx.Partner
-import edu.gemini.spModel.core.Site
 
 trait PartnerArbitrary {
-  import percent._
 
   val GenPartner: Gen[Partner] =
-    for {
-      id <- arbitrary[String]
-      fn <- arbitrary[String]
-      sh <- arbitrary[Percent]
-      ss <- arbitrary[Set[Site]]
-      e  <- arbitrary[String]
-    } yield Partner(id, fn, sh, ss, e)
+    Gen.oneOf(Partner.all)
 
   implicit val ArbitraryPartner: Arbitrary[Partner] =
     Arbitrary(GenPartner)
