@@ -23,11 +23,8 @@ object PartnerTimeCalc {
       prop => (prop.mode == Mode.Classical) && (prop.site == site)
     }
 
-    // Expand joints into their parts.
-    val cprops = Proposal.expandJoints(filteredProps)
-
     // Group by partner, turning it into a Map[Partner, List[Proposal]]
-    val cmap = cprops.groupBy(_.ntac.partner)
+    val cmap = filteredProps.groupBy(_.ntac.partner)
 
      // Sum the awarded times, converting the map into a Map[Partner, Time]
     def sumtime(t: Time, p: Proposal): Time = p.ntac.awardedTime + t

@@ -67,13 +67,26 @@ class ProposalIo {
       p: im.Proposal,
       mp: m.Proposal,
       when: Long,
-      jointIdGen: JointIdGen,
       p1xml: File
-  ): ValidationNel[String, (NonEmptyList[Proposal], JointIdGen)] = {
+  ): ValidationNel[String, NonEmptyList[Proposal]] = {
 
     def read(
         obsGroups: ObservationIo.GroupedObservations
-    )(ntacs: NonEmptyList[Ntac]): (NonEmptyList[Proposal], JointIdGen) = {
+    )(ntacs: NonEmptyList[Ntac]): NonEmptyList[Proposal]= {
+      // Although a proposal might in principle have more than one NTAC with a response, the way we
+      // do things now guarantees that this will never happen! And it fact we rely on it never
+      // happening. So just punt here if there's more than one.
+      if (ntacs.length > 1)
+        sys.error(s"Got more than one NTAC! How did this happen??!?: ${ntacs.list}")
+
+      doRead(obsGroups, ntacs.head)
+    }
+
+    def doRead(
+      obsGroups: ObservationIo.GroupedObservations,
+      ntac: Ntac
+    ): NonEmptyList[Proposal] = {
+
       // Discover which sites are used in the observations.
       val sites = obsGroups.map(_._1).list.toList.distinct
 
@@ -82,7 +95,6 @@ class ProposalIo {
         obsGroups.list.collect {
           case (`site`, _, os) => os.foldMap(_.time)
         } .foldMap(identity)
-
 
       // OK LISTEN UP
 
@@ -100,9 +112,9 @@ class ProposalIo {
       // NTAC awards, divided into gn, gs, and dual-site. These are mutually exclusive. The GN award
       // can be used only at GN; the GS award can be used only at GS; and the remainder can be used
       // anywhers.
-      val dedicatedAwardGN = ntacs.toList.filter(n => gnPartners.contains(n.partner)).foldMap(_.awardedTime)
-      val dedicatedAwardGS = ntacs.toList.filter(n => gsPartners.contains(n.partner)).foldMap(_.awardedTime)
-      val dualSiteAward    = ntacs.toList.filter(n => dualPartners.contains(n.partner)).foldMap(_.awardedTime)
+      val dedicatedAwardGN = Option(ntac).filter(n => gnPartners.contains(n.partner)).foldMap(_.awardedTime)
+      val dedicatedAwardGS = Option(ntac).filter(n => gsPartners.contains(n.partner)).foldMap(_.awardedTime)
+      val dualSiteAward    = Option(ntac).filter(n => dualPartners.contains(n.partner)).foldMap(_.awardedTime)
 
       // The estimated shared time at each site, which means the estimated time at the site, less
       // dedicated time that can only be used there. We want to remove the dedicated time and then
@@ -131,8 +143,7 @@ class ProposalIo {
       // Fin.
 
       // Make a proposal per site represented in the observations.
-      val (props, newGen) = sites.foldLeft((List.empty[Proposal], jointIdGen)) {
-        case ((propList, gen), site) =>
+      val props = sites.map { site =>
 
           // Get the list of observations associated with the given band category (if any).
           def bandList(cat: QueueBand.Category): List[Observation] =
@@ -140,8 +151,7 @@ class ProposalIo {
               .find { case (s, b, _) => s == site && b == cat }
               .map(_._3.list.toList)
 
-          // The first NTAC is the one we care about here (why?)
-          val ntac = ntacs.head
+          // Total award at this site
           val totalAwardHere = if (site == Site.GN) totalAwardGN else totalAwardGS
 
           // println()
@@ -166,15 +176,17 @@ class ProposalIo {
           // println(ntacs.map(n => f"${n.partner.id}:${n.awardedTime.toHours.value}%5.1f").list.toList.mkString(", "))
 
           if (totalAwardHere.isZero) {
-            LoggerFactory.getLogger("edu.gemini.itac").warn(s"Proposal ${ntac.reference} has observations at $site but no awarded time is usable there. Award was ${ntacs.map(n => s"${n.partner.id}: ${n.awardedTime.toHours}").toList.mkString(", ")}.")
+            LoggerFactory.getLogger("edu.gemini.itac").warn(s"Proposal ${ntac.reference} has observations at $site but no awarded time is usable there. Award was ${ntac.partner.id}: ${ntac.awardedTime.toHours}.")
           }
 
           val ntacʹ = ntac.copy(awardedTime = totalAwardHere, undividedTime = Some(ntac.awardedTime))
 
-          // Make the corresponding CoreProposal
+          // Make the corresponding Proposal
           val b12 = bandList(QueueBand.Category.B1_2)
           val b3 = bandList(QueueBand.Category.B3)
-          val core = CoreProposal(
+
+          // done
+          Proposal(
             ntacʹ,
             site,
             mode(p),
@@ -189,17 +201,10 @@ class ProposalIo {
             p1xml
           )
 
-          // If there are more ntacs, it is a Joint, otherwise just this core.
-          val (prop, newGen) = ntacs.tail.toList match {
-            case Nil => (core, gen)
-            case _ =>
-              (JointProposal(gen.toString, core, ntacs.list.toList), gen.next)
-          }
-          (prop :: propList, newGen)
       }
 
       // GroupedObservations is a NonEmptyList so props cannot be Nil
-      (NonEmptyList(props.head, props.tail: _*), newGen)
+      NonEmptyList(props.head, props.tail: _*)
     }
 
     ntacIo.read(p.copy(observations = p.observations.filter(_.enabled))) <*> ObservationIo

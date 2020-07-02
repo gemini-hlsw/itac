@@ -132,11 +132,10 @@ object ProposalLog {
    * A combination of proposal id and queue band time category that serves as
    * a key for looking up proposal log messages.
    */
-  case class Key(id: Proposal.Id, cat: TimeCat) extends Ordered[Key] {
-    def compare(that: Key): Int = id.compare(that.id) match {
-      case 0 => cat.compare(that.cat)
-      case n => n
-    }
+  case class Key(id: Proposal.Id, cat: TimeCat)
+  object Key {
+    implicit val OrderingKey: Ordering[Key] =
+      Ordering.by(k => (k.id, k.cat))
   }
 
   /**
@@ -145,13 +144,6 @@ object ProposalLog {
    */
   case class Entry(key: Key, msg: LogMessage) {
     def toPair: Tuple2[Key, LogMessage] = (key, msg)
-  }
-
-  /**
-   * Proposal entry ordering by Key.
-   */
-  object KeyOrdering extends Ordering[Entry] {
-    def compare(e1: Entry, e2: Entry): Int = e1.key.compare(e2.key)
   }
 
   // Takes a reversed list of entries, filters it to remove duplicate keys

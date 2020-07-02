@@ -4,7 +4,7 @@ import edu.gemini.tac.qengine.impl.block.Block
 import edu.gemini.tac.qengine.api.config.BandRestriction
 import edu.gemini.tac.qengine.api.queue.ProposalPosition
 import edu.gemini.tac.qengine.log.{ProposalLog, RejectBand, RejectMessage}
-import edu.gemini.tac.qengine.p1.{JointProposal, JointProposalPart, Proposal, QueueBand}
+import edu.gemini.tac.qengine.p1.{Proposal, QueueBand}
 import edu.gemini.tac.qengine.util.Percent
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
 
@@ -15,17 +15,6 @@ import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
  */
 final class BandResource(val lst: List[BandRestriction]) extends Resource {
   type T = BandResource
-
-  /**
-   * Determines the band to consider this proposal in.  If a non-joint, we'll
-   * take the current queue band.  If part of a joint, we'll take the queue
-   * at which the combined joint proposal falls if the part were accepted.
-   */
-  private def getBand(prop: Proposal, queue: ProposalQueueBuilder) =
-    prop match {
-      case p: JointProposalPart => (queue :+ p).positionOf(p).get.band
-      case _ => queue.band
-    }
 
   def bandAndPercent(queue: ProposalQueueBuilder): (QueueBand, Percent) = {
     val perc = Percent((queue.usedTime.toHours.value / queue.queueTime.full.toHours.value * 100).round.toDouble)
@@ -42,7 +31,7 @@ final class BandResource(val lst: List[BandRestriction]) extends Resource {
    * proposal matches the predicate (is rapid TOO, requires LGS, etc).
    */
   private def checkBand(prop: Proposal, queue: ProposalQueueBuilder, valid: List[BandRestriction]): RejectMessage Either BandResource = {
-    val band = getBand(prop, queue)
+    val band = queue.band
     valid.find(!_.bands.contains(band)) match {
       case None    => Right(this)
       case Some(r) => Left(rejectBand(prop, r.name, queue))
@@ -94,13 +83,8 @@ final class BandResource(val lst: List[BandRestriction]) extends Resource {
         val rest = bandViolation(prop, pos).get // which restriction violated
         val cat  = pos.band.logCategory         // Category for the log
 
-        // Updated log. Need log messages for all parts for joint proposals.
-        prop match {
-          case joint: JointProposal =>
-            curLog.updated(joint.toParts, cat, logMessage(_, pos, queue, rest))
-          case _ =>
-            curLog.updated(prop.id, cat, logMessage(prop, pos, queue, rest))
-        }
+        // Updated log.
+        curLog.updated(prop.id, cat, logMessage(prop, pos, queue, rest))
       }
     }
 

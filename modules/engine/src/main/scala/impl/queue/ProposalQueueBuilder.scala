@@ -18,19 +18,18 @@ import edu.gemini.tac.qengine.ctx.Partner
  * extract the queue for each of the 3 queue bands.
  */
 object ProposalQueueBuilder {
-  private val DefaultStrategy = EagerMergeStrategy
 
   /**
    * Definition data that doesn't change as proposals are added to the queue.
    */
-  final case class Config(val queueTime: QueueTime, val strategy: MergeStrategy)
+  final case class Config(val queueTime: QueueTime)
 
   /**
    * Factory for ProposalQueue implementations.  QueueTime is required, but the
    * band percentages and merge strategy are optional.
    */
-  def apply(queueTime: QueueTime, strategy: MergeStrategy = DefaultStrategy): ProposalQueueBuilder =
-    new ProposalQueueBuilder(queueTime.fullPartnerTime.partners, new Config(queueTime, strategy), PartnerTime.empty(queueTime.fullPartnerTime.partners))
+  def apply(queueTime: QueueTime): ProposalQueueBuilder =
+    new ProposalQueueBuilder(queueTime.fullPartnerTime.partners, new Config(queueTime), PartnerTime.empty(queueTime.fullPartnerTime.partners))
 }
 
 class ProposalQueueBuilder(
@@ -54,14 +53,7 @@ class ProposalQueueBuilder(
     new ProposalQueueBuilder(partners, config.copy(queueTime = queueTime), ug, u, proposals)
 
   private def addGuaranteedTimeFor(prop: Proposal): PartnerTime =
-    prop match {
-      case joint: JointProposal =>
-        joint.toParts.foldLeft(usedGuaranteed) {
-          case (cur, part) => cur.add(part.ntac.partner, part.time)
-        }
-      case _ =>
-        usedGuaranteed.add(prop.ntac.partner, prop.time)
-    }
+    usedGuaranteed.add(prop.ntac.partner, prop.time)
 
 
   /**
@@ -89,7 +81,7 @@ class ProposalQueueBuilder(
       else
         addGuaranteedTimeFor(prop)
 
-    val updatedProposals = config.strategy.add(prop, proposals)
+    val updatedProposals = prop :: proposals
 
     copy(newUsedGuaranteed, usedTime + prop.time, updatedProposals)
   }
@@ -110,7 +102,7 @@ class ProposalQueueBuilder(
    */
   val band: QueueBand = queueTime.band(usedTime)
 
-  def toList: List[Proposal] = config.strategy.merge(proposals).reverse
+  def toList: List[Proposal] = proposals.reverse
 
   /**
    * Gets the queue of proposals for each of the queue bands.
@@ -144,7 +136,7 @@ class ProposalQueueBuilder(
     remaining match {
       case Nil          => None
       case head :: tail =>
-        if (head.containsId(prop.id))
+        if (head.id == prop.id)
           Some(pos)
         else
           positionOf(prop, pos.next(head, queueTime.band _), tail)
@@ -179,14 +171,11 @@ class ProposalQueueBuilder(
    * rejected proposal.
    */
   def positionFilter(f: (Proposal, ProposalPosition) => Boolean): ProposalQueueBuilder =
-    Proposal.expandJoints(calcRemoveSet(f, ProposalPosition(queueTime), toList, Nil)) match {
+    calcRemoveSet(f, ProposalPosition(queueTime), toList, Nil) match {
       case Nil => this  // Nothing removed, return this
       case lst => {
         val ids      = extractIds(lst)
-        val filtered = proposals.filterNot(prop => ids.contains(prop match {
-          case joint: JointProposal => joint.toParts.head.id
-          case _ => prop.id
-        }))
+        val filtered = proposals.filterNot(prop => ids.contains(prop.id))
 
         // Rebuild the queue with just the filtered proposals.
         new ProposalQueueBuilder(partners, config, PartnerTime.empty(partners)) ++ filtered.reverse

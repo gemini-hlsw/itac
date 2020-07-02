@@ -25,7 +25,7 @@ trait ProposalQueue {
 
   /** Gets the used time for the particular partner. */
   def usedTime(p: Partner): Time =
-    Proposal.sumTimes(Proposal.expandJoints(toList).filter(_.ntac.partner == p))
+    Proposal.sumTimes(toList.filter(_.ntac.partner == p))
 
   /** Gets the amount of time used for a particular band. */
   def usedTime(band: QueueBand): Time = Proposal.sumTimes(bandedQueue(band))
@@ -39,7 +39,7 @@ trait ProposalQueue {
    * queue band for a particular partner.
    */
   def usedTime(band: QueueBand, p: Partner): Time  =
-    Proposal.sumTimes(Proposal.expandJoints(bandedQueue(band)).filter(_.ntac.partner == p))
+    Proposal.sumTimes(bandedQueue(band).filter(_.ntac.partner == p))
 
   /**
    * Gets amount of time used by the proposals associated with the given
@@ -47,7 +47,7 @@ trait ProposalQueue {
    */
   def usedTime(cat: Category, p: Partner): Time = {
     val props = bandedQueue.filterKeys(_.categories.contains(cat)).values.flatten.toList
-    Proposal.sumTimes(Proposal.expandJoints(props).filter(_.ntac.partner == p))
+    Proposal.sumTimes(props.filter(_.ntac.partner == p))
   }
 
 
