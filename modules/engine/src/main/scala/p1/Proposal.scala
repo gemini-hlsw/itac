@@ -75,8 +75,4 @@ object Proposal {
       Ordering.by(id => (id.partner.id, id.reference))
   }
 
-  /**
-   * Sums the awarded time for the proposals in the given
-   */
-  def sumTimes(lst: Traversable[Proposal]): Time = lst.foldLeft(Time.ZeroHours)(_ + _.time)
 }

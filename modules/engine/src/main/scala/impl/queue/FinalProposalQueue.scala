@@ -4,6 +4,7 @@ import edu.gemini.tac.qengine.p1.{QueueBand, Proposal}
 import edu.gemini.tac.qengine.api.queue.time.QueueTime
 import edu.gemini.tac.qengine.util.Time
 import edu.gemini.tac.qengine.api.queue.ProposalPosition
+import scalaz._, Scalaz._
 
 /**
  * A ProposalQueue implementation that contains a final queue calculation.
@@ -14,7 +15,7 @@ class FinalProposalQueue(val queueTime: QueueTime, bandMap: Map[QueueBand, List[
   val bandedQueue: Map[QueueBand, List[Proposal]] =
     QueueBand.values.map(band => band -> bandMap.getOrElse(band, Nil)).toMap
 
-  val usedTime: Time = Proposal.sumTimes(bandedQueue.values.flatten)
+  val usedTime: Time = bandedQueue.values.flatten.toList.foldMap(_.time)
 
   def toList: List[Proposal] =
     (QueueBand.values map { band => bandedQueue(band) }).flatten
