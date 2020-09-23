@@ -18,7 +18,8 @@ final class PartnerTime private (private val f: Partner => Time) extends (Partne
 }
 
 object PartnerTime {
-  val empty: PartnerTime = new PartnerTime(_ => Time.Zero)
+  val empty: PartnerTime = constant(Time.Zero)
+  def constant(t: Time) = new PartnerTime(_ => t)
   def single(p: Partner, t: Time): PartnerTime = new PartnerTime(a => if (p == a) t else Time.Zero)
   def fromMap(map: Map[Partner, Time]): PartnerTime = new PartnerTime(map.withDefaultValue(Time.Zero))
   def fromFunction(f: Partner => Time): PartnerTime = new PartnerTime(f)

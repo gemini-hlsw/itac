@@ -10,8 +10,8 @@ import edu.gemini.tac.qengine.p1._
 import edu.gemini.spModel.core.Site
 
 class DecResourceTest {
-  import edu.gemini.tac.qengine.ctx.TestPartners._
-  val partners = All
+  import edu.gemini.tac.qengine.ctx.Partner._
+  val partners = all
 
   private val bin1 = DecBin( 0, 10, BoundedTime(Time.hours(10)))
   private val bin2 = DecBin(10, 20, BoundedTime(Time.hours(20)))
@@ -28,10 +28,10 @@ class DecResourceTest {
   private val target20  = target(20)    // after bin2
 
   private val conds = ObservingConditions.AnyConditions
-  private val ntac = Ntac(GS, "x", 0, Time.Zero)
+  private val ntac = Ntac(KR, "x", 0, Time.Zero)
 
-  private def mkProp(target: Target): CoreProposal =
-    CoreProposal(ntac, site = Site.GS, obsList = List(Observation(null, target, conds, Time.Zero)))
+  private def mkProp(target: Target): Proposal =
+    Proposal(ntac, site = Site.GS, obsList = List(Observation(null, target, conds, Time.Zero)))
 
   @Test def testNormalReserveWithRemainingTime() {
     val prop   = mkProp(target0)

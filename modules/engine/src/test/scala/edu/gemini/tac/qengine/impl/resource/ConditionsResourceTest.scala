@@ -19,8 +19,8 @@ import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
 import edu.gemini.spModel.core.Site
 
 class ConditionsResourceTest {
-  import edu.gemini.tac.qengine.ctx.TestPartners._
-  val partners = All
+  import edu.gemini.tac.qengine.ctx.Partner._
+  val partners = all
 
   private val bins = ConditionsBin.of(
       (Cat(Eq(CC50)),  Percent(25)),
@@ -32,12 +32,12 @@ class ConditionsResourceTest {
   private val binGrp = ConditionsBinGroup.of(bins)
   private val resGrp = ConditionsResourceGroup(Time.minutes(100), binGrp)
 
-  private val ntac   = Ntac(GS, "x", 0, Time.minutes(100)) // not used
+  private val ntac   = Ntac(KR, "x", 0, Time.minutes(100)) // not used
   private val target = Target(0,0)                               // not used
 
-  private def mkProp(obsConds: ObservingConditions): CoreProposal = {
+  private def mkProp(obsConds: ObservingConditions): Proposal = {
     val obsList = List(Observation(null, target, obsConds, Time.minutes(10)))
-    CoreProposal(ntac, site = Site.GS, obsList = obsList)
+    Proposal(ntac, site = Site.GS, obsList = obsList)
   }
 
   private def mkConds(cc: CloudCover): ObservingConditions =
@@ -120,24 +120,4 @@ class ConditionsResourceTest {
     }
   }
 
-  @Test def testBand3ConditionsUsedinBand3() {
-    // Create a proposal to fill the first two queue bands and put us into
-    // band 3.
-    val q0 = ProposalQueueBuilder(QueueTime(Site.GS, Map(GS -> Time.minutes(166)), partners))
-    val q1 = q0 :+ mkProp(mkConds(CC50))
-    assertEquals(QueueBand.QBand3, q1.band)
-    val template : Observation = mkProp(mkConds(CC50)).obsList.head
-    val templateConditions = template.conditions
-    val cs = ObservingConditions(CloudCover.CC80, templateConditions.iq, templateConditions.sb, templateConditions.wv)
-    val obs = template.copy(conditions=cs)
-    assertEquals(Time.minutes(10), obs.time)
-    val b3os = List(obs)
-
-    val prop  = mkProp(mkConds(CC50)).copy(band3Observations = b3os)
-    val block = Block(prop, prop.band3Observations.head, Time.minutes(10))
-
-    verifyTimes(resGrp, 25, 50, 75, 100) //Each condition has +25 minutes
-    val res   = resGrp.reserve(block, q1)
-    verifyTimes(res.right.get, 25, 50, 65, 90) // uses CC80 time, not CC50 (-10 @ 80, but then +25 to 90)
-  }
 }

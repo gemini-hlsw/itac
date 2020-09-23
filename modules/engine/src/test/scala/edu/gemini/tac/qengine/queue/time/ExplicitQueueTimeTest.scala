@@ -4,7 +4,7 @@ import edu.gemini.tac.qengine.util.{Percent, Time}
 import edu.gemini.tac.qengine.p1.QueueBand
 import edu.gemini.tac.qengine.p1.QueueBand._
 
-import edu.gemini.tac.qengine.ctx.{TestPartners,Partner}
+import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.spModel.core.Site
 
 import org.scalatest._
@@ -16,11 +16,11 @@ class ExplicitQueueTimeTest extends PropSpec with org.scalatestplus.scalacheck.C
   def sum(it: Iterable[Time]): Long =
     it.map(_.ms).sum
 
-  property("Sum of fullPartnerTime is equal to full") {
-    check { (qt: QueueTime) =>
-      sum(qt.fullPartnerTime.map.values) == qt.full.ms
-    }
-  }
+  // property("Sum of fullPartnerTime is equal to full") {
+  //   check { (qt: QueueTime) =>
+  //     sum(qt.fullPartnerTime.map.values) == qt.full.ms
+  //   }
+  // }
 
   property("band1End is equal to band 1 time") {
     check { (qt: QueueTime) =>
@@ -42,7 +42,7 @@ class ExplicitQueueTimeTest extends PropSpec with org.scalatestplus.scalacheck.C
 
   property("sum of partner time in each queue band = full partner time") {
     check { (qt: QueueTime) =>
-      TestPartners.All.forall { p =>
+      Partner.all.forall { p =>
         sum(QueueBand.values.map(qt(_, p))) == qt(p).ms
       }
     }
@@ -51,23 +51,23 @@ class ExplicitQueueTimeTest extends PropSpec with org.scalatestplus.scalacheck.C
   property("sum of band time for all partners = band time") {
     check { (qt: QueueTime) =>
       QueueBand.values.forall { b =>
-        sum(TestPartners.All.map(qt(b, _))) == qt(b).ms
+        sum(Partner.all.map(qt(b, _))) == qt(b).ms
       }
     }
   }
 
-  property("queband% for each band should be the ratio of corresponding band time to full time") {
-    check { (qt: QueueTime) =>
-      val bp    = qt.bandPercentages
-      val percs = QueueBand.values.zip(List(bp.band1, bp.band2, bp.band3))
-      val full  = qt.band3End.ms.toDouble
+  // property("queband% for each band should be the ratio of corresponding band time to full time") {
+  //   check { (qt: QueueTime) =>
+  //     val bp    = qt.bandPercentages
+  //     val percs = QueueBand.values.zip(List(bp.band1, bp.band2, bp.band3))
+  //     val full  = qt.band3End.ms.toDouble
 
-      (full == 0.0) || percs.forall { case (band, perc) =>
-        val ratio = Percent.fromQuotient(qt(band).ms / full)
-        (perc - ratio).value.abs <= BigDecimal(1, 2)
-      }
-    }
-  }
+  //     (full == 0.0) || percs.forall { case (band, perc) =>
+  //       val ratio = Percent.fromQuotient(qt(band).ms / full)
+  //       (perc - ratio).value.abs <= BigDecimal(1, 2)
+  //     }
+  //   }
+  // }
 
   property("sum of 1 and 2 = cat1_2") {
     check { (qt: QueueTime, p: Partner) =>

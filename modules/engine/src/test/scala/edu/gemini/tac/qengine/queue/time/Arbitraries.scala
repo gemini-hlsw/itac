@@ -4,14 +4,14 @@ import org.scalacheck._
 import org.scalacheck.Gen._
 import org.scalacheck.Arbitrary._
 
-import edu.gemini.tac.qengine.ctx.{Partner, TestPartners}
+import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.tac.qengine.p1.QueueBand
 import edu.gemini.tac.qengine.util.{Percent, Time}
 
 trait Arbitraries {
   implicit val arbitraryPartner: Arbitrary[Partner] =
     Arbitrary {
-      oneOf(TestPartners.All)
+      oneOf(Partner.all)
     }
 
   implicit val arbitraryQueueBand: Arbitrary[QueueBand] =

@@ -11,8 +11,8 @@ import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.spModel.core.{Site,Semester}
 
 class TooBlocksTest {
-  import edu.gemini.tac.qengine.ctx.TestPartners._
-  val partners = All
+  import edu.gemini.tac.qengine.ctx.Partner._
+  val partners = all
 
   val site     = Site.GS
   val semester = new Semester(2011, Semester.Half.A)
