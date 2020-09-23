@@ -12,11 +12,11 @@ package object codec {
        with TokensCodecs
        with ConditionsBinCodec
        with ConditionsCategoryCodec
-       with QueueCalcEncoder
        with RaBinSizeCodec
        with DecBinSizeCodec
        with RolloverObservationCodec
        with RolloverReportCodec
        with QueueBandCategoryCodec
+       with PartnerCodec
 
 }

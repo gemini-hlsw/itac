@@ -1,6 +1,6 @@
 package edu.gemini.tac.qengine.p1
 
-import edu.gemini.tac.qengine.util.{Percent, CompoundOrdering, Time}
+import edu.gemini.tac.qengine.util.Time
 import edu.gemini.tac.qengine.p1.Ntac.Rank
 import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.model.p1.immutable.{ Submission, NgoSubmission }
@@ -16,10 +16,10 @@ case class Ntac(partner: Partner,
   submission: Submission = null,
   undividedTime: Option[Time] = None, // this will be set to the original time if the actual time is reduced due to a site split
   ngoEmail: Option[String] = None
-) extends Ordered[Ntac] {
+) {
   require(awardedTime.ms >= 0, "Awarded time must be non-negative, not " + awardedTime.ms)
 
-  def compare(that: Ntac): Int = Ntac.MasterOrdering.compare(this, that)
+  // def compare(that: Ntac): Int = Ntac.MasterOrdering.compare(this, that)
 
   def ngoSubmission: NgoSubmission =
     submission match {
@@ -59,18 +59,18 @@ object Ntac {
     def apply(num: Double): Rank = new Rank(Some(num))
   }
 
-  /**
-   * An ordering based upon awarded time (descending) followed by partner
-   * percentage (ascending).  This is the default ordering for selecting
-   * master proposals.
-   */
-  object MasterOrdering extends CompoundOrdering(
-    Ordering.by[Ntac, Time](_.awardedTime).reverse,
-    Ordering.by[Ntac, Percent](_.partner.share),
-    Ordering.by[Ntac, Rank](_.ranking),
-    Ordering.by[Ntac, String](_.partner.id),
-    Ordering.by[Ntac, String](_.reference)
-  )
+  // /**
+  //  * An ordering based upon awarded time (descending) followed by partner
+  //  * percentage (ascending).  This is the default ordering for selecting
+  //  * master proposals.
+  //  */
+  // object MasterOrdering extends CompoundOrdering(
+  //   Ordering.by[Ntac, Time](_.awardedTime).reverse,
+  //   Ordering.by[Ntac, Percent](_.partner.share),
+  //   Ordering.by[Ntac, Rank](_.ranking),
+  //   Ordering.by[Ntac, String](_.partner.id),
+  //   Ordering.by[Ntac, String](_.reference)
+  // )
 
   /**
    * Sums the awarded time in a collection of Ntacs.

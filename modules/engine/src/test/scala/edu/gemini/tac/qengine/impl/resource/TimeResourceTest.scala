@@ -16,8 +16,8 @@ import edu.gemini.spModel.core.Site
 import scala.Ordering.Implicits._
 
 class TimeResourceTest {
-  import edu.gemini.tac.qengine.ctx.TestPartners._
-  val partners = All
+  import edu.gemini.tac.qengine.ctx.Partner._
+  val partners = all
 
   private val ntac   = Ntac(US, "x", 0, Time.hours(10))
   private val target = Target(0.0, 0.0) // not used
@@ -32,7 +32,7 @@ class TimeResourceTest {
   private val res60min = TimeResource(bin, Time.hours(10))
 
   private def mkProp(wv: WaterVapor): Proposal =
-    CoreProposal(ntac, site = Site.GS, obsList = List(Observation(null, target, conds(wv), Time.hours(10))))
+    Proposal(ntac, site = Site.GS, obsList = List(Observation(null, target, conds(wv), Time.hours(10))))
 
   @Test def testReserveNoMatch() {
     val prop = mkProp(WV80)

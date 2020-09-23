@@ -10,10 +10,11 @@ import edu.gemini.tac.qengine.util.{Angle, Percent, Time}
 import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.spModel.core.{Semester,Site}
 import edu.gemini.tac.qengine.p2.rollover.RolloverReport
+import edu.gemini.tac.qengine.impl.resource.Fixture
 
 class RandomQueueTest {
-  import edu.gemini.tac.qengine.ctx.TestPartners._
-  val partners = All
+  import edu.gemini.tac.qengine.ctx.Partner._
+  val partners = all
 
   val site     = Site.GN
   val semester = new Semester(2011, Semester.Half.A)
@@ -22,7 +23,8 @@ class RandomQueueTest {
   private def randomTime(max: Int): Time = Time.hours(max * rand.nextDouble)
 
   private def queueTime: QueueTime =
-    QueueTime(site, partners.map(p => (p, Time.hours(1000) * Percent(p.percentDoubleAt(site)))).toMap, partners)
+    Fixture.evenQueueTime(1000, None)
+  //   QueueTime(site, partners.map(p => (p, Time.hours(1000) * Percent(p.percentDoubleAt(site)))).toMap, partners)
 
   // Ra Bins for GN-A
   private def raLimits: RaBinGroup[Time] =
@@ -71,7 +73,7 @@ class RandomQueueTest {
     val ntac = Ntac(p, p.id + "-" + i, i, randomTime(10))
     val band3 = if (rand.nextInt(2) % 2 == 0) randomObsList.filter(o => o.conditions.cc.percent >= 80) else List.empty
     val poorWeather = rand.nextInt(20) == 0
-    CoreProposal(ntac, site = site, band3Observations = band3, obsList = randomObsList, isPoorWeather = poorWeather)
+    Proposal(ntac, site = site, band3Observations = band3, obsList = randomObsList, isPoorWeather = poorWeather)
   }
 
   private def randomProposals: List[Proposal] =
@@ -82,7 +84,7 @@ class RandomQueueTest {
   @Test def testRandomQueue() {
     val binConf = gnABinConfig
     val props   = randomProposals
-    val partnerSequence = new ProportionalPartnerSequence(partners, binConf.site)
+    val partnerSequence = new PartnerSequence { def sequence: Stream[Partner] = all.toStream #::: sequence }
     val conf    = QueueEngineConfig(partners, binConf, partnerSequence, RolloverReport.empty)
 
     val startTime  = System.currentTimeMillis

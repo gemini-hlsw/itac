@@ -10,7 +10,7 @@ import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.spModel.core.Site
 
 class ProposalPrepTest {
-  import edu.gemini.tac.qengine.ctx.TestPartners._
+  import Partner._
 
   val target: Target = Target(0.0, 0.0)
   val conds: ObservingConditions = ObservingConditions.AnyConditions
@@ -19,8 +19,8 @@ class ProposalPrepTest {
   val noneObs: List[Observation] = Nil
   val someObs: List[Observation] = List(Observation(null, target, conds, Time.hours(1)))
 
-  private def nonJoint(partner: Partner, id: String, time: Time = Time.hours(1), b3: List[Observation] = Nil, obsList: List[Observation] = Nil): CoreProposal =
-    CoreProposal(Ntac(partner, id, 0, time), site = Site.GS, band3Observations = b3, obsList = obsList)
+  private def nonJoint(partner: Partner, id: String, time: Time = Time.hours(1), b3: List[Observation] = Nil, obsList: List[Observation] = Nil): Proposal =
+    Proposal(Ntac(partner, id, 0, time), site = Site.GS, band3Observations = b3, obsList = obsList)
 
   @Test def testEmpty() {
     val pp = ProposalPrep(Nil)
@@ -61,7 +61,7 @@ class ProposalPrepTest {
   @Test def testB1_2() {
     val br = nonJoint(BR, "br1", time = Time.Zero, obsList = someObs)
     val ca = nonJoint(CA, "ca1", time = Time.hours(1), obsList = noneObs)
-    val gs = nonJoint(GS, "gs1", time = Time.hours(1), obsList = someObs)
+    val gs = nonJoint(US, "us1", time = Time.hours(1), obsList = someObs)
 
     val pp = ProposalPrep(List(br, ca, gs))
     assertEquals(List(gs), pp.propList)
@@ -79,7 +79,7 @@ class ProposalPrepTest {
   @Test def testB3() {
     val br = nonJoint(BR, "br1", time = Time.Zero, obsList = someObs, b3 = noneBand3)
     val ca = nonJoint(CA, "ca1", time = Time.hours(1), obsList = noneObs, b3 = noneBand3)
-    val gs = nonJoint(GS, "gs1", time = Time.hours(1), obsList = someObs, b3 = noneBand3)
+    val gs = nonJoint(US, "us1", time = Time.hours(1), obsList = someObs, b3 = noneBand3)
     val uh = nonJoint(UH, "uh1", time = Time.hours(1), obsList = someObs, b3 = someBand3)
 
     val pp = ProposalPrep(List(br, ca, gs, uh)).band3(None)

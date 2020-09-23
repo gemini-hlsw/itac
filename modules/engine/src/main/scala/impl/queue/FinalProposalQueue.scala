@@ -39,7 +39,7 @@ class FinalProposalQueue(val queueTime: QueueTime, bandMap: Map[QueueBand, List[
   }
 
   def positionOf(prop: Proposal): Option[ProposalPosition] =
-    (zipWithPosition.find { case (curProp, _) => curProp.containsId(prop.id) }) map {
+    (zipWithPosition.find { case (curProp, _) => curProp.id == prop.id }) map {
       case (_, pos) => pos
     }
 }

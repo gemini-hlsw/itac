@@ -39,7 +39,7 @@ case class Summary(slices: OneOrTwo[Proposal]) {
         |Reference: ${reference}
         |Mode:      ${mode}
         |PI:        ${pi}
-        |Partner:   ${partner.fullName}
+        |Partner:   ${partner.id}
         |Award:     ${award.toHours.value}%1.1f
         |Rank:      ${rank}%1.1f
         |ToO:       ${too}

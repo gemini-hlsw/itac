@@ -62,19 +62,17 @@ final class ProposalPrep private (val propList: List[Proposal], val cat: QueueBa
    * proposals.  Calculates (this.propList -- rmProps) in a more efficient way.
    */
   def remove(rmProps: List[Proposal]): ProposalPrep = {
-    val ids = Proposal.expandJoints(rmProps).map(_.id).toSet
+    val ids = rmProps.map(_.id).toSet
     new ProposalPrep(propList.filterNot(prop => ids.contains(prop.id)), cat, log)
   }
 }
 
 object ProposalPrep {
   def apply(propList: List[Proposal], log: ProposalLog = ProposalLog.Empty): ProposalPrep = {
-    // Expand any joint proposals into their parts.
-    val expanded = Proposal.expandJoints(propList)
 
     // Filter out duplicate ids.  There are several parts of the code that
     // assume each proposal has a unique id.
-    val unique   = expanded.groupBy(_.id).values.map(_.head).toList
+    val unique   = propList.groupBy(_.id).values.map(_.head).toList
 
     val prep = new ProposalPrep(unique, QueueBand.Category.B1_2, log)
     val withTime = prep.withTime

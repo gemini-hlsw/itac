@@ -10,14 +10,14 @@ import Fixture.{badCC, emptyQueue, goodCC}
 import org.junit.Assert._
 
 class RaResourceTest {
-  import edu.gemini.tac.qengine.ctx.TestPartners._
-  val partners = All
+  import edu.gemini.tac.qengine.ctx.Partner._
+  val partners = all
 
   // Proposal partner, proposal time, and observation time are not used in this
   // test.  We will make time blocks with the explicit amount of time we need
   // for testing.
 
-  private val ntac = Ntac(GS, "x", 0, Time.Zero)
+  private val ntac = Ntac(KR, "x", 0, Time.Zero)
 
   private def mkProp(target: Target, conds: ObservingConditions): Proposal =
     Fixture.mkProp(ntac,  (target, conds, Time.Zero))

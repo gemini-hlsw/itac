@@ -8,13 +8,13 @@ import edu.gemini.tac.qengine.p1.SkyBackground.SBAny
 import edu.gemini.tac.qengine.p1.WaterVapor._
 import edu.gemini.tac.qengine.p1._
 import edu.gemini.tac.qengine.util.{Time, Percent}
-import edu.gemini.tac.qengine.ctx.TestPartners
 import edu.gemini.spModel.core.Site
 import scala.Ordering.Implicits._
+import edu.gemini.tac.qengine.ctx.Partner
 
 class TimeRestrictionTest {
 
-  val US = TestPartners.US
+  val US = Partner.US
 
   private val ntac   = Ntac(US, "x", 0, Time.hours(10))
   private val target = Target(0.0, 0.0) // not used
@@ -26,7 +26,7 @@ class TimeRestrictionTest {
   }
 
   private def mkProp(wv: WaterVapor): Proposal =
-    CoreProposal(ntac, site = Site.GS, obsList = List(Observation(null, target, conds(wv), Time.hours(10))))
+    Proposal(ntac, site = Site.GS, obsList = List(Observation(null, target, conds(wv), Time.hours(10))))
 
 
   @Test def testMatches() {

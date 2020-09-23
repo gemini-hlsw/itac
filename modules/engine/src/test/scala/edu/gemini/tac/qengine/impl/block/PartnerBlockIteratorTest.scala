@@ -7,8 +7,8 @@ import edu.gemini.tac.qengine.util.Time
 import edu.gemini.spModel.core.Site
 
 class PartnerBlockIteratorTest {
-  import edu.gemini.tac.qengine.ctx.TestPartners._
-  val partners = All
+  import edu.gemini.tac.qengine.ctx.Partner._
+  val partners = all
 
   val target = Target(0.0, 0.0) // required but not used for this test
   val conds  = ObservingConditions.AnyConditions // required by not used
@@ -23,11 +23,11 @@ class PartnerBlockIteratorTest {
 
   def mkObs(hrs: Double): Observation = Observation(null, target, conds, Time.hours(hrs))
 
-  def mkProp(hrs: Double, obsHrs: Double*): CoreProposal = {
+  def mkProp(hrs: Double, obsHrs: Double*): Proposal = {
     val ntac = Ntac(AR, gen.id, 0, Time.hours(hrs))
     gen = gen.next
     val lst  = obsHrs.map(curHrs => Observation(null, target, conds, Time.hours(curHrs))).toList
-    CoreProposal(ntac, site = Site.GS, obsList = lst)
+    Proposal(ntac, site = Site.GS, obsList = lst)
   }
 
   @Test def testCreateEmpty() {

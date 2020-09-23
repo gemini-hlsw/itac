@@ -9,16 +9,19 @@ target
 itac-web/bin/
 .idea
 .metals
-project/metals.sbt
-.bloop
+metals.sbt
+.bloop/
+project/.bloop/
 .vscode
 
 # rob's local work
 work
-work2
+work-old
+baseline*
 hawaii
 2020B
 *.worksheet.sc
 marie
 marie-old
 marie-old2
+sanity-check.sh

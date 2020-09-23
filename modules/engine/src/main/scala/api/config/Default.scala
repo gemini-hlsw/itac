@@ -29,12 +29,6 @@ object Default {
     (Cat(UnspecifiedCC, Eq(IQAny), UnspecifiedSB, UnspecifiedWV, Some("9")), 40)
   )
 
-  val Band1Percent = Percent(30)
-  val Band2Percent = Percent(30)
-  val Band3Percent = Percent(20)
-
-  val BandPercentages = QueueBandPercentages()
-
   val WvTimeRestriction  = TimeRestriction.wv(Percent(50), WV50)
   val LgsTimeRestriction = TimeRestriction.lgs(Time.hours(200))
 

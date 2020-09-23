@@ -271,11 +271,10 @@ object Workspace {
             cwd  <- cwd
             conf <- commonConfig
             p     = cwd.resolve(dir)
-            pas   = conf.engine.partners.map { p => (p.id, p) } .toMap
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
             es   <- edits
-            ps   <- ProposalLoader[F](pas, when, es, log, mutator).loadMany(p.toFile.getAbsoluteFile)
+            ps   <- ProposalLoader[F](when, es, log, mutator).loadMany(p.toFile.getAbsoluteFile)
             _    <- ps.traverse { case (f, Left(es)) => log.warn(s"$f: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
             psʹ   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
             _    <- log.debug(s"Read ${ps.length} proposals.")
@@ -299,11 +298,10 @@ object Workspace {
             cwd  <- cwd
             conf <- commonConfig
             p     = cwd.resolve(ProposalDir)
-            pas   = conf.engine.partners.map { p => (p.id, p) } .toMap
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
             es   <- edits
-            p    <- ProposalLoader[F](pas, when, es, log, (_, _) => ().pure[F]).loadByReference(p.toFile.getAbsoluteFile, ref)
+            p    <- ProposalLoader[F](when, es, log, (_, _) => ().pure[F]).loadByReference(p.toFile.getAbsoluteFile, ref)
           } yield p
 
         def newQueueFolder(site: Site): F[Path] =

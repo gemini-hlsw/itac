@@ -2,7 +2,7 @@
 publish / skip := true
 
 inThisBuild(Seq(
-  scalaVersion := "2.12.10",
+  scalaVersion := "2.12.12",
   resolvers    += "Gemini Repository" at "https://github.com/gemini-hlsw/maven-repo/raw/master/releases",
   homepage := Some(url("https://github.com/gemini-hlsw/itac")),
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
@@ -17,13 +17,13 @@ lazy val engine = project
       "edu.gemini.ocs"          %% "edu-gemini-shared-skyobject" % "2019101.1.4",
       "edu.gemini.ocs"          %% "edu-gemini-util-skycalc"     % "2019101.1.4",
       "edu.gemini.ocs"          %% "edu-gemini-util-security"    % "2019101.1.4",
-      "org.scala-lang.modules"  %% "scala-xml"                   % "2.0.0-M1",
-      "org.slf4j"                % "slf4j-api"                   % "1.7.28",
+      "org.scala-lang.modules"  %% "scala-xml"                   % "2.0.0-M2",
+      "org.slf4j"                % "slf4j-api"                   % "1.7.30",
       "javax.xml.bind"           % "jaxb-api"                    % "2.3.1",
-      "com.sun.xml.bind"         % "jaxb-impl"                   % "2.3.2",
+      "com.sun.xml.bind"         % "jaxb-impl"                   % "2.3.3",
       "com.sun.xml.bind"         % "jaxb-core"                   % "2.3.0.1",
       "com.novocode"             % "junit-interface"             % "0.11"    % "test",
-      "junit"                    % "junit"                       % "4.12"    % "test",
+      "junit"                    % "junit"                       % "4.13"    % "test",
       "org.mockito"              % "mockito-all"                 % "1.10.19" % "test",
       "org.scalacheck"          %% "scalacheck"                  % "1.14.1"  % "test",
       "org.scalatest"           %% "scalatest"                   % "3.1.1"   % "test",
@@ -39,24 +39,24 @@ lazy val main = project
   .settings(
     name := "itac-main",
     libraryDependencies ++= Seq(
-      "com.monovore"         %% "decline-effect"         % "1.0.0",
-      "com.monovore"         %% "decline"                % "1.0.0",
-      "edu.gemini"           %% "gsp-math"               % "0.1.10",
-      "io.chrisdavenport"    %% "log4cats-slf4j"         % "1.0.1",
-      "io.circe"             %% "circe-core"             % "0.11.1",
-      "io.circe"             %% "circe-generic"          % "0.11.1",
-      "io.circe"             %% "circe-parser"           % "0.11.1",
-      "io.circe"             %% "circe-yaml"             % "0.10.0",
-      "com.sun.mail"            % "javax.mail"         % "1.6.0",
-      "org.apache.velocity"   % "velocity-engine-core"   % "2.2",    // save me jeebus
-      "org.slf4j"             % "slf4j-simple"           % "1.7.28",
-      "org.tpolecat"         %% "atto-core"              % "0.7.1",
-      "org.typelevel"        %% "cats-effect"            % "2.0.0",
-      "com.github.davidmoten" % "word-wrap"              % "0.1.6",
-      "org.apache.poi"        % "poi"                    % "4.1.2",  // over here too jeebus
-      "com.softwaremill.sttp.client" %% "core" % "2.2.0",
-      "org.typelevel"        %% "cats-testkit"           % "2.0.0"     % "test",
-      "org.typelevel"        %% "cats-testkit-scalatest" % "1.0.0-RC1" % "test",
+      "com.monovore"                 %% "decline-effect"         % "1.3.0",
+      "com.monovore"                 %% "decline"                % "1.3.0",
+      "edu.gemini"                   %% "gsp-math"               % "0.1.16", // <--- don't change to lucuma!
+      "io.chrisdavenport"            %% "log4cats-slf4j"         % "1.1.1",
+      "io.circe"                     %% "circe-core"             % "0.13.0",
+      "io.circe"                     %% "circe-generic"          % "0.13.0",
+      "io.circe"                     %% "circe-parser"           % "0.13.0",
+      "io.circe"                     %% "circe-yaml"             % "0.13.1",
+      "com.sun.mail"                  % "javax.mail"             % "1.6.2",
+      "org.apache.velocity"           % "velocity-engine-core"   % "2.2",    // save me jeebus
+      "org.slf4j"                     % "slf4j-simple"           % "1.7.30",
+      "org.tpolecat"                 %% "atto-core"              % "0.8.0",
+      "org.typelevel"                %% "cats-effect"            % "2.2.0",
+      "com.github.davidmoten"         % "word-wrap"              % "0.1.6",
+      "org.apache.poi"                % "poi"                    % "4.1.2",  // over here too jeebus
+      "com.softwaremill.sttp.client" %% "core"                   % "2.2.9",
+      "org.typelevel"                %% "cats-testkit"           % "2.2.0" % "test",
+      "org.typelevel"                %% "cats-testkit-scalatest" % "2.0.0" % "test",
     ),
     sourceGenerators in Compile += Def.task {
       val outDir = (sourceManaged in Compile).value / "scala" / "itac"
