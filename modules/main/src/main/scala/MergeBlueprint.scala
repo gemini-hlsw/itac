@@ -87,7 +87,7 @@ trait MergeBlueprint {
       case Some(bp) => bp
       case None =>
         from.setId(nextBlueprintId(all))
-        val choice = implicitly[ClassTag[C]].runtimeClass.newInstance().asInstanceOf[C]
+        val choice = implicitly[ClassTag[C]].runtimeClass.getDeclaredConstructor().newInstance().asInstanceOf[C]
         setter(choice, from)
         coll.add(choice)
         from
