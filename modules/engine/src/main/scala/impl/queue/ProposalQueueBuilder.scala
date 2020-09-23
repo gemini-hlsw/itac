@@ -20,26 +20,19 @@ import edu.gemini.tac.qengine.ctx.Partner
 object ProposalQueueBuilder {
 
   /**
-   * Definition data that doesn't change as proposals are added to the queue.
-   */
-  final case class Config(val queueTime: QueueTime)
-
-  /**
    * Factory for ProposalQueue implementations.  QueueTime is required, but the
    * band percentages and merge strategy are optional.
    */
   def apply(queueTime: QueueTime): ProposalQueueBuilder =
-    new ProposalQueueBuilder(Partner.all, new Config(queueTime), PartnerTime.empty)
+    new ProposalQueueBuilder(Partner.all, queueTime, PartnerTime.empty)
 }
 
 class ProposalQueueBuilder(
   val partners: List[Partner],
-  val config: ProposalQueueBuilder.Config,
+  val queueTime: QueueTime,
   val usedGuaranteed: PartnerTime,
   val usedTime: Time = Time.ZeroHours,
   val proposals: List[Proposal] = Nil) extends edu.gemini.tac.qengine.api.queue.ProposalQueue {
-
-  def queueTime: QueueTime = config.queueTime
 
   // We explicitly track guaranteed time because we need it very frequently
   // to know when partners pass this limit.
@@ -50,7 +43,7 @@ class ProposalQueueBuilder(
     if (c == Category.Guaranteed) usedGuaranteed.total else super.usedTime(c)
 
   def copy(ug: PartnerTime = usedGuaranteed, u: Time = usedTime, proposals: List[Proposal] = proposals, queueTime: QueueTime = queueTime): ProposalQueueBuilder =
-    new ProposalQueueBuilder(partners, config.copy(queueTime = queueTime), ug, u, proposals)
+    new ProposalQueueBuilder(partners, queueTime, ug, u, proposals)
 
   private def addGuaranteedTimeFor(prop: Proposal): PartnerTime =
     usedGuaranteed.add(prop.ntac.partner, prop.time)
@@ -178,7 +171,7 @@ class ProposalQueueBuilder(
         val filtered = proposals.filterNot(prop => ids.contains(prop.id))
 
         // Rebuild the queue with just the filtered proposals.
-        new ProposalQueueBuilder(partners, config, PartnerTime.empty) ++ filtered.reverse
+        new ProposalQueueBuilder(partners, queueTime, PartnerTime.empty) ++ filtered.reverse
       }
     }
 
