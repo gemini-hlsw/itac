@@ -1,12 +1,12 @@
 package edu.gemini.tac.qengine.impl.queue
 
-import edu.gemini.tac.qengine.api.queue.time.{QueueTime, PartnerTime}
-import edu.gemini.tac.qengine.util.Time
-import edu.gemini.tac.qengine.p1.QueueBand.{Category, QBand3, QBand4}
 import annotation.tailrec
 import edu.gemini.tac.qengine.api.queue.ProposalPosition
+import edu.gemini.tac.qengine.api.queue.ProposalQueue
+import edu.gemini.tac.qengine.api.queue.time.QueueTime
 import edu.gemini.tac.qengine.p1._
-import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.tac.qengine.p1.QueueBand.{QBand3, QBand4}
+import scalaz._, Scalaz._
 
 /**
  * ProposalQueueBuilder is used to construct the Band 1, 2, and 3 part of the
@@ -24,30 +24,15 @@ object ProposalQueueBuilder {
    * band percentages and merge strategy are optional.
    */
   def apply(queueTime: QueueTime): ProposalQueueBuilder =
-    new ProposalQueueBuilder(Partner.all, queueTime, PartnerTime.empty)
+    new ProposalQueueBuilder(queueTime)
 }
 
-class ProposalQueueBuilder(
-  val partners: List[Partner],
-  val queueTime: QueueTime,
-  val usedGuaranteed: PartnerTime,
-  val usedTime: Time = Time.ZeroHours,
-  val proposals: List[Proposal] = Nil) extends edu.gemini.tac.qengine.api.queue.ProposalQueue {
+final case class ProposalQueueBuilder(
+  queueTime: QueueTime,
+  proposals: List[Proposal] = Nil
+) extends ProposalQueue {
 
-  // We explicitly track guaranteed time because we need it very frequently
-  // to know when partners pass this limit.
-  override def usedTime(c: Category, p: Partner): Time  =
-    if (c == Category.Guaranteed) usedGuaranteed(p) else super.usedTime(c, p)
-
-  override def usedTime(c: Category): Time =
-    if (c == Category.Guaranteed) usedGuaranteed.total else super.usedTime(c)
-
-  def copy(ug: PartnerTime = usedGuaranteed, u: Time = usedTime, proposals: List[Proposal] = proposals, queueTime: QueueTime = queueTime): ProposalQueueBuilder =
-    new ProposalQueueBuilder(partners, queueTime, ug, u, proposals)
-
-  private def addGuaranteedTimeFor(prop: Proposal): PartnerTime =
-    usedGuaranteed.add(prop.ntac.partner, prop.time)
-
+  lazy val usedTime = proposals.foldMap(_.time)
 
   /**
    * Adds the given proposal to the queue and returns a new ProposalQueue
@@ -68,15 +53,7 @@ class ProposalQueueBuilder(
     require((curBand != QBand3) || prop.band3Observations.size != 0,
       "Proposal cannot be scheduled in band 3.")
 
-    val newUsedGuaranteed =
-      if (!curBand.isIn(Category.Guaranteed))
-        usedGuaranteed
-      else
-        addGuaranteedTimeFor(prop)
-
-    val updatedProposals = prop :: proposals
-
-    copy(newUsedGuaranteed, usedTime + prop.time, updatedProposals)
+    copy(proposals = prop :: proposals)
   }
 
   /**
@@ -171,7 +148,7 @@ class ProposalQueueBuilder(
         val filtered = proposals.filterNot(prop => ids.contains(prop.id))
 
         // Rebuild the queue with just the filtered proposals.
-        new ProposalQueueBuilder(partners, queueTime, PartnerTime.empty) ++ filtered.reverse
+        new ProposalQueueBuilder(queueTime) ++ filtered.reverse
       }
     }
 
