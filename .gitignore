@@ -16,10 +16,12 @@ project/.bloop/
 
 # rob's local work
 work
-work2
+work-old
+baseline*
 hawaii
 2020B
 *.worksheet.sc
 marie
 marie-old
 marie-old2
+sanity-check

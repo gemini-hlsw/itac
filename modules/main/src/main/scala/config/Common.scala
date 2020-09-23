@@ -51,6 +51,9 @@ final case class Common(
 object Common {
   import itac.codec.all._
 
+  implicit val encoderListPartner: Encoder[List[Partner]] = encodeTokens(_.id)
+  implicit val decoderListPartner: Decoder[List[Partner]] = decodeTokens(s => Partner.fromString(s).toRight(s"Invalid partner: $s"))
+
   implicit val encoderCommon: Encoder[Common] = deriveEncoder
   implicit val decoderCommon: Decoder[Common] = deriveDecoder
 
