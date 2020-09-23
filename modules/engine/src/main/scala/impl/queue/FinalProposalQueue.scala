@@ -4,21 +4,24 @@ import edu.gemini.tac.qengine.p1.{QueueBand, Proposal}
 import edu.gemini.tac.qengine.api.queue.time.QueueTime
 import edu.gemini.tac.qengine.util.Time
 import edu.gemini.tac.qengine.api.queue.ProposalPosition
+import edu.gemini.tac.qengine.api.queue.ProposalQueue
 import scalaz._, Scalaz._
 
 /**
  * A ProposalQueue implementation that contains a final queue calculation.
  */
-class FinalProposalQueue(val queueTime: QueueTime, bandMap: Map[QueueBand, List[Proposal]]) extends edu.gemini.tac.qengine.api.queue.ProposalQueue {
+class FinalProposalQueue(val queueTime: QueueTime, bandMap: Map[QueueBand, List[Proposal]]) extends ProposalQueue {
 
   // Complete the map with empty lists for bands that weren't present.
   val bandedQueue: Map[QueueBand, List[Proposal]] =
     QueueBand.values.map(band => band -> bandMap.getOrElse(band, Nil)).toMap
 
-  val usedTime: Time = bandedQueue.values.flatten.toList.foldMap(_.time)
+  // behavior changes if we move this up to ProposalQueue, why?
+  val usedTime: Time =
+    toList.foldMap(_.time)
 
   def toList: List[Proposal] =
-    (QueueBand.values map { band => bandedQueue(band) }).flatten
+    QueueBand.values.flatMap(bandedQueue)
 
   private def zipBandWithPosition(index: Int, time: Time, band: QueueBand, props: List[Proposal]): (List[(Proposal, ProposalPosition)], Int, Time) = {
     def pos = ProposalPosition(index, time, band, 0, Time.ZeroHours)
