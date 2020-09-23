@@ -129,22 +129,4 @@ trait ProposalQueue {
    */
   val bandedQueue: Map[QueueBand, List[Proposal]]
 
-  /**
-   *  The proposal queue zipped with ProposalPosition.
-   */
-  def zipWithPosition: List[(Proposal, ProposalPosition)]
-
-  /**
-   * Gets the queue band and start time associated with the given proposal.  If
-   * the proposal is a joint part, it will find the information associated with
-   * the merged joint.  Returns None if the proposal is not found in the queue.
-   */
-  def positionOf(prop: Proposal): Option[ProposalPosition]
-
-  def programId(p: Proposal): Option[ProgramId] =
-    positionOf(p).map(_.programNumber).map { num =>
-      val str = s"${p.site.abbreviation}-${p.p1proposal.semester.display}-${p.mode.programId}-$num"
-      ProgramId.parse(str) // sorry
-    }
-
 }
