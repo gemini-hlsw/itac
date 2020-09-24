@@ -8,7 +8,7 @@ import edu.gemini.tac.qengine.p1._
 import edu.gemini.tac.qengine.api.{BucketsAllocation, QueueCalc}
 import edu.gemini.tac.qengine.log.ProposalLog
 import edu.gemini.tac.qengine.api.queue.ProposalQueue
-import edu.gemini.tac.qengine.ctx.{Context, Partner}
+import edu.gemini.tac.qengine.ctx.Context
 import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.api.config.{ConditionsCategory, QueueEngineConfig, SiteSemesterConfig}
 import edu.gemini.tac.qengine.p2.rollover.RolloverObservation
@@ -130,7 +130,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
     Log.info(s"${Console.GREEN}-----------------------------------${Console.RESET}")
   }
 
-  def calc(bandedProposals: Map[QueueBand, List[Proposal]], queueTime: QueueTime, config: QueueEngineConfig, partners : List[Partner], extras: List[Proposal], removed: List[Proposal]): QueueCalc = {
+  def calc(bandedProposals: Map[QueueBand, List[Proposal]], queueTime: QueueTime, config: QueueEngineConfig, extras: List[Proposal], removed: List[Proposal]): QueueCalc = {
 
     // temp
     val proposals = bandedProposals.values.toList.flatten

@@ -44,7 +44,6 @@ abstract class AbstractQueueOperation[F[_]](
       queueCalc = qe.calc(
         bandedProposals = ps,
         queueTime       = qc.engine.explicitQueueTime,
-        partners        = Partner.all,
         config          = QueueEngineConfig(
           partners   = Partner.all,
           partnerSeq = cc.engine.partnerSequence(qc.site),
