@@ -37,19 +37,6 @@ trait QueueTime {
   /** Calculates the PartnerTime for the given queue category. */
   def partnerTime(cat: Category): PartnerTime
 
-  /** Time amount at which each particular queue band is defined to start and
-    * end.  This will differ from the actual queue band time ranges because
-    * proposals will not usually add up to exactly the amount of time available
-    * in a band.  Queue band 1 always starts at zero.
-    */
-  def range(band: QueueBand): (Time, Time) =
-    band match {
-      case QBand1 => (Time.ZeroHours, band1End)
-      case QBand2 => (band1End,       band2End)
-      case QBand3 => (band2End,       band3End)
-      case QBand4 => (band3End,       band4End)
-    }
-
   /** Gets the nominal band that corresponds to the given time according only to
     * the queue time and band percentages. In reality band 1 will usually extend
     * into part of the time which was allocated for band 2 and band 2 will extend
