@@ -100,15 +100,6 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
   private[impl] def initBins(config: QueueEngineConfig, props: List[Proposal]): RaResourceGroup =
     initBins(config.binConfig, config.rollover.obsList, props)
 
-  // TODO:
-  // If it becomes necessary, an alternative to running the band1/2 phase
-  // a second time would be to calculate the difference in all the bins used
-  // for partially scheduled proposals.  Would be a bit of work to figure out
-  // but probably would run more efficiently.
-
-  def apply(propList: List[Proposal], queueTime: QueueTime, config: QueueEngineConfig, partners: List[Partner]): QueueCalc =
-    calc(propList, queueTime, config, partners)
-
   def filterProposals(proposals: List[Proposal], config: QueueEngineConfig): List[Proposal] = {
     proposals.filter(p => p.site == config.binConfig.site && p.mode.schedule) // remove non-site and non-queue
   }
@@ -139,7 +130,10 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
     Log.info(s"${Console.GREEN}-----------------------------------${Console.RESET}")
   }
 
-  def calc(proposals: List[Proposal], queueTime: QueueTime, config: QueueEngineConfig, partners : List[Partner], extras: List[Proposal], removed: List[Proposal]): QueueCalc = {
+  def calc(bandedProposals: Map[QueueBand, List[Proposal]], queueTime: QueueTime, config: QueueEngineConfig, partners : List[Partner], extras: List[Proposal], removed: List[Proposal]): QueueCalc = {
+
+    // temp
+    val proposals = bandedProposals.values.toList.flatten
 
     // (helper) run and log a queue calculation stage, using our local config.
     def stage(params: QueueCalcStage.Params): QueueCalcStage = {

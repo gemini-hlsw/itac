@@ -34,6 +34,7 @@ import edu.gemini.util.security.auth.ProgIdHash
 import java.io.File
 import cats.data.NonEmptyList
 import scala.collection.JavaConverters._
+import edu.gemini.tac.qengine.p1.QueueBand
 
 /** Interface for some Workspace operations. */
 trait Workspace[F[_]] {
@@ -62,11 +63,9 @@ trait Workspace[F[_]] {
    * the created directory.
    */
   def mkdirs(path: Path): F[Path]
-
   def commonConfig: F[Common]
-
   def queueConfig(path: Path): F[QueueConfig]
-
+  def bandedProposals: F[Map[QueueBand, List[Proposal]]]
   def proposals: F[List[Proposal]]
   def extras: F[List[Proposal]]
   def extrasNotSubmitted: F[List[Proposal]]
@@ -94,15 +93,17 @@ trait Workspace[F[_]] {
 object Workspace {
 
   val EmailTemplateDir      = Paths.get("email_templates")
-  val ProposalDir           = Paths.get("proposals")
   val ExtrasDir             = Paths.get("extras")
   val ExtrasNotSubmittedDir = Paths.get("extras_not_submitted")
   val RemovedDir            = Paths.get("removed")
   val EditsDir              = Paths.get("edits")
   val BulkEditsFile         = Paths.get("bulk_edits.xls")
 
+  def proposalDir(band: QueueBand) = Paths.get(s"band-${band.number}")
+
   val WorkspaceDirs: List[Path] =
-    List(EmailTemplateDir, ProposalDir, ExtrasDir, ExtrasNotSubmittedDir, RemovedDir, EditsDir)
+    List(EmailTemplateDir, ExtrasDir, ExtrasNotSubmittedDir, RemovedDir, EditsDir) ++
+    QueueBand.values.map(proposalDir)
 
   object Default {
     val CommonConfigFile = Paths.get("common.yaml")
@@ -281,7 +282,10 @@ object Workspace {
             ret   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
           } yield ret
 
-        def proposals: F[List[Proposal]] = loadProposals(ProposalDir)
+        def bandedProposals: F[Map[QueueBand, List[Proposal]]] =
+          QueueBand.values.traverse(b => loadProposals(proposalDir(b)).map(ps => Map(b -> ps))).map(_.combineAll)
+
+        def proposals: F[List[Proposal]] = bandedProposals.map(_.values.toList.flatten)
         def extras: F[List[Proposal]] = loadProposals(ExtrasDir)
 
         def extrasNotSubmitted: F[List[Proposal]] =
@@ -293,16 +297,22 @@ object Workspace {
           log.warn(s"Adding LP acceptance for ${f.getName} - ${p.getInvestigators().getPi().getLastName()}") *>
           Sync[F].delay(NonSubmitted.addAcceptance(f, p))
 
-        def proposal(ref: String): F[(File, NonEmptyList[Proposal])] =
+        def proposal(ref: String, band: QueueBand): F[(File, NonEmptyList[Proposal])] =
           for {
             cwd  <- cwd
             conf <- commonConfig
-            p     = cwd.resolve(ProposalDir)
+            p     = cwd.resolve(proposalDir(band))
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
             es   <- edits
             p    <- ProposalLoader[F](when, es, log, (_, _) => ().pure[F]).loadByReference(p.toFile.getAbsoluteFile, ref)
           } yield p
+
+        def proposal(ref: String): F[(File, NonEmptyList[Proposal])] =
+          proposal(ref, QueueBand.QBand1) orElse
+          proposal(ref, QueueBand.QBand2) orElse
+          proposal(ref, QueueBand.QBand2) orElse
+          proposal(ref, QueueBand.QBand2)
 
         def newQueueFolder(site: Site): F[Path] =
           for {

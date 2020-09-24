@@ -35,18 +35,17 @@ abstract class AbstractQueueOperation[F[_]](
       cc <- ws.commonConfig
       qc <- ws.queueConfig(siteConfig)
       rr <- ws.readRolloverReport(rolloverReport.getOrElse(s"${qc.site.abbreviation.toLowerCase}-rollovers.yaml"))
-      ps <- ws.proposals
+      ps <- ws.bandedProposals
       es <- ws.extras
       xs <- ws.extrasNotSubmitted
       rs <- ws.removed
 
       // Compute the queue
       queueCalc = qe.calc(
-        proposals = ps,
-        // queueTime = qc.engine.queueTime(partners),
-        queueTime = qc.engine.explicitQueueTime,
-        partners  = Partner.all,
-        config    = QueueEngineConfig(
+        bandedProposals = ps,
+        queueTime       = qc.engine.explicitQueueTime,
+        partners        = Partner.all,
+        config          = QueueEngineConfig(
           partners   = Partner.all,
           partnerSeq = cc.engine.partnerSequence(qc.site),
           rollover   = rr,
@@ -68,7 +67,7 @@ abstract class AbstractQueueOperation[F[_]](
         removed = rs,
       )
 
-    } yield (ps ++ es ++ xs ++ rs, queueCalc)
+    } yield (ps.values.toList.flatten ++ es ++ xs ++ rs, queueCalc)
 
   // These methods were lifted from the ITAC web application.
 
