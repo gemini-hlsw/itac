@@ -1,6 +1,6 @@
 package edu.gemini.tac.qengine.p1
 
-abstract sealed class QueueBand(val number: Int) extends Ordered[QueueBand] {
+abstract sealed class QueueBand(val number: Int) extends Ordered[QueueBand] with Product with Serializable {
   def compare(that: QueueBand): Int = number - that.number
   def categories: Set[QueueBand.Category]
   def isIn(category: QueueBand.Category): Boolean = categories.contains(category)
