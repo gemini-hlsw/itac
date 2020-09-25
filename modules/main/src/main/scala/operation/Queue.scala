@@ -4,7 +4,7 @@
 package itac
 package operation
 
-import edu.gemini.tac.qengine.impl.QueueEngine.RemovedRejectMessage
+import edu.gemini.tac.qengine.impl.QueueEngine2.RemovedRejectMessage
 import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.p1.Proposal
 import itac.util.Colors
@@ -165,11 +165,11 @@ object Queue {
             println(separator)
             println(s"${Colors.BOLD}Rejection Report for ${queueCalc.context.site.abbreviation}-${queueCalc.context.semester}${Colors.RESET}\n")
 
-            List(QueueBand.Category.B1_2, QueueBand.Category.B3).foreach { qc =>
-              println(s"${Colors.BOLD}The following proposals were rejected for $qc.${Colors.RESET}")
+            QueueBand.values.foreach { qb =>
+              println(s"${Colors.BOLD}The following proposals were rejected for $qb.${Colors.RESET}")
               pids.toList.flatMap(pid => ps.find(_.id == pid)).sortBy(_.ntac.ranking.num).foreach { p=>
                 val pid = p.id
-                log.get(pid, qc) match {
+                log.get(pid, qb) match {
                   case None =>
                   case Some(AcceptMessage(_, _, _))          => //println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s 👍")
                   case Some(m: RejectPartnerOverAllocation)  => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Partner full:"}%-20s ${m.detail}")
@@ -188,9 +188,7 @@ object Queue {
 
             println(s"${Colors.BOLD}The following proposals for ${queueCalc.context.site.abbreviation} do not appear in the proposal log:${Colors.RESET}")
             ps.foreach { p =>
-              val b12msg = log.get(p.id, QueueBand.Category.B1_2)
-              val b3msg  = log.get(p.id, QueueBand.Category.B3)
-              if (p.site == queueCalc.context.site && b12msg.isEmpty && b3msg.isEmpty) {
+              if (p.site == queueCalc.context.site && QueueBand.values.forall(log.get(p.id, _).isEmpty)) {
                 println(f"- ${p.id.reference}%-30s ${p.piName.orEmpty}%-20s  ${p.time.toHours.value}%5.1f h (${p.mode})")
               }
             }

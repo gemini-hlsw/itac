@@ -146,7 +146,7 @@ class ProposalIo {
       val props = sites.map { site =>
 
           // Get the list of observations associated with the given band category (if any).
-          def bandList(cat: QueueBand.Category): List[Observation] =
+          def bandList(cat: ObservationIo.BandChoice): List[Observation] =
             ~obsGroups.list
               .find { case (s, b, _) => s == site && b == cat }
               .map(_._3.list.toList)
@@ -182,8 +182,8 @@ class ProposalIo {
           val ntacʹ = ntac.copy(awardedTime = totalAwardHere, undividedTime = Some(ntac.awardedTime))
 
           // Make the corresponding Proposal
-          val b12 = bandList(QueueBand.Category.B1_2)
-          val b3 = bandList(QueueBand.Category.B3)
+          val b12 = bandList(ObservationIo.BandChoice.Band124)
+          val b3 = bandList(ObservationIo.BandChoice.Band3)
 
           // done
           Proposal(

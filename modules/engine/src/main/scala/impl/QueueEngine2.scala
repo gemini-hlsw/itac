@@ -16,6 +16,8 @@ import edu.gemini.tac.qengine.impl.resource.TimeResourceGroup
 import edu.gemini.tac.qengine.impl.resource.TimeResource
 import edu.gemini.tac.qengine.impl.resource.SemesterResource
 import edu.gemini.tac.qengine.impl.QueueCalcStage.Params
+import edu.gemini.tac.qengine.impl.resource.RaResource
+import edu.gemini.tac.qengine.api.config.ConditionsCategory
 
 object QueueEngine2 extends edu.gemini.tac.qengine.api.QueueEngine {
 
@@ -50,9 +52,6 @@ object QueueEngine2 extends edu.gemini.tac.qengine.api.QueueEngine {
 
     //Sets parameters for Band1
     def band1(grouped: Map[Partner, List[Proposal]], log: ProposalLog, qtime: QueueTime, config: QueueEngineConfig, bins: RaResourceGroup) = {
-      // Calculate for the full time category (bands 1 and 2)
-      val cat = Category.B1_2
-
       // Initialize an empty, starting queue state.
       val queue = ProposalQueueBuilder(qtime, QBand1)
 
@@ -68,7 +67,7 @@ object QueueEngine2 extends edu.gemini.tac.qengine.api.QueueEngine {
       val time = new TimeResourceGroup(rbins.map(new TimeResource(_)))
       val semRes = new SemesterResource(bins, time, QBand1)
 
-      new Params(cat, queue, iter, _.obsList, semRes, log)
+      new Params(QBand1, queue, iter, _.obsList, semRes, log)
     }
 
     // Ok now let's do the Band 1 queue.
@@ -88,7 +87,7 @@ object QueueEngine2 extends edu.gemini.tac.qengine.api.QueueEngine {
       context           = config.binConfig.context,
       queue             = stage1.queue,
       proposalLog       = stage1.log,
-      bucketsAllocation = QueueEngine.BucketsAllocationImpl(stage1.resource.ra.grp.bins.toList)
+      bucketsAllocation = BucketsAllocationImpl(stage1.resource.ra.grp.bins.toList)
     )
 
   }
@@ -108,6 +107,63 @@ object QueueEngine2 extends edu.gemini.tac.qengine.api.QueueEngine {
   implicit class ProposalListOps(self: List[Proposal]) {
     def groupByPartnerAndSortedByRanking: Map[Partner, List[Proposal]] =
       self.groupBy(_.ntac.partner).mapValues(_.sortBy(_.ntac.ranking))
+  }
+
+    case class RaAllocation(name: String, boundedTime: BoundedTime)
+  case class BucketsAllocationImpl(raBins: List[RaResource]) extends BucketsAllocation {
+
+    sealed trait Row extends Product with Serializable
+    case class RaRow(h: String, remaining: Double, used: Double, limit: Double) extends Row
+    case class ConditionsRow(t: ConditionsCategory, u: Double, r: Double, l: Double) extends Row
+
+    val hPerBin  = 24 / raBins.length
+    val binHours = 0 until 24 by 24 / raBins.length
+    val raRanges = binHours.map(h => s"$h-${h + hPerBin} h")
+    val report = raRanges.zip(raBins).toList.map {
+      case (h, b) =>
+
+        val binUsedMins: Double =
+          b.condsRes.bins.bins.values.map(_.used.toMinutes.value).sum
+
+        val ra = RaRow(
+          h,
+          math.round(b.remaining.toMinutes.value) / 60.0,
+          math.round(binUsedMins) / 60.0,
+          math.round(b.limit.toMinutes.value) / 60.0
+        )
+
+        val conds = b.condsRes.bins.bins.toList.sortBy(_._1.name).map {
+          case (c, t) =>
+            ConditionsRow(
+              c,
+              math.round(t.used.toMinutes.value) / 60.0,
+              (math.round(t.remaining.toMinutes.value) / 60.0) min ra.remaining,
+              math.round(t.limit.toMinutes.value) / 60.0
+            )
+        }
+        //s"$ra\n${conds.mkString("\n")}"
+        ra :: conds
+    }
+
+    override def toString = {
+      report.mkString("\n")
+      //BucketsAllocationImpl(Nil)
+      //System.exit(0)
+    }
+
+    // Annoying, we need to turn off ANSI color if output is being redirected. In the `main` project
+    // we have a `Colors` module for this but in `engine` there's no such thing we we'll just hack
+    // it in again.
+    def embolden(s: String): String =
+      if (System.console != null || sys.props.get("force-color").isDefined) s"${Console.BOLD}$s${Console.RESET}"
+      else s
+
+    val raTablesANSI: String =
+      report.flatten.map {
+        case RaRow(h, r, u, l)         => embolden(f"\nRA: $h%-78s  $l%6.2f  $u%6.2f  $r%6.2f")
+        case ConditionsRow(t, u, r, l) => f"Conditions: $t%-70s  $l%6.2f  $u%6.2f  $r%6.2f "
+      } .mkString("\n")
+
   }
 
 }

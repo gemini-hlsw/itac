@@ -1,7 +1,6 @@
 package edu.gemini.tac.qengine.api.queue
 
 import edu.gemini.tac.qengine.p1._
-import edu.gemini.tac.qengine.p1.QueueBand.Category
 import edu.gemini.tac.qengine.api.queue.time.QueueTime
 import edu.gemini.tac.qengine.util.{BoundedTime, Time}
 import edu.gemini.tac.qengine.ctx.Partner
@@ -29,25 +28,12 @@ trait ProposalQueue {
   /** Gets the amount of time used for a particular band. */
   def usedTime(band: QueueBand): Time = bandedQueue(band).foldMap(_.time)
 
-  /** Gets the amount of time used for a particular category. */
-  def usedTime(cat: Category): Time =
-    bandedQueue.filterKeys(_.categories.contains(cat)).values.flatten.toList.foldMap(_.time)
-
   /**
    * Gets amount of time used by the proposals associated with the given
    * queue band for a particular partner.
    */
   def usedTime(band: QueueBand, p: Partner): Time  =
     bandedQueue(band).filter(_.ntac.partner == p).foldMap(_.time)
-
-  /**
-   * Gets amount of time used by the proposals associated with the given
-   * queue band for a particular category and partner.
-   */
-  def usedTime(cat: Category, p: Partner): Time = {
-    val props = bandedQueue.filterKeys(_.categories.contains(cat)).values.flatten.toList
-    props.filter(_.ntac.partner == p).foldMap(_.time)
-  }
 
   /**
    * Gets the amount of time remaining (or unused) in the given queue band for

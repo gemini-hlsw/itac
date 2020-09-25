@@ -1,7 +1,6 @@
 package edu.gemini.tac.qengine.log
 
 import edu.gemini.tac.qengine.p1.{QueueBand, Proposal}
-import QueueBand.{Category => TimeCat}
 import collection.SortedSet
 import edu.gemini.tac.qengine.log.ProposalLog.Key
 
@@ -22,8 +21,8 @@ trait ProposalLog {
   protected val log: List[Entry]
 
   def isDefinedAt(key: Key): Boolean = log.exists(_.key == key)
-  def isDefinedAt(id: Proposal.Id, cat: TimeCat): Boolean =
-    isDefinedAt(Key(id, cat))
+  def isDefinedAt(id: Proposal.Id, band: QueueBand): Boolean =
+    isDefinedAt(Key(id, band))
 
   /**
    * Obtains the LogMessage associated with the given Key, or throws an
@@ -38,18 +37,18 @@ trait ProposalLog {
    * a convenience method to hide the creation of the Key from the proposal
    * id and time category.
    */
-  def apply(id: Proposal.Id, cat: TimeCat): LogMessage = get(Key(id, cat)).get
+  def apply(id: Proposal.Id, band: QueueBand): LogMessage = get(Key(id, band)).get
 
   def get(key: Key): Option[LogMessage] =
     log.find(_.key == key).map(_.msg)
 
-  def get(id: Proposal.Id, cat: TimeCat): Option[LogMessage] = get(Key(id, cat))
+  def get(id: Proposal.Id, band: QueueBand): Option[LogMessage] = get(Key(id, band))
 
   def getOrElse(key: Key, default: LogMessage): LogMessage =
     get(key).getOrElse(default)
 
-  def getOrElse(id: Proposal.Id, cat: TimeCat, default: LogMessage): LogMessage =
-    getOrElse(Key(id, cat), default)
+  def getOrElse(id: Proposal.Id, band: QueueBand, default: LogMessage): LogMessage =
+    getOrElse(Key(id, band), default)
 
   /**
    * Converts the log into a sorted list of Key and LogMessage where the Key
@@ -104,17 +103,17 @@ trait ProposalLog {
    * message.  This is a convenience method to obviate the need to explicitly
    * create a Key object from the proposal id and category.
    */
-  def updated(id: Proposal.Id, cat: QueueBand.Category, msg: LogMessage): ProposalLog =
-    updated(Key(id, cat), msg)
+  def updated(id: Proposal.Id, band: QueueBand, msg: LogMessage): ProposalLog =
+    updated(Key(id, band), msg)
 
   /**
    * Creates a new ProposalLog with entries for all the given proposals at the
    * specified time category.  The LogMessages are determined by the provided
    * function.
    */
-  def updated(propList: List[Proposal], cat: TimeCat, f: Proposal => LogMessage): ProposalLog =
+  def updated(propList: List[Proposal], band: QueueBand, f: Proposal => LogMessage): ProposalLog =
     mkProposalLog(propList.foldLeft(log) {
-      (lst, prop) => Entry(Key(prop.id, cat), f(prop)) :: lst
+      (lst, prop) => Entry(Key(prop.id, band), f(prop)) :: lst
     })
 
   /**
@@ -132,10 +131,10 @@ object ProposalLog {
    * A combination of proposal id and queue band time category that serves as
    * a key for looking up proposal log messages.
    */
-  case class Key(id: Proposal.Id, cat: TimeCat)
+  case class Key(id: Proposal.Id, band: QueueBand)
   object Key {
     implicit val OrderingKey: Ordering[Key] =
-      Ordering.by(k => (k.id, k.cat))
+      Ordering.by(k => (k.id, k.band))
   }
 
   /**
@@ -168,9 +167,9 @@ object ProposalLog {
 
   val Empty: ProposalLog = new ProposalLogImpl(List.empty)
 
-  def apply(tups: (Proposal.Id, TimeCat, LogMessage)*): ProposalLog =
+  def apply(tups: (Proposal.Id, QueueBand, LogMessage)*): ProposalLog =
     new ProposalLogImpl(List(tups.map {
-      case (id, cat, msg) => Entry(Key(id, cat), msg)
+      case (id, band, msg) => Entry(Key(id, band), msg)
     }: _*).reverse)
 
   private class ProposalLogImpl(val log: List[Entry]) extends ProposalLog {

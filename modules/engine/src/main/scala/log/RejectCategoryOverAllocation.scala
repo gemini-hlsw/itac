@@ -10,11 +10,11 @@ object RejectCategoryOverAllocation {
   val name  = "Band Time Limit"
 
   private val detailTemplate = "All queue time in %s has been allocated."
-  def detail(cat: QueueBand.Category): String =
+  def detail(cat: QueueBand): String =
     detailTemplate.format(cat)
 }
 
-case class RejectCategoryOverAllocation(prop: Proposal, cat: QueueBand.Category) extends RejectMessage {
+case class RejectCategoryOverAllocation(prop: Proposal, cat: QueueBand) extends RejectMessage {
   def reason: String = RejectCategoryOverAllocation.name
   def detail: String = RejectCategoryOverAllocation.detail(cat)
 }

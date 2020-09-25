@@ -5,23 +5,16 @@ import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.tac.qengine.p1.QueueBand
 import edu.gemini.tac.qengine.util.{Percent, Time}
 
-/** Record of queue times for each partner.  Provides access to the total queue
-  * time and the size of the time quantum for each partner.
+object QueueTime {
+  /** Number of hours in each "cycle" of 100 Partner countries. */
+  val CycleTimeConstant = 300
+  val DefaultPartnerOverfillAllowance = Percent(5)
+}
+
+/** Implementation of `QueueTime` derived from overall partner allocation and
+  * band percentages.
   */
-trait QueueTime {
-
-  def fullPartnerTime: PartnerTime
-
-  def overfillAllowance(band: QueueBand): Percent
-
-  /** Total time for queue observing including guaranteed time and poor weather.
-   */
-  def full: Time
-
-  /** Calculates the PartnerTime for the given queue band. */
-  def partnerTime(band: QueueBand): PartnerTime
-
-  protected def partnerPercent(p: Partner): Percent
+final case class QueueTime(categorizedTimes: Map[(Partner, QueueBand), Time], val partnerOverfillAllowance: Map[QueueBand, Percent]) {
 
   /** Size of time quantum as
     * (partner queue time * 300) / (total queue time * partner percentage share)
@@ -40,25 +33,6 @@ trait QueueTime {
     */
   def partnerQuanta: PartnerTime =
     PartnerTime.fromFunction(quantum)
-
-  /** Computes the amount of time that is nominally designated for the given
-    * queue band and partner.
-    */
-  def apply(band: QueueBand, p: Partner): Time
-
-}
-
-
-object QueueTime {
-  /** Number of hours in each "cycle" of 100 Partner countries. */
-  val CycleTimeConstant = 300
-  val DefaultPartnerOverfillAllowance = Percent(5)
-}
-
-/** Implementation of `QueueTime` derived from overall partner allocation and
-  * band percentages.
-  */
-final case class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), Time], val partnerOverfillAllowance: Map[QueueBand, Percent]) extends QueueTime {
 
   val allPartners: List[Partner] =
     categorizedTimes.keys.map(_._1).toList.distinct
@@ -80,10 +54,10 @@ final case class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), T
       sum + (if (filter(pb)) t else Time.Zero)
     }
 
-  override val fullPartnerTime: PartnerTime =
+  val fullPartnerTime: PartnerTime =
     PartnerTime.fromMap(partnerTimes)
 
-  override val full: Time =
+  val full: Time =
     sum(Function.const(true))
 
   private def bandFilteredPartnerTime(f: QueueBand => Boolean): PartnerTime = {
@@ -91,10 +65,10 @@ final case class ExplicitQueueTime(categorizedTimes: Map[(Partner, QueueBand), T
     PartnerTime.fromMap(m)
   }
 
-  override def partnerTime(band: QueueBand): PartnerTime =
+  def partnerTime(band: QueueBand): PartnerTime =
     bandFilteredPartnerTime(_ == band)
 
-  override def apply(band: QueueBand, p: Partner): Time =
+  def apply(band: QueueBand, p: Partner): Time =
     categorizedTimes.getOrElse((p, band), Time.Zero)
 
   def partnerPercent(p: Partner): Percent =

@@ -2,23 +2,11 @@ package edu.gemini.tac.qengine.impl
 
 import block.BlockIterator
 import edu.gemini.tac.qengine.p1.{Proposal, QueueBand, Observation}
-import QueueBand.Category
 import annotation.tailrec
 import resource._
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
 import edu.gemini.tac.qengine.log.{RejectCategoryOverAllocation, ProposalLog}
-import edu.gemini.tac.qengine.api.config.QueueEngineConfig
-// import edu.gemini.tac.qengine.util.BoundedTime._
-import edu.gemini.tac.qengine.util.BoundedTime
-import edu.gemini.tac.qengine.api.queue.time.{PartnerTime, QueueTime}
-import edu.gemini.tac.qengine.ctx.Partner
-// import java.util.logging.{Level, Logger}
-import edu.gemini.tac.qengine.util.Time
-// import edu.gemini.tac.qengine.api.queue.time.ExplicitQueueTime
-// import edu.gemini.tac.qengine.api.config.QueueBandPercentages
-import edu.gemini.tac.qengine.util.Percent
 import edu.gemini.tac.qengine.p1.QueueBand
-import edu.gemini.tac.qengine.p1.QueueBand._
 import org.slf4j.LoggerFactory
 
 object QueueCalcStage {
@@ -26,58 +14,7 @@ object QueueCalcStage {
 
   private val Log = LoggerFactory.getLogger("edu.gemini.itac")
 
-  object Params {
-
-    //Sets parameters for Band1 and 2
-    def band12(grouped: Map[Partner, List[Proposal]], log: ProposalLog, qtime: QueueTime, config: QueueEngineConfig, bins: RaResourceGroup) = {
-      // Calculate for the full time category (bands 1 and 2)
-      val cat = Category.B1_2
-
-      // Initialize an empty, starting queue state.
-      val queue = ProposalQueueBuilder(qtime, ??? : QueueBand)
-
-      // Create a new block iterator that will step through the proposals
-      // according to partner sequence and time quantum
-      val iter = BlockIterator(config.partners, qtime.partnerQuanta, config.partnerSeq.sequence, grouped, _.obsList)
-
-      // Create the initial restricted bins.  Percent bins are mapped to a
-      // percentage of guaranteed queue time, and time bins set their own bound.
-      val rbins = config.restrictedBinConfig.mapTimeRestrictions(
-        percent => BoundedTime(qtime.full * percent),
-        time => BoundedTime(time))
-      val time = new TimeResourceGroup(rbins.map(new TimeResource(_)))
-      val semRes = new SemesterResource(bins, time, ??? : QueueBand)
-
-      new Params(cat, queue, iter, _.obsList, semRes, log)
-    }
-
-
-    def band3(phase12queue: ProposalQueueBuilder, grouped: Map[Partner, List[Proposal]], phase12log: ProposalLog, config: QueueEngineConfig, phase12bins: SemesterResource) = {
-      // ok so now we want to set the band 1/2 cutoffs to be whatever the used time is.
-      val hackedQueueTime: QueueTime =
-        new QueueTime {
-          val delegate = phase12queue.queueTime
-          def fullPartnerTime: PartnerTime = delegate.fullPartnerTime
-          // def bandPercentages: QueueBandPercentages = delegate.bandPercentages
-          def overfillAllowance(band: QueueBand) = delegate.overfillAllowance(band)
-          def full: Time = delegate.full
-          def partnerTime(band: QueueBand): PartnerTime = ???
-          def partnerPercent(p: Partner): Percent = ???
-          // def apply(band: QueueBand): Time =
-          //   band match {
-          //     case QBand1 | QBand2 => phase12queue.usedTime(band)
-          //     case QBand3 | QBand4 => delegate(band)
-          //   }
-          def apply(band: QueueBand, p: Partner): Time = ???
-        }
-      val hackedQueue = phase12queue.copy(queueTime = hackedQueueTime)
-      val iter = BlockIterator(config.partners, phase12queue.queueTime.partnerQuanta, config.partnerSeq.sequence, grouped, _.band3Observations)
-      new Params(Category.B3, hackedQueue, iter, _.band3Observations, phase12bins.copy(band = QBand3), phase12log)
-    }
-
-  }
-
-  class Params(val cat: QueueBand.Category,
+  class Params(val cat: QueueBand,
                val queue: ProposalQueueBuilder,
                val iter: BlockIterator,
                val activeList : Proposal=>List[Observation],
@@ -103,7 +40,7 @@ object QueueCalcStage {
   // RejectMessage. Call skip on that frame and push it so that it considers
   // the next proposal in the sequence.
   //
-  @tailrec private def compute(cat: Category, stack: List[QueueFrame], log: ProposalLog, activeList : Proposal=>List[Observation]): Result = {
+  @tailrec private def compute(cat: QueueBand, stack: List[QueueFrame], log: ProposalLog, activeList : Proposal=>List[Observation]): Result = {
     val stackHead = stack.head
     if (!stackHead.hasNext) {
       Log.trace( "Stack is empty [" + ! stackHead.hasNext + "]")
