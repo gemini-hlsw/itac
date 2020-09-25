@@ -3,7 +3,6 @@ package edu.gemini.tac.qengine.impl.queue
 import edu.gemini.tac.qengine.api.queue.ProposalQueue
 import edu.gemini.tac.qengine.api.queue.time.QueueTime
 import edu.gemini.tac.qengine.p1._
-import edu.gemini.tac.qengine.p1.QueueBand.{QBand3, QBand4}
 import scalaz._, Scalaz._
 
 /**
@@ -32,30 +31,16 @@ final case class ProposalQueueBuilder(
    * scheduled in band3, or if the proposal would use more than the remaining
    * queue time
    */
-  def :+(prop: Proposal): ProposalQueueBuilder = {
-    val curBand = band
-
-    require((curBand == QBand4) || ((usedTime + prop.time) <= queueTime.full),
-      "Cannot schedule guaranteed time past the total available queue time.")
-
-    // See ITAC-415, ITAC-416.  If we do not filter out band 3 during band
-    // restriction tests, we cannot have this requirement.
-    require((curBand != QBand3) || prop.band3Observations.size != 0,
-      "Proposal cannot be scheduled in band 3.")
-
+  def :+(prop: Proposal): ProposalQueueBuilder =
     copy(proposals = prop :: proposals)
-  }
 
   /**
    * Adds all the proposals to the queue in the traversal order.
    */
   def ++(props: Traversable[Proposal]): ProposalQueueBuilder =
     props.foldLeft(this) {
-      (q, p) =>
-//        println("%d - %s - %.1f".format(q.band.number, p.id, q.usedTime.toHours.value))
-        q :+ p
+      (q, p) => q :+ p
     }
-
 
   def toList: List[Proposal] = proposals.reverse
 

@@ -15,7 +15,7 @@ trait BucketsAllocation {
  */
 trait QueueCalc {
   val context: Context
-  val queue: ProposalQueue
+  val queue: ProposalQueue // we want def queue(band) here
   val proposalLog: ProposalLog
   val bucketsAllocation: BucketsAllocation
 }

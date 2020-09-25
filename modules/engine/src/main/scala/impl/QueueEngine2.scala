@@ -13,7 +13,6 @@ import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
 import edu.gemini.tac.qengine.impl.block.BlockIterator
 import edu.gemini.tac.qengine.util.BoundedTime
 import edu.gemini.tac.qengine.impl.resource.TimeResourceGroup
-import edu.gemini.tac.qengine.impl.resource.TimeResource
 import edu.gemini.tac.qengine.impl.resource.SemesterResource
 import edu.gemini.tac.qengine.impl.resource.RaResource
 import edu.gemini.tac.qengine.api.config.ConditionsCategory
@@ -43,8 +42,7 @@ object QueueEngine2 extends edu.gemini.tac.qengine.api.QueueEngine {
     val rolloverObs       = config.rollover.obsList
     val classicalObs      = siteProposals(QBand1).filter(_.mode == Mode.Classical).flatMap(_.obsList)
     val raResourceGroup   = RaResourceGroup(config.binConfig).reserveAvailable(rolloverObs ++ classicalObs)._1
-    val timeRestrictions  = config.restrictedBinConfig.mapTimeRestrictions(p => BoundedTime(queueTime.full * p), t => BoundedTime(t))
-    val timeResourceGroup = new TimeResourceGroup(timeRestrictions.map(new TimeResource(_)))
+    val timeResourceGroup = new TimeResourceGroup(Nil) // let's not do this for now
     val semesterResource  = new SemesterResource(raResourceGroup, timeResourceGroup, QBand1)
 
     // We're done with classical proposals. Filter them out.
