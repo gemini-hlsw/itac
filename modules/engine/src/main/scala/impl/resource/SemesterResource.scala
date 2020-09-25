@@ -25,17 +25,17 @@ final case class SemesterResource(
 
   // Determines whether the partner is already over allocated.
   private def partnerAlreadyOverallocated(block: Block, queue: ProposalQueueBuilder): Boolean = {
-    LOGGER.debug(f"Remaining time in $band for ${block.prop.ntac.partner} is ${queue.remainingTime(band, block.prop.ntac.partner).toHours.value}%5.1f")
-    queue.remainingTime(band, block.prop.ntac.partner) <= Time.Zero
+    LOGGER.debug(f"Remaining time in $band for ${block.prop.ntac.partner} is ${queue.remainingTime(block.prop.ntac.partner).toHours.value}%5.1f")
+    queue.remainingTime(block.prop.ntac.partner) <= Time.Zero
   }
 
   // Determines whether including the indicated proposal will overallocate the
   // partner past the limit and allowance.
   private def partnerWouldBeOverallocated(block: Block, queue: ProposalQueueBuilder): Boolean = {
-    val perc       = queue.queueTime.overfillAllowance(band)
+    val perc      = queue.queueTime.overfillAllowance
     val partner   = block.prop.ntac.partner
-    val used      = queue.usedTime(band, partner)
-    val softLimit = queue.queueTime(band, partner)
+    val used      = queue.usedTime(partner)
+    val softLimit = queue.queueTime(partner)
     val allowance = softLimit * perc // overfill is per category (B1_2 and B3 are what we're using)
     val hardlimit = softLimit + allowance
     val ret = (used + block.prop.time) >= hardlimit
@@ -57,7 +57,7 @@ final case class SemesterResource(
     if (block.isStart && partnerOverallocated(block, queue)) {
       val p = block.prop.ntac.partner
       LOGGER.debug("Rejected due to partner overallocation")
-      Left(RejectPartnerOverAllocation(block.prop, queue.bounds(band, p), queue.bounds(band, p)))
+      Left(RejectPartnerOverAllocation(block.prop, queue.bounds(p), queue.bounds(p)))
     } else {
       LOGGER.debug("Block OK")
       if(block.isFinal){

@@ -17,11 +17,9 @@ import scalaz._, Scalaz._
 
 final case class ProposalQueueBuilder(
   queueTime: QueueTime,
-  band: QueueBand,
+  band:      QueueBand,
   proposals: List[Proposal] = Nil
 ) extends ProposalQueue {
-
-  lazy val usedTime = proposals.foldMap(_.time)
 
   /**
    * Adds the given proposal to the queue and returns a new ProposalQueue

@@ -1,27 +1,24 @@
 package edu.gemini.tac.qengine.impl
 
-import edu.gemini.tac.qengine.api.{BucketsAllocation, QueueCalc}
-import edu.gemini.tac.qengine.api.config.QueueEngineConfig
-import edu.gemini.tac.qengine.api.queue.ProposalQueue
+import edu.gemini.tac.qengine.api.{ BucketsAllocation, QueueCalc, QueueEngine }
+import edu.gemini.tac.qengine.api.config.{ ConditionsCategory, QueueEngineConfig }
 import edu.gemini.tac.qengine.api.queue.time.QueueTime
-import edu.gemini.tac.qengine.ctx.{ Context, Partner }
-import edu.gemini.tac.qengine.impl.resource.RaResourceGroup
+import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.tac.qengine.impl.block.BlockIterator
+import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
+import edu.gemini.tac.qengine.impl.resource.{ RaResource, RaResourceGroup, SemesterResource, TimeResourceGroup }
 import edu.gemini.tac.qengine.log.{ ProposalLog, RejectMessage }
 import edu.gemini.tac.qengine.p1._
 import edu.gemini.tac.qengine.p1.QueueBand._
-import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
-import edu.gemini.tac.qengine.impl.block.BlockIterator
 import edu.gemini.tac.qengine.util.BoundedTime
-import edu.gemini.tac.qengine.impl.resource.TimeResourceGroup
-import edu.gemini.tac.qengine.impl.resource.SemesterResource
-import edu.gemini.tac.qengine.impl.resource.RaResource
-import edu.gemini.tac.qengine.api.config.ConditionsCategory
+import edu.gemini.tac.qengine.api.queue.ProposalQueue
+import scalaz._, Scalaz._
 
-object QueueEngine2 extends edu.gemini.tac.qengine.api.QueueEngine {
+object QueueEngine2 extends QueueEngine {
 
   def calc(
     rawProposals: Map[QueueBand, List[Proposal]],
-    queueTime:    QueueTime,
+    queueTimes:   QueueBand => QueueTime,
     config:       QueueEngineConfig,
     extras:       List[Proposal],
     removed:      List[Proposal]
@@ -51,63 +48,87 @@ object QueueEngine2 extends edu.gemini.tac.qengine.api.QueueEngine {
         b -> ps.filter(_.mode != Mode.Classical)
       }
 
-    // All we need to construct a BlockIterator is our band.
+    // All we need to construct an obs accessor is the banc.
+    def obsAccessor(band: QueueBand): Proposal => List[Observation] = { p =>
+      if (band == QBand3) p.band3Observations else p.obsList
+    }
+
+    // All we need to construct a BlockIterator is the band.
     def iteratorFor(band: QueueBand): BlockIterator =
       BlockIterator(
-        queueTime.partnerQuanta,
+        queueTimes(band).partnerQuanta,
         config.partnerSeq.sequence,
         queueProposals(band).groupByPartnerAndSortedByRanking,
-        p => if (band == QBand3) p.band3Observations else p.obsList
+        obsAccessor(band)
       )
 
-    // Construct the Band 1 queue.
-    val stage1: QueueCalcStage =
-      QueueCalcStage(
-        queue       = ProposalQueueBuilder(queueTime, QBand1),
-        iter        = iteratorFor(QBand1),
-        activeList  = _.obsList,
-        res         = semesterResource,
-        log         = ProposalLog.Empty,
-      )
+    // All we need to construct an empty queue is the band.
+    def emptyQueue(band: QueueBand): ProposalQueueBuilder =
+      ProposalQueueBuilder(queueTimes(band), band)
 
-      // // Construct the Band 1 queue.
-    // val stage2: QueueCalcStage =
-    //   QueueCalcStage(
-    //     queue       = ProposalQueueBuilder(queueTime, QBand2),
-    //     iter        = iteratorFor(QBand2),
-    //     activeList  = _.obsList,
-    //     res         = stage1.resource,
-    //     log         = stage1.log,
-    //   )
+    // Buliding a queue is a state transition.
+    def runQueue(band: QueueBand): State[(SemesterResource, ProposalLog), ProposalQueue] =
+      State { case (res, log) =>
+        val stage = QueueCalcStage(
+          queue       = emptyQueue(band),
+          iter        = iteratorFor(band),
+          activeList  = _.obsList,
+          res         = res,
+          log         = log,
+        )
+        ((stage.resource, stage.log), stage.queue)
+      }
 
-    // Done
-    new QueueCalcImpl(
-      context           = config.binConfig.context,
-      queue             = stage1.queue,
-      proposalLog       = stage1.log,
-      bucketsAllocation = BucketsAllocationImpl(stage1.resource.ra.grp.bins.toList)
-    )
+    // Run the queues in order!
+    val ((finalResource, finalLog), (queue1, queue2, queue3)) = (
+      runQueue(QBand1) |@| runQueue(QBand2) |@| runQueue(QBand3)
+    ).tupled.run((semesterResource, ProposalLog.Empty))
+
+    // All Band 4 proposals that made it to ITAC are accepted.
+    val queue4 = new ProposalQueue {
+      def band      = QBand4
+      def queueTime = queueTimes(QBand4)
+      def toList    = queueProposals(QBand4)
+    }
+
+    // Assemble our final result for the user
+    new QueueCalc {
+      val context           = config.binConfig.context
+      val proposalLog       = finalLog
+      val bucketsAllocation = BucketsAllocationImpl(finalResource.ra.grp.bins.toList)
+      def queue(b: QueueBand) =
+        b match {
+          case QBand1 => queue1
+          case QBand2 => queue2
+          case QBand3 => queue3
+          case QBand4 => queue4
+        }
+    }
 
   }
+
+
+
+
+
+
+
+
+
+  // helper crap below
 
   case class RemovedRejectMessage(prop: Proposal) extends RejectMessage {
     def reason: String = "Unknown."
     def detail: String = "Proposal was removed from consideration."
   }
 
-  case class QueueCalcImpl(
-    context:           Context,
-    queue:             ProposalQueue,
-    proposalLog:       ProposalLog,
-    bucketsAllocation: BucketsAllocation
-  ) extends QueueCalc
 
   implicit class ProposalListOps(self: List[Proposal]) {
     def groupByPartnerAndSortedByRanking: Map[Partner, List[Proposal]] =
       self.groupBy(_.ntac.partner).mapValues(_.sortBy(_.ntac.ranking))
   }
 
-    case class RaAllocation(name: String, boundedTime: BoundedTime)
+  case class RaAllocation(name: String, boundedTime: BoundedTime)
   case class BucketsAllocationImpl(raBins: List[RaResource]) extends BucketsAllocation {
 
     sealed trait Row extends Product with Serializable

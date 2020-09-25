@@ -81,9 +81,9 @@ final case class QueueResult(bandedQueue: Map[QueueBand, List[Proposal]], contex
 
 object QueueResult {
 
-  // temo
+  // temp
   def apply(queueCalc: QueueCalc): QueueResult =
-    apply(queueCalc.queue.bandedQueue, queueCalc.context, queueCalc.proposalLog)
+    apply(queueCalc.bandedQueue, queueCalc.context, queueCalc.proposalLog)
 
   final case class Entry(proposals: NonEmptyList[Proposal], programId: ProgramId)
 

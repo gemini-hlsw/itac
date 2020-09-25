@@ -5,7 +5,6 @@ import edu.gemini.tac.qengine.impl.resource.SemesterResource
 import edu.gemini.tac.qengine.log.{AcceptMessage, RejectMessage}
 import queue.ProposalQueueBuilder
 import edu.gemini.tac.qengine.p1.{Observation, Proposal}
-// import edu.gemini.tac.qengine.p1.QueueBand.Category
 import org.slf4j.LoggerFactory
 
 /**
@@ -36,7 +35,7 @@ final class QueueFrame(val queue: ProposalQueueBuilder, val iter: BlockIterator,
       val partner  = prop.id.partner
       val newQueue = queue :+ prop
       applicationLogger.trace("accept(): " + block.toString)
-      (newQueue, Some(AcceptMessage(prop, newQueue.bounds(queue.band, partner), newQueue.bounds(queue.band, block.prop.ntac.partner))))
+      (newQueue, Some(AcceptMessage(prop, newQueue.bounds(partner), newQueue.bounds(block.prop.ntac.partner))))
     } else
       // More blocks for this proposal so we can't accept it yet.
       (queue, None)
@@ -57,18 +56,4 @@ final class QueueFrame(val queue: ProposalQueueBuilder, val iter: BlockIterator,
     }
   }
 
-  // // Should stop when there are no more time blocks to iterate over or when
-  // // we have successfully scheduled enough proposals to move to a new
-  // // category.
-  // def emptyOrOtherCategory(cat : Category) : Boolean = {
-  //   val noMoreQueueFrames = ! this.hasNext
-  //   val finishedBand = ! this.queue.band.isIn(cat)
-  //   if (noMoreQueueFrames || finishedBand){
-  //     LOGGER.info("QueueCalcStage.emptyOrOtherCategory leaving band %s caused by No more time blocks for current partner (%s) or finished band (%s)".format(cat, noMoreQueueFrames, finishedBand))
-  //     applicationLogger.trace("emptyOrOtherCategory == true")
-  //     true
-  //   }else{
-  //     false
-  //   }
-  // }
 }

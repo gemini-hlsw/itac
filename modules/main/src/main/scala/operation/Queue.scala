@@ -101,14 +101,12 @@ object Queue {
 
             println(separator)
 
-            def hasProposals(p: Partner): Boolean = queueCalc.queue.toList.exists(_.ntac.partner == p)
+            def hasProposals(p: Partner): Boolean = queueCalc.toList.exists(_.ntac.partner == p)
 
             // Partners that appear in the queue
             Partner.all.sortBy(_.id).filter(hasProposals) foreach { p =>
               println(s"${Colors.BOLD}Partner Details for ${if (p.id == "CFH") "GT" else p.toString} ${Colors.RESET}\n")
               QueueBand.values.foreach { qb =>
-                val q = queueCalc.queue
-
                 print(qb.number match {
                   case 1 => Colors.YELLOW
                   case 2 => Colors.GREEN
@@ -122,39 +120,20 @@ object Queue {
                   printWithGroupBars(ss.toList)
                 }
                 print(Colors.RESET)
-
+                val q = queueCalc.queue(qb)
                 if (qb.number < 4) {
-                  val used  = q.usedTime(qb, p).toHours.value
-                  val avail = q.queueTime(qb, p).toHours.value
+                  val used  = q.usedTime(p).toHours.value
+                  val avail = q.queueTime(p).toHours.value
                   val pct   = if (avail == 0) 0.0 else (used / avail) * 100
-
-                  if (qb != QueueBand.QBand3) {
-                    println(f"                                                 B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%%)")
-                  }
-
-                  // After the Band2 total print an extra B1+B2 total.
-                  if (qb == QueueBand.QBand2) {
-                    val used  = (q.usedTime(QueueBand.QBand1, p) + q.usedTime(QueueBand.QBand2, p)).toHours.value
-                    val avail = (q.queueTime(QueueBand.QBand1, p) + q.queueTime(QueueBand.QBand2, p)).toHours.value
-                    val pct   = if (avail == 0) 0.0 else (used / avail) * 100
-                    println(f"                                                 B1 Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%% ≤ ${(queueCalc.queue.queueTime.overfillAllowance(QueueBand.QBand1).doubleValue + 100.0)}%3.1f%%)")
-                  }
-
-                  if (qb == QueueBand.QBand3) {
-                    println(f"                                                 B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%% ≤ ${(queueCalc.queue.queueTime.overfillAllowance(QueueBand.QBand3).doubleValue + 100.0)}%3.1f%%)")
-                  }
-
+                  println(f"                                                 B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%% ≤ ${(q.queueTime.overfillAllowance.doubleValue + 100.0)}%3.1f%%)")
                 } else {
-                  val used = q.usedTime(qb, p).toHours.value
+                  val used = q.usedTime(p).toHours.value
                   println(f"                                                 B${qb.number} Total: $used%5.1f h\n")
                 }
-
-                  println()
-
+                println()
               }
               println()
             }
-
 
             println(separator)
             println(s"${Colors.BOLD}Rejection Report for ${queueCalc.context.site.abbreviation}-${queueCalc.context.semester}${Colors.RESET}\n")

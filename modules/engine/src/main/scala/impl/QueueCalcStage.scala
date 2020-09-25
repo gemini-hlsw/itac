@@ -7,6 +7,7 @@ import resource._
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
 import edu.gemini.tac.qengine.log.{RejectCategoryOverAllocation, ProposalLog}
 import org.slf4j.LoggerFactory
+import edu.gemini.tac.qengine.api.queue.ProposalQueue
 
 object QueueCalcStage {
   type Result = (QueueFrame, ProposalLog)
@@ -73,14 +74,8 @@ object QueueCalcStage {
 /**
  * Contains the result of calculating (a portion of) the queue.
  */
-final class QueueCalcStage private(result: QueueCalcStage.Result) {
-  private val frame: QueueFrame = result._1
-
-  val resource = frame.res
-  val iter = frame.iter
-
-  // Take the queue and log from the result and run the band restriction filter
-  // again -- merging proposals can cause movement in the queue and band
-  // restriction violations.
-  val (queue, log) = (frame.queue, result._2)
+final class QueueCalcStage private (result: QueueCalcStage.Result) {
+  val queue: ProposalQueue = result._1.queue
+  val resource: SemesterResource = result._1.res
+  val log: ProposalLog = result._2
 }

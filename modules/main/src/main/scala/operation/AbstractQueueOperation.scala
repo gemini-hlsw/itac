@@ -42,7 +42,7 @@ abstract class AbstractQueueOperation[F[_]](
       // Compute the queue
       queueCalc = qe.calc(
         bandedProposals = ps,
-        queueTime       = qc.engine.explicitQueueTime,
+        queueTimes      = qc.engine.queueTimes,
         config          = QueueEngineConfig(
           partnerSeq = cc.engine.partnerSequence(qc.site),
           rollover   = rr,

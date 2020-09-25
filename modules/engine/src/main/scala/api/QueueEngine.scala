@@ -9,5 +9,11 @@ import edu.gemini.tac.qengine.p1.QueueBand
  * The queue generation engine.
  */
 trait QueueEngine {
-  def calc(bandedProposals: Map[QueueBand, List[Proposal]], queueTime: QueueTime, config: QueueEngineConfig, extras: List[Proposal] = Nil, removed: List[Proposal] = Nil): QueueCalc
+  def calc(
+    bandedProposals: Map[QueueBand, List[Proposal]],
+    queueTimes:   QueueBand => QueueTime,
+    config: QueueEngineConfig,
+    extras: List[Proposal] = Nil,
+    removed: List[Proposal] = Nil
+  ): QueueCalc
 }
