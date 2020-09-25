@@ -17,4 +17,6 @@ final case class QueueEngineConfig(
   rollover: RolloverReport,
   restrictedBinConfig: RestrictionConfig = RestrictionConfig(),
   explicitQueueAssignments: Map[String, QueueBand] = Map.empty
-)
+) {
+  def site = binConfig.site
+}
