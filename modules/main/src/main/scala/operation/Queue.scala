@@ -143,11 +143,11 @@ object Queue {
                     val used  = (q.usedTime(QueueBand.QBand1, p) + q.usedTime(QueueBand.QBand2, p)).toHours.value
                     val avail = (q.queueTime(QueueBand.QBand1, p) + q.queueTime(QueueBand.QBand2, p)).toHours.value
                     val pct   = if (avail == 0) 0.0 else (used / avail) * 100
-                    println(f"                                              B1+B2 Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%% ≤ ${(queueCalc.queue.queueTime.overfillAllowance(QueueBand.Category.B1_2).foldMap(_.doubleValue) + 100.0)}%3.1f%%)")
+                    println(f"                                                 B1 Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%% ≤ ${(queueCalc.queue.queueTime.overfillAllowance(QueueBand.QBand1).doubleValue + 100.0)}%3.1f%%)")
                   }
 
                   if (qb == QueueBand.QBand3) {
-                    println(f"                                                 B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%% ≤ ${(queueCalc.queue.queueTime.overfillAllowance(QueueBand.Category.B3).foldMap(_.doubleValue) + 100.0)}%3.1f%%)")
+                    println(f"                                                 B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%% ≤ ${(queueCalc.queue.queueTime.overfillAllowance(QueueBand.QBand3).doubleValue + 100.0)}%3.1f%%)")
                   }
 
                 } else {

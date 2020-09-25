@@ -16,6 +16,7 @@ object QueueBand {
   }
 
   object Category {
+
     // Bands 1 and 2 use the normal observing conditions specified per
     // observation.
     case object B1_2 extends Category("Bands 1,2", 0)
@@ -23,28 +24,25 @@ object QueueBand {
     // Band 3 uses the special "Band 3" conditions.
     case object B3 extends Category("Band 3", 1)
 
-    // Time is "guaranteed" if a proposal falls in bands 1, 2, or 3.
-    case object Guaranteed extends Category("Guaranteed", 2)
-
     // Poor weather is not guaranteed and is used to fill up time when no
     // better proposal is available.
     case object PoorWeather extends Category("Poor Weather", 3)
 
-    val values = List(B1_2, B3, Guaranteed, PoorWeather)
+    val values = List(B1_2, B3, PoorWeather)
   }
 
   case object QBand1 extends QueueBand(1) {
-    def categories  = Set(Category.B1_2, Category.Guaranteed)
+    def categories  = Set(Category.B1_2)
     def logCategory = Category.B1_2
   }
 
   case object QBand2 extends QueueBand(2) {
-    def categories  = Set(Category.B1_2, Category.Guaranteed)
+    def categories  = Set(Category.B1_2)
     def logCategory = Category.B1_2
   }
 
   case object QBand3 extends QueueBand(3) {
-    def categories  = Set(Category.B3, Category.Guaranteed)
+    def categories  = Set(Category.B3)
     def logCategory = Category.B3
   }
 

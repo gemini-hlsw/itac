@@ -2,7 +2,7 @@ package edu.gemini.tac.qengine.impl.resource
 
 import edu.gemini.tac.qengine.impl.block.Block
 import edu.gemini.tac.qengine.util.Time
-import edu.gemini.tac.qengine.log.{RejectOverAllocation, RejectMessage, RejectPartnerOverAllocation}
+import edu.gemini.tac.qengine.log.{ RejectMessage, RejectPartnerOverAllocation}
 // import edu.gemini.tac.qengine.p1.QueueBand.Category.Guaranteed
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
 import edu.gemini.tac.qengine.p1.{ObservingConditions, Target}
@@ -12,8 +12,7 @@ import edu.gemini.tac.qengine.p1.QueueBand
 final case class SemesterResource(
     ra:   RaResourceGroup,
     time: TimeResourceGroup,
-    band: BandResource,
-    cat:  QueueBand.Category
+    band:  QueueBand,
 ) extends Resource {
   private val LOGGER = LoggerFactory.getLogger("edu.gemini.itac")
   type T = SemesterResource
@@ -22,41 +21,30 @@ final case class SemesterResource(
     for {
       newRa   <- ra.reserve(block, queue).right
       newTime <- time.reserve(block, queue).right
-      newBand <- band.reserve(block, queue).right
-    } yield new SemesterResource(newRa, newTime, newBand, cat)
+    } yield new SemesterResource(newRa, newTime, band)
 
   // Determines whether the partner is already over allocated.
   private def partnerAlreadyOverallocated(block: Block, queue: ProposalQueueBuilder): Boolean = {
-    LOGGER.debug(f"Remaining time in $cat for ${block.prop.ntac.partner} is ${queue.remainingTime(cat, block.prop.ntac.partner).toHours.value}%5.1f")
-    queue.remainingTime(cat, block.prop.ntac.partner) <= Time.Zero
+    LOGGER.debug(f"Remaining time in $band for ${block.prop.ntac.partner} is ${queue.remainingTime(band, block.prop.ntac.partner).toHours.value}%5.1f")
+    queue.remainingTime(band, block.prop.ntac.partner) <= Time.Zero
   }
 
   // Determines whether including the indicated proposal will overallocate the
   // partner past the limit and allowance.
-  private def partnerWouldBeOverallocated(block: Block, queue: ProposalQueueBuilder): Boolean =
-    // RCN: the old logic (and many tests) depend on there being NO LIMIT to overfiling if this
-    //      isn't defined, so for now we're leaving this logic. We need to circle back and fix this.
-    queue.queueTime.overfillAllowance(cat).exists { perc =>
-      val partner   = block.prop.ntac.partner
-      val used      = queue.usedTime(cat, partner)
-      val softLimit = queue.queueTime(cat, partner)
-      val allowance = softLimit * perc // overfill is per category (B1_2 and B3 are what we're using)
-      val hardlimit = softLimit + allowance
-      val ret = (used + block.prop.time) >= hardlimit
-      // println(f"==> used ${used.toHours.value}%5.1f, available = ${softLimit.toHours.value}%5.1f, overfill = ${perc.value.toDouble}%5.1f, percentage = ${(used.toHours.value / softLimit.toHours.value) * 100.0}%5.1f, prop = ${block.prop.ntac.reference}, award = ${block.prop.time.toHours.value}%5.1f, partnerWouldBeOverallocated = ${ret}")
-      ret
-    }
+  private def partnerWouldBeOverallocated(block: Block, queue: ProposalQueueBuilder): Boolean = {
+    val perc       = queue.queueTime.overfillAllowance(band)
+    val partner   = block.prop.ntac.partner
+    val used      = queue.usedTime(band, partner)
+    val softLimit = queue.queueTime(band, partner)
+    val allowance = softLimit * perc // overfill is per category (B1_2 and B3 are what we're using)
+    val hardlimit = softLimit + allowance
+    val ret = (used + block.prop.time) >= hardlimit
+    // println(f"==> used ${used.toHours.value}%5.1f, available = ${softLimit.toHours.value}%5.1f, overfill = ${perc.value.toDouble}%5.1f, percentage = ${(used.toHours.value / softLimit.toHours.value) * 100.0}%5.1f, prop = ${block.prop.ntac.reference}, award = ${block.prop.time.toHours.value}%5.1f, partnerWouldBeOverallocated = ${ret}")
+    ret
+  }
 
   private def partnerOverallocated(block: Block, queue: ProposalQueueBuilder): Boolean =
     partnerAlreadyOverallocated(block, queue) || partnerWouldBeOverallocated(block, queue)
-
-  // Determines whether the queue has space to accommodate the proposal.
-  // queue.remainingTime tells us how much scheduable time is remaining.  We
-  // are allowed to schedule the last proposal past this time but never more
-  // that the total queue time.  In other words, the hard limit is the
-  // full queue time.
-  private def queueTooFull(block: Block, queue: ProposalQueueBuilder): Boolean =
-    (queue.remainingTime(cat) <= Time.Zero) || queue.remainingTime < block.prop.time
 
   def reserve(block: Block, queue: ProposalQueueBuilder): RejectMessage Either SemesterResource = {
     // Check that we haven't over allocated this partner.  If so, rejected.
@@ -69,12 +57,8 @@ final case class SemesterResource(
     if (block.isStart && partnerOverallocated(block, queue)) {
       val p = block.prop.ntac.partner
       LOGGER.debug("Rejected due to partner overallocation")
-      Left(RejectPartnerOverAllocation(block.prop, queue.bounds(cat, p), queue.bounds(p)))
-    } else if (queueTooFull(block, queue)) {
-      LOGGER.debug("Rejected due to queue too full")
-      Left(RejectOverAllocation(block.prop, queue.remainingTime(cat), queue.remainingTime))
-    }
-    else {
+      Left(RejectPartnerOverAllocation(block.prop, queue.bounds(band, p), queue.bounds(band, p)))
+    } else {
       LOGGER.debug("Block OK")
       if(block.isFinal){
         LOGGER.debug("Block is final; proposal will be accepted")
@@ -85,7 +69,7 @@ final case class SemesterResource(
 
   def reserveAvailable(time: Time, target: Target, conds: ObservingConditions): (SemesterResource, Time) = {
     val (newRa, rem) = ra.reserveAvailable(time, target, conds)
-    (new SemesterResource(newRa, this.time, band, cat), rem)
+    (new SemesterResource(newRa, this.time, band), rem)
   }
 
 

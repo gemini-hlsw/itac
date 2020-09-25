@@ -17,14 +17,8 @@ import edu.gemini.tac.qengine.util.Time
 // import edu.gemini.tac.qengine.api.queue.time.ExplicitQueueTime
 // import edu.gemini.tac.qengine.api.config.QueueBandPercentages
 import edu.gemini.tac.qengine.util.Percent
-import edu.gemini.tac.qengine.p1.QueueBand.QBand1
-import edu.gemini.tac.qengine.p1.QueueBand.QBand2
-import edu.gemini.tac.qengine.p1.QueueBand.QBand3
-import edu.gemini.tac.qengine.p1.QueueBand.QBand4
-import edu.gemini.tac.qengine.p1.QueueBand.Category.B1_2
-import edu.gemini.tac.qengine.p1.QueueBand.Category.B3
-import edu.gemini.tac.qengine.p1.QueueBand.Category.Guaranteed
-import edu.gemini.tac.qengine.p1.QueueBand.Category.PoorWeather
+import edu.gemini.tac.qengine.p1.QueueBand
+import edu.gemini.tac.qengine.p1.QueueBand._
 import org.slf4j.LoggerFactory
 
 object QueueCalcStage {
@@ -40,7 +34,7 @@ object QueueCalcStage {
       val cat = Category.B1_2
 
       // Initialize an empty, starting queue state.
-      val queue = ProposalQueueBuilder(qtime)
+      val queue = ProposalQueueBuilder(qtime, ??? : QueueBand)
 
       // Create a new block iterator that will step through the proposals
       // according to partner sequence and time quantum
@@ -52,8 +46,7 @@ object QueueCalcStage {
         percent => BoundedTime(qtime.full * percent),
         time => BoundedTime(time))
       val time = new TimeResourceGroup(rbins.map(new TimeResource(_)))
-      val band = new BandResource(config.restrictedBinConfig.bandRestrictions)
-      val semRes = new SemesterResource(bins, time, band, Category.B1_2)
+      val semRes = new SemesterResource(bins, time, ??? : QueueBand)
 
       new Params(cat, queue, iter, _.obsList, semRes, log)
     }
@@ -66,38 +59,20 @@ object QueueCalcStage {
           val delegate = phase12queue.queueTime
           def fullPartnerTime: PartnerTime = delegate.fullPartnerTime
           // def bandPercentages: QueueBandPercentages = delegate.bandPercentages
-          def overfillAllowance(cat: QueueBand.Category) = delegate.overfillAllowance(cat)
+          def overfillAllowance(band: QueueBand) = delegate.overfillAllowance(band)
           def full: Time = delegate.full
-          def band1End: Time = phase12queue.usedTime(QueueBand.QBand1)
-          def band2End: Time = phase12queue.usedTime(Category.B1_2)
-          def band3End: Time = delegate.band3End
           def partnerTime(band: QueueBand): PartnerTime = ???
-          def partnerTime(cat: Category): PartnerTime = ???
           def partnerPercent(p: Partner): Percent = ???
-          def apply(band: QueueBand): Time =
-            band match {
-              case QBand1 | QBand2 => phase12queue.usedTime(band)
-              case QBand3 | QBand4 => delegate(band)
-            }
-          def apply(cat: Category): Time =
-            cat match {
-              case B1_2        => phase12queue.usedTime(B1_2)
-              case B3          => delegate(B3)
-              case Guaranteed  => phase12queue.usedTime(B1_2) + delegate(cat)
-              case PoorWeather => delegate(PoorWeather)
-            }
+          // def apply(band: QueueBand): Time =
+          //   band match {
+          //     case QBand1 | QBand2 => phase12queue.usedTime(band)
+          //     case QBand3 | QBand4 => delegate(band)
+          //   }
           def apply(band: QueueBand, p: Partner): Time = ???
-          def apply(cat: Category, p: Partner): Time =
-            cat match {
-              case B1_2        => phase12queue.usedTime(B1_2, p)
-              case B3          => delegate(B3, p)
-              case Guaranteed  => phase12queue.usedTime(B1_2, p) + delegate(cat, p)
-              case PoorWeather => delegate(PoorWeather, p)
-            }
         }
       val hackedQueue = phase12queue.copy(queueTime = hackedQueueTime)
       val iter = BlockIterator(config.partners, phase12queue.queueTime.partnerQuanta, config.partnerSeq.sequence, grouped, _.band3Observations)
-      new Params(Category.B3, hackedQueue, iter, _.band3Observations, phase12bins.copy(cat = Category.B3), phase12log)
+      new Params(Category.B3, hackedQueue, iter, _.band3Observations, phase12bins.copy(band = QBand3), phase12log)
     }
 
   }
@@ -130,8 +105,8 @@ object QueueCalcStage {
   //
   @tailrec private def compute(cat: Category, stack: List[QueueFrame], log: ProposalLog, activeList : Proposal=>List[Observation]): Result = {
     val stackHead = stack.head
-    if (stackHead.emptyOrOtherCategory(cat)) {
-      Log.trace( "Stack is empty [" + ! stackHead.hasNext + "] or in other category [Expected : " + cat + " Actual: " + stackHead.queue.band + "]")
+    if (!stackHead.hasNext) {
+      Log.trace( "Stack is empty [" + ! stackHead.hasNext + "]")
       (stackHead, log.updated(stackHead.iter.remPropList, cat, RejectCategoryOverAllocation(_, cat)))
     } else stackHead.next(activeList) match {
       case Left(msg) => //Error, so roll back (and recurse)
@@ -158,14 +133,14 @@ object QueueCalcStage {
     val queueFrameHead = List(new QueueFrame(p.queue, p.iter, p.res))
     Log.info(s"Constructing a QueueCalcStage with cat=${p.cat}")
     val result = compute(p.cat, queueFrameHead, p.log, p.activeList)
-    new QueueCalcStage(p.cat, result)
+    new QueueCalcStage(result)
   }
 }
 
 /**
  * Contains the result of calculating (a portion of) the queue.
  */
-final class QueueCalcStage private(cat: Category, result: QueueCalcStage.Result) {
+final class QueueCalcStage private(result: QueueCalcStage.Result) {
   private val frame: QueueFrame = result._1
 
   val resource = frame.res
@@ -174,7 +149,5 @@ final class QueueCalcStage private(cat: Category, result: QueueCalcStage.Result)
   // Take the queue and log from the result and run the band restriction filter
   // again -- merging proposals can cause movement in the queue and band
   // restriction violations.
-  val (queue, log) =
-    if (cat == Category.B3) frame.res.band.filter(frame.queue, result._2)
-    else (frame.queue, result._2)
+  val (queue, log) = (frame.queue, result._2)
 }

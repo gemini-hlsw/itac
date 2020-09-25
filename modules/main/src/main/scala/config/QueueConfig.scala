@@ -16,7 +16,7 @@ import edu.gemini.tac.qengine.p1.QueueBand
 // queue configuration
 final case class QueueConfig(
   site:       Site,
-  overfill:   Map[QueueBand.Category, Percent],
+  overfill:   Map[QueueBand, Percent],
   raBinSize:  RaBinSize,
   decBinSize: DecBinSize,
   hours:      Map[Partner, BandTimes],

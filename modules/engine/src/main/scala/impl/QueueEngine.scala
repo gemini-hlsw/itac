@@ -24,7 +24,7 @@ import edu.gemini.tac.qengine.log.AcceptMessage
 import edu.gemini.tac.qengine.log.RejectMessage
 
 object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
-  private val Log = LoggerFactory.getLogger("edu.gemini.itac")
+  val Log = LoggerFactory.getLogger("edu.gemini.itac")
 
   case class RaAllocation(name: String, boundedTime: BoundedTime)
   case class BucketsAllocationImpl(raBins: List[RaResource]) extends BucketsAllocation {
@@ -114,21 +114,21 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
     (siteProps, bins)
   }
 
-  /** Log the time availability and usage for a stage. */
-  def show(config: QueueEngineConfig, s: QueueCalcStage): Unit = {
-    Log.info(s"${Console.GREEN}-----------------------------------${Console.RESET}")
-    Log.info(s"${Console.GREEN}Partner       Band 1/2       Band 3${Console.RESET}")
-    config.partners.foreach { p =>
-      val q   = s.queue
-      // val t0  = q.queueTime(p).toHours.value
-      val b12Aval = q.queueTime(QueueBand.Category.B1_2, p).toHours.value
-      val b12Used = q.usedTime(QueueBand.Category.B1_2, p).toHours.value
-      val b3Aval = q.queueTime(QueueBand.Category.B3, p).toHours.value
-      val b3Used = q.usedTime(QueueBand.Category.B3, p).toHours.value
-      Log.info(f"${p.id}%-10s $b12Used%5.1f/$b12Aval%5.1f  $b3Used%5.1f/$b3Aval%5.1f")
-    }
-    Log.info(s"${Console.GREEN}-----------------------------------${Console.RESET}")
-  }
+  // /** Log the time availability and usage for a stage. */
+  // def show(config: QueueEngineConfig, s: QueueCalcStage): Unit = {
+  //   Log.info(s"${Console.GREEN}-----------------------------------${Console.RESET}")
+  //   Log.info(s"${Console.GREEN}Partner       Band 1/2       Band 3${Console.RESET}")
+  //   config.partners.foreach { p =>
+  //     val q   = s.queue
+  //     // val t0  = q.queueTime(p).toHours.value
+  //     val b12Aval = q.queueTime(QueueBand.Category.B1_2, p).toHours.value
+  //     val b12Used = q.usedTime(QueueBand.Category.B1_2, p).toHours.value
+  //     val b3Aval = q.queueTime(QueueBand.Category.B3, p).toHours.value
+  //     val b3Used = q.usedTime(QueueBand.Category.B3, p).toHours.value
+  //     Log.info(f"${p.id}%-10s $b12Used%5.1f/$b12Aval%5.1f  $b3Used%5.1f/$b3Aval%5.1f")
+  //   }
+  //   Log.info(s"${Console.GREEN}-----------------------------------${Console.RESET}")
+  // }
 
   def calc(bandedProposals: Map[QueueBand, List[Proposal]], queueTime: QueueTime, config: QueueEngineConfig, extras: List[Proposal], removed: List[Proposal]): QueueCalc = {
 
@@ -138,7 +138,7 @@ object QueueEngine extends edu.gemini.tac.qengine.api.QueueEngine {
     // (helper) run and log a queue calculation stage, using our local config.
     def stage(params: QueueCalcStage.Params): QueueCalcStage = {
       val stage = QueueCalcStage(params)
-      show(config, stage)
+      // show(config, stage)
       // stage.queue.bandedQueue.foreach { case (b, ps) =>
       //     println(s"$b")
       //     ps.foreach(p => println(s"  ${p.id.reference}"))

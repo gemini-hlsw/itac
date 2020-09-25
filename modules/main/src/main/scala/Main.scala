@@ -15,7 +15,7 @@ import com.monovore.decline.effect.CommandIOApp
 import com.monovore.decline.Opts
 import edu.gemini.spModel.core.Semester
 import edu.gemini.spModel.core.Site
-import edu.gemini.tac.qengine.impl.QueueEngine
+import edu.gemini.tac.qengine.impl.{ QueueEngine2 => QueueEngine }
 import gsp.math.Angle
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
