@@ -47,8 +47,8 @@ abstract class AbstractExportOperation[F[_]: Sync](
 
           // Non-Queue Proposals ...
           val nonQueue =
-            ps.filter(_.site == qr.queueCalc.context.site)                // are at this site
-              .filterNot(p => qr.queueCalc.proposalLog.proposalIds(p.id)) // but don't appear in the log
+            ps.filter(_.site == qr.context.site)                // are at this site
+              .filterNot(p => qr.proposalLog.proposalIds(p.id)) // but don't appear in the log
 
           // Pick out classicals and those that shouldn't be here
           val (classical, orphans) = nonQueue.partition(_.mode == Mode.Classical)

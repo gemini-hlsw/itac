@@ -18,9 +18,6 @@ trait ProposalQueue {
   /** Root queue time information. */
   def queueTime: QueueTime
 
-  /** Gets the amount of queue time used. */
-  def usedTime: Time
-
   /** Gets the used time for the particular partner. */
   def usedTime(p: Partner): Time =
     toList.filter(_.ntac.partner == p).foldMap(_.time)
@@ -44,22 +41,12 @@ trait ProposalQueue {
 
   /**
    * Creates a BoundedTime object containing the total available queue time
-   * for all partners and bands together along with the amount of used time
-   * for all partners and bands.
-   */
-  def bounds = BoundedTime(queueTime.full, usedTime)
-
-  /**
-   * Creates a BoundedTime object containing the total available queue time
-   * and used time for the given band and partner..
+   * and used time for the given band and partner.
    */
   def bounds(band: QueueBand, p: Partner): BoundedTime =
     BoundedTime(queueTime(band, p), usedTime(band, p))
 
-  /**
-   *  Gets the queue of proposals.  Joint parts will be merged in the list
-   * that is returned.
-   */
+  /** Gets the queue of proposals. */
   def toList: List[Proposal]
 
   /**

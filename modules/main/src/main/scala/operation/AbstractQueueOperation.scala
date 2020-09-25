@@ -4,7 +4,6 @@
 package itac
 package operation
 
-import edu.gemini.tac.qengine.ctx.Partner
 import cats._
 import cats.implicits._
 import edu.gemini.tac.qengine.api.config._
@@ -45,7 +44,6 @@ abstract class AbstractQueueOperation[F[_]](
         bandedProposals = ps,
         queueTime       = qc.engine.explicitQueueTime,
         config          = QueueEngineConfig(
-          partners   = Partner.all,
           partnerSeq = cc.engine.partnerSequence(qc.site),
           rollover   = rr,
           binConfig  = createConfig(

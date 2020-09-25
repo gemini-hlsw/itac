@@ -11,11 +11,13 @@ import edu.gemini.spModel.core.ProgramId
 import edu.gemini.tac.qengine.p1.QueueBand
 import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.tac.qengine.p1.Mode
+import edu.gemini.tac.qengine.ctx.Context
+import edu.gemini.tac.qengine.log.ProposalLog
 
 /** The final queue result, with joint proposal grouped and program IDs assigned. */
-final case class QueueResult(queueCalc: QueueCalc) {
+final case class QueueResult(bandedQueue: Map[QueueBand, List[Proposal]], context: Context, proposalLog: ProposalLog) {
   import QueueResult.Entry
-  import queueCalc.context.{ site, semester }
+  import context.{ site, semester }
 
   /** Group joints together by finding proposals with the same PI and title, sorting each group by rank. */
   private def groupJoints(ps: List[Proposal]): List[NonEmptyList[Proposal]] =
@@ -23,7 +25,7 @@ final case class QueueResult(queueCalc: QueueCalc) {
 
   /** Get entries in the specified band, ordered by program id. */
   def entries(qb: QueueBand): List[Entry] = {
-    val ps = queueCalc.queue.bandedQueue.getOrElse(qb, Nil)
+    val ps = bandedQueue.getOrElse(qb, Nil)
     val gs = groupJoints(ps).sortBy(_.head.piName.fold("")(_.reverse))
     gs.zipWithIndex.map { case (nel, n) =>
       val num = explicitNumber(nel.head.ntac.reference).getOrElse(100 * qb.number + (n + 1))
@@ -42,7 +44,7 @@ final case class QueueResult(queueCalc: QueueCalc) {
 
   def classical(candidates: List[Proposal]): List[Entry] = // no support for joints, may not be needed
     candidates
-      .filter(p => p.site == queueCalc.context.site && p.mode == Mode.Classical)
+      .filter(p => p.site == site && p.mode == Mode.Classical)
       .sortBy(p => (p.ntac.ranking.num.orEmpty, p.piName.foldMap(_.reverse)))
       .zipWithIndex
       .map { case (p, n) =>
@@ -58,9 +60,9 @@ final case class QueueResult(queueCalc: QueueCalc) {
     }
 
   def unsuccessful(candidates: List[Proposal]): List[Proposal] = {
-    lazy val accepted = queueCalc.queue.toList.map(_.ntac.reference).toSet
+    lazy val accepted = bandedQueue.values.toList.flatten.map(_.ntac.reference).toSet
     candidates
-      .filter(p => p.site == queueCalc.context.site && p.mode == Mode.Queue)
+      .filter(p => p.site == site && p.mode == Mode.Queue)
       .filter(p => !accepted(p.ntac.reference))
   }
 
@@ -78,6 +80,10 @@ final case class QueueResult(queueCalc: QueueCalc) {
 }
 
 object QueueResult {
+
+  // temo
+  def apply(queueCalc: QueueCalc): QueueResult =
+    apply(queueCalc.queue.bandedQueue, queueCalc.context, queueCalc.proposalLog)
 
   final case class Entry(proposals: NonEmptyList[Proposal], programId: ProgramId)
 

@@ -150,7 +150,6 @@ object BlockIterator {
   }
 
   private class BlockIteratorImpl(
-          val allPartners: List[Partner],
           val quantaMap: PartnerTime,
           val seq: Seq[Partner],
           val remTime: Time,
@@ -159,12 +158,12 @@ object BlockIterator {
     def mkIterator(s: Seq[Partner], t: Time, m: IMap) = {
       LoggerFactory.getLogger("edu.gemini.itac").debug("BlockIterator: " + seq.head + " remTime " + remTime)
       //QueueCalculationLog.logger.log(Level.trace, (<Event source="BlockIterator" event="mkIterator">{s.head.fullName}</Event>).toString)
-      new BlockIteratorImpl(allPartners, quantaMap, s, t, m)
+      new BlockIteratorImpl(quantaMap, s, t, m)
     }
   }
 
-  private def genIterMap(allPartners: List[Partner], m: Map[Partner, List[Proposal]], activeList : Proposal=>List[Observation]): IMap =
-    Partner.mkMap(allPartners, m, Nil).mapValues(PartnerBlockIterator.apply(_, activeList))
+  private def genIterMap(m: Map[Partner, List[Proposal]], activeList : Proposal=>List[Observation]): IMap =
+    Partner.mkMap(Partner.all, m, Nil).mapValues(PartnerBlockIterator.apply(_, activeList))
 
   // Finds the first partner that has a non-zero time quantum and a proposal
   // list and returns the sequence advanced to that partner and the time in its
@@ -190,19 +189,19 @@ object BlockIterator {
    * <p>The partner sequence can be finite but an infinite sequence is expected
    * in order to be able to generate time blocks for all the proposals.
    */
-  def apply(allPartners: List[Partner], quantaMap: PartnerTime, seq: Seq[Partner], propLists: Map[Partner, List[Proposal]], activeList : Proposal=>List[Observation]): BlockIterator = {
+  def apply(quantaMap: PartnerTime, seq: Seq[Partner], propLists: Map[Partner, List[Proposal]], activeList : Proposal=>List[Observation]): BlockIterator = {
 
     // Filter `quantaMap` to retain entries only for relevant partners; i.e., those who have
     // proposals. Failure to do this can lead to nontermination in `advancePartner`.
     val relevant   = propLists.toList.collect { case (p, _ :: _) => p } .toSet
     val quantaMapʹ = quantaMap.filter(relevant)
 
-    val iterMap = genIterMap(allPartners, propLists, activeList)
+    val iterMap = genIterMap(propLists, activeList)
 
     init(quantaMapʹ, iterMap, seq, validpartners(quantaMapʹ)) match {
       case (s, _) if s.isEmpty => Empty
       case (partnerSeq, remainingTime) => {
-        new BlockIteratorImpl(allPartners, quantaMapʹ, partnerSeq, remainingTime, iterMap)
+        new BlockIteratorImpl(quantaMapʹ, partnerSeq, remainingTime, iterMap)
       }
     }
   }

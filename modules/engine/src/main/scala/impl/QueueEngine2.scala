@@ -15,7 +15,6 @@ import edu.gemini.tac.qengine.util.BoundedTime
 import edu.gemini.tac.qengine.impl.resource.TimeResourceGroup
 import edu.gemini.tac.qengine.impl.resource.TimeResource
 import edu.gemini.tac.qengine.impl.resource.SemesterResource
-import edu.gemini.tac.qengine.impl.QueueCalcStage.Params
 import edu.gemini.tac.qengine.impl.resource.RaResource
 import edu.gemini.tac.qengine.api.config.ConditionsCategory
 
@@ -39,10 +38,14 @@ object QueueEngine2 extends edu.gemini.tac.qengine.api.QueueEngine {
     siteProposals.foreach { case (b, ps) => ps.foreach { p => QueueEngineBandProblems.unsafeCheckAll(p, b) }}
 
     // Find all the observations that don't participate in the queue process, because their time
-    // needs to be subtracted from the initail RaResourceGroup (which happens on construction).
-    val rolloverObs     = config.rollover.obsList
-    val classicalObs    = siteProposals(QBand1).filter(_.mode == Mode.Classical).flatMap(_.obsList)
-    val raResourceGroup = RaResourceGroup(config.binConfig).reserveAvailable(rolloverObs ++ classicalObs)._1
+    // needs to be subtracted from the initail RaResourceGroup (which happens on construction). Then
+    // finish building our SemesterResource
+    val rolloverObs       = config.rollover.obsList
+    val classicalObs      = siteProposals(QBand1).filter(_.mode == Mode.Classical).flatMap(_.obsList)
+    val raResourceGroup   = RaResourceGroup(config.binConfig).reserveAvailable(rolloverObs ++ classicalObs)._1
+    val timeRestrictions  = config.restrictedBinConfig.mapTimeRestrictions(p => BoundedTime(queueTime.full * p), t => BoundedTime(t))
+    val timeResourceGroup = new TimeResourceGroup(timeRestrictions.map(new TimeResource(_)))
+    val semesterResource  = new SemesterResource(raResourceGroup, timeResourceGroup, QBand1)
 
     // We're done with classical proposals. Filter them out.
     val queueProposals: Map[QueueBand, List[Proposal]] =
@@ -50,37 +53,34 @@ object QueueEngine2 extends edu.gemini.tac.qengine.api.QueueEngine {
         b -> ps.filter(_.mode != Mode.Classical)
       }
 
-    //Sets parameters for Band1
-    def band1(grouped: Map[Partner, List[Proposal]], log: ProposalLog, qtime: QueueTime, config: QueueEngineConfig, bins: RaResourceGroup) = {
-      // Initialize an empty, starting queue state.
-      val queue = ProposalQueueBuilder(qtime, QBand1)
+    // All we need to construct a BlockIterator is our band.
+    def iteratorFor(band: QueueBand): BlockIterator =
+      BlockIterator(
+        queueTime.partnerQuanta,
+        config.partnerSeq.sequence,
+        queueProposals(band).groupByPartnerAndSortedByRanking,
+        p => if (band == QBand3) p.band3Observations else p.obsList
+      )
 
-      // Create a new block iterator that will step through the proposals
-      // according to partner sequence and time quantum
-      val iter = BlockIterator(config.partners, qtime.partnerQuanta, config.partnerSeq.sequence, grouped, _.obsList)
-
-      // Create the initial restricted bins.  Percent bins are mapped to a
-      // percentage of guaranteed queue time, and time bins set their own bound.
-      val rbins = config.restrictedBinConfig.mapTimeRestrictions(
-        percent => BoundedTime(qtime.full * percent),
-        time => BoundedTime(time))
-      val time = new TimeResourceGroup(rbins.map(new TimeResource(_)))
-      val semRes = new SemesterResource(bins, time, QBand1)
-
-      new Params(QBand1, queue, iter, _.obsList, semRes, log)
-    }
-
-    // Ok now let's do the Band 1 queue.
+    // Construct the Band 1 queue.
     val stage1: QueueCalcStage =
       QueueCalcStage(
-        band1(
-          grouped = queueProposals(QBand1).groupByPartnerAndSortedByRanking,
-          log     = ProposalLog.Empty,
-          qtime   = queueTime,
-          config  = config,
-          bins    = raResourceGroup
-        )
+        queue       = ProposalQueueBuilder(queueTime, QBand1),
+        iter        = iteratorFor(QBand1),
+        activeList  = _.obsList,
+        res         = semesterResource,
+        log         = ProposalLog.Empty,
       )
+
+      // // Construct the Band 1 queue.
+    // val stage2: QueueCalcStage =
+    //   QueueCalcStage(
+    //     queue       = ProposalQueueBuilder(queueTime, QBand2),
+    //     iter        = iteratorFor(QBand2),
+    //     activeList  = _.obsList,
+    //     res         = stage1.resource,
+    //     log         = stage1.log,
+    //   )
 
     // Done
     new QueueCalcImpl(

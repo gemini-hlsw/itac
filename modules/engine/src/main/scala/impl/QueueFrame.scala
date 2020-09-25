@@ -36,7 +36,7 @@ final class QueueFrame(val queue: ProposalQueueBuilder, val iter: BlockIterator,
       val partner  = prop.id.partner
       val newQueue = queue :+ prop
       applicationLogger.trace("accept(): " + block.toString)
-      (newQueue, Some(AcceptMessage(prop, newQueue.bounds(queue.band, partner), newQueue.bounds)))
+      (newQueue, Some(AcceptMessage(prop, newQueue.bounds(queue.band, partner), newQueue.bounds(queue.band, block.prop.ntac.partner))))
     } else
       // More blocks for this proposal so we can't accept it yet.
       (queue, None)

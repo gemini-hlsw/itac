@@ -69,12 +69,6 @@ object Queue {
             val pids = log.proposalIds // proposals that were considered
             val separator = "━" * 100 + "\n"
 
-            // println(s"${Colors.BOLD}The following proposals were not considered due to site, mode, or lack of awarded time or observations.${Colors.RESET}")
-            // ps.filterNot(p => pids.contains(p.id)).foreach { p =>
-            //   println(f"- ${p.id.reference} (${p.site.abbreviation}, ${p.mode.programId}%2s, ${p.ntac.awardedTime.toHours.value}%4.1fh ${p.ntac.partner.id}, ${p.obsList.length}%3d obs)")
-            // }
-            // println()
-
             println(s"\n${Colors.BOLD}${queueCalc.context.site.displayName} ${queueCalc.context.semester} Queue Candidate${Colors.RESET}")
             println(s"${new java.util.Date}\n") // lazy, this has a reasonable default toString
 

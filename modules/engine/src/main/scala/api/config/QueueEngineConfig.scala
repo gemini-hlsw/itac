@@ -3,7 +3,6 @@
 
 package edu.gemini.tac.qengine.api.config
 
-import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.tac.qengine.p2.rollover.RolloverReport
 import edu.gemini.tac.qengine.p1.QueueBand
 
@@ -11,7 +10,6 @@ import edu.gemini.tac.qengine.p1.QueueBand
  * A combination of configuration required by the Queue Engine.
  */
 final case class QueueEngineConfig(
-  partners: List[Partner],
   binConfig: SiteSemesterConfig,
   partnerSeq: PartnerSequence,
   rollover: RolloverReport,
