@@ -11,15 +11,14 @@ import edu.gemini.tac.qengine.util.{Time, BoundedTime}
 object RejectPartnerOverAllocation {
   val name = "Partner Time Limit"
 
-  private val fullTemplate = "%s already past %d%% allocation limit %s"
-  private val longTemplate = "%.1f hr %s proposal would allocate too far beyond %d%% limit: %s"
+  private val fullTemplate = "%s has reached allocation limit: %s"
+  private val longTemplate = "%s proposal (%.1f hr) would exceed overfill limit: %s"
   def detail(p: Partner, t: Time, guaranteed: BoundedTime, all: BoundedTime): String = {
-    val perc = (guaranteed.limit.toHours.value / all.limit.toHours.value * 100.0).toInt
     if (guaranteed.isFull)
-      fullTemplate.format(p, perc, LogMessage.formatBoundedTime(all))
+      fullTemplate.format(p, LogMessage.formatBoundedTime(all))
     else {
       val s = all.overbook(t) map { b => LogMessage.formatBoundedTime(b) } getOrElse ""
-      longTemplate.format(t.toHours.value, p, perc, s)
+      longTemplate.format(p, t.toHours.value, s)
     }
   }
 }
