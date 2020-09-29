@@ -3,6 +3,7 @@
 
 package itac
 
+import cats.data.State
 import cats.implicits._
 import edu.gemini.tac.qengine.api.QueueCalc
 import cats.data.NonEmptyList
@@ -11,11 +12,12 @@ import edu.gemini.spModel.core.ProgramId
 import edu.gemini.tac.qengine.p1.QueueBand
 import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.tac.qengine.p1.Mode
+import edu.gemini.tac.qengine.p1.Mode._
 import edu.gemini.tac.qengine.ctx.Context
 import edu.gemini.tac.qengine.log.ProposalLog
 
 /** The final queue result, with joint proposal grouped and program IDs assigned. */
-final case class QueueResult(bandedQueue: Map[QueueBand, List[Proposal]], context: Context, proposalLog: ProposalLog) {
+final case class QueueResult(bandedQueue: QueueBand => List[Proposal], context: Context, proposalLog: ProposalLog) {
   import QueueResult.Entry
   import context.{ site, semester }
 
@@ -23,14 +25,31 @@ final case class QueueResult(bandedQueue: Map[QueueBand, List[Proposal]], contex
   private def groupJoints(ps: List[Proposal]): List[NonEmptyList[Proposal]] =
     ps.groupBy(p => (p.piName, p.p1proposal.title)).values.toList.map(ps => NonEmptyList.fromList(ps.sortBy(_.ntac.ranking.num.getOrElse(0.0))).get)
 
+  protected def programId(p: Proposal): State[(Int, Int), ProgramId] =
+    State { case (cn, qn) =>
+
+      def pid(num: Int): ProgramId =
+        ProgramId.parse(s"${context.site.abbreviation}-${context.semester}-${p.mode.programId}-$num")
+
+      p.mode match {
+        case Classical => ((cn + 1, qn), pid(cn))
+        case Queue     => ((cn, qn + 1), pid(qn))
+        case LargeProgram =>
+          p.ntac.reference.split("-") match {
+            case Array("LP", _, num)    => ((cn, qn), pid(num.toInt))
+            case Array("LP", _, num, _) => ((cn, qn), pid(num.toInt))
+            case _ => sys.error(s"Proposal ${p.ntac.reference} doesn't have a valid LP reference.")
+          }
+        }
+
+    }
+
   /** Get entries in the specified band, ordered by program id. */
   def entries(qb: QueueBand): List[Entry] = {
-    val ps = bandedQueue.getOrElse(qb, Nil)
+    val ps = bandedQueue(qb)
     val gs = groupJoints(ps).sortBy(_.head.piName.fold("")(_.reverse))
-    gs.zipWithIndex.map { case (nel, n) =>
-      val num = explicitNumber(nel.head.ntac.reference).getOrElse(100 * qb.number + (n + 1))
-      Entry(nel, ProgramId.parse(s"${site.abbreviation}-${semester}-${nel.head.mode.programId}-$num"))
-    }
+    val x = gs.traverse(nel => programId(nel.head).map(Entry(nel, _))) : State[(Int, Int), List[Entry]]
+    x.runA((1, qb.number * 100)).value
   }
 
   /** Get entries in the specified band, per partner, ordered by program id. */
@@ -60,7 +79,7 @@ final case class QueueResult(bandedQueue: Map[QueueBand, List[Proposal]], contex
     }
 
   def unsuccessful(candidates: List[Proposal]): List[Proposal] = {
-    lazy val accepted = bandedQueue.values.toList.flatten.map(_.ntac.reference).toSet
+    lazy val accepted = QueueBand.values.flatMap(bandedQueue).map(_.ntac.reference).toSet
     candidates
       .filter(p => p.site == site && p.mode == Mode.Queue)
       .filter(p => !accepted(p.ntac.reference))
@@ -69,21 +88,13 @@ final case class QueueResult(bandedQueue: Map[QueueBand, List[Proposal]], contex
   def unsuccessful(candidates: List[Proposal], partner: Partner): List[Proposal] =
     unsuccessful(candidates).filter(_.ntac.partner == partner)
 
-  /** LP program numbers are given in the reference. */
-  private def explicitNumber(ref: String): Option[Int] =
-    ref.split("-") match {
-      case Array("LP", _, num)    => Either.catchOnly[NumberFormatException](num.toInt).toOption
-      case Array("LP", _, num, _) => Either.catchOnly[NumberFormatException](num.toInt).toOption
-      case _ => None
-    }
-
 }
 
 object QueueResult {
 
   // temp
   def apply(queueCalc: QueueCalc): QueueResult =
-    apply(queueCalc.bandedQueue, queueCalc.context, queueCalc.proposalLog)
+    apply(b => queueCalc.queue(b).toList, queueCalc.context, queueCalc.proposalLog)
 
   final case class Entry(proposals: NonEmptyList[Proposal], programId: ProgramId)
 

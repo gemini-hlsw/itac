@@ -13,6 +13,7 @@ import edu.gemini.tac.qengine.p1.QueueBand._
 import edu.gemini.tac.qengine.util.BoundedTime
 import edu.gemini.tac.qengine.api.queue.ProposalQueue
 import scalaz._, Scalaz._
+// import edu.gemini.tac.qengine.log.AcceptMessage
 
 object QueueEngine2 extends QueueEngine {
 
@@ -34,7 +35,8 @@ object QueueEngine2 extends QueueEngine {
     // needs to be subtracted from the initail RaResourceGroup (which happens on construction). Then
     // finish building our SemesterResource
     val rolloverObs       = config.rollover.obsList
-    val classicalObs      = siteProposals(QBand1).filter(_.mode == Mode.Classical).flatMap(_.obsList)
+    val classicalProps    = siteProposals(QBand1).filter(_.mode == Mode.Classical)
+    val classicalObs      = classicalProps.flatMap(_.obsList)
     val raResourceGroup   = RaResourceGroup(config.binConfig).reserveAvailable(rolloverObs ++ classicalObs)._1
     val timeResourceGroup = new TimeResourceGroup(Nil) // let's not do this for now
     val semesterResource  = new SemesterResource(raResourceGroup, timeResourceGroup, QBand1)
@@ -61,7 +63,7 @@ object QueueEngine2 extends QueueEngine {
     def emptyQueue(band: QueueBand): ProposalQueueBuilder =
       ProposalQueueBuilder(queueTimes(band), band)
 
-    // Buliding a queue is a state transition.
+    // Building a queue is a state transition.
     def runQueue(band: QueueBand): State[(SemesterResource, ProposalLog), ProposalQueue] =
       State { case (res, log) =>
         val stage = QueueCalcStage(
@@ -75,9 +77,16 @@ object QueueEngine2 extends QueueEngine {
       }
 
     // Run the queues in order!
-    val ((finalResource, finalLog), (queue1, queue2, queue3)) = (
+    val ((finalResource, finalLog), (queue1WithoutClassical, queue2, queue3)) = (
       runQueue(QBand1) |@| runQueue(QBand2) |@| runQueue(QBand3)
     ).tupled.run((semesterResource, ProposalLog.Empty))
+
+    // Add classical proposals back to Band 1
+    val queue1 = new ProposalQueue {
+      def band      = queue1WithoutClassical.band
+      def queueTime = queue1WithoutClassical.queueTime
+      def toList    = queue1WithoutClassical.toList ++ classicalProps
+    }
 
     // All Band 4 proposals that made it to ITAC are accepted.
     val queue4 = new ProposalQueue {

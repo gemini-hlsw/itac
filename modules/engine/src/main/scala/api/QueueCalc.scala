@@ -5,7 +5,6 @@ import edu.gemini.tac.qengine.log.ProposalLog
 import edu.gemini.tac.qengine.ctx.Context
 import edu.gemini.tac.qengine.p1.QueueBand
 import edu.gemini.tac.qengine.p1.Proposal
-import scalaz._, Scalaz._
 
 trait BucketsAllocation {
   def raTablesANSI: String
@@ -22,6 +21,5 @@ trait QueueCalc {
   val proposalLog: ProposalLog
   val bucketsAllocation: BucketsAllocation
   def toList: List[Proposal] = QueueBand.values.flatMap(queue(_).toList)
-  def bandedQueue: Map[QueueBand, List[Proposal]] = QueueBand.values.fproduct(queue(_).toList).toMap
 }
 
