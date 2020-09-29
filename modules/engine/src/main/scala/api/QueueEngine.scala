@@ -10,7 +10,7 @@ import edu.gemini.tac.qengine.p1.QueueBand
  */
 trait QueueEngine {
   def calc(
-    bandedProposals: Map[QueueBand, List[Proposal]],
+    bandedProposals: QueueBand => List[Proposal],
     queueTimes:   QueueBand => QueueTime,
     config: QueueEngineConfig,
     extras: List[Proposal] = Nil,

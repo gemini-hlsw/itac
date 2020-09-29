@@ -17,7 +17,7 @@ import scalaz._, Scalaz._
 object QueueEngine2 extends QueueEngine {
 
   def calc(
-    rawProposals: Map[QueueBand, List[Proposal]],
+    rawProposals: QueueBand => List[Proposal],
     queueTimes:   QueueBand => QueueTime,
     config:       QueueEngineConfig,
     extras:       List[Proposal],
@@ -25,13 +25,11 @@ object QueueEngine2 extends QueueEngine {
   ): QueueCalc = {
 
     // Silently filter out proposals that are not at our site.
-    val siteProposals: Map[QueueBand, List[Proposal]] =
-      rawProposals.map { case (b, ps) =>
-        b -> ps.filter(_.site == config.site)
-      }
+    val siteProposals: QueueBand => List[Proposal] =
+      rawProposals.map(_.filter(_.site == config.site))
 
     // Ensure that everything is in a compatible band. For now we'll just throw if there's an issue.
-    siteProposals.foreach { case (b, ps) => ps.foreach { p => QueueEngineBandProblems.unsafeCheckAll(p, b) }}
+    QueueBand.values.fproduct(siteProposals).foreach { case (b, ps) => ps.foreach { p => QueueEngineBandProblems.unsafeCheckAll(p, b) }}
 
     // Find all the observations that don't participate in the queue process, because their time
     // needs to be subtracted from the initail RaResourceGroup (which happens on construction). Then
@@ -43,10 +41,8 @@ object QueueEngine2 extends QueueEngine {
     val semesterResource  = new SemesterResource(raResourceGroup, timeResourceGroup, QBand1)
 
     // We're done with classical proposals. Filter them out.
-    val queueProposals: Map[QueueBand, List[Proposal]] =
-      siteProposals.map { case (b, ps) =>
-        b -> ps.filter(_.mode != Mode.Classical)
-      }
+    val queueProposals: QueueBand => List[Proposal] =
+      siteProposals.map(_.filter(_.mode != Mode.Classical))
 
     // All we need to construct an obs accessor is the banc.
     def obsAccessor(band: QueueBand): Proposal => List[Observation] = { p =>
