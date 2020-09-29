@@ -4,17 +4,15 @@
 package edu.gemini.tac.qengine.api.config
 
 import edu.gemini.tac.qengine.p2.rollover.RolloverReport
-import edu.gemini.tac.qengine.p1.QueueBand
 
 /**
  * A combination of configuration required by the Queue Engine.
  */
 final case class QueueEngineConfig(
-  binConfig: SiteSemesterConfig,
-  partnerSeq: PartnerSequence,
-  rollover: RolloverReport,
+  binConfig:           SiteSemesterConfig,
+  partnerSeq:          PartnerSequence,
+  rollover:            RolloverReport,
   restrictedBinConfig: RestrictionConfig = RestrictionConfig(),
-  explicitQueueAssignments: Map[String, QueueBand] = Map.empty
 ) {
   def site = binConfig.site
 }
