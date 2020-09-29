@@ -20,7 +20,6 @@ object QueueEngine2 extends QueueEngine {
     rawProposals: QueueBand => List[Proposal],
     queueTimes:   QueueBand => QueueTime,
     config:       QueueEngineConfig,
-    extras:       List[Proposal],
     removed:      List[Proposal]
   ): QueueCalc = {
 

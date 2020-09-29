@@ -67,8 +67,6 @@ trait Workspace[F[_]] {
   def queueConfig(path: Path): F[QueueConfig]
   def bandedProposals: F[Map[QueueBand, List[Proposal]]]
   def proposals: F[List[Proposal]]
-  def extras: F[List[Proposal]]
-  def extrasNotSubmitted: F[List[Proposal]]
   def removed: F[List[Proposal]]
 
   def proposal(ref: String): F[(File, NonEmptyList[Proposal])]
@@ -93,8 +91,6 @@ trait Workspace[F[_]] {
 object Workspace {
 
   val EmailTemplateDir      = Paths.get("email_templates")
-  val ExtrasDir             = Paths.get("extras")
-  val ExtrasNotSubmittedDir = Paths.get("extras_not_submitted")
   val RemovedDir            = Paths.get("removed")
   val EditsDir              = Paths.get("edits")
   val BulkEditsFile         = Paths.get("bulk_edits.xls")
@@ -102,7 +98,7 @@ object Workspace {
   def proposalDir(band: QueueBand) = Paths.get(s"band-${band.number}")
 
   val WorkspaceDirs: List[Path] =
-    List(EmailTemplateDir, ExtrasDir, ExtrasNotSubmittedDir, RemovedDir, EditsDir) ++
+    List(EmailTemplateDir, RemovedDir, EditsDir) ++
     QueueBand.values.map(proposalDir)
 
   object Default {
@@ -286,16 +282,8 @@ object Workspace {
           QueueBand.values.traverse(b => loadProposals(proposalDir(b)).map(ps => Map(b -> ps))).map(_.combineAll)
 
         def proposals: F[List[Proposal]] = bandedProposals.map(_.values.toList.flatten)
-        def extras: F[List[Proposal]] = loadProposals(ExtrasDir)
-
-        def extrasNotSubmitted: F[List[Proposal]] =
-          loadProposals(ExtrasNotSubmittedDir, addAcceptance)
 
         def removed: F[List[Proposal]] = loadProposals(RemovedDir)
-
-        def addAcceptance(f: File, p: edu.gemini.model.p1.mutable.Proposal): F[Unit] =
-          log.warn(s"Adding LP acceptance for ${f.getName} - ${p.getInvestigators().getPi().getLastName()}") *>
-          Sync[F].delay(NonSubmitted.addAcceptance(f, p))
 
         def proposal(ref: String, band: QueueBand): F[(File, NonEmptyList[Proposal])] =
           for {

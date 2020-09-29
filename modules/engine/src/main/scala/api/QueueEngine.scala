@@ -13,7 +13,6 @@ trait QueueEngine {
     bandedProposals: QueueBand => List[Proposal],
     queueTimes:   QueueBand => QueueTime,
     config: QueueEngineConfig,
-    extras: List[Proposal] = Nil,
     removed: List[Proposal] = Nil
   ): QueueCalc
 }
