@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory
  */
 final class QueueFrame(val queue: ProposalQueueBuilder, val iter: BlockIterator, val res: SemesterResource) {
   private val LOGGER = LoggerFactory.getLogger("edu.gemini.itac")
-  private val applicationLogger = QueueCalculationLog.logger
+  private val applicationLogger = LoggerFactory.getLogger("edu.gemini.itac")
 
   val lName = LOGGER.getName
 
