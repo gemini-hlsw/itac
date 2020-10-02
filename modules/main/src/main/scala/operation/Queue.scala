@@ -4,24 +4,17 @@
 package itac
 package operation
 
-import edu.gemini.tac.qengine.impl.QueueEngine2.RemovedRejectMessage
-import edu.gemini.spModel.core.Site
-import edu.gemini.tac.qengine.p1.Proposal
-import itac.util.Colors
 import cats._
 import cats.effect._
 import cats.implicits._
+import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.api.QueueEngine
-import io.chrisdavenport.log4cats.Logger
-import edu.gemini.tac.qengine.p1.QueueBand
-import edu.gemini.tac.qengine.log.AcceptMessage
-import edu.gemini.tac.qengine.log.RejectPartnerOverAllocation
-import java.nio.file.Path
-import edu.gemini.tac.qengine.log.RejectCategoryOverAllocation
-import edu.gemini.tac.qengine.log.RejectOverAllocation
-import edu.gemini.tac.qengine.log.RejectTarget
-import edu.gemini.tac.qengine.log.RejectConditions
 import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.tac.qengine.log._
+import edu.gemini.tac.qengine.p1.{ Proposal, QueueBand }
+import io.chrisdavenport.log4cats.Logger
+import itac.util.Colors
+import java.nio.file.Path
 
 object Queue {
 

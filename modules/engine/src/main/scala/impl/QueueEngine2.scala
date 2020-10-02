@@ -7,14 +7,12 @@ import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.tac.qengine.impl.block.BlockIterator
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
 import edu.gemini.tac.qengine.impl.resource.{ RaResource, RaResourceGroup, SemesterResource, TimeResourceGroup }
-import edu.gemini.tac.qengine.log.{ ProposalLog, RejectMessage }
+import edu.gemini.tac.qengine.log.{ ProposalLog, RemovedRejectMessage, AcceptMessage }
 import edu.gemini.tac.qengine.p1._
 import edu.gemini.tac.qengine.p1.QueueBand._
 import edu.gemini.tac.qengine.util.BoundedTime
 import edu.gemini.tac.qengine.api.queue.ProposalQueue
 import scalaz._, Scalaz._
-import edu.gemini.tac.qengine.log.AcceptMessage
-// import edu.gemini.tac.qengine.log.AcceptMessage
 
 object QueueEngine2 extends QueueEngine {
 
@@ -51,12 +49,16 @@ object QueueEngine2 extends QueueEngine {
       if (band == QBand3) p.band3Observations else p.obsList
     }
 
+    // It's a moutful!
+    def proposalsGoupedByPartnerAndSortedByRanking(band: QueueBand): Map[Partner, List[Proposal]] =
+      queueProposals(band).groupBy(_.ntac.partner).mapValues(_.sortBy(_.ntac.ranking))
+
     // All we need to construct a BlockIterator is the band.
     def iteratorFor(band: QueueBand): BlockIterator =
       BlockIterator(
         queueTimes(band).partnerQuanta,
         config.partnerSeq.sequence,
-        queueProposals(band).groupByPartnerAndSortedByRanking,
+        proposalsGoupedByPartnerAndSortedByRanking(band),
         obsAccessor(band)
       )
 
@@ -127,15 +129,6 @@ object QueueEngine2 extends QueueEngine {
 
 
 
-
-  // helper crap below
-
-  case class RemovedRejectMessage(prop: Proposal) extends RejectMessage {
-    def reason: String = "Unknown."
-    def detail: String = "Proposal was removed from consideration."
-  }
-
-
   implicit class ProposalListOps(self: List[Proposal]) {
     def groupByPartnerAndSortedByRanking: Map[Partner, List[Proposal]] =
       self.groupBy(_.ntac.partner).mapValues(_.sortBy(_.ntac.ranking))
@@ -173,15 +166,12 @@ object QueueEngine2 extends QueueEngine {
               math.round(t.limit.toMinutes.value) / 60.0
             )
         }
-        //s"$ra\n${conds.mkString("\n")}"
+
         ra :: conds
     }
 
-    override def toString = {
+    override def toString =
       report.mkString("\n")
-      //BucketsAllocationImpl(Nil)
-      //System.exit(0)
-    }
 
     // Annoying, we need to turn off ANSI color if output is being redirected. In the `main` project
     // we have a `Colors` module for this but in `engine` there's no such thing we we'll just hack
