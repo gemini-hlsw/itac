@@ -13,6 +13,7 @@ import edu.gemini.tac.qengine.p1.QueueBand._
 import edu.gemini.tac.qengine.util.BoundedTime
 import edu.gemini.tac.qengine.api.queue.ProposalQueue
 import scalaz._, Scalaz._
+import edu.gemini.tac.qengine.log.AcceptMessage
 // import edu.gemini.tac.qengine.log.AcceptMessage
 
 object QueueEngine2 extends QueueEngine {
@@ -77,7 +78,7 @@ object QueueEngine2 extends QueueEngine {
       }
 
     // Run the queues in order!
-    val ((finalResource, finalLog), (queue1WithoutClassical, queue2, queue3)) = (
+    val ((finalResource, band123log), (queue1WithoutClassical, queue2, queue3)) = (
       runQueue(QBand1) |@| runQueue(QBand2) |@| runQueue(QBand3)
     ).tupled.run((semesterResource, ProposalLog.Empty))
 
@@ -94,6 +95,14 @@ object QueueEngine2 extends QueueEngine {
       def queueTime = queueTimes(QBand4)
       def toList    = queueProposals(QBand4)
     }
+
+    // Band 4 proposals need to go into the log.
+    val band1234log: ProposalLog =
+      queue4.toList.foldLeft(band123log)((l, p) => l.updated(p.id, QBand4, AcceptMessage(p)))
+
+    // Removed proposals need to go into the log.
+    val finalLog: ProposalLog =
+      removed.foldLeft(band1234log)((l, p) => l.updated(p.id, QBand1, RemovedRejectMessage(p)))
 
     // Assemble our final result for the user
     new QueueCalc {
