@@ -1,8 +1,6 @@
 package edu.gemini.tac.qengine.ctx
 
 import edu.gemini.spModel.core.Site
-// import edu.gemini.model.p1.mutable.{ NgoPartner, ExchangePartner }
-// import edu.gemini.model.p1.immutable.LargeProgramPartner
 
 sealed abstract class Partner(
   val id: String,
