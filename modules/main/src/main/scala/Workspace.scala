@@ -28,8 +28,6 @@ import java.time.format.DateTimeFormatter
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.ZoneId
-import cats.effect.Resource
-import java.nio.file.StandardCopyOption
 import edu.gemini.util.security.auth.ProgIdHash
 import java.io.File
 import cats.data.NonEmptyList
@@ -51,12 +49,6 @@ trait Workspace[F[_]] {
   def readData[A: Decoder](path: Path): F[A]
 
   def readText(path: Path): F[String]
-
-  def extractResource(name: String, path: Path): F[Path]
-
-  def extractEmailTemplate(template: EmailTemplateRef): F[Path]
-
-  def readEmailTemplate(template: EmailTemplateRef): F[EmailTemplate]
 
   /**
    * Create a directory relative to `cwd`, including any intermediate ones, returning the path of
@@ -90,7 +82,6 @@ trait Workspace[F[_]] {
 
 object Workspace {
 
-  val EmailTemplateDir      = Paths.get("email_templates")
   val RemovedDir            = Paths.get("removed")
   val EditsDir              = Paths.get("edits")
   val BulkEditsFile         = Paths.get("bulk_edits.xls")
@@ -98,8 +89,7 @@ object Workspace {
   def proposalDir(band: QueueBand) = Paths.get(s"band-${band.number}")
 
   val WorkspaceDirs: List[Path] =
-    List(EmailTemplateDir, RemovedDir, EditsDir) ++
-    QueueBand.values.map(proposalDir)
+    List(RemovedDir, EditsDir) ++ QueueBand.values.map(proposalDir)
 
   object Default {
     val CommonConfigFile = Paths.get("common.yaml")
@@ -151,15 +141,6 @@ object Workspace {
             }
           }
 
-        def readEmailTemplate(template: EmailTemplateRef): F[EmailTemplate] =
-          readText(EmailTemplateDir.resolve(template.filename)).map { text =>
-            new EmailTemplate {
-              def name          = template.filename + " "
-              def titleTemplate = text.linesIterator.next.drop(2).trim
-              def bodyTemplate  = text
-            }
-          }
-
         def readData[A: Decoder](path: Path): F[A] =
           readText(path)
             .map(parser.parse(_))
@@ -189,20 +170,6 @@ object Workspace {
 
         def readAll[A: Decoder](path: Path): F[List[A]] =
           listFiles(path).flatMap(_.traverse(readData[A]))
-
-        def extractResource(name: String, path: Path): F[Path] =
-          Resource.make(Sync[F].delay(getClass.getResourceAsStream(name)))(is => Sync[F].delay(is.close()))
-            .use { is =>
-              val p = dir.resolve(path)
-              Sync[F].delay(p.toFile.getAbsoluteFile.isFile).flatMap {
-                case false | `force` => log.info(s"Writing: $p") *>
-                  Sync[F].delay(Files.copy(is, p, StandardCopyOption.REPLACE_EXISTING)).as(p)
-                case true  => Sync[F].raiseError(ItacException(s"File exists: $p"))
-              }
-            }
-
-        def extractEmailTemplate(template: EmailTemplateRef): F[Path] =
-          extractResource(template.resourcePath, EmailTemplateDir.resolve(template.filename))
 
         def writeText(path: Path, text: String): F[Path] = {
           val p = dir.resolve(path)

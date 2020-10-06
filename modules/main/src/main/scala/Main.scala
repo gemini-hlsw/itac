@@ -27,10 +27,11 @@ import org.slf4j.impl.ColoredSimpleLogger
 import scala.util.control.NonFatal
 import itac.config.PerSite
 import edu.gemini.spModel.core.ProgramId
-// object Stub {
-//   def main(args: Array[String]): Unit =
-//     Main.main(Array("-d", "hawaii", "summarize", "CL-2020B-014"))
-// }
+
+object Stub {
+  def main(args: Array[String]): Unit =
+    Main.main(Array("-d", "test-ws", "queue", "-n"))
+}
 
 object Main extends CommandIOApp(
   name    = "itac",
@@ -234,12 +235,6 @@ trait MainOpts { this: CommandIOApp =>
       header = "Create PI emails for successful proposals."
     )((siteConfig, rolloverReport, progids).mapN(EmailGen[IO](QueueEngine, _, _, _)))
 
-  lazy val emailFix: Command[Operation[IO]] =
-    Command(
-      name   = "fix-emails",
-      header = "Add CC line to emails."
-    )((siteConfig, rolloverReport, progids).mapN(EmailAddCC[IO](QueueEngine, _, _, _)))
-
   lazy val bulkEdits: Command[Operation[IO]] =
     Command(
       name = "bulk-edits",
@@ -422,7 +417,6 @@ trait MainOpts { this: CommandIOApp =>
       instrumentSpreadsheet,
       directorSpreadsheet,
       bulkEdits,
-      emailFix,
       emailSend,
     ).sortBy(_.name).map(Opts.subcommand(_)).foldK
 
