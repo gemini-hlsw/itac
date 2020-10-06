@@ -18,7 +18,6 @@ import java.time.LocalDate
 import edu.gemini.spModel.core.Site
 import cats.effect.ContextShift
 import cats.effect.Sync
-import itac.EmailTemplateRef
 
 object Init {
 
@@ -32,7 +31,6 @@ object Init {
         def init: F[ExitCode] =
           for {
             _ <- Workspace.WorkspaceDirs.traverse(ws.mkdirs(_))
-            _ <- EmailTemplateRef.all.traverse(ws.extractEmailTemplate)
             _ <- ws.writeText(Workspace.Default.CommonConfigFile, initialCommonConfig(semester))
             _ <- Site.values.toList.traverse(s => ws.writeText(Workspace.Default.queueConfigFile(s), initialSiteConfig(s)))
             _ <- Site.values.toList.traverse(s => Rollover(s, None).run(ws, log, b))
@@ -81,56 +79,12 @@ object Init {
         |  - ${sd2.asJson.asYaml.spaces2.trim}
         |  - ${sd3.asJson.asYaml.spaces2.trim}
         |
-        |# Partner shares and sites for this semester, along with partner contact information.
-        |partners:
-        |  KR:
-        |    email: dummy@example.org
-        |    percent: 4.5
-        |    sites: GN GS
-        |  SUBARU:
-        |    email: dummy@example.org
-        |    percent: 0.0
-        |    sites: GN GS
-        |  CFH:
-        |    email: dummy@example.org
-        |    percent: 0.0
-        |    sites: GN GS
-        |  CL:
-        |    email: dummy@example.org
-        |    percent: 10.6
-        |    sites: GS
-        |  KECK:
-        |    email: dummy@example.org
-        |    percent: 0.0
-        |    sites: GN GS
-        |  BR:
-        |    email: dummy@example.org
-        |    percent: 5.85
-        |    sites: GN GS
-        |  AU:
-        |    email: dummy@example.org
-        |    percent: 0.0
-        |    sites: GN GS
-        |  CA:
-        |    email: dummy@example.org
-        |    percent: 13.0
-        |    sites: GN GS
-        |  UH:
-        |    email: dummy@example.org
-        |    percent: 10.6
-        |    sites: GN
-        |  AR:
-        |    email: dummy@example.org
-        |    percent: 2.8
-        |    sites: GN GS
-        |  US:
-        |    email: dummy@example.org
-        |    percent: 48.05
-        |    sites: GN GS
-        |  LP:
-        |    email: dummy@example.org
-        |    percent: 15.22
-        |    sites: GN GS
+        |# Email Configuration
+        |emailConfig:
+        |  deadline: 2020-09-23
+        |  instructionsURL: http://foo.bar
+        |  eavesdroppingURL:  http://foo.bar
+        |  hashKey: <secret>
         |
         |# Partner sequences for both sites.
         |sequence:
@@ -181,7 +135,7 @@ object Init {
         |# Observing hours per partner in each band.
         |hours:
         |  US: 226.5	247.8	165.2
-        |  CA:  60.5	 66.2	 44.2
+        |  CA:  60.5  66.2	 44.2
         |  AR:  11.3  11.3   7.5
         |  BR:  23.8  23.8  15.9
         |  KR:  18.2  18.2  12.2
@@ -199,7 +153,10 @@ object Init {
         |initialPick: US
         |
         |# Queue filling limit (percentage over 80).
-        |overfill: 5
+        |overfill:
+        |  QBand1: 5
+        |  QBand2: 5
+        |  QBand3: 10
         |""".stripMargin
 
 }

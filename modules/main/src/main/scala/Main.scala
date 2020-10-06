@@ -27,10 +27,11 @@ import org.slf4j.impl.ColoredSimpleLogger
 import scala.util.control.NonFatal
 import itac.config.PerSite
 import edu.gemini.spModel.core.ProgramId
-// object Stub {
-//   def main(args: Array[String]): Unit =
-//     Main.main(Array("-d", "hawaii", "summarize", "CL-2020B-014"))
-// }
+
+object Stub {
+  def main(args: Array[String]): Unit =
+    Main.main(Array("-d", "test-ws", "queue", "-n"))
+}
 
 object Main extends CommandIOApp(
   name    = "itac",
