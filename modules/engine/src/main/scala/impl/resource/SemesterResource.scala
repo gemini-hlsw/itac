@@ -3,7 +3,6 @@ package edu.gemini.tac.qengine.impl.resource
 import edu.gemini.tac.qengine.impl.block.Block
 import edu.gemini.tac.qengine.util.Time
 import edu.gemini.tac.qengine.log.{ RejectMessage, RejectPartnerOverAllocation}
-// import edu.gemini.tac.qengine.p1.QueueBand.Category.Guaranteed
 import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
 import edu.gemini.tac.qengine.p1.{ObservingConditions, Target}
 import org.slf4j.LoggerFactory
@@ -19,8 +18,8 @@ final case class SemesterResource(
 
   private def reserveAll(block: Block, queue: ProposalQueueBuilder): RejectMessage Either SemesterResource =
     for {
-      newRa   <- ra.reserve(block, queue).right
-      newTime <- time.reserve(block, queue).right
+      newRa   <- ra.reserve(block, queue)
+      newTime <- time.reserve(block, queue)
     } yield new SemesterResource(newRa, newTime, band)
 
   // Determines whether the partner is already over allocated.

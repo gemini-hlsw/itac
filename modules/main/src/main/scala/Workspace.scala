@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// Copyright (c) 2016-2020 Association of Universities for Research in Astronomy, Inc. (AURA)
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac
@@ -28,10 +28,10 @@ import java.time.format.DateTimeFormatter
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.ZoneId
-import edu.gemini.util.security.auth.ProgIdHash
+import itac.util.ProgIdHash
 import java.io.File
 import cats.data.NonEmptyList
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import edu.gemini.tac.qengine.p1.QueueBand
 
 /** Interface for some Workspace operations. */

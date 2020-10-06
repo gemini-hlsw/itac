@@ -42,7 +42,7 @@ class BlockIteratorTest {
   }
 
   @Test def testZeroQuanta() {
-    List[(Proposal) => List[Observation]](_.obsList, _.band3Observations).map {
+    List[(Proposal) => List[Observation]](_.obsList, _.band3Observations).foreach {
       fn =>
         val it = BlockIterator(genQuanta(0), List(US), genPropLists(1, US, 10, List(10)), fn)
         assertFalse(it.hasNext)

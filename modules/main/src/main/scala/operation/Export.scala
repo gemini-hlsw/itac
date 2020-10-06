@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// Copyright (c) 2016-2020 Association of Universities for Research in Astronomy, Inc. (AURA)
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac.operation
@@ -17,7 +17,7 @@ import java.io.ByteArrayOutputStream
 import java.io.ByteArrayInputStream
 import edu.gemini.model.p1.mutable.Proposal
 import itac.config.Common
-import edu.gemini.util.security.auth.ProgIdHash
+import itac.util.ProgIdHash
 
 object Export {
 

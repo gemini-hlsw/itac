@@ -19,25 +19,25 @@ object Time {
   }
 
   object Millisecs extends Units {
-    def msInUnit =  1l                       // 1 (Long)
+    def msInUnit =  1L                       // 1 (Long)
     override def toString = "ms"
     override def zero = ZeroMillisecs
   }
 
   object Seconds extends Units {
-    def msInUnit =  1000l                   // 1000 ms in a sec
+    def msInUnit =  1000L                   // 1000 ms in a sec
     override def toString = "sec"
     override def zero = ZeroSeconds
   }
 
   object Minutes extends Units {
-    def msInUnit = 60l * Seconds.msInUnit   // 60 sec in a minute
+    def msInUnit = 60L * Seconds.msInUnit   // 60 sec in a minute
     override def toString = "min"
     override def zero = ZeroMinutes
   }
 
   object Hours extends Units {
-    def msInUnit = 60l * Minutes.msInUnit  // 60 min in an hour
+    def msInUnit = 60L * Minutes.msInUnit  // 60 min in an hour
     override def toString = "hrs"
     override def zero = ZeroHours
   }
@@ -99,7 +99,7 @@ final class Time private (val ms: Long, val unit: Units) extends Ordered[Time] w
   def toHours: Time     = to(Time.Hours)
   def toNights: Time    = to(Time.Nights)
 
-  override def toString = value + " " + unit.toString
+  override def toString = value.toString + " " + unit.toString
 
   override def equals(other: Any): Boolean = other match {
        case that: Time => ms == that.ms

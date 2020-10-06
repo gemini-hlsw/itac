@@ -49,7 +49,7 @@ final class QueueFrame(val queue: ProposalQueueBuilder, val iter: BlockIterator,
   def next(activeList : Proposal=>List[Observation]): RejectMessage Either Next = {
     val (block, newIter) = iter.next(activeList)
     logBlock(block)
-    res.reserve(block, queue).right map {
+    res.reserve(block, queue) map {
       r => val (updatedQueue, accept) = updated(block)
            Next(new QueueFrame(updatedQueue, newIter, r), accept)
     }

@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// Copyright (c) 2016-2020 Association of Universities for Research in Astronomy, Inc. (AURA)
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac.operation
@@ -9,7 +9,6 @@ import java.nio.file.Path
 import cats.effect.{Blocker, ExitCode}
 import io.chrisdavenport.log4cats.Logger
 import itac.config.PerSite
-import cats.implicits._
 import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory
 import cats.effect.Sync
 import org.apache.poi.ss.usermodel.FillPatternType
@@ -25,7 +24,7 @@ import scala.math.BigDecimal.RoundingMode
 import edu.gemini.tac.qengine.p1.Proposal
 // import _root_.operation.ProgramPartnerTime
 import edu.gemini.model.p1.mutable.{ Site => _, Proposal => MProposal, _ }
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 // import org.apache.poi.ss.usermodel.Sheet
 import edu.gemini.tac.qengine.p1.QueueBand
 import edu.gemini.spModel.core.ProgramId

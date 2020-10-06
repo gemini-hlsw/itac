@@ -4,7 +4,7 @@ import org.junit._
 import Assert._
 import edu.gemini.spModel.core.Site
 import edu.gemini.spModel.core.Semester
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class ExcelRaBinCalcTest {
 

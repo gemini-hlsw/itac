@@ -9,7 +9,7 @@ class TimeResourceGroup(val lst: List[TimeResource]) extends Resource {
   type T = TimeResourceGroup
 
   def reserve(block: Block, queue: ProposalQueueBuilder): RejectMessage Either TimeResourceGroup =
-    Resource.reserveAll(block, queue, lst).right map {
+    Resource.reserveAll(block, queue, lst) map {
       lst => new TimeResourceGroup(lst)
     }
 

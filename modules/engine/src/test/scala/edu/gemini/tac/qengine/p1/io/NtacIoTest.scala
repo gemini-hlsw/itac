@@ -51,7 +51,7 @@ class NtacIoTest {
   def assertEquals(ns1: IList[Ntac], ns2: IList[Ntac]): Unit = Assert.assertEquals(ns1.map(clean), ns2.map(clean))
 
   def fixtureNtac(p: ProposalFixture) = {
-    Ntac(AU, p.submissionId, Ntac.Rank(some(p.partnerRanking)), Time.hours(1.0), poorWeather = false, some(p.pi.lastName))
+    Ntac(CL, p.submissionId, Ntac.Rank(some(p.partnerRanking)), Time.hours(1.0), poorWeather = false, some(p.pi.lastName))
   }
 
   @Test def testNonJointQueue() {

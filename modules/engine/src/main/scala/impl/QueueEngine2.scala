@@ -51,7 +51,7 @@ object QueueEngine2 extends QueueEngine {
 
     // It's a moutful!
     def proposalsGoupedByPartnerAndSortedByRanking(band: QueueBand): Map[Partner, List[Proposal]] =
-      queueProposals(band).groupBy(_.ntac.partner).mapValues(_.sortBy(_.ntac.ranking))
+      queueProposals(band).groupBy(_.ntac.partner).map { case (k, v) => (k, v.sortBy(_.ntac.ranking)) }
 
     // All we need to construct a BlockIterator is the band.
     def iteratorFor(band: QueueBand): BlockIterator =
@@ -131,7 +131,7 @@ object QueueEngine2 extends QueueEngine {
 
   implicit class ProposalListOps(self: List[Proposal]) {
     def groupByPartnerAndSortedByRanking: Map[Partner, List[Proposal]] =
-      self.groupBy(_.ntac.partner).mapValues(_.sortBy(_.ntac.ranking))
+      self.groupBy(_.ntac.partner).map { case (k, v) => (k, v.sortBy(_.ntac.ranking)) }
   }
 
   case class RaAllocation(name: String, boundedTime: BoundedTime)

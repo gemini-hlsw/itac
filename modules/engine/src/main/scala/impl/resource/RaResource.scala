@@ -56,8 +56,8 @@ final case class RaResource(val absBounds: BoundedTime, val decRes: DecResourceG
         Left(new RejectTarget(block.prop, block.obs, queue.band, RejectTarget.Ra, absBounds.used, absBounds.limit))
       case Some(newAbsBounds) =>
         for {
-          newDecRes   <- decRes.reserve(block, queue).right
-          newCondsRes <- condsRes.reserve(block, queue).right
+          newDecRes   <- decRes.reserve(block, queue)
+          newCondsRes <- condsRes.reserve(block, queue)
         } yield new RaResource(newAbsBounds, newDecRes, newCondsRes)
     }
 

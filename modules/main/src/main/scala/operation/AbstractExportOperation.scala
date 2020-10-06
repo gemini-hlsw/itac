@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// Copyright (c) 2016-2020 Association of Universities for Research in Astronomy, Inc. (AURA)
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac.operation
@@ -19,7 +19,7 @@ import java.nio.file.Path
 import itac.PrimaryNgo.Info
 import cats.data.NonEmptyList
 import itac.config.Common
-import edu.gemini.util.security.auth.ProgIdHash
+import itac.util.ProgIdHash
 
 abstract class AbstractExportOperation[F[_]: Sync](
   qe:             QueueEngine,

@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// Copyright (c) 2016-2020 Association of Universities for Research in Astronomy, Inc. (AURA)
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac.config
@@ -26,7 +26,7 @@ final case class Common(
 
     def partnerSequence(site: Site): PartnerSequence =
       new PartnerSequence {
-        def sequence = self.sequence.forSite(site).toStream #::: sequence
+        def sequence = self.sequence.forSite(site).to(LazyList) #::: sequence
         override def toString = s"PartnerSequence(...)"
       }
 

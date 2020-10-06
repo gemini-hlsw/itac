@@ -26,6 +26,6 @@ class DecBinTest {
   }
 
   @Test def testMap() {
-    assertEquals(10, DecBin(10, 20, TenPercent).map(_.value).binValue.doubleValue(), Double.MinPositiveValue)
+    assertEquals(10, DecBin(10, 20, TenPercent).map(_.value).binValue.doubleValue, Double.MinPositiveValue)
   }
 }

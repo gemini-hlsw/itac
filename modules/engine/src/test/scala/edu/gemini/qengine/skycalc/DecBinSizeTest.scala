@@ -3,7 +3,7 @@ package edu.gemini.qengine.skycalc
 import org.junit._
 import Assert._
 
-import scala.collection.JavaConversions._
+import scala.jdk.CollectionConverters._
 
 class DecBinSizeTest {
   @Test def testNegativeSize() {
@@ -51,13 +51,13 @@ class DecBinSizeTest {
 
   @Test def testGenDecs() {
     val s10   = new DecBinSize(10)
-    val dec10 = s10.genDecs.toList
+    val dec10 = s10.genDecs.asScala.toList
     assertEquals(18, dec10.size)
 
     assertEquals(-85 to 85 by 10, dec10.map(_.toDegrees.getMagnitude.toInt))
 
     val s20   = new DecBinSize(20)
-    val dec20 = s20.genDecs.toList
+    val dec20 = s20.genDecs.asScala.toList
     assertEquals(9, dec20.size)
 
     assertEquals(-80 to 80 by 20, dec20.map(_.toDegrees.getMagnitude.toInt))

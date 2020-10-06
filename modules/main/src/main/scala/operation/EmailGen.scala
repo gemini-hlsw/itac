@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// Copyright (c) 2016-2020 Association of Universities for Research in Astronomy, Inc. (AURA)
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac.operation
@@ -16,7 +16,6 @@ import java.math.RoundingMode
 import edu.gemini.model.p1.mutable.NgoPartner.US
 import edu.gemini.model.p1.mutable.NgoPartner.CA
 import edu.gemini.model.p1.mutable.NgoPartner.UH
-import edu.gemini.model.p1.mutable.NgoPartner.AU
 import edu.gemini.model.p1.mutable.NgoPartner.KR
 import edu.gemini.model.p1.mutable.NgoPartner.BR
 import edu.gemini.model.p1.mutable.NgoPartner.AR
@@ -25,7 +24,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import org.davidmoten.text.utils.WordWrap
 import itac.config.Common
-import edu.gemini.util.security.auth.ProgIdHash
+import itac.util.ProgIdHash
 import java.nio.file.Files
 
 object EmailGen {
@@ -118,7 +117,6 @@ object EmailGen {
       case US => "United States"
       case CA => "Canada"
       case UH => "University of Hawaii"
-      case AU => "Australia"
       case KR => "Republic of Korea"
       case BR => "Brazil"
       case AR => "Argentina"

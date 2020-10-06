@@ -41,7 +41,7 @@ class ProposalFixture {
   )
   def observations   = List(observation)
 
-  def ngoPartner         = im.NgoPartner.AU
+  def ngoPartner         = im.NgoPartner.CL
   val proposalKey        = some(UUID.randomUUID())
   def submissionId       = "abc-123"
   def submissionRequest  = im.SubmissionRequest(oneHour, oneHour, None, None)
