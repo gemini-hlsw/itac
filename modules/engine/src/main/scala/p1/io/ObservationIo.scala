@@ -25,7 +25,13 @@ object ObservationIo {
   def MISSING_TARGET       = "Observation missing target definition"
   def MISSING_TIME         = "Observation missing time amount"
 
-  type GroupedObservations = NonEmptyList[(Site, QueueBand.Category, NonEmptyList[Observation])]
+  sealed trait BandChoice extends Product with Serializable
+  object BandChoice {
+    case object Band124 extends BandChoice
+    case object Band3   extends BandChoice
+  }
+
+  type GroupedObservations = NonEmptyList[(Site, BandChoice, NonEmptyList[Observation])]
 
   def readAllAndGroup(p: im.Proposal, when: Long): ValidationNel[String, GroupedObservations] = {
     // Get the p1 observation's site, defaulting to GN.
@@ -45,8 +51,8 @@ object ObservationIo {
     }
 
     // Get the p1 observations QueueBand.Category (Band 3 or Band 1/2).
-    def band(p1Obs: im.Observation): QueueBand.Category =
-      if (p1Obs.band == im.Band.BAND_3) QueueBand.Category.B3 else QueueBand.Category.B1_2
+    def band(p1Obs: im.Observation): BandChoice =
+      if (p1Obs.band == im.Band.BAND_3) BandChoice.Band3 else BandChoice.Band124
 
     // Site and band tuple for each observation in the proposal in the order
     // the observations appear (to be zipped with the extracted queue engine

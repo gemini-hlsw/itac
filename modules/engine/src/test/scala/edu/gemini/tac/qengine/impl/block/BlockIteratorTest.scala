@@ -36,29 +36,28 @@ class BlockIteratorTest {
   @Test def testEmptyQuanta() {
     List[(Proposal) => List[Observation]](_.obsList, _.band3Observations).map {
       fn =>
-        val it = BlockIterator(partners, PartnerTime.empty, List(US), genPropLists(1, US, 10, List(10), List(10)), fn)
+        val it = BlockIterator(PartnerTime.empty, List(US), genPropLists(1, US, 10, List(10), List(10)), fn)
         assertFalse(it.hasNext)
     }
   }
 
-
   @Test def testZeroQuanta() {
     List[(Proposal) => List[Observation]](_.obsList, _.band3Observations).map {
       fn =>
-        val it = BlockIterator(partners, genQuanta(0), List(US), genPropLists(1, US, 10, List(10)), fn)
+        val it = BlockIterator(genQuanta(0), List(US), genPropLists(1, US, 10, List(10)), fn)
         assertFalse(it.hasNext)
     }
   }
 
   @Test def testEmptyPropListMap() {
-    val it = BlockIterator(partners, genQuanta(10), List(US), Map.empty, _.obsList)
+    val it = BlockIterator(genQuanta(10), List(US), Map.empty, _.obsList)
     assertFalse(it.hasNext)
   }
 
   @Test def testEmptyPropLists() {
     List[(Proposal) => List[Observation]](_.obsList, _.band3Observations).map {
       fn =>
-        val it = BlockIterator(partners, genQuanta(10), List(US), genPropLists(0, US, 10, List(10)), fn)
+        val it = BlockIterator(genQuanta(10), List(US), genPropLists(0, US, 10, List(10)), fn)
         assertFalse(it.hasNext)
     }
   }
@@ -66,7 +65,7 @@ class BlockIteratorTest {
   @Test def testEmptyPartnerSequence() {
     List[(Proposal) => List[Observation]](_.obsList, _.band3Observations).map {
       fn =>
-        val it = BlockIterator(partners, genQuanta(10), Nil, genPropLists(1, US, 10, List(10)), fn)
+        val it = BlockIterator(genQuanta(10), Nil, genPropLists(1, US, 10, List(10)), fn)
         assertFalse(it.hasNext)
     }
   }
@@ -76,7 +75,7 @@ class BlockIteratorTest {
     val qMap = PartnerTime.fromMap(Map(BR -> Time.hours(10), US -> Time.hours(10)))
     // No proposals for Brazil, it will be skipped.
     val pMap: Map[Partner, List[Proposal]] = Map(US -> List(prop))
-    val it = BlockIterator(partners, qMap, List(BR, US), pMap, _.obsList)
+    val it = BlockIterator(qMap, List(BR, US), pMap, _.obsList)
 
     val expected = List(Block(prop, prop.obsList.head, Time.hours(5), isStart = true, isFinal = true))
     assertEquals(expected, it.toList(_.obsList))
@@ -90,7 +89,7 @@ class BlockIteratorTest {
     val qMap = PartnerTime.fromMap(Map(US -> Time.hours(10)))
     val pMap: Map[Partner, List[Proposal]] = Map(BR -> List(brProp), US -> List(usProp))
 
-    val it = BlockIterator(partners, qMap, List(BR, US), pMap, _.obsList)
+    val it = BlockIterator(qMap, List(BR, US), pMap, _.obsList)
 
     val expected = List(Block(usProp, usProp.obsList.head, Time.hours(2), isStart = true, isFinal = true))
     assertEquals(expected, it.toList(_.obsList))
@@ -105,7 +104,7 @@ class BlockIteratorTest {
     val qMap = PartnerTime.fromMap(Map(US -> Time.hours(10)))
     val pMap: Map[Partner, List[Proposal]] = Map(BR -> List(brProp), US -> List(usProp))
 
-    val it = BlockIterator(partners, qMap, List(BR, US), pMap, _.obsList)
+    val it = BlockIterator(qMap, List(BR, US), pMap, _.obsList)
 
     val expected = List(Block(usProp, usProp.obsList.head, Time.hours(2), isStart = true, isFinal = true))
     assertEquals(expected, it.toList(_.obsList))
@@ -117,7 +116,7 @@ class BlockIteratorTest {
     val usProp = mkProp(US, 2, List(2), List.empty)
 
     val pMap: Map[Partner, List[Proposal]] = Map(BR -> List(brProp), US -> List(usProp))
-    val it = BlockIterator(partners, genQuanta(10), List(BR, US, BR, US), pMap, _.obsList)
+    val it = BlockIterator(genQuanta(10), List(BR, US, BR, US), pMap, _.obsList)
 
     val expected = List(
       Block(brProp, brProp.obsList.head, Time.hours(1), isStart = true, isFinal = true),
@@ -133,7 +132,7 @@ class BlockIteratorTest {
     val usProp = mkProp(US, 5, List(5), List.empty)
 
     val pMap: Map[Partner, List[Proposal]] = Map(BR -> List(brProp), US -> List(usProp))
-    val it = BlockIterator(partners, genQuanta(10), List(BR, US, BR, US), pMap, _.obsList)
+    val it = BlockIterator(genQuanta(10), List(BR, US, BR, US), pMap, _.obsList)
 
     val expected = List(
       Block(brProp, brProp.obsList.head, Time.hours(10), isStart = true, isFinal = false),
@@ -149,7 +148,7 @@ class BlockIteratorTest {
     val usProp = mkProp(US, 10, List(10), List.empty)
 
     val pMap: Map[Partner, List[Proposal]] = Map(BR -> List(brProp), US -> List(usProp))
-    val it = BlockIterator(partners, genQuanta(10), List(BR, US, BR, US), pMap, _.obsList)
+    val it = BlockIterator(genQuanta(10), List(BR, US, BR, US), pMap, _.obsList)
 
     val expected = List(
       Block(brProp, brProp.obsList.head, Time.hours(10), isStart = true, isFinal = true),
@@ -165,7 +164,7 @@ class BlockIteratorTest {
 
     val pMap: Map[Partner, List[Proposal]] = Map(BR -> List(brProp), US -> List(usProp))
 
-    val it = BlockIterator(partners, genQuanta(15), List(BR, US, BR, US), pMap, _.obsList)
+    val it = BlockIterator(genQuanta(15), List(BR, US, BR, US), pMap, _.obsList)
 
     // a time quantum of 15 hours will create:
     // BR Quantum 1
@@ -199,7 +198,7 @@ class BlockIteratorTest {
 
     val pMap: Map[Partner, List[Proposal]] = Map(BR -> List(brProp1, brProp2))
 
-    val it = BlockIterator(partners, genQuanta(5), List(BR, US), pMap, _.obsList)
+    val it = BlockIterator(genQuanta(5), List(BR, US), pMap, _.obsList)
 
     val expected = List(
       Block(brProp1, brProp1.obsList.head, Time.hours(1), isStart = true, isFinal = false),
@@ -216,7 +215,7 @@ class BlockIteratorTest {
 
     val pMap: Map[Partner, List[Proposal]] = Map(BR -> List(brProp1, brProp2))
 
-    val it = BlockIterator(partners, genQuanta(1), List(BR, BR, BR, BR, BR), pMap, _.obsList)
+    val it = BlockIterator(genQuanta(1), List(BR, BR, BR, BR, BR), pMap, _.obsList)
 
     val expected = List(
       Block(brProp1, brProp1.obsList.head, Time.hours(1), isStart = true, isFinal = false),
@@ -235,7 +234,7 @@ class BlockIteratorTest {
 
     val pMap: Map[Partner, List[Proposal]] = Map(BR -> List(brProp), US -> List(usProp))
 
-    val it = BlockIterator(partners, genQuanta(15), List(BR, US, BR, US), pMap, _.obsList)
+    val it = BlockIterator(genQuanta(15), List(BR, US, BR, US), pMap, _.obsList)
 
     // Gnerate the blocks from the first time quantum for BR
     val it2 = it.next(_.obsList)._2.next(_.obsList)._2
@@ -256,7 +255,7 @@ class BlockIteratorTest {
 
     val pMap: Map[Partner, List[Proposal]] = Map(BR -> List(brProp), US -> List(usProp))
 
-    val it = BlockIterator(partners, genQuanta(15), List(BR, US, BR, US), pMap, _.obsList)
+    val it = BlockIterator(genQuanta(15), List(BR, US, BR, US), pMap, _.obsList)
 
     // Gnerate the blocks from the first time quantum for BR, and the first for
     // the US, skip the rest of the US proposal
@@ -276,7 +275,7 @@ class BlockIteratorTest {
 
     val pMap: Map[Partner, List[Proposal]] = Map(BR -> List(brProp), US -> List(usProp))
 
-    val it = BlockIterator(partners, genQuanta(15), List(BR, US, BR, US), pMap, _.obsList)
+    val it = BlockIterator(genQuanta(15), List(BR, US, BR, US), pMap, _.obsList)
 
     assertEquals(List(usProp, brProp).sortBy(_.toString), it.remPropList.sortBy(_.toString))
 

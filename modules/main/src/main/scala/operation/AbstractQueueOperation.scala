@@ -4,7 +4,6 @@
 package itac
 package operation
 
-import edu.gemini.tac.qengine.ctx.Partner
 import cats._
 import cats.implicits._
 import edu.gemini.tac.qengine.api.config._
@@ -35,19 +34,14 @@ abstract class AbstractQueueOperation[F[_]](
       cc <- ws.commonConfig
       qc <- ws.queueConfig(siteConfig)
       rr <- ws.readRolloverReport(rolloverReport.getOrElse(s"${qc.site.abbreviation.toLowerCase}-rollovers.yaml"))
-      ps <- ws.proposals
-      es <- ws.extras
-      xs <- ws.extrasNotSubmitted
+      ps <- ws.bandedProposals
       rs <- ws.removed
 
       // Compute the queue
       queueCalc = qe.calc(
-        proposals = ps,
-        // queueTime = qc.engine.queueTime(partners),
-        queueTime = qc.engine.explicitQueueTime,
-        partners  = Partner.all,
-        config    = QueueEngineConfig(
-          partners   = Partner.all,
+        bandedProposals = ps,
+        queueTimes      = qc.engine.queueTimes,
+        config          = QueueEngineConfig(
           partnerSeq = cc.engine.partnerSequence(qc.site),
           rollover   = rr,
           binConfig  = createConfig(
@@ -62,13 +56,11 @@ abstract class AbstractQueueOperation[F[_]](
             absoluteTimeRestrictions = Nil, // TODO
             bandRestrictions         = Nil, // TODO
           ),
-          explicitQueueAssignments = qc.explicitAssignments.getOrElse(Map.empty)
         ),
-        extras  = es ++ xs,
         removed = rs,
       )
 
-    } yield (ps ++ es ++ xs ++ rs, queueCalc)
+    } yield (ps.values.toList.flatten ++ rs, queueCalc)
 
   // These methods were lifted from the ITAC web application.
 

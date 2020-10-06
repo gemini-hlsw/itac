@@ -18,10 +18,8 @@ object BulkEdits {
       def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] = {
         for {
           ps <- ws.proposals
-          es <- ws.extras
-          ns <- ws.extrasNotSubmitted
           rs <- ws.removed
-          _  <- ws.bulkEdits(ps ++ es ++ ns ++ rs)
+          _  <- ws.bulkEdits(ps ++ rs)
         } yield ExitCode.Success
       }
 

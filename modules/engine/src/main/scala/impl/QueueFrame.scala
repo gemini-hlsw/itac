@@ -5,7 +5,6 @@ import edu.gemini.tac.qengine.impl.resource.SemesterResource
 import edu.gemini.tac.qengine.log.{AcceptMessage, RejectMessage}
 import queue.ProposalQueueBuilder
 import edu.gemini.tac.qengine.p1.{Observation, Proposal}
-import edu.gemini.tac.qengine.p1.QueueBand.Category
 import org.slf4j.LoggerFactory
 
 /**
@@ -17,7 +16,7 @@ import org.slf4j.LoggerFactory
  */
 final class QueueFrame(val queue: ProposalQueueBuilder, val iter: BlockIterator, val res: SemesterResource) {
   private val LOGGER = LoggerFactory.getLogger("edu.gemini.itac")
-  private val applicationLogger = QueueCalculationLog.logger
+  private val applicationLogger = LoggerFactory.getLogger("edu.gemini.itac")
 
   val lName = LOGGER.getName
 
@@ -33,10 +32,9 @@ final class QueueFrame(val queue: ProposalQueueBuilder, val iter: BlockIterator,
     if (block.isFinal) {
       // There will be no more blocks for this proposal, so accept it.
       val prop     = block.prop
-      val partner  = prop.id.partner
       val newQueue = queue :+ prop
       applicationLogger.trace("accept(): " + block.toString)
-      (newQueue, Some(AcceptMessage(prop, newQueue.bounds(partner), newQueue.bounds)))
+      (newQueue, Some(AcceptMessage(prop)))
     } else
       // More blocks for this proposal so we can't accept it yet.
       (queue, None)
@@ -57,18 +55,4 @@ final class QueueFrame(val queue: ProposalQueueBuilder, val iter: BlockIterator,
     }
   }
 
-  // Should stop when there are no more time blocks to iterate over or when
-  // we have successfully scheduled enough proposals to move to a new
-  // category.
-  def emptyOrOtherCategory(cat : Category) : Boolean = {
-    val noMoreQueueFrames = ! this.hasNext
-    val finishedBand = ! this.queue.band.isIn(cat)
-    if (noMoreQueueFrames || finishedBand){
-      LOGGER.info("QueueCalcStage.emptyOrOtherCategory leaving band %s caused by No more time blocks for current partner (%s) or finished band (%s)".format(cat, noMoreQueueFrames, finishedBand))
-      applicationLogger.trace("emptyOrOtherCategory == true")
-      true
-    }else{
-      false
-    }
-  }
 }

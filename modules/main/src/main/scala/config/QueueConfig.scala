@@ -10,33 +10,41 @@ import io.circe.generic.semiauto._
 import edu.gemini.qengine.skycalc.RaBinSize
 import edu.gemini.qengine.skycalc.DecBinSize
 import edu.gemini.tac.qengine.ctx.Partner
-import edu.gemini.tac.qengine.api.queue.time.ExplicitQueueTime
+import edu.gemini.tac.qengine.api.queue.time.QueueTime
 import edu.gemini.tac.qengine.p1.QueueBand
+import edu.gemini.tac.qengine.api.queue.time.PartnerTime
+import edu.gemini.tac.qengine.p1.QueueBand.QBand1
+import edu.gemini.tac.qengine.p1.QueueBand.QBand2
+import edu.gemini.tac.qengine.p1.QueueBand.QBand3
+import edu.gemini.tac.qengine.p1.QueueBand.QBand4
 
 // queue configuration
 final case class QueueConfig(
   site:       Site,
-  overfill:   Map[QueueBand.Category, Percent],
+  overfill:   Map[QueueBand, Percent],
   raBinSize:  RaBinSize,
   decBinSize: DecBinSize,
   hours:      Map[Partner, BandTimes],
-  explicitAssignments: Option[Map[String, QueueBand]] // to allow missing in YAML
 ) {
 
   object engine {
 
-    val explicitQueueTime: ExplicitQueueTime = {
+    val queueTimes: QueueBand => QueueTime = { b =>
 
-      val categorizedTimes: Map[(Partner, QueueBand), Time] =
-        hours.toList.flatMap { case (p, BandTimes(b1, b2, b3)) =>
-          List(
-            (p, QueueBand.QBand1) -> b1,
-            (p, QueueBand.QBand2) -> b2,
-            (p, QueueBand.QBand3) -> b3,
-          )
-        } .toMap
+      val pt = PartnerTime.fromFunction { p =>
+        hours.get(p) match {
+          case Some(BandTimes(b1, b2, b3)) =>
+             b match {
+               case QBand1 => b1
+               case QBand2 => b2
+               case QBand3 => b3
+               case QBand4 => Time.Zero // we don't really count time in Band 4
+             }
+          case None    => Time.Zero
+        }
+      }
 
-      new ExplicitQueueTime(categorizedTimes, overfill)
+      new QueueTime(pt, overfill.getOrElse(b, Percent.Zero))
 
     }
 

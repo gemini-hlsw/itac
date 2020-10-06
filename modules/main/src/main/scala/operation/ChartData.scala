@@ -26,7 +26,7 @@ object ChartData {
       def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
         computeQueue(ws).flatMap { case (_, qc) =>
           Sync[F].delay {
-            val ps = qc.queue.toList
+            val ps = qc.toList
 
             val hoursByRAandInstrument: Map[(String, Int), Double] =
               ps.foldMap { p =>

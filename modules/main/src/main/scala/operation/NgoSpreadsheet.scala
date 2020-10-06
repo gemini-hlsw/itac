@@ -86,7 +86,7 @@ object NgoSpreadsheet {
   val Title       = 10 // Program Title: @PROG_TITLE@
 
   def writeSheet(wb: Workbook, p: Partner, bes: Map[String, BulkEdit], ps: List[Proposal], qr: QueueResult): Unit = {
-    val sh = wb.createSheet(qr.queueCalc.context.site.displayName)
+    val sh = wb.createSheet(qr.context.site.displayName)
 
     // A bold font!
     val font = sh.getWorkbook.createFont

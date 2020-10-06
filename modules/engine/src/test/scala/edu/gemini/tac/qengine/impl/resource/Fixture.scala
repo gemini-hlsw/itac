@@ -12,7 +12,6 @@ import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
 import edu.gemini.tac.qengine.api.queue.time.{PartnerTime, QueueTime}
 import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.spModel.core.{Semester, Site}
-import edu.gemini.tac.qengine.api.queue.time.ExplicitQueueTime
 
 object Fixture {
   val site = Site.GS
@@ -45,10 +44,8 @@ object Fixture {
     new TimeResourceGroup(bins.map(new TimeResource(_)))
   }
 
-  def bandResource = new BandResource(RestrictionConfig().bandRestrictions)
-
   def semesterRes(total: Time): SemesterResource =
-    new SemesterResource(raResGroup, timeResourceGroup(total), bandResource, QueueBand.Category.Guaranteed)
+    new SemesterResource(raResGroup, timeResourceGroup(total), QueueBand.QBand1)
 
   // Falls in the first conditions bin (<=CC70)
   val goodCC = ObservingConditions(CC50, IQAny, SBAny, WVAny)
@@ -63,7 +60,7 @@ object Fixture {
   def mkProp(ntac: Ntac, obsDefs: (Target, ObservingConditions, Time)*): Proposal =
     Proposal(ntac, site = site, obsList = obsDefs.map(tup => Observation(null, tup._1, tup._2, tup._3)).toList)
 
-  val emptyQueue = ProposalQueueBuilder(ExplicitQueueTime(Map.empty, Map.empty)) // QueueTime(Site.GN, PartnerTime.empty(partners).map, partners))
+  val emptyQueue = ProposalQueueBuilder(QueueTime(PartnerTime.empty, Percent.Zero), QueueBand.QBand1, Nil) // QueueTime(Site.GN, PartnerTime.empty(partners).map, partners))
   def evenQueue(hrs: Double): ProposalQueueBuilder =
     evenQueue(hrs, Some(QueueTime.DefaultPartnerOverfillAllowance))
 
@@ -73,18 +70,12 @@ object Fixture {
   val Band3Percent = Percent(20)
 
   def evenQueueTime(hrs: Double, overfill: Option[Percent]): QueueTime = {
-    val pt = partners.flatMap(p =>
-      List(
-        (p, QueueBand.QBand1:QueueBand) -> Time.hours(hrs) * Band1Percent,
-        (p, QueueBand.QBand2:QueueBand) -> Time.hours(hrs) * Band2Percent,
-        (p, QueueBand.QBand3:QueueBand) -> Time.hours(hrs) * Band3Percent,
-      )
-    ).toMap
-    ExplicitQueueTime(pt, QueueBand.Category.values.map(_ -> overfill.getOrElse(Percent.Zero)).toMap)
+    val pt = PartnerTime.fromFunction { p => Time.hours(hrs) * Band1Percent }
+    QueueTime(pt, Percent.Zero)
   }
 
   def evenQueue(hrs: Double, overfill: Option[Percent]): ProposalQueueBuilder =
-    ProposalQueueBuilder(evenQueueTime(hrs, overfill))
+    ProposalQueueBuilder(evenQueueTime(hrs, overfill), QueueBand.QBand1)
 
 
 }

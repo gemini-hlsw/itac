@@ -3,6 +3,8 @@ package edu.gemini.tac.qengine.api
 import edu.gemini.tac.qengine.api.queue.ProposalQueue
 import edu.gemini.tac.qengine.log.ProposalLog
 import edu.gemini.tac.qengine.ctx.Context
+import edu.gemini.tac.qengine.p1.QueueBand
+import edu.gemini.tac.qengine.p1.Proposal
 
 trait BucketsAllocation {
   def raTablesANSI: String
@@ -15,7 +17,9 @@ trait BucketsAllocation {
  */
 trait QueueCalc {
   val context: Context
-  val queue: ProposalQueue
+  def queue(band: QueueBand): ProposalQueue
   val proposalLog: ProposalLog
   val bucketsAllocation: BucketsAllocation
+  def toList: List[Proposal] = QueueBand.values.flatMap(queue(_).toList)
 }
+

@@ -4,26 +4,17 @@
 package itac
 package operation
 
-import edu.gemini.tac.qengine.impl.QueueEngine.RemovedRejectMessage
-import edu.gemini.spModel.core.Site
-import edu.gemini.tac.qengine.p1.Proposal
-import itac.util.Colors
 import cats._
 import cats.effect._
 import cats.implicits._
+import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.api.QueueEngine
-import io.chrisdavenport.log4cats.Logger
-import edu.gemini.tac.qengine.p1.QueueBand
-import edu.gemini.tac.qengine.log.AcceptMessage
-import edu.gemini.tac.qengine.log.RejectPartnerOverAllocation
-import edu.gemini.tac.qengine.log.RejectNotBand3
-import edu.gemini.tac.qengine.log.RejectNoTime
-import java.nio.file.Path
-import edu.gemini.tac.qengine.log.RejectCategoryOverAllocation
-import edu.gemini.tac.qengine.log.RejectOverAllocation
-import edu.gemini.tac.qengine.log.RejectTarget
-import edu.gemini.tac.qengine.log.RejectConditions
 import edu.gemini.tac.qengine.ctx.Partner
+import edu.gemini.tac.qengine.log._
+import edu.gemini.tac.qengine.p1.{ Proposal, QueueBand }
+import io.chrisdavenport.log4cats.Logger
+import itac.util.Colors
+import java.nio.file.Path
 
 object Queue {
 
@@ -69,12 +60,6 @@ object Queue {
             val pids = log.proposalIds // proposals that were considered
             val separator = "━" * 100 + "\n"
 
-            // println(s"${Colors.BOLD}The following proposals were not considered due to site, mode, or lack of awarded time or observations.${Colors.RESET}")
-            // ps.filterNot(p => pids.contains(p.id)).foreach { p =>
-            //   println(f"- ${p.id.reference} (${p.site.abbreviation}, ${p.mode.programId}%2s, ${p.ntac.awardedTime.toHours.value}%4.1fh ${p.ntac.partner.id}, ${p.obsList.length}%3d obs)")
-            // }
-            // println()
-
             println(s"\n${Colors.BOLD}${queueCalc.context.site.displayName} ${queueCalc.context.semester} Queue Candidate${Colors.RESET}")
             println(s"${new java.util.Date}\n") // lazy, this has a reasonable default toString
 
@@ -107,14 +92,12 @@ object Queue {
 
             println(separator)
 
-            def hasProposals(p: Partner): Boolean = queueCalc.queue.toList.exists(_.ntac.partner == p)
+            def hasProposals(p: Partner): Boolean = queueCalc.toList.exists(_.ntac.partner == p)
 
             // Partners that appear in the queue
             Partner.all.sortBy(_.id).filter(hasProposals) foreach { p =>
               println(s"${Colors.BOLD}Partner Details for ${if (p.id == "CFH") "GT" else p.toString} ${Colors.RESET}\n")
               QueueBand.values.foreach { qb =>
-                val q = queueCalc.queue
-
                 print(qb.number match {
                   case 1 => Colors.YELLOW
                   case 2 => Colors.GREEN
@@ -128,58 +111,37 @@ object Queue {
                   printWithGroupBars(ss.toList)
                 }
                 print(Colors.RESET)
-
+                val q = queueCalc.queue(qb)
                 if (qb.number < 4) {
-                  val used  = q.usedTime(qb, p).toHours.value
-                  val avail = q.queueTime(qb, p).toHours.value
+                  val used  = q.usedTime(p).toHours.value
+                  val avail = q.queueTime(p).toHours.value
                   val pct   = if (avail == 0) 0.0 else (used / avail) * 100
-
-                  if (qb != QueueBand.QBand3) {
-                    println(f"                                                 B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%%)")
-                  }
-
-                  // After the Band2 total print an extra B1+B2 total.
-                  if (qb == QueueBand.QBand2) {
-                    val used  = (q.usedTime(QueueBand.QBand1, p) + q.usedTime(QueueBand.QBand2, p)).toHours.value
-                    val avail = (q.queueTime(QueueBand.QBand1, p) + q.queueTime(QueueBand.QBand2, p)).toHours.value
-                    val pct   = if (avail == 0) 0.0 else (used / avail) * 100
-                    println(f"                                              B1+B2 Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%% ≤ ${(queueCalc.queue.queueTime.overfillAllowance(QueueBand.Category.B1_2).foldMap(_.doubleValue) + 100.0)}%3.1f%%)")
-                  }
-
-                  if (qb == QueueBand.QBand3) {
-                    println(f"                                                 B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%% ≤ ${(queueCalc.queue.queueTime.overfillAllowance(QueueBand.Category.B3).foldMap(_.doubleValue) + 100.0)}%3.1f%%)")
-                  }
-
+                  println(f"                                                 B${qb.number} Total: $used%5.1f h/${avail}%5.1f h ($pct%3.1f%% ≤ ${(q.queueTime.overfillAllowance.doubleValue + 100.0)}%3.1f%%)")
                 } else {
-                  val used = q.usedTime(qb, p).toHours.value
+                  val used = q.usedTime(p).toHours.value
                   println(f"                                                 B${qb.number} Total: $used%5.1f h\n")
                 }
-
-                  println()
-
+                println()
               }
               println()
             }
 
-
             println(separator)
             println(s"${Colors.BOLD}Rejection Report for ${queueCalc.context.site.abbreviation}-${queueCalc.context.semester}${Colors.RESET}\n")
 
-            List(QueueBand.Category.B1_2, QueueBand.Category.B3).foreach { qc =>
-              println(s"${Colors.BOLD}The following proposals were rejected for $qc.${Colors.RESET}")
+            QueueBand.values.foreach { qb =>
+              println(s"${Colors.BOLD}The following proposals were rejected for $qb.${Colors.RESET}")
               pids.toList.flatMap(pid => ps.find(_.id == pid)).sortBy(_.ntac.ranking.num).foreach { p=>
                 val pid = p.id
-                log.get(pid, qc) match {
+                log.get(pid, qb) match {
                   case None =>
-                  case Some(AcceptMessage(_, _, _))          => //println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s 👍")
+                  case Some(AcceptMessage(_))                => //println(f"- ${pid.reference}%-20s ${p.piName.orEmpty}%-15s 👍")
                   case Some(m: RejectPartnerOverAllocation)  => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Partner full:"}%-20s ${m.detail}")
-                  case Some(m: RejectNotBand3)               => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Not band 3:"}%-20s ${m.detail}")
-                  case Some(m: RejectNoTime)                 => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"No time awarded:"}%-20s ${m.detail}")
                   case Some(m: RejectCategoryOverAllocation) => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Category overallocated:"}%-20s ${m.detail}")
                   case Some(m: RejectTarget)                 => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${m.raDecType + " bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
                   case Some(m: RejectConditions)             => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Conditions bin full:"}%-20s ${m.detail} -- ${ObservationDigest.digest(m.obs.p1Observation)}")
                   case Some(m: RejectOverAllocation)         => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Overallocation"}%-20s ${m.detail}")
-                  case Some(m: RemovedRejectMessage)         => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Unknown"}%-20s ${m.detail}")
+                  case Some(m: RemovedRejectMessage)         => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Removed"}%-20s ${m.detail}")
                   case Some(lm)                              => println(f"${p.ntac.ranking.num.orEmpty}%5.1f ${pid.reference}%-20s ${p.piName.orEmpty}%-15s ${"Miscellaneous"}%-20s ${lm.getClass.getName}")
                 }
               }
@@ -188,9 +150,7 @@ object Queue {
 
             println(s"${Colors.BOLD}The following proposals for ${queueCalc.context.site.abbreviation} do not appear in the proposal log:${Colors.RESET}")
             ps.foreach { p =>
-              val b12msg = log.get(p.id, QueueBand.Category.B1_2)
-              val b3msg  = log.get(p.id, QueueBand.Category.B3)
-              if (p.site == queueCalc.context.site && b12msg.isEmpty && b3msg.isEmpty) {
+              if (p.site == queueCalc.context.site && QueueBand.values.forall(log.get(p.id, _).isEmpty)) {
                 println(f"- ${p.id.reference}%-30s ${p.piName.orEmpty}%-20s  ${p.time.toHours.value}%5.1f h (${p.mode})")
               }
             }

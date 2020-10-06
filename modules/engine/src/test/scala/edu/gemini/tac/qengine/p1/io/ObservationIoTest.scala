@@ -4,8 +4,8 @@ import edu.gemini.model.p1.{immutable => im}
 import edu.gemini.model.p1.{mutable => m}
 import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.p1._
-import edu.gemini.tac.qengine.p1.io.ObservationIo.GroupedObservations
-import edu.gemini.tac.qengine.p1.QueueBand.Category.{B1_2, B3}
+import edu.gemini.tac.qengine.p1.io.ObservationIo.{ GroupedObservations, BandChoice }
+import edu.gemini.tac.qengine.p1.io.ObservationIo.BandChoice.{ Band124 => B1_2, Band3 => B3 }
 import edu.gemini.tac.qengine.util.Time
 
 import org.junit._
@@ -193,7 +193,7 @@ class ObservationIoTest {
     }
   }
 
-  private def mapObsGroups(grps: GroupedObservations): Map[(Site, QueueBand.Category), NonEmptyList[Observation]] =
+  private def mapObsGroups(grps: GroupedObservations): Map[(Site, BandChoice), NonEmptyList[Observation]] =
     grps.list.toList.map { case (s, c, os) => (s, c) -> os }.toMap
 
   @Test def readMultiSiteObservations(): Unit = {
