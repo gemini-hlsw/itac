@@ -27,6 +27,12 @@ final case class QueueConfig(
   hours:      Map[Partner, BandTimes],
 ) {
 
+  // Ensure that we don't allocate time for partners at the wrong site.
+  Partner.all.filterNot(_.sites(site)).foreach { p =>
+    if (hours.contains(p))
+      throw new ItacException(s"Partner ${p.id} cannot be given time at $site! Please remove this from your queue configuration.")
+  }
+
   object engine {
 
     val queueTimes: QueueBand => QueueTime = { b =>
