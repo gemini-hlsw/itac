@@ -266,8 +266,8 @@ object Workspace {
         def proposal(ref: String): F[(File, NonEmptyList[Proposal])] =
           proposal(ref, QueueBand.QBand1) orElse
           proposal(ref, QueueBand.QBand2) orElse
-          proposal(ref, QueueBand.QBand2) orElse
-          proposal(ref, QueueBand.QBand2)
+          proposal(ref, QueueBand.QBand3) orElse
+          proposal(ref, QueueBand.QBand4)
 
         def newQueueFolder(site: Site): F[Path] =
           for {
