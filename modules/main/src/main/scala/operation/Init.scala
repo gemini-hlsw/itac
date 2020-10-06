@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// Copyright (c) 2016-2020 Association of Universities for Research in Astronomy, Inc. (AURA)
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac.operation
@@ -55,7 +55,7 @@ object Init {
     val start: LocalDate = LocalDate.of(semester.getYear, semester.getHalf.getStartMonth, 1)
 
     def shutdown(offsetDays: Int, lengthDays: Int): LocalDateRange =
-      LocalDateRange(start.plusDays(offsetDays.toLong), start.plusDays((offsetDays + lengthDays).toLong)).right.get
+      LocalDateRange(start.plusDays(offsetDays.toLong), start.plusDays((offsetDays + lengthDays).toLong)).toOption.get
 
     val (sd1, sd2, sd3) = (shutdown(20, 3), shutdown(40, 4), shutdown(70, 2))
 

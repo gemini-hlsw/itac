@@ -163,7 +163,7 @@ object BlockIterator {
   }
 
   private def genIterMap(m: Map[Partner, List[Proposal]], activeList : Proposal=>List[Observation]): IMap =
-    Partner.mkMap(Partner.all, m, Nil).mapValues(PartnerBlockIterator.apply(_, activeList))
+    Partner.mkMap(Partner.all, m, Nil).map { case (k, v) => (k, PartnerBlockIterator.apply(v, activeList)) }
 
   // Finds the first partner that has a non-zero time quantum and a proposal
   // list and returns the sequence advanced to that partner and the time in its

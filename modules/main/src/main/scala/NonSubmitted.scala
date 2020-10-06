@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// Copyright (c) 2016-2020 Association of Universities for Research in Astronomy, Inc. (AURA)
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac
@@ -11,7 +11,7 @@ import edu.gemini.model.p1.mutable.SubmissionAccept
 import javax.xml.datatype.DatatypeFactory
 import edu.gemini.model.p1.mutable.QueueProposalClass
 import java.time.LocalDateTime
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
  * One-off hack for 2020B to make non-submitted GT programs with accidental LP requests kind-of

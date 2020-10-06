@@ -2,7 +2,7 @@
 publish / skip := true
 
 inThisBuild(Seq(
-  scalaVersion := "2.12.12",
+  scalaVersion := "2.13.3",
   resolvers    += "Gemini Repository" at "https://github.com/gemini-hlsw/maven-repo/raw/master/releases",
   homepage := Some(url("https://github.com/gemini-hlsw/itac")),
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
@@ -13,10 +13,9 @@ lazy val engine = project
   .settings(
     name := "itac-engine",
     libraryDependencies ++= Seq(
-      "edu.gemini.ocs"          %% "edu-gemini-model-p1"         % "2020001.1.0",
-      "edu.gemini.ocs"          %% "edu-gemini-shared-skyobject" % "2019101.1.4",
-      "edu.gemini.ocs"          %% "edu-gemini-util-skycalc"     % "2019101.1.4",
-      "edu.gemini.ocs"          %% "edu-gemini-util-security"    % "2019101.1.4",
+      "edu.gemini.ocs"          %% "edu-gemini-model-p1"         % "2021001.1.1",
+      "edu.gemini.ocs"          %% "edu-gemini-shared-skyobject" % "2020001.1.7",
+      "edu.gemini.ocs"          %% "edu-gemini-util-skycalc"     % "2020001.1.7",
       "org.scala-lang.modules"  %% "scala-xml"                   % "2.0.0-M2",
       "org.slf4j"                % "slf4j-api"                   % "1.7.30",
       "javax.xml.bind"           % "jaxb-api"                    % "2.3.1",

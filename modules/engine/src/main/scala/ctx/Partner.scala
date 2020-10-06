@@ -15,7 +15,6 @@ object Partner {
   import Site.{ GN, GS }
 
   case object AR     extends Partner("AR",     Set(GN, GS))
-  case object AU     extends Partner("AU",     Set(GN, GS))
   case object BR     extends Partner("BR",     Set(GN, GS))
   case object CA     extends Partner("CA",     Set(GN, GS))
   case object CFH    extends Partner("CFH",    Set(GN, GS))
@@ -28,7 +27,7 @@ object Partner {
   case object US     extends Partner("US",     Set(GN, GS))
 
   def all: List[Partner] =
-    List(AR, AU, BR, CA, CFH, CL, KECK, KR, LP, SUBARU, UH, US)
+    List(AR, BR, CA, CFH, CL, KECK, KR, LP, SUBARU, UH, US)
 
   def fromString(id: String): Option[Partner] =
     all.find(_.id == id)
@@ -40,7 +39,6 @@ object Partner {
       case Left(NgoPartner.CA) => CA
       case Left(NgoPartner.BR) => BR
       case Left(NgoPartner.KR) => KR
-      case Left(NgoPartner.AU) => AU
       case Left(NgoPartner.US) => US
       case Left(NgoPartner.AR) => AR
       case Left(NgoPartner.CL) => CL

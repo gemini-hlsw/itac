@@ -42,7 +42,7 @@ object Default {
   val BandRestrictions =
     List(NotBand3Restriction, RapidTooBandRestriction, LgsBandRestriction, Iq20BandRestriction)
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     Conditions.searchPath.cats foreach { cat =>
       println(cat)
     }

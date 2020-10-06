@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// Copyright (c) 2016-2020 Association of Universities for Research in Astronomy, Inc. (AURA)
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac.operation
@@ -14,7 +14,7 @@ import java.nio.charset.Charset
 import java.nio.file.{ Files, Path }
 import java.util.stream.Collectors
 import javax.mail.internet.InternetAddress
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object EmailSend {
 

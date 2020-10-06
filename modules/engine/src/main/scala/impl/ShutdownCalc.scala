@@ -5,7 +5,7 @@ import edu.gemini.tac.qengine.api.config.Shutdown
 import edu.gemini.tac.qengine.ctx.Context
 import edu.gemini.tac.qengine.util.Time
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import edu.gemini.spModel.core.Site
 
 /**

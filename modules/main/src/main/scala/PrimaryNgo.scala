@@ -1,11 +1,11 @@
-// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// Copyright (c) 2016-2020 Association of Universities for Research in Astronomy, Inc. (AURA)
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac
 
 import cats.implicits._
 import edu.gemini.model.p1.mutable._
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import org.slf4j.LoggerFactory
 
 object PrimaryNgo {
@@ -55,7 +55,6 @@ object PrimaryNgo {
   private def find(pi: PrincipalInvestigator): Option[Info] =
     pi.getAddress.getCountry.trim.toUpperCase match {
       case "ARGENTINA"                => Some(Info(NgoPartner.AR, None))
-      case "AUSTRALIA"                => Some(Info(NgoPartner.AU, None))
       case "BRASIL"                   |
            "BRAZIL"                   => Some(Info(NgoPartner.BR, None))
       case "CANADA"                   => Some(Info(NgoPartner.CA, None))

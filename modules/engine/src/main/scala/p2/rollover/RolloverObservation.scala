@@ -10,7 +10,7 @@ import edu.gemini.tac.qengine.util.Angle
 import edu.gemini.tac.qengine.util.Time
 import scala.util.Try
 import scalaz._, Scalaz._
-import edu.jhu.htm.parsers.ParseException
+import java.text.ParseException
 
 /**
  * A class that represents a rollover time observation.  The time for each

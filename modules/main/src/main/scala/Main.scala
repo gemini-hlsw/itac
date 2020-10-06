@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// Copyright (c) 2016-2020 Association of Universities for Research in Astronomy, Inc. (AURA)
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac
@@ -8,7 +8,6 @@ import cats.data.Validated
 import cats.data.ValidatedNel
 import cats.effect._
 import cats.implicits._
-import cats.instances.short
 import com.monovore.decline.Argument
 import com.monovore.decline.Command
 import com.monovore.decline.effect.CommandIOApp
@@ -28,10 +27,10 @@ import scala.util.control.NonFatal
 import itac.config.PerSite
 import edu.gemini.spModel.core.ProgramId
 
-object Stub {
-  def main(args: Array[String]): Unit =
-    Main.main(Array("-d", "test-ws", "queue", "-n"))
-}
+// object Stub {
+//   def main(args: Array[String]): Unit =
+//     Main.main(Array("-d", "test-ws", "queue", "-n"))
+// }
 
 object Main extends CommandIOApp(
   name    = "itac",

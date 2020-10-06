@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// Copyright (c) 2016-2020 Association of Universities for Research in Astronomy, Inc. (AURA)
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac
@@ -7,7 +7,7 @@ import cats._
 import cats.implicits._
 import edu.gemini.model.p1.mutable._
 import java.{util => ju}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
  * Eq instances for determining whether mutable blueprints are equivalent. Super sketchy, only use

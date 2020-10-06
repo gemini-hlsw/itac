@@ -35,7 +35,7 @@ final case class ProposalQueueBuilder(
   /**
    * Adds all the proposals to the queue in the traversal order.
    */
-  def ++(props: Traversable[Proposal]): ProposalQueueBuilder =
+  def ++(props: Iterable[Proposal]): ProposalQueueBuilder =
     props.foldLeft(this) {
       (q, p) => q :+ p
     }

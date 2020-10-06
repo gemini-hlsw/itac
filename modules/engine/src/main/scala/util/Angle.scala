@@ -138,7 +138,7 @@ final class Angle(private val theta: Double, val unit: Unit) extends Ordered[Ang
       if (mag <= 0) this else new Angle(mag - unit.circle, unit)
   }
 
-  private def radians(): Double = unit.convert(mag, Rad)
+  private def radians: Double = unit.convert(mag, Rad)
 
   /**
    * Computes the trigometric sine of the angle.

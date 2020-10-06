@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// Copyright (c) 2016-2020 Association of Universities for Research in Astronomy, Inc. (AURA)
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac.operation
@@ -11,7 +11,6 @@ import io.chrisdavenport.log4cats.Logger
 import itac.config.PerSite
 import org.apache.poi.ss.usermodel.Workbook
 import edu.gemini.spModel.core.Site
-import cats.implicits._
 import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory
 import cats.effect.Sync
 import org.apache.poi.ss.usermodel.FillPatternType

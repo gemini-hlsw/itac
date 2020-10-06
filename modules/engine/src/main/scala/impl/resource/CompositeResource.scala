@@ -7,8 +7,8 @@ import edu.gemini.tac.qengine.impl.queue.ProposalQueueBuilder
 object CompositeResource {
   def compositeReserve[A <: Resource{type T=A}, B <: Resource{type T=B}](block: Block, queue: ProposalQueueBuilder, a: A, b: B): RejectMessage Either (A, B) =
     for {
-      newA <- a.reserve(block, queue).right
-      newB <- b.reserve(block, queue).right
+      newA <- a.reserve(block, queue)
+      newB <- b.reserve(block, queue)
     } yield (newA, newB)
 }
 
@@ -25,7 +25,7 @@ class CompositeResource[A <: Resource{type T=A}, B <: Resource{type T=B}](val _1
   def this(tup: (A, B)) = this(tup._1, tup._2)
 
   def reserve(block: Block, queue: ProposalQueueBuilder): RejectMessage Either CompositeResource[A, B] =
-    CompositeResource.compositeReserve(block, queue, _1, _2).right map {
+    CompositeResource.compositeReserve(block, queue, _1, _2) map {
       tup => new CompositeResource(tup)
     }
 

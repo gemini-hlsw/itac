@@ -1,7 +1,7 @@
 package edu.gemini.tac.qengine.log
 
 import edu.gemini.tac.qengine.p1.{QueueBand, Proposal}
-import collection.SortedSet
+import scala.collection.immutable.SortedSet
 import edu.gemini.tac.qengine.log.ProposalLog.Key
 
 /**

@@ -82,16 +82,16 @@ object Percent {
 
 final case class Percent(value: BigDecimal) extends Ordered[Percent] {
   private def quotient: BigDecimal = BigDecimal(value.underlying().movePointLeft(2))
-  def *(thatValue: Int): Double    = (quotient * thatValue).doubleValue()
-  def *(thatValue: Long): Double   = (quotient * thatValue).doubleValue()
-  def *(thatValue: Double): Double = (quotient * thatValue).doubleValue()
+  def *(thatValue: Int): Double    = (quotient * thatValue).doubleValue
+  def *(thatValue: Long): Double   = (quotient * thatValue).doubleValue
+  def *(thatValue: Double): Double = (quotient * thatValue).doubleValue
 
   def +(that: Percent): Percent = Percent(value + that.value)
   def -(that: Percent): Percent = Percent(value - that.value)
 
-  override def toString: String = value + "%"
+  override def toString: String = value.toString + "%"
 
   def compare(that: Percent): Int = value.compare(that.value)
 
-  def doubleValue: Double = value.doubleValue()
+  def doubleValue: Double = value.doubleValue
 }

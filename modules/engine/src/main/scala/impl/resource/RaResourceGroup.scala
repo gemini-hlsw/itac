@@ -39,7 +39,7 @@ case class RaResourceGroup(val grp: RaBinGroup[RaResource]) extends Resource {
             new RaResourceGroup(
               RaBinGroup(
                 grp.bins.zip(s) map {
-                  case (raResr, blk) => raResr.reserve(blk, queue).right.get
+                  case (raResr, blk) => raResr.reserve(blk, queue).toOption.get
                 }
               )
             )
@@ -48,7 +48,7 @@ case class RaResourceGroup(val grp: RaBinGroup[RaResource]) extends Resource {
 
   private def reserveNonToo(block: Block, queue: ProposalQueueBuilder): RejectMessage Either RaResourceGroup = {
     val ra = block.obs.target.ra
-    grp(ra).reserve(block, queue).right.map(bin => new RaResourceGroup(grp.updated(ra, bin)))
+    grp(ra).reserve(block, queue).map(bin => new RaResourceGroup(grp.updated(ra, bin)))
   }
 
   def tooBlocks(block: Block): Option[Seq[Block]] =
@@ -63,10 +63,10 @@ case class RaResourceGroup(val grp: RaBinGroup[RaResource]) extends Resource {
     (new RaResourceGroup(grp.updated(target.ra, bin)), rem)
   }
 
-  def reserveAvailable[U <% CategorizedTime](reduction: U): (RaResourceGroup, Time) =
+  def reserveAvailable[U](reduction: U)(implicit ev: U => CategorizedTime): (RaResourceGroup, Time) =
     reserveAvailable(reduction.time, reduction.target, reduction.conditions)
 
-  def reserveAvailable[U <% CategorizedTime](reductions: List[U]): (RaResourceGroup, Time) = {
+  def reserveAvailable[U](reductions: List[U])(implicit ev: U => CategorizedTime): (RaResourceGroup, Time) = {
     reductions.foldLeft((this,Time.Zero)) {
       case ((grp0, time), reduction) =>
         grp0.reserveAvailable(reduction) match {

@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Association of Universities for Research in Astronomy, Inc. (AURA)
+// Copyright (c) 2016-2020 Association of Universities for Research in Astronomy, Inc. (AURA)
 // For license information see LICENSE or https://opensource.org/licenses/BSD-3-Clause
 
 package itac
@@ -9,7 +9,7 @@ import gsp.math.RightAscension
 import gsp.math.Declination
 import edu.gemini.tac.qengine.{ p1 => itac }
 import io.circe.Decoder
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import org.slf4j.LoggerFactory
 
 /**

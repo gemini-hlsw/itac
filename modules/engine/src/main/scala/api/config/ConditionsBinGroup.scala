@@ -18,7 +18,7 @@ final case class ConditionsBinGroup[A](
   def updated(that: Seq[ConditionsBin[A]]): ConditionsBinGroup[A] =
     updated(that.map(bin => (bin.cat, bin.binValue)))
 
-  def updated(that: TraversableOnce[(ConditionsCategory, A)]): ConditionsBinGroup[A] = {
+  def updated(that: Iterable[(ConditionsCategory, A)]): ConditionsBinGroup[A] = {
     require(
       that.foldLeft(true)((res, tup) => res && bins.get(tup._1).isDefined),
       "Cannot handle unknown categories."
@@ -38,7 +38,7 @@ final case class ConditionsBinGroup[A](
     bins.get(c).getOrElse(sys.error(s"ConditionsBinGroup: no mapping for $c"))
 
   def map[B](f: A => B): ConditionsBinGroup[B] =
-    new ConditionsBinGroup[B](bins.mapValues(f(_)), searchPath)
+    new ConditionsBinGroup[B](bins.map { case (k,v) => (k, f(v)) }, searchPath)
 
   def category(oc: ObservingConditions): ConditionsCategory = searchPath.category(oc)
 
