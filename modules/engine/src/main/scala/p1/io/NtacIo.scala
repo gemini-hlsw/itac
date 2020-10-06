@@ -9,6 +9,7 @@ import edu.gemini.tac.qengine.util.Time
 import scalaz._
 import Scalaz._
 import scalaz.Validation.FlatMap._
+import edu.gemini.model.p1.mutable.SpecialProposalType.GUARANTEED_TIME
 
 /**
  * Extract Ntac information from a proposal, ignoring any non-accepted
@@ -59,6 +60,7 @@ class NtacIo {
       case q: im.QueueProposalClass     => q.subs.fold(ngoNtacs(p, _), exchangeNtacs(p, _))
       case c: im.ClassicalProposalClass => c.subs.fold(ngoNtacs(p, _), exchangeNtacs(p, _))
       case l: im.LargeProgramClass      => lpNtacs(p, l.sub)
+      case s: im.SpecialProposalClass   => specialNtacs(p, s.sub)
       case _                            => UNEXPECTED_PROPOSAL_CLASS.failureNel[NonEmptyList[Ntac]]
     }
 
@@ -79,6 +81,12 @@ class NtacIo {
 
   private def lpNtacs(p: im.Proposal, sub: im.LargeProgramSubmission): ValidationNel[String, NonEmptyList[Ntac]] =
     singletonNtac(ntac(sub, Partner.LP.id, Some(p.investigators.pi.lastName)))
+
+  private def specialNtacs(p: im.Proposal, sub: im.SpecialSubmission): ValidationNel[String, NonEmptyList[Ntac]] =
+    sub.specialType match {
+      case GUARANTEED_TIME => singletonNtac(ntac(sub, Partner.GT.id, Some(p.investigators.pi.lastName)))
+      case t               => s"Special submission type $t is not supported in ITAC.".failureNel
+    }
 
   private def ntac(sub: im.Submission, partnerId: String, lead: Option[String]): ValidationNel[String, Option[Ntac]] = {
     val partner = Partner.fromString(partnerId).toSuccess(UNKNOWN_PARTNER_ID(partnerId).wrapNel)

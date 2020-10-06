@@ -1,8 +1,6 @@
 package edu.gemini.tac.qengine.ctx
 
 import edu.gemini.spModel.core.Site
-import edu.gemini.model.p1.mutable.{ NgoPartner, ExchangePartner }
-import edu.gemini.model.p1.immutable.LargeProgramPartner
 
 sealed abstract class Partner(
   val id: String,
@@ -25,29 +23,13 @@ object Partner {
   case object SUBARU extends Partner("SUBARU", Set(GN, GS))
   case object UH     extends Partner("UH",     Set(GN))
   case object US     extends Partner("US",     Set(GN, GS))
+  case object GT     extends Partner("GT",     Set(GN, GS))
 
   def all: List[Partner] =
-    List(AR, BR, CA, CFH, CL, KECK, KR, LP, SUBARU, UH, US)
+    List(AR, BR, CA, CFH, CL, KECK, KR, LP, SUBARU, UH, US, GT)
 
   def fromString(id: String): Option[Partner] =
     all.find(_.id == id)
-
-  def fromPhase1(
-    value: Either[NgoPartner, Either[ExchangePartner, LargeProgramPartner.type]]
-  ): Partner =
-    value match {
-      case Left(NgoPartner.CA) => CA
-      case Left(NgoPartner.BR) => BR
-      case Left(NgoPartner.KR) => KR
-      case Left(NgoPartner.US) => US
-      case Left(NgoPartner.AR) => AR
-      case Left(NgoPartner.CL) => CL
-      case Left(NgoPartner.UH) => UH
-      case Right(Left(ExchangePartner.KECK)) => KECK
-      case Right(Left(ExchangePartner.SUBARU)) => SUBARU
-      case Right(Left(ExchangePartner.CFH)) => CFH
-      case Right(Right(LargeProgramPartner)) => LP
-    }
 
   /**
    * Creates a map with entries for all Partners according to the value
