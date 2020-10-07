@@ -86,6 +86,16 @@ final case class BulkEdit(
       Option(pc.getNgo()).foreach(_.forEach(update))
       if (pc.getItac == null) pc.setItac(new Itac)
       update(pc.getItac, disp, pc.getTooOption)
+
+      // Set the band 3 min requested time (if any) to be the awarded time (if any).
+      val band3request = pc.getBand3Request()
+      if (band3request != null) {
+        disp match {
+          case Accept(_, _, award) => band3request.setMinTime(award)
+          case _                   => ()
+        }
+      }
+
     }
 
   private def update(pc: ClassicalProposalClass, disp: Disposition): Unit =
