@@ -67,8 +67,7 @@ object NgoSpreadsheet {
           // TODO: include removed proposals
           p   <- computeQueue(ws)
           (ps, qc) = p
-          bes <- ws.bulkEdits(ps)
-          _   <- wbs.traverse { case (p, wb) => Sync[F].delay(writeSheet(wb, p, bes, ps, QueueResult(qc))) }
+          _   <- wbs.traverse { case (p, wb) => Sync[F].delay(writeSheet(wb, p, ps, QueueResult(qc))) }
         } yield ExitCode.Success
     }
 
@@ -84,7 +83,7 @@ object NgoSpreadsheet {
   val ItacComment =  9 // ITAC Feedback: @ITAC_COMMENTS@
   val Title       = 10 // Program Title: @PROG_TITLE@
 
-  def writeSheet(wb: Workbook, p: Partner, bes: Map[String, BulkEdit], ps: List[Proposal], qr: QueueResult): Unit = {
+  def writeSheet(wb: Workbook, p: Partner, ps: List[Proposal], qr: QueueResult): Unit = {
     val sh = wb.createSheet(qr.context.site.displayName)
 
     // A bold font!
@@ -176,7 +175,7 @@ object NgoSpreadsheet {
         addCell(Time, (e.proposals.foldMap(_.time)).toHours.value)
         addCell(ProgTime, progTime.toHours.value)
         addCell(PartTime, partTime.toHours.value)
-        addCell(ItacComment, bes.get(p.ntac.reference).flatMap(_.itacComment).orEmpty)
+        addCell(ItacComment, p.itacComment.orEmpty)
         addCell(Title, p.p1proposal.title)
         n += 1
 

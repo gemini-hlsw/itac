@@ -26,7 +26,6 @@ object BulkEditFile {
     val Pi            = 3
     val NgoEmail      = 4
     val StaffEmail    = 5
-    val ItacComment   = 6
   }
 
   def createOrUpdate[F[_]: Sync](file: File, ps: List[Proposal]): F[Unit] =
@@ -51,8 +50,7 @@ object BulkEditFile {
         val ref         = r.getCell(Reference).getStringCellValue()
         val ngoEmail    = r.getCell(NgoEmail).safeGetStringCellValue
         val staffEmail  = r.getCell(StaffEmail).safeGetStringCellValue
-        val itacComment = r.getCell(ItacComment).safeGetStringCellValue
-        ref -> BulkEdit(ngoEmail, staffEmail, itacComment)
+        ref -> BulkEdit(ngoEmail, staffEmail)
       } .toMap
     }
 
@@ -82,7 +80,6 @@ object BulkEditFile {
         sh.setColumnWidth(Pi,            256 * 20)
         sh.setColumnWidth(NgoEmail,      256 * 20)
         sh.setColumnWidth(StaffEmail,    256 * 20)
-        sh.setColumnWidth(ItacComment,   256 * 64)
         sh.createFreezePane(3, 1, 3, 1);
         sh.setZoom(120)
         wb.write(file)
@@ -115,9 +112,8 @@ object BulkEditFile {
       create(Site,          "Site")
       create(Instrument,    "Instrument")
       create(Pi,            "PI")
-      create(NgoEmail,      "NGO Email")
-      create(StaffEmail,    "Staff Email")
-      create(ItacComment,   "ITAC Comment")
+      create(NgoEmail,      "Principal Support")
+      create(StaffEmail,    "Additional Support")
 
     }
 
@@ -141,7 +137,6 @@ object BulkEditFile {
       newR.createCell(Instrument   ).setCellValue(instruments(p))
       newR.createCell(NgoEmail     ).setCellValue(p.ntac.ngoEmail.orEmpty)
       newR.createCell(StaffEmail   ).setBlank()
-      newR.createCell(ItacComment  ).setBlank()
     }
 
     def updateSheet(sh: Sheet, ps: List[Proposal]): Unit = {

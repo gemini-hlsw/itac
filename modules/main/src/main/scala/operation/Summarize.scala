@@ -79,16 +79,17 @@ object Summarize {
         val header =
           s"""|# Edit file for ${summary.reference}
               |# You may edit [only] the following fields/columns.
-              |# - Award as Decimal Hours
-              |# - Rank  as Decimal
-              |# - Band  as B1/2, B3
-              |# - CC    as ${CloudCover.values.mkString(", ")}
-              |# - IQ    as ${ImageQuality.values.mkString(", ")}
-              |# - SB    as ${SkyBackground.values.mkString(", ")}
-              |# - WV    as ${WaterVapor.values.mkString(", ")}
-              |# - RA    as HMS
-              |# - Dec   as Signed DMS(signed dms)
-              |# - Name  as Text, set to DISABLE to disable observation
+              |# - Award    as Decimal Hours
+              |# - Rank     as Decimal
+              |# - Comment  as Text
+              |# - Band     as B1/2, B3
+              |# - CC       as ${CloudCover.values.mkString(", ")}
+              |# - IQ       as ${ImageQuality.values.mkString(", ")}
+              |# - SB       as ${SkyBackground.values.mkString(", ")}
+              |# - WV       as ${WaterVapor.values.mkString(", ")}
+              |# - RA       as HMS
+              |# - Dec      as Signed DMS(signed dms)
+              |# - Name     as Text, set to DISABLE to disable observation
               |""".stripMargin
 
         if (edit) {

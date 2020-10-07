@@ -12,12 +12,10 @@ import itac.BulkEdit.Reject
 final case class BulkEdit(
   ngoEmail:      Option[String],
   staffEmail:    Option[String],
-  itacComment:   Option[String]
 ) {
   import BulkEdit.Disposition
 
-  private def update(itac: Itac, disp: Disposition, too: TooOption): Unit = {
-    itacComment.foreach(itac.setComment)
+  private def update(itac: Itac, disp: Disposition, too: TooOption): Unit =
     disp match {
 
       case Accept(pid, band, award) =>
@@ -35,8 +33,6 @@ final case class BulkEdit(
         itac.setAccept(null)
         itac.setReject(new ItacReject)
     }
-
-  }
 
   private def update(sa: SubmissionAccept): Unit =
     if (sa != null) {

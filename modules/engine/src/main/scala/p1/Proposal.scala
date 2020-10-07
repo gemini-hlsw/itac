@@ -21,6 +21,7 @@ case class Proposal(
   p1proposal: edu.gemini.model.p1.immutable.Proposal = null, // to avoid having to generate one for testcases that don't care
   p1mutableProposal: edu.gemini.model.p1.mutable.Proposal = null, // to avoid having to generate one for testcases that don't care
   p1xmlFile: File = null, // to avoid having to generate one for testcases that don't care
+  itacComment: Option[String] = None,
 ) {
 
   lazy val id: Proposal.Id = Proposal.Id(ntac.partner, ntac.reference)
