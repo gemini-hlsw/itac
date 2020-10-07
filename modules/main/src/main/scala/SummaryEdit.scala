@@ -19,10 +19,11 @@ import cats.effect.Sync
  * dance if you're not accustomed to programming with mutable values, as I no longer am.
  */
 case class SummaryEdit(
-  reference: String,
-  ranking:   Double,
-  award:     edu.gemini.model.p1.mutable.TimeAmount,
-  obsEdits:  List[SummaryObsEdit]
+  reference:   String,
+  ranking:     Double,
+  award:       edu.gemini.model.p1.mutable.TimeAmount,
+  obsEdits:    List[SummaryObsEdit],
+  itacComment: Option[String]
 ) {
 
   private def update(os: java.util.List[Observation], p: Proposal): Unit = {
@@ -78,41 +79,54 @@ case class SummaryEdit(
       update(fts.getResponse())
     }
 
+  private def updateItacComment(pc: ProposalClass): Unit =
+    itacComment.foreach { c =>
+      if (pc.getItac == null) pc.setItac(new Itac)
+      pc.getItac().setComment(c)
+    }
+
   private def update(pc: QueueProposalClass): Unit =
     if (pc != null) {
       update(pc.getExchange())
       Option(pc.getNgo()).foreach(_.forEach(update))
+      updateItacComment(pc)
     }
 
   private def update(pc: ClassicalProposalClass): Unit =
     if (pc != null) {
       Option(pc.getNgo()).foreach(_.forEach(update))
       update(pc.getExchange())
+      updateItacComment(pc)
     }
 
   private def update(pc: SpecialProposalClass): Unit =
     if (pc != null) {
       update(pc.getSubmission())
+      updateItacComment(pc)
     }
 
   private def update(pc: ExchangeProposalClass): Unit =
     if (pc != null) {
       Option(pc.getNgo()).foreach(_.forEach(update))
+      updateItacComment(pc)
     }
 
   private def update(pc: LargeProgramClass): Unit =
     if (pc != null) {
       update(pc.getSubmission())
+      updateItacComment(pc)
     }
 
   private def update(pc: SubaruIntensiveProgramClass): Unit =
     if (pc != null) {
       update(pc.getSubmission())
+      updateItacComment(pc)
     }
 
-  private def update(ft: FastTurnaroundProgramClass): Unit =
-    if (ft != null) {
-      update(ft.getSubmission())
+  private def update(pc: FastTurnaroundProgramClass): Unit =
+    if (pc != null) {
+      update(pc.getSubmission())
+      updateItacComment(pc)
     }
 
   // // N.B. let's not overload here because it will spin if don't implement a case above.
@@ -154,7 +168,8 @@ object SummaryEdit {
           rank  <- c.downField("Rank").as[Double]
           award <- c.downField("Award").as[BigDecimal].map { d => val ta = new TimeAmount(); ta.setUnits(TimeUnit.HR); ta.setValue(d.bigDecimal); ta }
           obs   <- c.downField("Observations").as[Map[String, List[SummaryObsEdit]]].map(_.values.toList.combineAll)
-        } yield SummaryEdit(ref, rank, award, obs)
+          itac  <- c.downField("Comment").as[Option[String]]
+        } yield SummaryEdit(ref, rank, award, obs, itac)
     }
 
 }

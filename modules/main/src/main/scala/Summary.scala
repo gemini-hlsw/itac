@@ -33,6 +33,7 @@ case class Summary(slices: OneOrTwo[Proposal]) {
   val award     = slices.fst.ntac.awardedTime
   val rank      = slices.fst.ntac.ranking.num.orEmpty
   val too       = slices.fst.too
+  val comment   = slices.fst.itacComment
 
   def yaml(disable: Option[Site])(implicit ev: Ordering[BandedObservation]) =
     f"""|
@@ -43,6 +44,7 @@ case class Summary(slices: OneOrTwo[Proposal]) {
         |Award:     ${award.toHours.value}%1.1f
         |Rank:      ${rank}%1.1f
         |ToO:       ${too}
+        |Comment:   ${comment.orEmpty}
         |
         |Observations:
         |${siteSummaries.foldMap(_.yaml(disable))}

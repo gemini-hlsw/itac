@@ -185,6 +185,10 @@ class ProposalIo {
           val b12 = bandList(ObservationIo.BandChoice.Band124)
           val b3 = bandList(ObservationIo.BandChoice.Band3)
 
+          // Get the itacComment, if any.
+          val itacComment: Option[String] =
+            p.proposalClass.itac.flatMap(_.comment)
+
           // done
           Proposal(
             ntacʹ,
@@ -198,7 +202,8 @@ class ProposalIo {
             piEmail(p),
             p,
             mp,
-            p1xml
+            p1xml,
+            itacComment
           )
 
       }
