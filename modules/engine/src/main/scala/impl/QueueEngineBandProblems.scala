@@ -29,8 +29,13 @@ object QueueEngineBandProblems {
       s"Rapid TOO proposal not allowed in Band ${b.number}"
   }
 
+  val StandardTooOutsideBand12: Problem = {
+    case (p, b@(QBand3 | QBand4)) if p.too == Too.standard =>
+      s"Standard TOO proposal not allowed in band ${b.number}"
+  }
+
   val All: List[Problem] =
-    List(ClassicalNotInBand1, NoObsInBand, LpInBand3Or4, RapidTooOutsideBand1)
+    List(ClassicalNotInBand1, NoObsInBand, LpInBand3Or4, RapidTooOutsideBand1, StandardTooOutsideBand12)
 
   def checkAll(p: Proposal, b: QueueBand): ValidationNel[String, Unit] =
     All.foldMap(problem => problem.lift((p, b)).toFailureNel(()))
@@ -40,7 +45,7 @@ object QueueEngineBandProblems {
       case Success(u)  => u
       case Failure(es) =>
         throw new RuntimeException(
-          s"""|Proposal ${p.ntac.reference} is improperly categorized in Band ${b.number}:
+          s"""|Proposal ${p.ntac.reference} is improperly categorized:
               |  ${es.intercalate("\n  ")}
               |""".stripMargin
         )
