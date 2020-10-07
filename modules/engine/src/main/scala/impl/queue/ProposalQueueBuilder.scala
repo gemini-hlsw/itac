@@ -24,10 +24,6 @@ final case class ProposalQueueBuilder(
   /**
    * Adds the given proposal to the queue and returns a new ProposalQueue
    * reflecting the change.
-   *
-   * @throws IllegalArgumentException if in band 3 and the proposal cannot be
-   * scheduled in band3, or if the proposal would use more than the remaining
-   * queue time
    */
   def :+(prop: Proposal): ProposalQueueBuilder =
     copy(proposals = prop :: proposals)
