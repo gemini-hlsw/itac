@@ -12,7 +12,6 @@ import itac.BulkEdit.Reject
 final case class BulkEdit(
   ngoEmail:      Option[String],
   staffEmail:    Option[String],
-  ntacComment:   Option[String],
   itacComment:   Option[String]
 ) {
   import BulkEdit.Disposition
@@ -47,7 +46,6 @@ final case class BulkEdit(
   private def update(sr: SubmissionResponse): Unit =
     if (sr != null) {
       update(sr.getAccept())
-      ntacComment.foreach(sr.setComment)
     }
 
   private def update(ns: NgoSubmission): Unit =

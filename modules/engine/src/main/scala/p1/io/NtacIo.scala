@@ -43,7 +43,7 @@ object NtacIo {
     }
 
   private def mkNtac(lead: Option[String], submission: im.Submission)(p: Partner)(response: Option[Response]): Option[Ntac] =
-    response.map { r => Ntac(p, r.ref, r.rank, r.awardedTime, r.poorWeather, lead, response.flatMap(_.comment), submission, None, response.flatMap(_.ngoEmail)) }
+    response.map { r => Ntac(p, r.ref, r.rank, r.awardedTime, r.poorWeather, lead, submission, None, response.flatMap(_.ngoEmail)) }
 
   private val NoneAccepted = NONE_ACCEPTED.failureNel[NonEmptyList[Ntac]]
 
