@@ -12,7 +12,6 @@ case class Ntac(partner: Partner,
   awardedTime: Time,
   poorWeather: Boolean,
   lead: Option[String] = None,
-  comment: Option[String] = None,
   submission: Submission = null,
   undividedTime: Option[Time] = None, // this will be set to the original time if the actual time is reduced due to a site split
   ngoEmail: Option[String] = None
