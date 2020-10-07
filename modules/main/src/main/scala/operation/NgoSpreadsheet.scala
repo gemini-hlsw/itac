@@ -218,7 +218,7 @@ object NgoSpreadsheet {
       addCell(Time, 0.0)
       addCell(ProgTime, 0.0)
       addCell(PartTime, 0.0)
-      addCell(ItacComment, "")
+      addCell(ItacComment, p.itacComment.orEmpty)
       addCell(Title, p.p1proposal.title)
       n += 1
 
