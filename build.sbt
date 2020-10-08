@@ -98,7 +98,7 @@ lazy val channel = project
             |    "ivy2Local"
             |  ],
             |  "dependencies": [
-            |    "edu.gemini:itac-main_2.12:${version.value}"
+            |    "edu.gemini:itac-main_2.13:${version.value}"
             |  ],
             |  "javaOptions": [
             |    "-Djava.awt.headless=true"
