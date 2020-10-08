@@ -6,7 +6,7 @@ This is the repository for the Gemini Observatory ITAC application.
 
 If you already have a 2020B workspace set up, you can do `cs update itac` to get a new version, then skip down to **Using ITAC** below.
 
-**Please read** the new documentation because there have been some changes. If you wish to use
+**Please read** the new documentation because there have been some changes.
 
 ## Installing Itac
 
