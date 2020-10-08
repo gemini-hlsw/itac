@@ -1,6 +1,12 @@
-# ITAC Command-Line Interface
+# ITAC Command-Line Interface (2021A)
 
 This is the repository for the Gemini Observatory ITAC application.
+
+## Upgrading from 2020B
+
+If you already have a 2020B workspace set up, you can do `cs update itac` to get a new version, then skip down to **Using ITAC** below.
+
+**Please read** the new documentation because there have been some changes. If you wish to use
 
 ## Installing Itac
 
@@ -58,13 +64,14 @@ ITAC is a command-line application that reads proposal XML files along with some
 
 1. Initialize a workspace directory to contain all your input files, and copy proposal XML files into the `proposals` directory.
 1. Customize configuration files as necessary to specify partner times, shutdown blocks, target changes, and so on.
-1. Create queues and examine the output, tweaking configuration until you're satisfied.
+1. Place proposals in band folders according to desired queue placement.
+1. Create queues and examine the output, tweaking configuration and applying proposal edits until you're satisfied.
 1. Send emails and ingest the proposals into the ODB.
 
 Keep in mind the following big ideas:
 
 - All the input files are just normal text files. You can rename them, make backups, store them in source control, manage them however you like.
-- All proposal "edits" are specified as part of configuration and occur as proposals are loaded from disk. *The XML files are never touched.* This means you undo or change edits simply by updating the contents of the `edits/` folder.
+- All proposal "edits" are specified as part of configuration and occur as proposals are loaded from disk. *The XML files are never touched.* This means you can undo or change edits by updating the contents of the `edits/` folder.
 - The input files completely specify the Queue. If you want to have several queues that you can compare, you can have several sets of input files.
 
 Now let's examine these steps in more detail.
@@ -76,64 +83,66 @@ Now let's examine these steps in more detail.
 Create a new directory, move into it, and initialize the ITAC workspace for next semester.
 
 ```
-$ mkdir itac-example
-$ cd itac-example
-$ itac init 2020B
-[INFO ] Creating folder: email_templates
-[INFO ] Creating folder: proposals
+tmp$ mkdir itac-example
+tmp$ cd itac-example/
+itac-example$ itac init 2021A
+[INFO ] Creating folder: removed
 [INFO ] Creating folder: edits
-[INFO ] Writing: ./email_templates/ngo_classical.vm
-[INFO ] Writing: ./email_templates/ngo_exchange.vm
-[INFO ] Writing: ./email_templates/ngo_joint_classical.vm
-[INFO ] Writing: ./email_templates/ngo_joint_exchange.vm
-[INFO ] Writing: ./email_templates/ngo_joint_poor_weather.vm
-[INFO ] Writing: ./email_templates/ngo_joint_queue.vm
-[INFO ] Writing: ./email_templates/ngo_poor_weather.vm
-[INFO ] Writing: ./email_templates/ngo_queue.vm
-[INFO ] Writing: ./email_templates/pi_successful.vm
-[INFO ] Writing: ./email_templates/unsuccessful.vm
+[INFO ] Creating folder: band-1
+[INFO ] Creating folder: band-2
+[INFO ] Creating folder: band-3
+[INFO ] Creating folder: band-4
 [INFO ] Writing: ./common.yaml
 [INFO ] Writing: ./gn-queue.yaml
 [INFO ] Writing: ./gs-queue.yaml
 [INFO ] Fetching current rollover report from Gemini North...
-[INFO ] Got rollover information for 2020A
+[INFO ] Got rollover information for 2020B
 [INFO ] Writing: ./gn-rollovers.yaml
 [INFO ] Fetching current rollover report from Gemini South...
-[INFO ] Got rollover information for 2020A
+[INFO ] Got rollover information for 2020B
 [INFO ] Writing: ./gs-rollovers.yaml
 [INFO ] init: initialized ITAC workspace in .
+itac-example$
 ```
 
 `itac` has created a bunch of files. Let's look at them.
 
 ```
-$ tree
+itac-example$ tree -F --dirsfirst
 .
+├── band-1/
+├── band-2/
+├── band-3/
+├── band-4/
+├── edits/
+├── removed/
 ├── common.yaml
-├── email_templates
-│   ├── ngo_classical.vm
-│   ├── ngo_exchange.vm
-│   ├── ngo_joint_classical.vm
-│   ├── ngo_joint_exchange.vm
-│   ├── ngo_joint_poor_weather.vm
-│   ├── ngo_joint_queue.vm
-│   ├── ngo_poor_weather.vm
-│   ├── ngo_queue.vm
-│   ├── pi_successful.vm
-│   └── unsuccessful.vm
 ├── gn-queue.yaml
 ├── gn-rollovers.yaml
 ├── gs-queue.yaml
-├── gs-rollovers.yaml
-└── proposals
+└── gs-rollovers.yaml
+
+6 directories, 5 files
+itac-example$
 ```
 
-- `common.yaml` contains configuration that applies to all queues and is unlikely to change much. You will need to edit this file to specify shutdown times and partner contact emails. The rest is probably ok.
-- `email_templates/` contains the default email templates which are used to generate emails that are sent to partners and PIs. You can change these if you wish (and if you do, let us know so we can change the defaults) but they're probably ok.
-- `gn-queue.yaml` and `gs-queue.yaml` specify site-specific queue configurations. The most important part here is `hours` which specifies per-partner hours in bands 1, 2, and 3. Remaining configuration is probably ok.
-- `gn-rollovers.yaml` and `gn-rollovers.yaml` contain rollover reports fetched from the ODBs at GN and GS. You may wish to adjust the times here. To re-fetch a rollover report you can say `itac --force rollover --south` (or `--north`). Note that you must have an internal or VPN connection to do this.
-- `proposals/` is where your proposal XML files (from Jared's system) need to go.
-- `edits/` is where you define edits that are applied to the XML files as they are read.
+- `band-<n>/` are where your proposal XML files (from Jared's system) need to go. Place each proposal in the folder associated with the desired band placement.
+- `edits/` is where you define edits that are applied to the XML files as they are read. See **Editing Proposals** below for more information.
+- `removed/` is a folder for proposals that have been removed from consideration for some reason. These will appear in reports and so on but will not be considered by the queue engine.
+- `common.yaml` contains configuration that applies to all queues and is unlikely to change much. You will need to edit this file to specify shutdown times, and prior to finalizing the queue you will need to specify information for email generation.
+- `<site>-queue.yaml` specify site-specific queue configurations. The most important part here is `hours` which specifies per-partner hours in bands 1, 2, and 3. You may need to add or remove partner lines.
+- `<site>-rollovers.yaml` contain rollover reports fetched from the ODBs at GN and GS. You may wish to adjust the times here. To re-fetch a rollover report you can say `itac --force rollover --south` (or `--north`). Note that you must have an internal or VPN connection to do this.
+
+#### Experimenting with Last Semester's Data
+
+If you wish to try out the new software with last semester's data it is recommended that you copy/paste the relevant information from old configuration files into the new ones, because some sections in the old config files are no longer needed and may lead to confusion.
+
+- All proposals must go into the appropriate band folders. The `extras/` and `extras_not_submitted/` folders are no longer used.
+- `common.yaml` is compatible with the 2020B, but some entries are no longer used.
+- `<site>-queue.yaml` files have a different format for band ovefills.
+- `<site>-rollovers.yaml` files can be copied verbatim; the format has not changed.
+- `edits/` from 2020B are *not* compatible with this version and cannot be used.
+- `bulk_edits.xls` from 2020B can be used, but the ITAC/NTAC comments columns will be ignored. You can delete them to avoid confusion.
 
 ### Get Help
 
@@ -157,19 +166,15 @@ The following commands display information about the proposals in your workspace
 
 ### Construct a Queue
 
-Once your workspace is set up you can run a queue, but if you want to play with this software it's likely you don't have any proposals for the current semester. So to do this we can **turn back time** and run a previous semester's queue again. Let's use 2020A.
-
-1. Put the 2020A proposal XMLs in `proposals/`.
-1. Edit `common.yaml` and change the semester to `2020A`.
-1. Replace the rollover files if desired (Rob can send you 20A rollovers).
-
-You should now be able to run a queue and see output that includes rejection messages, bin usage, and band assignments.
+Assuming everything is configured reasonably, you should be able to generate a queue.
 
 ```
 itac queue --south
 ```
 
-### Edit Proposals
+### Editing Proposals
+
+#### Editing Individual Proposals
 
 `itac` allows you to define edits that are applied to proposals as the XML files are read. Here is the workflow.
 
@@ -179,8 +184,32 @@ itac queue --south
 - Changes will be applied each time the proposal is loaded from disk. The original XML file is never touched. You can verify changes by running `itac summarize <ref>` again.
 - To undo your edits, delete the edit file.
 
-Limitations:
+#### Bulk Edits
 
-- It is not possible to update ToO or nonsidereal targets using `itac`. Such edits will be ignored.
-- It is not possible to **add** observations. This must be done in the PIT.
+`itac` provides an Excel spreadsheet for bulk edits that are applied prior to exporting proposals to the ODB. These edits are not used during queue creation. If this file does not exist (or does not contain newly added proposals) you can create/update it explicitly.
 
+```
+itac-example$ itac bulk-edits
+itac-example$ ls *.xls
+bulk_edits.xls
+```
+
+### Generating Reports
+
+The following commands are available for generating reports.
+
+| Example Command | Output Type | Description |
+|---|---|---|
+| `itac blueprints --north` | Text | Blueprints by band. |
+| `itac chart-data --north` | Text | Instrument time by RA. |
+| `itac director-spreadsheet` | Excel | Director's report. |
+| `itac duplicates --north` | Text | Target duplication report. |
+| `itac instrument-spreadsheets` | Excel | Instrument report. |
+| `itac ngo-spreadsheets` | Excel | NGO queue reports (one per partner). |
+| `itac scheduling --north` | Text | Report of prooposals with scheduling notes. |
+| `itac splits` | Text | Report of split (joint) proposals. |
+| `itac staff-email-spreadsheet` | Excel | Staff email spreadsheet. |
+
+## Exporting Proposals and Sending Email Notifications
+
+This needs to be done by Rob for now :-\
