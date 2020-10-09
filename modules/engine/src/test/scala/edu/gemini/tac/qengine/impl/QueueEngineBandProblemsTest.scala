@@ -33,9 +33,9 @@ class QueueEngineBandProblemsTest {
 
   @Test def testClassicalNotInBand1: Unit =
     testRule(ClassicalNotInBand1, P.copy(mode = Mode.Classical)) {
-      case QBand2 => "Classical proposal is not allowed in band 2"
-      case QBand3 => "Classical proposal is not allowed in band 3"
-      case QBand4 => "Classical proposal is not allowed in band 4"
+      case QBand2 => "Classical proposal in band 2"
+      case QBand3 => "Classical proposal in band 3"
+      case QBand4 => "Classical proposal in band 4"
     }
 
   @Test def testNoObsInBand124: Unit =
@@ -52,21 +52,21 @@ class QueueEngineBandProblemsTest {
 
   @Test def testLpInBand3Or4: Unit =
     testRule(LpInBand3Or4, P.copy(mode = Mode.LargeProgram)) {
-      case QBand3 => "LP proposal not allowed in Band 3"
-      case QBand4 => "LP proposal not allowed in Band 4"
+      case QBand3 => "LP proposal in Band 3"
+      case QBand4 => "LP proposal in Band 4"
     }
 
   @Test def testRapidTooOutsideBand1: Unit =
     testRule(RapidTooOutsideBand1, P.copy(too = Too.rapid)) {
-      case QBand2 => "Rapid TOO proposal not allowed in Band 2"
-      case QBand3 => "Rapid TOO proposal not allowed in Band 3"
-      case QBand4 => "Rapid TOO proposal not allowed in Band 4"
+      case QBand2 => "Rapid TOO proposal in Band 2"
+      case QBand3 => "Rapid TOO proposal in Band 3"
+      case QBand4 => "Rapid TOO proposal in Band 4"
     }
 
   @Test def testStandardTooOutsideBand12: Unit =
     testRule(StandardTooOutsideBand12, P.copy(too = Too.standard)) {
-      case QBand3 => "Standard TOO proposal not allowed in band 3"
-      case QBand4 => "Standard TOO proposal not allowed in band 4"
+      case QBand3 => "Standard TOO proposal in band 3"
+      case QBand4 => "Standard TOO proposal in band 4"
     }
 
 }

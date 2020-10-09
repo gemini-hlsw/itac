@@ -239,7 +239,7 @@ object Workspace {
             _    <- log.debug(s"Reading proposals from $p")
             es   <- edits
             ps   <- ProposalLoader[F](when, es, log, mutator).loadMany(p.toFile.getAbsoluteFile)
-            _    <- ps.traverse { case (f, Left(es)) => log.warn(s"$f: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
+            _    <- ps.traverse { case (f, Left(es)) => log.warn(s"${f.getName}: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
             psʹ   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
             _    <- log.debug(s"Read ${ps.length} proposals.")
             ret   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
