@@ -50,6 +50,9 @@ object EditorOps {
         case lp: im.LargeProgramClass =>
           lp.sub.response.map(_.receipt.id).headOption
 
+        case sp: im.SpecialProposalClass =>
+          sp.sub.response.map(_.receipt.id).headOption
+
         case pc => sys.error(s"Unsupported proposal class: $pc")
       }
 
