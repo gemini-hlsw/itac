@@ -5,17 +5,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK 8
-        uses: olafurpg/setup-scala@v2
-      - name: Cache Coursier
-        uses: actions/cache@v1
-        with:
-          path: ~/.cache/coursier
-          key: sbt-coursier-cache
-      - name: Cache SBT
-        uses: actions/cache@v1
-        with:
-          path: ~/.sbt
-          key: sbt-${{ hashFiles('**/build.sbt') }}
-      - name: Compile and run tests
-        run: sbt clean main/headerCheck compile test
+      - uses: olafurpg/setup-scala@v10
+      - uses: coursier/cache-action@v3
+      - run: sbt clean main/headerCheck compile test

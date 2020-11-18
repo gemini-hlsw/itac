@@ -168,8 +168,8 @@ object Workspace {
               .toList
           }
 
-        def readAll[A: Decoder](path: Path): F[List[A]] =
-          listFiles(path).flatMap(_.traverse(readData[A]))
+        def readAll[A: Decoder](path: Path, suffix: String): F[List[A]] =
+          listFiles(path).flatMap(_.filter(_.toFile.getName.endsWith(suffix)).traverse(readData[A]))
 
         def writeText(path: Path, text: String): F[Path] = {
           val p = dir.resolve(path)
@@ -220,7 +220,7 @@ object Workspace {
           }
 
         def edits: F[Map[String, SummaryEdit]] =
-          readAll[SummaryEdit](EditsDir).map(_.map(e => (e.reference -> e)).toMap)
+          readAll[SummaryEdit](EditsDir, ".yaml").map(_.map(e => (e.reference -> e)).toMap)
 
         def bulkEdits(ps: List[Proposal]): F[Map[String, BulkEdit]] =
           for {
