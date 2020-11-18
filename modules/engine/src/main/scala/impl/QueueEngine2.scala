@@ -72,7 +72,7 @@ object QueueEngine2 extends QueueEngine {
         val stage = QueueCalcStage(
           queue       = emptyQueue(band),
           iter        = iteratorFor(band),
-          activeList  = _.obsList,
+          activeList  = _.obsListFor(band),
           res         = res,
           log         = log,
         )
