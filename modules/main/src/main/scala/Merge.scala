@@ -138,7 +138,7 @@ object Merge extends MergeBlueprint {
   }
 
   def mergeInto(from: Itac, into: Itac): Unit =
-    if (from != null)
+    if (from != null && into != null)
       mergeInto(from.getAccept, into.getAccept) // we assume this is here for now
 
   def mergeInto(from: ClassicalProposalClass, into: ClassicalProposalClass): Unit = {
