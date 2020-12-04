@@ -23,7 +23,7 @@ final case class QueueResult(bandedQueue: QueueBand => List[Proposal], context: 
 
   /** Group joints together by finding proposals with the same PI and title, sorting each group by rank. */
   private def groupJoints(ps: List[Proposal]): List[NonEmptyList[Proposal]] =
-    ps.groupBy(p => (p.piName, p.p1proposal.title)).values.toList.map(ps => NonEmptyList.fromList(ps.sortBy(_.ntac.ranking.num.getOrElse(0.0))).get)
+    ps.groupBy(p => (p.piName, p.p1proposal.title, p.too)).values.toList.map(ps => NonEmptyList.fromList(ps.sortBy(_.ntac.ranking.num.getOrElse(0.0))).get)
 
   protected def programId(p: Proposal): State[(Int, Int), ProgramId] =
     State { case (cn, qn) =>
