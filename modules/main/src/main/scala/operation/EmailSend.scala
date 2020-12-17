@@ -26,7 +26,7 @@ object EmailSend {
       new InternetAddress(s.trim)
   }
 
-  def apply[F[_]: Sync]: Operation[F] =
+  def apply[F[_]: Sync](dryRun: Boolean): Operation[F] =
     new Operation[F] {
 
       // TO:      pi@bar.edu
@@ -58,7 +58,8 @@ object EmailSend {
       def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
         for {
           dir <- ws.cwd.map(_.resolve("emails")) // TODO: internalize
-          m    = Mailer.forDevelopment[F](log)
+          m    = if (dryRun) Mailer.forDevelopment[F](log) else Mailer.forProduction[F](log, "localhost")
+          _   <- Sync[F].delay { Console.println("This will send emails for real! Enter to continue, ^C to cancel."); Console.in.readLine() } .unlessA(dryRun)
           fs  <- Sync[F].delay(Files.list(dir).collect(Collectors.toList()).asScala.toList) // ugh
           ms  <- fs.traverse(readMimeMessage)
           _   <- ms.traverse_(m.send)

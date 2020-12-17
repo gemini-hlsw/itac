@@ -394,7 +394,7 @@ trait MainOpts { this: CommandIOApp =>
     Command(
       name   = "send-emails",
       header = "Sends all emails in the emails/ folder."
-    )(EmailSend[IO].pure[Opts])
+    )(Opts.flag("dry-run", "Test, but don't actually send emails.", "n").orFalse.map(EmailSend[IO](_)))
 
   lazy val duplicates: Command[Operation[IO]] =
     Command(
