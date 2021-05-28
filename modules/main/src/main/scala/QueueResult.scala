@@ -49,7 +49,7 @@ final case class QueueResult(bandedQueue: QueueBand => List[Proposal], context: 
     val ps = bandedQueue(qb)
     val gs = groupJoints(ps).sortBy(_.head.piName.fold("")(_.reverse))
     val x = gs.traverse(nel => programId(nel.head).map(Entry(nel, _))) : State[(Int, Int), List[Entry]]
-    x.runA((1, qb.number * 100)).value
+    x.runA((1, qb.number * 100 + 1)).value
   }
 
   /** Get entries in the specified band, per partner, ordered by program id. */
