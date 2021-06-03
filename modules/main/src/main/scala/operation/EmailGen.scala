@@ -205,9 +205,9 @@ object EmailGen {
            |
            |Regards,
            |
-           |Marie Lemoine-Busserolle, ITAC Chair (mbussero@gemini.edu)
-           |Atsuko Nitta, Gemini North Head of Science Operations (anitta@gemini.edu)
-           |Rene Rutten, Gemini South Head of Science Operations (rrutten@gemini.edu)
+           |Sandy Leggett, ITAC Chair (sandy.leggett@noirlab.edu)
+           |Atsuko Nitta, Gemini North Head of Science Operations (atsuko.nitta@noirlab.edu)
+           |Fredrik Rantakyro, Gemini South Head of Science Operations (fredrik.rantakyro@noirlab.edu)
            |""".stripMargin
   )
 
