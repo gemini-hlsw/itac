@@ -18,7 +18,7 @@ import scala.jdk.CollectionConverters._
 
 object EmailSend {
 
-  val FromAddress = new InternetAddress("announcements@gemini.edu")
+  val FromAddress = new InternetAddress("announcements-gemini@noirlab.edu")
   val Header = s"""^[A-Z]+:\\s+(.*)\\s*""".r
 
   implicit class StringOps(s: String) {
