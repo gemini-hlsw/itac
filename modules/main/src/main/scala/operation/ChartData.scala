@@ -13,6 +13,7 @@ import edu.gemini.model.p1.immutable.VisitorBlueprint
 import io.chrisdavenport.log4cats.Logger
 import java.nio.file.Path
 import itac.util.Colors
+import edu.gemini.tac.qengine.p1.QueueBand
 
 object ChartData {
 
@@ -26,10 +27,9 @@ object ChartData {
       def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] =
         computeQueue(ws).flatMap { case (_, qc) =>
           Sync[F].delay {
-            val ps = qc.toList
 
-            val hoursByRAandInstrument: Map[(String, Int), Double] =
-              ps.foldMap { p =>
+            def hoursByRAandInstrument(band: QueueBand): Map[(String, Int), Double] =
+              qc.queue(band).toList.foldMap { p =>
 
                 val os        = p.obsList ++ p.band3Observations
                 val awarded   = p.time.toHours.value
@@ -51,21 +51,25 @@ object ChartData {
             println(s"""|
                         |${Colors.BOLD}Queue Chart Data${Colors.RESET}
                         |
-                        |Instrument Time by RA
+                        |Instrument Time by Band and RA
                         |
-                        |Select and copy the following lines, then paste into a Google Sheet. A clipboard icon will appear,
-                        |click it and select "Split text to columns", then click the chart icon (on the right side of the
-                        |toolbar). Under Chart Type select the stacked column chart.
-                        |""".stripMargin)
+                        |For each band, select and copy the following lines, then paste into a Google Sheet. A clipboard icon
+                        |will appear, click it and select "Split text to columns", then click the chart icon (on the right side
+                        |of the toolbar). Under Chart Type select the stacked column chart. Empty bands are omitted.
+                        |""".stripMargin.stripTrailing())
 
-            println((-1 to 23)
-                .map(d => f"$d%7d").mkString("Hour        ", "", ""))
-
-            for (i <- hoursByRAandInstrument.keys.map(_._1).toList.distinct.sorted) {
-              val times = (-1 to 23)
-                .map { h => hoursByRAandInstrument.getOrElse((i, h), 0.0) }
-                .map(d => f"$d%7.2f").mkString(i.padTo(12, ' '), "", "")
-              println(times)
+            for (b <- QueueBand.values) {
+              val map = hoursByRAandInstrument(b)
+              if (map.nonEmpty) {
+                println(s"\nBand ${b.number}:\n")
+                println((-1 to 23).map(d => f"$d%7d").mkString("Hour        ", "", ""))
+                for (i <- map.keys.map(_._1).toList.distinct.sorted) {
+                  val times = (-1 to 23)
+                    .map { h => map.getOrElse((i, h), 0.0) }
+                    .map(d => f"$d%7.2f").mkString(i.padTo(12, ' '), "", "")
+                  println(times)
+                }
+              }
             }
 
             println(s"""|
@@ -76,8 +80,9 @@ object ChartData {
                         |toolbar). Under Chart Type select the pie chart.
                         |""".stripMargin)
 
-            for (i <- hoursByRAandInstrument.keys.map(_._1).toList.distinct.sorted) {
-              val time = (-1 to 23).toList.foldMap { h => hoursByRAandInstrument.getOrElse((i, h), 0.0) }
+            val all = QueueBand.values.foldMap(hoursByRAandInstrument)
+            for (i <- all.keys.map(_._1).toList.distinct.sorted) {
+              val time = (-1 to 23).toList.foldMap { h => all.getOrElse((i, h), 0.0) }
               println(f"${i}%-12s $time%7.2f")
             }
 
