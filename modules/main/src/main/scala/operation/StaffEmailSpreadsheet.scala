@@ -159,7 +159,7 @@ object StaffEmailSpreadsheet {
                 addCell(Reference, p.ntac.reference)
                 addCell(Band, b.number)
                 addCell(ProgId, e.programId.toString)
-                addCell(PIName, s"${mpi.getFirstName} ${mpi.getLastName}")
+                addCell(PIName, s"${mpi.getLastName}, ${mpi.getFirstName}")
                 addCell(Time, (e.proposals.foldMap(_.time)).toHours.value)
 
                 val insts = e.proposals.toList.flatMap { p =>
