@@ -53,18 +53,22 @@ object StaffEmailSpreadsheet {
         } yield ExitCode.Success
     }
 
-  val Reference   = 0
-  val Band        = 1
-  val ProgId      = 2
-  val PIName      = 3
-  val Time        = 4
-  val Instrument  = 5
-  val ToO         = 6
-  val LGS         = 7
-  val NGO         = 8
-  val NgoEmail    = 9
-  val GeminiEmail = 10
-  val Title       = 11
+  val Reference        = 0
+  val Band             = 1
+  val ProgId           = 2
+  val PIName           = 3
+  val Time             = 4
+  val Instrument       = 5
+  val ToO              = 6
+  val LGS              = 7
+  val NGO              = 8
+  val NgoEmail         = 9
+  val GeminiEmail      = 10
+  val Title            = 11
+  val ObsConstraints   = 12
+  val RaMin            = 13
+  val RaMax            = 14
+  val SchedConstraints = 15
 
   def addSheet[F[_]: Sync](
     wb:             Workbook,
@@ -112,6 +116,10 @@ object StaffEmailSpreadsheet {
             create(NgoEmail, "NGO/principal support Email", 35)
             create(GeminiEmail, "Gemini/additional support Email", 35)
             create(Title, "Title", 100)
+            create(ObsConstraints, "Obs Constraints", 50)
+            create(RaMin, "RA Min", 6)
+            create(RaMax, "RA Max", 6)
+            create(SchedConstraints, "Scheduling", 100)
 
             // A style for each band
             val bandStyles: QueueBand => CellStyle =
@@ -193,6 +201,14 @@ object StaffEmailSpreadsheet {
                 addCell(NgoEmail, ngoInfo.flatMap(_.ngoEmail).orEmpty)
                 addCell(GeminiEmail, "")
                 addCell(Title, p.p1proposal.title)
+                addCell(ObsConstraints, p.obsList.map(_.conditions.toString).distinct.sorted.mkString(" / "))
+
+                val ras = p.obsList.map(_.target.ra.mag)
+                ras.minimumOption.fold(addCell(RaMin, ""))(addCell(RaMin, _))
+                ras.maximumOption.fold(addCell(RaMax, ""))(addCell(RaMax, _))
+
+                addCell(SchedConstraints, p.p1proposal.scheduling)
+
                 n += 1
               }
             }
