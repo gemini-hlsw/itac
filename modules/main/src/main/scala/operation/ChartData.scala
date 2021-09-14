@@ -56,7 +56,7 @@ object ChartData {
                         |For each band, select and copy the following lines, then paste into a Google Sheet. A clipboard icon
                         |will appear, click it and select "Split text to columns", then click the chart icon (on the right side
                         |of the toolbar). Under Chart Type select the stacked column chart. Empty bands are omitted.
-                        |""".stripMargin.stripTrailing())
+                        |""".stripMargin)
 
             for (b <- QueueBand.values) {
               val map = hoursByRAandInstrument(b)
