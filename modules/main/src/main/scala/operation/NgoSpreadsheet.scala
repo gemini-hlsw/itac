@@ -170,7 +170,7 @@ object NgoSpreadsheet {
         addCell(Rank, p.ntac.ranking.num.orEmpty)
         addCell(Band, b.number)
         addCell(ProgId, e.programId.toString)
-        addCell(PIName, s"${pi.firstName} ${pi.lastName}")
+        addCell(PIName, s"${pi.lastName}, ${pi.firstName}")
         addCell(PiEmail, p.p1proposal.investigators.pi.email)
         addCell(Time, (e.proposals.foldMap(_.time)).toHours.value)
         addCell(ProgTime, progTime.toHours.value)
