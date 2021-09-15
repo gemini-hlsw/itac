@@ -95,9 +95,10 @@ class TargetDuplicationChecker(proposals: List[Proposal], val tolerance: Angle =
       } yield TargetInfo(p.id.reference, p.p1proposal.investigators.pi, t, b)
 
     // Compute clusters and filter out those where they all have the same PI email.
-    go(infos).filterNot { c =>
-      c.keySet.map(_.pi.email).size == 1
-    }
+    // REL-3953 also filter out clusters where the instruments differ
+    go(infos)
+      .filterNot(_.keySet.map(_.pi.email).size == 1)
+      .filterNot(_.values.toList.foldMap(_.toList).distinctBy(_.instrument).size > 1)
 
   }
 
