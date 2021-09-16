@@ -8,6 +8,7 @@ import cats.effect.Sync
 import edu.gemini.spModel.core.ProgramId
 import itac.BulkEdit.Accept
 import itac.BulkEdit.Reject
+import scala.jdk.CollectionConverters._
 
 final case class BulkEdit(
   ngoEmail:      Option[String],
@@ -15,7 +16,7 @@ final case class BulkEdit(
 ) {
   import BulkEdit.Disposition
 
-  private def update(itac: Itac, disp: Disposition, too: TooOption): Unit =
+  private def update(itac: Itac, disp: Disposition, too: TooOption, isVisitorOrNonPersistentProposalType: Boolean): Unit =
     disp match {
 
       case Accept(pid, band, award) =>
@@ -26,7 +27,7 @@ final case class BulkEdit(
         ngoEmail.foreach(acc.setEmail)     // email is NGO email
         staffEmail.foreach(acc.setContact) // contact is Gemini email
         acc.setProgramId(pid.toString)
-        acc.setRollover(band == 1 && (too == null || too == TooOption.NONE))
+        acc.setRollover(band == 1 && (too == null || too == TooOption.NONE) && (!isVisitorOrNonPersistentProposalType))
         itac.setAccept(acc)
 
       case Reject =>
@@ -74,12 +75,12 @@ final case class BulkEdit(
       update(fts.getResponse())
     }
 
-  private def update(pc: QueueProposalClass, disp: Disposition): Unit =
+  private def update(pc: QueueProposalClass, disp: Disposition, isVisitorInstrument: Boolean): Unit =
     if (pc != null) {
       update(pc.getExchange())
       Option(pc.getNgo()).foreach(_.forEach(update))
       if (pc.getItac == null) pc.setItac(new Itac)
-      update(pc.getItac, disp, pc.getTooOption)
+      update(pc.getItac, disp, pc.getTooOption, isVisitorInstrument)
 
       // Set the band 3 min requested time (if any) to be the awarded time (if any).
       val band3request = pc.getBand3Request()
@@ -97,59 +98,93 @@ final case class BulkEdit(
       Option(pc.getNgo()).foreach(_.forEach(update))
       update(pc.getExchange())
       if (pc.getItac == null) pc.setItac(new Itac)
-      update(pc.getItac, disp, TooOption.RAPID) // HACK: ensure it doesn't get rollover status
+      update(pc.getItac, disp, TooOption.RAPID, false) // HACK: ensure it doesn't get rollover status
     }
 
-  private def update(pc: SpecialProposalClass, disp: Disposition): Unit =
+  private def update(pc: SpecialProposalClass, disp: Disposition, isVisitorInstrument: Boolean): Unit =
     if (pc != null) {
       update(pc.getSubmission())
       if (pc.getItac == null) pc.setItac(new Itac)
-      update(pc.getItac, disp, TooOption.NONE)
+      update(pc.getItac, disp, TooOption.NONE, isVisitorInstrument)
     }
 
-  private def update(pc: ExchangeProposalClass, disp: Disposition): Unit =
+  private def update(pc: ExchangeProposalClass, disp: Disposition, isVisitorInstrument: Boolean): Unit =
     if (pc != null) {
       Option(pc.getNgo()).foreach(_.forEach(update))
       if (pc.getItac == null) pc.setItac(new Itac)
-      update(pc.getItac, disp, TooOption.NONE)
+      update(pc.getItac, disp, TooOption.NONE, isVisitorInstrument)
     }
 
   private def update(pc: LargeProgramClass, disp: Disposition): Unit =
     if (pc != null) {
       update(pc.getSubmission())
       if (pc.getItac == null) pc.setItac(new Itac)
-      update(pc.getItac, disp, pc.getTooOption)
+      update(pc.getItac, disp, pc.getTooOption, true)
     }
 
-  private def update(pc: SubaruIntensiveProgramClass, disp: Disposition): Unit =
+  private def update(pc: SubaruIntensiveProgramClass, disp: Disposition, isVisitorInstrument: Boolean): Unit =
     if (pc != null) {
       update(pc.getSubmission())
       if (pc.getItac == null) pc.setItac(new Itac)
-      update(pc.getItac, disp, pc.getTooOption)
+      update(pc.getItac, disp, pc.getTooOption, isVisitorInstrument)
     }
 
-  private def update(pc: FastTurnaroundProgramClass, disp: Disposition): Unit =
+  private def update(pc: FastTurnaroundProgramClass, disp: Disposition, isVisitorInstrument: Boolean): Unit =
     if (pc != null) {
       update(pc.getSubmission())
       if (pc.getItac == null) pc.setItac(new Itac)
-      update(pc.getItac, disp, pc.getTooOption)
+      update(pc.getItac, disp, pc.getTooOption, isVisitorInstrument)
     }
 
-  private def update(pc: ProposalClassChoice, disp: Disposition): Unit =
+  private def update(pc: ProposalClassChoice, disp: Disposition, isVisitorInstrument: Boolean): Unit =
     if (pc != null) {
       update(pc.getClassical, disp)
-      update(pc.getExchange, disp)
-      update(pc.getFastTurnaround, disp)
+      update(pc.getExchange, disp, isVisitorInstrument)
+      update(pc.getFastTurnaround, disp, isVisitorInstrument)
       update(pc.getLarge, disp)
-      update(pc.getQueue, disp)
-      update(pc.getSip, disp)
-      update(pc.getSpecial, disp)
-      update(pc.getFastTurnaround, disp)
+      update(pc.getQueue, disp, isVisitorInstrument)
+      update(pc.getSip, disp, isVisitorInstrument)
+      update(pc.getSpecial, disp, isVisitorInstrument)
+      update(pc.getFastTurnaround, disp, isVisitorInstrument)
     }
 
   def unsafeApplyUpdate(p: Proposal, disp: Disposition): Unit =
     try {
-      update(p.getProposalClass(), disp)
+
+      // sigh
+      def mutableBand(n: Int) =
+        n match {
+          case 1 | 2 => Some(Band.BAND_1_2)
+          case 3     => Some(Band.BAND_3)
+          case _     => None
+        }
+
+      // also sigh
+      def blueprints: List[BlueprintBase] =
+        disp match {
+          case Accept(_, band, _) =>
+            mutableBand(band) match {
+              case Some(p1b) =>
+                p.getObservations().getObservation().asScala.toList.filter(_.getBand == p1b).map(_.getBlueprint()).distinct
+              case None => Nil // unpossible
+            }
+          case Reject => Nil // irrelevant
+        }
+
+      // oh no
+      def isVisitorBlueprint(bp: BlueprintBase): Boolean =
+        bp match {
+          // Alopeke, Zorro, IGRINS, GRACES, MAROON-X.
+          case _: AlopekeBlueprint => true
+          case _: ZorroBlueprint   => true
+          case _: IgrinsBlueprint  => true
+          case _: GracesBlueprint  => true
+          case _: VisitorBlueprint => true
+          case _                   => false
+        }
+
+      update(p.getProposalClass(), disp, blueprints.exists(isVisitorBlueprint))
+
     } catch {
       case e: Exception => throw new ItacException(e.getMessage())
     }
