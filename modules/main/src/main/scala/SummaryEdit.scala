@@ -142,16 +142,17 @@ case class SummaryEdit(
       update(pc.getFastTurnaround())
     }
 
-  private def update(p: Proposal): Unit =
+  private def update(p: Proposal): ReferenceTime =
     try {
       update(p.getObservations().getObservation(), p)
       updatePC(p.getProposalClass())
+      ReferenceTime.Default // TODO!
     } catch {
       case e: Exception => throw new ItacException(s"$reference: ${e.getMessage}")
     }
 
   // Pure entry point with logging.
-  def applyUpdate[F[_]: Sync: Logger](p: Proposal): F[Unit] =
+  def applyUpdate[F[_]: Sync: Logger](p: Proposal): F[ReferenceTime] =
     Logger[F].debug(s"Pre-edit\n${SummaryDebug.summary(p)}") *>
     Sync[F].delay(update(p)) <*
     Logger[F].debug(s"Post-edit\n${SummaryDebug.summary(p)}")

@@ -14,14 +14,15 @@ import java.io.File
 class Editor[F[_]: Sync: Logger](edits: Map[String, SummaryEdit], log: Logger[F]) {
   import EditorOps._
 
-  def applyEdits(file: File, p: Proposal): F[Unit] =
+  // needs to return an Option[Long] in case the reference time has been specified
+
+  def applyEdits(file: File, p: Proposal): F[ReferenceTime] =
     p.id.flatMap(edits.get) match {
       case Some(e) =>
-
         log.debug(s"There are edits for ${p.id}/${file.getName}") *>
         e.applyUpdate(p)
-
-      case None    => log.debug(s"No edits for ${p.id}/${file.getName}")
+      case None    =>
+        log.debug(s"No edits for ${p.id}/${file.getName}").as(ReferenceTime.Default)
 
     }
 

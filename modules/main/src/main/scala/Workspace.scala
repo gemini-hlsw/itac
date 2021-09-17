@@ -230,7 +230,7 @@ object Workspace {
             m <- BulkEditFile.read(f)
           } yield m
 
-        def loadProposals(dir: Path, mutator: (File, edu.gemini.model.p1.mutable.Proposal) => F[Unit] = (_, _) => ().pure[F]): F[List[Proposal]] =
+        def loadProposals(dir: Path): F[List[Proposal]] =
           for {
             cwd  <- cwd
             conf <- commonConfig
@@ -238,7 +238,7 @@ object Workspace {
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
             es   <- edits
-            ps   <- ProposalLoader[F](when, es, log, mutator).loadMany(p.toFile.getAbsoluteFile)
+            ps   <- ProposalLoader[F](when, es, log).loadMany(p.toFile.getAbsoluteFile)
             _    <- ps.traverse { case (f, Left(es)) => log.warn(s"${f.getName}: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
             psʹ   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
             _    <- log.debug(s"Read ${ps.length} proposals.")
@@ -260,7 +260,7 @@ object Workspace {
             when  = conf.semester.getMidpointDate(Site.GN).getTime // arbitrary
             _    <- log.debug(s"Reading proposals from $p")
             es   <- edits
-            p    <- ProposalLoader[F](when, es, log, (_, _) => ().pure[F]).loadByReference(p.toFile.getAbsoluteFile, ref)
+            p    <- ProposalLoader[F](when, es, log).loadByReference(p.toFile.getAbsoluteFile, ref)
           } yield p
 
         def proposal(ref: String): F[(File, NonEmptyList[Proposal])] =
