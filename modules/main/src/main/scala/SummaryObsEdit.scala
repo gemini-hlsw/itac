@@ -138,6 +138,8 @@ case class SummaryObsEdit(
                 val t2 = new NonSiderealTarget()
                 t2.setEpoch(t.getEpoch())
                 t2.getEphemeris().addAll(t.getEphemeris)
+                t2.setHorizonsDesignation(t.getHorizonsDesignation())
+                t2.setHorizonsQuery(t.getHorizonsQuery())
                 t2
 
           }
