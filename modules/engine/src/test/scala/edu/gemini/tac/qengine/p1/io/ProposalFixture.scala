@@ -16,8 +16,7 @@ class ProposalFixture {
   def semester      = im.Semester(2014, im.SemesterOption.A)
   def title         = "Test Proposal"
   def abs           = "My test proposal abstract"
-  def tacCategory   = Some(im.TacCategory.STARS_AND_STELLAR_EVOLUTION)
-  def keywords      = List(m.Keyword.BLUE_STRAGGLERS)
+  def tacCategory   = Some(im.TacCategory.ACTIVE_GALAXIES_QUASARS_SMBH)
 
   def piStatus      = im.InvestigatorStatus.PH_D
   def piAddress     = im.InstitutionAddress("Bovine University")
@@ -92,7 +91,6 @@ class ProposalFixture {
     abs,
     "scheduling",
     tacCategory,
-    keywords,
     investigators,
     targets,
     observations,
