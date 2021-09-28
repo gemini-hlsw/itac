@@ -10,6 +10,8 @@ import io.circe.Decoder
 import io.circe.HCursor
 import io.chrisdavenport.log4cats.Logger
 import cats.effect.Sync
+import edu.gemini.spModel.core
+import scala.jdk.CollectionConverters._
 
 /**
  * Apply edits to the MUTABLE p1 `Proposal` as it is loaded from disk, before it is turned into an
@@ -26,16 +28,20 @@ case class SummaryEdit(
   itacComment: Option[String]
 ) {
 
-  private def update(os: java.util.List[Observation], p: Proposal): Unit = {
-    os.forEach { o =>
-      val digest = ObservationDigest.digest(im.Observation(o))
-      obsEdits.find(_.hash == digest) match {
-        case Some(e) => e.update(o, p, reference)
-        case None => println(s"No digest for $o")
+  // Update all the observations, collecting a map from target id to reference coordinats as we go.
+  // These reference coordinates let the user override the ephemeris for nonsidereal targets, just
+  // for bin-filling. They will be applied to the immutable proposal on construction.
+  private def update(os: java.util.List[Observation], p: Proposal):  Map[String, core.Coordinates] = {
+    val referenceCoords: Map[String, core.Coordinates] =
+      os.asScala.foldLeft(Map.empty[String, core.Coordinates]) { (m, o) =>
+        val digest = ObservationDigest.digest(im.Observation(o, None))
+        obsEdits.find(_.hash == digest) match {
+          case Some(e) => e.update(o, p, reference).fold(m)(m + _)
+          case None => println(s"No digest for $o"); m
+        }
       }
-    }
     os.removeIf { o => !o.isEnabled() }
-    ()
+    referenceCoords
   }
 
   private def update(sa: SubmissionAccept): Unit =
@@ -142,16 +148,19 @@ case class SummaryEdit(
       update(pc.getFastTurnaround())
     }
 
-  private def update(p: Proposal): Unit =
+  private def update(p: Proposal): Map[String, core.Coordinates] =
     try {
-      update(p.getObservations().getObservation(), p)
       updatePC(p.getProposalClass())
+      update(p.getObservations().getObservation(), p)
     } catch {
       case e: Exception => throw new ItacException(s"$reference: ${e.getMessage}")
     }
 
-  // Pure entry point with logging.
-  def applyUpdate[F[_]: Sync: Logger](p: Proposal): F[Unit] =
+  /**
+   * Apply updates, yieldiong any accumulated reference coordinates, used for overriding ephimerides
+   * for bin-filling. These will be applied to the immutable model on construction.
+   */
+  def applyUpdate[F[_]: Sync: Logger](p: Proposal): F[Map[String, core.Coordinates]] =
     Logger[F].debug(s"Pre-edit\n${SummaryDebug.summary(p)}") *>
     Sync[F].delay(update(p)) <*
     Logger[F].debug(s"Post-edit\n${SummaryDebug.summary(p)}")

@@ -10,7 +10,7 @@ import gsp.math.Declination
 import edu.gemini.tac.qengine.{ p1 => itac }
 import io.circe.Decoder
 import scala.jdk.CollectionConverters._
-import org.slf4j.LoggerFactory
+import edu.gemini.spModel.core
 
 /**
  * Used by `SummaryEdit` to deal with observations, which is where most of the complications lie.
@@ -73,9 +73,10 @@ case class SummaryObsEdit(
   }
 
   /*
-   * The logic here is the same as in updateConditions above. We never change a value in-place.
+   * The logic here is the same as in updateConditions above. We never change a value in-place. If
+   * the target is nonsidereal we return its ID and the new reference coordinates.
    */
-  def updateTarget(o: Observation, p: Proposal, ref: String): Unit = {
+  def updateTarget(o: Observation, p: Proposal, ref: String): Option[(String, core.Coordinates)] = {
 
     val allTargets = p.getTargets().getSiderealOrNonsiderealOrToo().asScala
 
@@ -118,19 +119,31 @@ case class SummaryObsEdit(
         case None =>
 
           // Warn in the case where we're clobbering something that's not a SiderealTarget
-          o.getTarget match {
-            case _: SiderealTarget => () // ok
-            case _: TooTarget | _: NonSiderealTarget =>
-              LoggerFactory.getLogger("edu.gemini.itac").warn(s"$ref: replacing ${o.getTarget.getClass.getSimpleName} '${o.getTarget.getName}' with a sidereal target.")
+          val t2: Target =
+            o.getTarget match {
+              case _: SiderealTarget =>
+                val t2 = new SiderealTarget()
+                t2.setDegDeg {
+                  val dd = new DegDegCoordinates
+                  dd.setRa(BigDecimal(ra.toAngle.toDoubleDegrees).bigDecimal)
+                  dd.setDec(BigDecimal(dec.toAngle.toSignedDoubleDegrees).bigDecimal)
+                  dd
+                }
+                t2
+
+              case _: TooTarget =>
+                new TooTarget()
+
+              case t: NonSiderealTarget =>
+                val t2 = new NonSiderealTarget()
+                t2.setEpoch(t.getEpoch())
+                t2.getEphemeris().addAll(t.getEphemeris)
+                t2.setHorizonsDesignation(t.getHorizonsDesignation())
+                t2.setHorizonsQuery(t.getHorizonsQuery())
+                t2
+
           }
 
-          val t2 = new SiderealTarget()
-          t2.setDegDeg {
-            val dd = new DegDegCoordinates
-            dd.setRa(BigDecimal(ra.toAngle.toDoubleDegrees).bigDecimal)
-            dd.setDec(BigDecimal(dec.toAngle.toSignedDoubleDegrees).bigDecimal)
-            dd
-          }
           t2.setName(name)
           t2.setId(s"target-${allTargets.map(_.getId.dropWhile(!_.isDigit).toInt).max + 1}")
           // no magnitudes or proper motion, we have no idea
@@ -140,13 +153,23 @@ case class SummaryObsEdit(
 
     o.setTarget(replaceWith)
 
+    replaceWith match {
+      case  _: NonSiderealTarget =>
+        val coords = core.Coordinates.fromDegrees(ra.toAngle.toDoubleDegrees, dec.toAngle.toSignedDoubleDegrees).getOrElse(sys.error(s"Invalid coordinates specified for $ref"))
+        Some(replaceWith.getId() -> coords)
+      case _ =>
+        None
+    }
+
   }
 
-  // Appy this edit to the specified observation.
-  def update(o: Observation, p: Proposal, ref: String): Unit =
-    if (o != null) {
+  // Appy this edit to the specified observation, returning a possibly empty mapping from
+  // nonsidereal target ids to reference coordinates.
+  def update(o: Observation, p: Proposal, ref: String): Option[(String, core.Coordinates)] =
+    Option(o).flatMap { o =>
       if (name == "DISABLE") {
         o.setEnabled(false)
+        None
       } else {
         o.setBand(band)
         updateCondition(o, p)

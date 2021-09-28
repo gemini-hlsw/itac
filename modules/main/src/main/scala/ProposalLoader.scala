@@ -65,11 +65,11 @@ object ProposalLoader {
           context.createUnmarshaller.unmarshal(f).asInstanceOf[M.Proposal]
         } .flatTap(mutator(f, _))
           .flatMap { p =>
-          editor.applyEdits(f, p).flatMap { _ =>
+          editor.applyEdits(f, p).flatMap { referenceCoords =>
             Sync[F].delay {
               // important to delay here! any time you look at a mutable value it's a side-effect!
               // see https://github.com/gemini-hlsw/itac/pull/29 :-(
-              val pʹ = edu.gemini.model.p1.immutable.Proposal(p)
+              val pʹ = edu.gemini.model.p1.immutable.Proposal(p, referenceCoords)
               (pʹ.copy(observations = pʹ.nonEmptyObservations), p)
             }
           }

@@ -61,7 +61,7 @@ object ObservationDigest {
       // N.B. ignore the UUID, which is assigned by the deserializer
       case TooTarget(_, n)                       => (n).hash
       case SiderealTarget(_, n, cs, e, pm, mags) => (n, cs, e, pm, mags).hash
-      case NonSiderealTarget(_, n, eph, e)       => (n, eph, e).hash
+      case NonSiderealTarget(_, n, eph, e, _, _, _)   => (n, eph, e).hash
     }
 
   implicit val HashAltair: Hash[Altair] =
@@ -136,7 +136,7 @@ object ObservationDigest {
     ("00000000" + o.hash.toHexString).takeRight(8)
 
   def digest(o: M.Observation): String =
-    digest(Observation(o))
+    digest(Observation(o, None))
 
 
 }

@@ -9,19 +9,26 @@ import edu.gemini.model.p1.mutable.Proposal
 import edu.gemini.model.p1.{ immutable => im }
 import io.chrisdavenport.log4cats.Logger
 import java.io.File
+import edu.gemini.spModel.core
 
 /** Proposal editing. This applies edits that are supplied as part of the configuration. */
 class Editor[F[_]: Sync: Logger](edits: Map[String, SummaryEdit], log: Logger[F]) {
   import EditorOps._
 
-  def applyEdits(file: File, p: Proposal): F[Unit] =
+  /**
+   * Apply edits in `file` to mutable proposal `p`, yielding a map from mutable model target id
+   * to reference coordinates, if any. These become populated in the *immutable* proposal that we
+   * use to construct our ITAC model.
+   */
+  def applyEdits(file: File, p: Proposal): F[Map[String, core.Coordinates]] =
     p.id.flatMap(edits.get) match {
       case Some(e) =>
 
         log.debug(s"There are edits for ${p.id}/${file.getName}") *>
         e.applyUpdate(p)
 
-      case None    => log.debug(s"No edits for ${p.id}/${file.getName}")
+      case None    =>
+        log.debug(s"No edits for ${p.id}/${file.getName}").as(Map.empty)
 
     }
 

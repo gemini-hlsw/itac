@@ -87,7 +87,10 @@ object ObservationIo {
     o.target.map(target(_, when)).fold(MISSING_TARGET.failureNel[Target]) { _.successNel[String] }
 
   def target(t: im.Target, when: Long): Target = {
-    val c = t.coords(when) | tooCoords
+    // If it's a nonsidereal target we want to use the reference coordinates, if any, otherwise use
+    // the ephemeris as normal.
+    val rc = Option(t).collect { case nst: im.NonSiderealTarget => nst.referenceCoordinates } .flatten
+    val c  = rc orElse t.coords(when) getOrElse tooCoords
     Target(c.ra.toAngle.toDegrees, c.dec.toDegrees, ~Option(t.name))
   }
 
