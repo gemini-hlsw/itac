@@ -59,6 +59,7 @@ trait MergeBlueprint {
       case c: VisitorBlueprintChoice    => unNull(c.getVisitor)
       case c: AlopekeBlueprintChoice    => unNull(c.getAlopeke)
       case c: ZorroBlueprintChoice      => unNull(c.getZorro)
+      case c: MaroonXBlueprintChoice    => unNull(c.getMaroonX)
       case c => sys.error(s"MergeBlueprint.allBlueprints: unhandled class ${c.getClass.getName}")
     }
 
@@ -205,6 +206,9 @@ trait MergeBlueprint {
   val canonicalizeZorroBlueprint: Canonicalizer[ZorroBlueprint] =
     canonicalizeBlueprintBase[ZorroBlueprint, ZorroBlueprintChoice](_ setZorro _)
 
+  val canonicalizeMaroonXBlueprint: Canonicalizer[MaroonXBlueprint] =
+    canonicalizeBlueprintBase[MaroonXBlueprint, MaroonXBlueprintChoice](_ setMaroonX _)
+
   /**
    * Find or destructively create matching `BlueprintBase` in `into`.
    */
@@ -248,6 +252,7 @@ trait MergeBlueprint {
       case bp: TrecsBlueprintSpectroscopy => canonicalizeTrecsBlueprintSpectroscopy(bp, into)
       case bp: VisitorBlueprint => canonicalizeVisitorBlueprint(bp, into)
       case bp: ZorroBlueprint => canonicalizeZorroBlueprint(bp, into)
+      case bp: MaroonXBlueprint => canonicalizeMaroonXBlueprint(bp, into)
       case _ => (into, sys.error("blah") : BlueprintBase)._2
     }
 

@@ -111,6 +111,7 @@ object ObservationDigest {
       case b: TrecsBlueprintImaging         => (b.name, b.filters).hash
       case b: TrecsBlueprintSpectroscopy    => (b.name, b.disperser, b.fpu).hash
       case b: ZorroBlueprint                => (b.name, b.mode).hash
+      case b: MaroonXBlueprint              => (b.name).hash
       case b: SubaruBlueprint               => (b.name, b.customName, b.instrument).hash
       case b: KeckBlueprint                 => (b.name, b.instrument).hash
       case b: VisitorBlueprint              => (b.name, b.customName, b.site).hash

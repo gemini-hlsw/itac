@@ -142,5 +142,8 @@ object MergeBlueprintInstances {
   implicit val EqZorroBlueprint: Eq[ZorroBlueprint] =
     Eq.by(b => (b.getMode()))
 
+  implicit val EqMaroonXBlueprint: Eq[MaroonXBlueprint] =
+    Eq.allEqual
+
 
 }

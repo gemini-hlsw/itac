@@ -89,9 +89,10 @@ object InstrumentScientistSpreadsheet {
     case object Trecs      extends Instrument
     case object Visitor    extends Instrument
     case object Zorro      extends Instrument
+    case object MaroonX    extends Instrument
 
     val all: List[Instrument] =
-      List(Alopeke, Dssi, Flamingos2, GmosN, GmosS, Gnirs, Gpi, Graces, Gsaoi, Igrins, Keck, Michelle, Nici, Nifs, Niri, Phoenix, Subaru, Texes, Trecs, Visitor, Zorro)
+      List(Alopeke, Dssi, Flamingos2, GmosN, GmosS, Gnirs, Gpi, Graces, Gsaoi, Igrins, Keck, Michelle, Nici, Nifs, Niri, Phoenix, Subaru, Texes, Trecs, Visitor, Zorro, MaroonX)
 
     def forBlueprint(b: BlueprintBase): Instrument =
       b match {
@@ -132,6 +133,7 @@ object InstrumentScientistSpreadsheet {
         case _: TrecsBlueprintSpectroscopy    => Trecs
         case _: VisitorBlueprint              => Visitor
         case _: ZorroBlueprint                => Zorro
+        case _: MaroonXBlueprint              => MaroonX
       }
 
   }
@@ -190,6 +192,7 @@ object InstrumentScientistSpreadsheet {
       case b: TrecsBlueprintSpectroscopy    => Props(Mode -> "Spectroscopy", FPU -> b.getFpu, Disperser -> b.getDisperser)
       case b: VisitorBlueprint              => Props(Site -> b.getSite, InstrumentSelection -> b.getCustomName)
       case b: ZorroBlueprint                => Props(Mode -> b.getMode)
+      case _: MaroonXBlueprint              => Props()
     }
   }
 
