@@ -203,7 +203,7 @@ object StaffEmailSpreadsheet {
                 addCell(Title, p.p1proposal.title)
                 addCell(ObsConstraints, p.obsList.map(_.conditions.toString).distinct.sorted.mkString(" / "))
 
-                val ras = p.obsList.map(_.target.ra.mag)
+                val ras = p.obsList.map(_.target.ra.toHr.mag)
                 ras.minimumOption.fold(addCell(RaMin, ""))(addCell(RaMin, _))
                 ras.maximumOption.fold(addCell(RaMax, ""))(addCell(RaMax, _))
 
