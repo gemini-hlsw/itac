@@ -127,15 +127,16 @@ object Merge extends MergeBlueprint {
     }
   }
 
-  def mergeInto(from: ItacAccept, into: ItacAccept): Unit = {
-    into.setAward {
-      val ta = new TimeAmount
-      ta.setUnits(into.getAward.getUnits)
-      // assume same units in both
-      ta.setValue(into.getAward.getValue add from.getAward.getValue)
-      ta
+  def mergeInto(from: ItacAccept, into: ItacAccept): Unit =
+    if (from != null && into != null) {
+      into.setAward {
+        val ta = new TimeAmount
+        ta.setUnits(into.getAward.getUnits)
+        // assume same units in both
+        ta.setValue(into.getAward.getValue add from.getAward.getValue)
+        ta
+      }
     }
-  }
 
   def mergeInto(from: Itac, into: Itac): Unit =
     if (from != null && into != null)
