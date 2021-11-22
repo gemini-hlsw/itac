@@ -201,7 +201,7 @@ object StaffEmailSpreadsheet {
                 addCell(NgoEmail, ngoInfo.flatMap(_.ngoEmail).orEmpty)
                 addCell(GeminiEmail, "")
                 addCell(Title, p.p1proposal.title)
-                addCell(ObsConstraints, p.obsList.map(_.conditions.toString).distinct.sorted.mkString(" / "))
+                addCell(ObsConstraints, p.obsListFor(b).map(_.conditions.toString).distinct.sorted.mkString(" / "))
 
                 val ras = p.obsList.map(_.target.ra.toHr.mag)
                 ras.minimumOption.fold(addCell(RaMin, ""))(addCell(RaMin, _))
