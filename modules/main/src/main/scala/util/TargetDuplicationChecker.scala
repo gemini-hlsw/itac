@@ -12,6 +12,8 @@ import gsp.math.Coordinates
 import scala.collection.immutable.Queue
 import cats.data.NonEmptyChain
 import edu.gemini.model.p1.immutable.Investigator
+import edu.gemini.model.p1.immutable.BlueprintBase
+import edu.gemini.model.p1.immutable.VisitorBlueprint
 
 /**
  *
@@ -86,10 +88,18 @@ class TargetDuplicationChecker(proposals: List[Proposal], val tolerance: Angle =
           go(nonMembers, if (cluster.size > 1) cluster :: accum else accum)
       }
 
+    // Work around the case where some people use the actual MaroonXBlueprint and others use the
+    // Visitor blueprint with the label "MAROON-X"
+    def blueprintName(bb: BlueprintBase): String =
+      bb match {
+        case v: VisitorBlueprint => v.customName
+        case other => other.name
+      }
+
     val infos: List[TargetInfo] =
       for {
         p <- proposals
-        x <- (p.obsList ++ p.band3Observations).map(o => (o.target, o.p1Observation.blueprint.foldMap(_.name))).distinct
+        x <- (p.obsList ++ p.band3Observations).map(o => (o.target, o.p1Observation.blueprint.foldMap(blueprintName))).distinct
         (t, b) = x
         if (t.ra.mag != 0 || t.dec.mag != 0)
       } yield TargetInfo(p.id.reference, p.p1proposal.investigators.pi, t, b)
