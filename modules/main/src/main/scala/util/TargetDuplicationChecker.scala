@@ -88,11 +88,15 @@ class TargetDuplicationChecker(proposals: List[Proposal], val tolerance: Angle =
           go(nonMembers, if (cluster.size > 1) cluster :: accum else accum)
       }
 
-    // Work around the case where some people use the actual MaroonXBlueprint and others use the
-    // Visitor blueprint with the label "MAROON-X"
+    // Work around the case where some people use the actual Vistor blueprint instead of the real
+    // blueprint for MAROON-X and IGRINS (and who knows what else in the future?)
     def blueprintName(bb: BlueprintBase): String =
       bb match {
-        case v: VisitorBlueprint => v.customName
+        case v: VisitorBlueprint =>
+          v.customName match {
+            case "IGRINS - continuous observation" => "IGRINS"
+            case other => other
+          }
         case other => other.name
       }
 
@@ -103,6 +107,8 @@ class TargetDuplicationChecker(proposals: List[Proposal], val tolerance: Angle =
         (t, b) = x
         if (t.ra.mag != 0 || t.dec.mag != 0)
       } yield TargetInfo(p.id.reference, p.p1proposal.investigators.pi, t, b)
+
+    // infos.map(_.instrument).distinct.sorted.foreach(println)
 
     // Compute clusters and filter out those where they all have the same PI email.
     // REL-3953 also filter out clusters where the instruments differ
