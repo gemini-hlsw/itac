@@ -1,15 +1,15 @@
+enablePlugins(NoPublishPlugin)
 
-publish / skip := true
-
-inThisBuild(Seq(
-  scalaVersion := "2.13.3",
-  resolvers    += "Gemini Repository" at "https://github.com/gemini-hlsw/maven-repo/raw/master/releases",
-  homepage := Some(url("https://github.com/gemini-hlsw/itac")),
-  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
-) ++ gspPublishSettings)
+ThisBuild / scalaVersion := "2.13.3"
+ThisBuild / resolvers    += "Gemini Repository" at "https://github.com/gemini-hlsw/maven-repo/raw/master/releases"
+ThisBuild / homepage     := Some(url("https://github.com/gemini-hlsw/itac"))
+ThisBuild / tlCiReleaseBranches := Seq("cli")
+// keep the header/formatting, test steps and discard mima, scaladocs steps
+ThisBuild / githubWorkflowBuild ~= { _.take(2) }
 
 lazy val engine = project
   .in(file("modules/engine"))
+  .disablePlugins(MimaPlugin)
   .settings(
     name := "itac-engine",
     libraryDependencies ++= Seq(
@@ -34,8 +34,8 @@ lazy val engine = project
 
 lazy val main = project
   .in(file("modules/main"))
+  .disablePlugins(MimaPlugin)
   .dependsOn(engine)
-  .enablePlugins(AutomateHeaderPlugin)
   .settings(
     name := "itac-main",
     libraryDependencies ++= Seq(
@@ -58,8 +58,8 @@ lazy val main = project
       "org.typelevel"                %% "cats-testkit"           % "2.2.0" % "test",
       "org.typelevel"                %% "cats-testkit-scalatest" % "2.0.0" % "test",
     ),
-    sourceGenerators in Compile += Def.task {
-      val outDir = (sourceManaged in Compile).value / "scala" / "itac"
+    Compile / sourceGenerators += Def.task {
+      val outDir = (Compile / sourceManaged).value / "scala" / "itac"
       val outFile = new File(outDir, "BuildInfo.scala")
       outDir.mkdirs
       val v = version.value
@@ -81,11 +81,12 @@ lazy val main = project
 
 lazy val channel = project
   .in(file("modules/channel"))
+  .disablePlugins(MimaPlugin)
   .settings(
     name := "itac-channel",
 
     // Create the app manifest such that it includes the version string.
-    resourceGenerators in Compile += Def.task {
+    Compile / resourceGenerators += Def.task {
       val outDir = resourceManaged.value
       val outFile = new File(outDir, "itac.json")
       outDir.mkdirs
