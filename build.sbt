@@ -9,7 +9,6 @@ ThisBuild / githubWorkflowBuild ~= { _.take(2) }
 
 lazy val engine = project
   .in(file("modules/engine"))
-  .disablePlugins(MimaPlugin)
   .settings(
     name := "itac-engine",
     libraryDependencies ++= Seq(
@@ -30,11 +29,11 @@ lazy val engine = project
       "org.slf4j"                % "slf4j-simple"                % "1.7.30"  % "test",
      ),
     Test / compile / scalacOptions := Nil, // don't worry about warnings right now
+    mimaPreviousArtifacts := Set.empty,
   )
 
 lazy val main = project
   .in(file("modules/main"))
-  .disablePlugins(MimaPlugin)
   .dependsOn(engine)
   .settings(
     name := "itac-main",
@@ -76,12 +75,12 @@ lazy val main = project
             |}
             |""".stripMargin)
       Seq(outFile)
-    }.taskValue
+    }.taskValue,
+    mimaPreviousArtifacts := Set.empty,
   )
 
 lazy val channel = project
   .in(file("modules/channel"))
-  .disablePlugins(MimaPlugin)
   .settings(
     name := "itac-channel",
 
@@ -112,7 +111,7 @@ lazy val channel = project
 
     // Don't add _2.12 to the artifact name, and also don't add a dependency to the Scala lib.
     crossPaths := false,
-    autoScalaLibrary := false
-
+    autoScalaLibrary := false,
+    mimaPreviousArtifacts := Set.empty,
   )
 
