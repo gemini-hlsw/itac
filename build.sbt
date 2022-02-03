@@ -1,6 +1,6 @@
 enablePlugins(NoPublishPlugin)
 
-ThisBuild / scalaVersion := "2.13.3"
+ThisBuild / scalaVersion := "2.13.8"
 ThisBuild / resolvers    += "Gemini Repository" at "https://github.com/gemini-hlsw/maven-repo/raw/master/releases"
 ThisBuild / homepage     := Some(url("https://github.com/gemini-hlsw/itac"))
 ThisBuild / tlCiReleaseBranches := Seq("cli")
