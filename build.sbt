@@ -6,6 +6,7 @@ ThisBuild / homepage     := Some(url("https://github.com/gemini-hlsw/itac"))
 ThisBuild / tlCiReleaseBranches := Seq("cli")
 // keep the header/formatting, test steps and discard mima, scaladocs steps
 ThisBuild / githubWorkflowBuild ~= { _.take(2) }
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"))
 
 lazy val engine = project
   .in(file("modules/engine"))
