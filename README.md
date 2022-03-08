@@ -62,7 +62,7 @@ cs uninstall itac
 
 ITAC is a command-line application that reads proposal XML files along with some configuration information stored in YAML files, and produces an observing queue. The main workflow is:
 
-1. Initialize a workspace directory to contain all your input files, and copy proposal XML files into the `proposals` directory.
+1. Initialize a workspace directory to contain all your input files.
 1. Customize configuration files as necessary to specify partner times, shutdown blocks, target changes, and so on.
 1. Place proposals in band folders according to desired queue placement.
 1. Create queues and examine the output, tweaking configuration and applying proposal edits until you're satisfied.
