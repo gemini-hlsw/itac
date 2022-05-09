@@ -54,18 +54,23 @@ case class Proposal(
   def relativeObsList(band: QueueBand): List[Observation] =
     Observation.relativeObsList(time, obsListFor(band))
 
-  def p1pdfFile: String =
-    // p1xmlFile can be null because we need to retrofit old tests
+  def p1pdfBaseName: Option[String] =
     Option(p1xmlFile).map { f =>
       val name     = f.getName
-      val baseName =
-        name.lastIndexOf('.') match {
-          case -1 => name
-          case  n => name.substring(0, n)
-        }
-      s"$baseName.pdf"
-    }.orNull
+      name.lastIndexOf('.') match {
+        case -1 => name
+        case  n => name.substring(0, n)
+      }
+    }
 
+  def p1pdfFile: String =
+    p1pdfBaseName.map(s => s + ".pdf").orNull
+
+  def p1pdfStage2File: String =
+    p1pdfBaseName.map(s => s + "_stage2.pdf").orNull
+
+  def p1pdfs: Proposal.Pdfs[String] =
+    Proposal.Pdfs(p1pdfFile, p1pdfStage2File)
 }
 
 object Proposal {
@@ -74,6 +79,19 @@ object Proposal {
   object Id {
     implicit val OrderingId: Ordering[Id] =
       Ordering.by(id => (id.partner.id, id.reference))
+  }
+
+  case class Pdfs[A](
+    p1pdf: A,
+    p1pdfStage2: A
+  ) {
+
+    def map[B](f: A => B): Pdfs[B] =
+      Pdfs(f(p1pdf), f(p1pdfStage2))
+
+    def toList: List[A] =
+      List(p1pdf, p1pdfStage2)
+
   }
 
 }

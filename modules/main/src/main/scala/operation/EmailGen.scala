@@ -26,6 +26,7 @@ import org.davidmoten.text.utils.WordWrap
 import itac.config.Common
 import itac.util.ProgIdHash
 import java.nio.file.Files
+import edu.gemini.tac.qengine.p1
 
 object EmailGen {
 
@@ -61,7 +62,7 @@ object EmailGen {
   ): Operation[F] =
     new AbstractExportOperation[F](qe, siteConfig, rolloverReport) {
 
-      def export(p: Proposal, pdfFile: File, pid: ProgramId, cc: Common, pih: ProgIdHash): Unit = {
+      def export(p: Proposal, pdfs: p1.Proposal.Pdfs[File], pid: ProgramId, cc: Common, pih: ProgIdHash): Unit = {
 
         // If we gave an explicit list of progids, make sure pid is in it
         if (progids.nonEmpty && !progids.contains(pid))
@@ -94,7 +95,7 @@ object EmailGen {
           Option(p.getItacAccept.getEmail).toList ++ Option(p.getItacAccept.getContact).toList
 
         // this is gross but we'll come back and clean up
-        val emailFolder = new File(pdfFile.getParentFile.getParentFile, "emails")
+        val emailFolder = new File(pdfs.p1pdf.getParentFile.getParentFile, "emails")
         val emailFile   = new File(emailFolder, s"${p.getItacAccept.getProgramId}.txt")
         val text =
           s"""|TO:      ${p.getInvestigators().getPi().getEmail()}

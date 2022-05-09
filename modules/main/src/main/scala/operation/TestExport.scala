@@ -16,6 +16,7 @@ import edu.gemini.model.p1.mutable._
 import itac.config.Common
 import itac.util.ProgIdHash
 import scala.jdk.CollectionConverters._
+import edu.gemini.tac.qengine.p1
 
 object TestExport {
 
@@ -54,7 +55,10 @@ object TestExport {
   ): Operation[F] =
     new AbstractExportOperation[F](qe, siteConfig, rolloverReport) {
 
-      def export(p: Proposal, pdfFile: File, pid: ProgramId, cc: Common, pih: ProgIdHash): Unit = {
+      def checkFile(f: File): String =
+        (f.getName + (if (f.exists) "" else " *")).padTo(35, ' ')
+
+      def export(p: Proposal, pdfs: p1.Proposal.Pdfs[File], pid: ProgramId, cc: Common, pih: ProgIdHash): Unit = {
 
         // If we gave an explicit list of progids, make sure pid is in it
         if (progids.nonEmpty && !progids.contains(pid))
@@ -76,7 +80,8 @@ object TestExport {
             case None                     => "--"
           }
 
-        println(f"${System.identityHashCode(p).toHexString}%-10s ${pid}%-17s ${pdfFile.getName}%-25s ${ia.getBand()} $t%-10s $i%-12s $r")
+        println(f"${System.identityHashCode(p).toHexString}%-10s ${pid}%-17s ${pdfs.map(checkFile).toList.mkString("  ")} ${ia.getBand()} $t%-10s $i%-12s $r")
+
 
         // Serialize the proposal to XML.
         // marshaller.marshal(p, System.out)
