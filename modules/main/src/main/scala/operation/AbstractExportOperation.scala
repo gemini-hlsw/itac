@@ -27,7 +27,7 @@ abstract class AbstractExportOperation[F[_]: Sync](
   rolloverReport: Option[Path]
 ) extends AbstractQueueOperation[F](qe, siteConfig, rolloverReport) {
 
-      def export(p: edu.gemini.model.p1.mutable.Proposal, pdfFile: File, pid: ProgramId, cc: Common, pih: ProgIdHash): Unit
+      def export(p: edu.gemini.model.p1.mutable.Proposal, pdfs: Proposal.Pdfs[File], pid: ProgramId, cc: Common, pih: ProgIdHash): Unit
 
       def doExport(ps: List[Proposal], qr: QueueResult, bes: Map[String, BulkEdit], cwd: Path, cc: Common, pih: ProgIdHash): F[ExitCode] =
         Sync[F].delay {
@@ -68,7 +68,7 @@ abstract class AbstractExportOperation[F[_]: Sync](
           qr.classical(classical).foreach { e =>
             val p = e.proposals.head // don't handle joints yet, may not matter
             addItacNode(p, e.programId, QueueBand.QBand1)
-            export(p.p1mutableProposal, pdfFile(p.p1pdfFile), e.programId, cc, pih)
+            export(p.p1mutableProposal, p.p1pdfs.map(pdfFile), e.programId, cc, pih)
           }
 
           QueueBand.values.foreach { qb =>
@@ -96,7 +96,7 @@ abstract class AbstractExportOperation[F[_]: Sync](
               // println(s"[An] input file is ${e.proposals.head.p1xmlFile.getName} and the PDF file is ${e.proposals.head.p1pdfFile.getName}.")
               // println(SummaryDebug.summary(p))
 
-              export(p, pdfFile(e.proposals.head.p1pdfFile), e.programId, cc, pih)
+              export(p, e.proposals.head.p1pdfs.map(pdfFile), e.programId, cc, pih)
 
             }
 

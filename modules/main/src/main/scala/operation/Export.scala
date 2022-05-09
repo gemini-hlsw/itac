@@ -18,6 +18,7 @@ import java.io.ByteArrayInputStream
 import edu.gemini.model.p1.mutable.Proposal
 import itac.config.Common
 import itac.util.ProgIdHash
+import edu.gemini.tac.qengine.p1
 
 object Export {
 
@@ -37,13 +38,13 @@ object Export {
   ): Operation[F] =
     new AbstractExportOperation[F](qe, siteConfig, rolloverReport) {
 
-      def export(p: Proposal, pdfFile: File, pid: ProgramId, cc: Common, pih: ProgIdHash): Unit = {
+      def export(p: Proposal, pdfs: p1.Proposal.Pdfs[File], pid: ProgramId, cc: Common, pih: ProgIdHash): Unit = {
 
         // If we gave an explicit list of progids, make sure pid is in it
         if (progids.nonEmpty && !progids.contains(pid))
           return; //
 
-        println(s"==> exporting <#${System.identityHashCode(p).toHexString}> ${pid} with ${pdfFile.getName} ... ")
+        println(s"==> exporting <#${System.identityHashCode(p).toHexString}> ${pid} with ${pdfs.toList.map(_.getName).mkString(", ")} ... ")
 
         // Serialize the proposal to XML.
         val baos = new ByteArrayOutputStream
@@ -52,16 +53,20 @@ object Export {
         val xmlStream = new ByteArrayInputStream(baos.toByteArray)
 
         // Skip if no PDF file
-        if (!pdfFile.exists()) {
-          println(s"${Console.RED}    NO PDF FILE!${Console.RESET}")
-          return
+        pdfs.toList.foreach { pdfFile =>
+          if (!pdfFile.exists()) {
+            println(s"${Console.RED}    NO PDF FILE ${pdfFile.getName}!${Console.RESET}")
+            return
+          }
         }
 
         // ok need an http client here that can do multipart
         implicit val backend = HttpURLConnectionBackend()
         val req = basicRequest.multipartBody(
           multipart("proposal", xmlStream).contentType("text/xml"),
-          multipartFile("attachment", pdfFile).contentType("application/pdf")
+          multipartFile("attachment1", pdfs.p1pdf).contentType("application/pdf"),
+          multipartFile("attachment2", pdfs.p1pdfSummary).contentType("application/pdf"),
+          multipartFile("attachment3", pdfs.p1pdfStage2).contentType("application/pdf")
         ).get(uri"http://$odbHost:$odbPort/skeleton?convert=true")
 
         val res = req.send()
