@@ -1,8 +1,6 @@
 
 publish / skip := true
 
-sonatypeCredentialHost := "s01.oss.sonatype.org"
-
 inThisBuild(Seq(
   scalaVersion := "2.13.3",
   resolvers    += "Gemini Repository" at "https://github.com/gemini-hlsw/maven-repo/raw/master/releases",
@@ -10,10 +8,18 @@ inThisBuild(Seq(
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
 ) ++ gspPublishSettings)
 
+val commonSettings = Seq(
+  sonatypeCredentialHost := "s01.oss.sonatype.org",
+  sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
+)
+
+// probably unnecessary
+commonSettings
+
 lazy val engine = project
   .in(file("modules/engine"))
+  .settings(commonSettings)
   .settings(
-    sonatypeCredentialHost := "s01.oss.sonatype.org",
     name := "itac-engine",
     libraryDependencies ++= Seq(
       "edu.gemini.ocs"          %% "edu-gemini-model-p1"         % "2022001.1.2",
@@ -37,10 +43,10 @@ lazy val engine = project
 
 lazy val main = project
   .in(file("modules/main"))
+  .settings(commonSettings)
   .dependsOn(engine)
   .enablePlugins(AutomateHeaderPlugin)
   .settings(
-    sonatypeCredentialHost := "s01.oss.sonatype.org",
     name := "itac-main",
     libraryDependencies ++= Seq(
       "com.monovore"                 %% "decline-effect"         % "1.3.0",
@@ -85,8 +91,8 @@ lazy val main = project
 
 lazy val channel = project
   .in(file("modules/channel"))
+  .settings(commonSettings)
   .settings(
-    sonatypeCredentialHost := "s01.oss.sonatype.org",
     name := "itac-channel",
 
     // Create the app manifest such that it includes the version string.
