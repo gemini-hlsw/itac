@@ -65,7 +65,6 @@ object Export {
         val req = basicRequest.multipartBody(
           multipart("proposal", xmlStream).contentType("text/xml"),
           multipartFile("attachment1", pdfs.p1pdf).contentType("application/pdf"),
-          multipartFile("attachment2", pdfs.p1pdfSummary).contentType("application/pdf"),
           multipartFile("attachment3", pdfs.p1pdfStage2).contentType("application/pdf")
         ).get(uri"http://$odbHost:$odbPort/skeleton?convert=true")
 

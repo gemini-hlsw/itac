@@ -66,14 +66,11 @@ case class Proposal(
   def p1pdfFile: String =
     p1pdfBaseName.map(s => s + ".pdf").orNull
 
-  def p1pdfSummaryFile: String =
-    p1pdfBaseName.map(s => s + "_summary.pdf").orNull
-
   def p1pdfStage2File: String =
     p1pdfBaseName.map(s => s + "_stage2.pdf").orNull
 
   def p1pdfs: Proposal.Pdfs[String] =
-    Proposal.Pdfs(p1pdfFile, p1pdfSummaryFile, p1pdfStage2File)
+    Proposal.Pdfs(p1pdfFile, p1pdfStage2File)
 }
 
 object Proposal {
@@ -86,15 +83,14 @@ object Proposal {
 
   case class Pdfs[A](
     p1pdf: A,
-    p1pdfSummary: A,
     p1pdfStage2: A
   ) {
 
     def map[B](f: A => B): Pdfs[B] =
-      Pdfs(f(p1pdf), f(p1pdfSummary), f(p1pdfStage2))
+      Pdfs(f(p1pdf), f(p1pdfStage2))
 
     def toList: List[A] =
-      List(p1pdf, p1pdfSummary, p1pdfStage2)
+      List(p1pdf, p1pdfStage2)
 
   }
 
