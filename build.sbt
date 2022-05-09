@@ -1,12 +1,12 @@
+enablePlugins(NoPublishPlugin)
 
-publish / skip := true
-
-inThisBuild(Seq(
-  scalaVersion := "2.13.3",
-  resolvers    += "Gemini Repository" at "https://github.com/gemini-hlsw/maven-repo/raw/master/releases",
-  homepage := Some(url("https://github.com/gemini-hlsw/itac")),
-  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
-) ++ gspPublishSettings)
+ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / resolvers    += "Gemini Repository" at "https://github.com/gemini-hlsw/maven-repo/raw/master/releases"
+ThisBuild / homepage     := Some(url("https://github.com/gemini-hlsw/itac"))
+ThisBuild / tlCiReleaseBranches := Seq("cli")
+// keep the header/formatting, test steps and discard mima, scaladocs steps
+ThisBuild / githubWorkflowBuild ~= { _.take(2) }
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("8"))
 
 val commonSettings = Seq(
   sonatypeCredentialHost := "s01.oss.sonatype.org",
@@ -39,13 +39,13 @@ lazy val engine = project
       "org.slf4j"                % "slf4j-simple"                % "1.7.30"  % "test",
      ),
     Test / compile / scalacOptions := Nil, // don't worry about warnings right now
+    mimaPreviousArtifacts := Set.empty,
   )
 
 lazy val main = project
   .in(file("modules/main"))
   .settings(commonSettings)
   .dependsOn(engine)
-  .enablePlugins(AutomateHeaderPlugin)
   .settings(
     name := "itac-main",
     libraryDependencies ++= Seq(
@@ -68,8 +68,8 @@ lazy val main = project
       "org.typelevel"                %% "cats-testkit"           % "2.2.0" % "test",
       "org.typelevel"                %% "cats-testkit-scalatest" % "2.0.0" % "test",
     ),
-    sourceGenerators in Compile += Def.task {
-      val outDir = (sourceManaged in Compile).value / "scala" / "itac"
+    Compile / sourceGenerators += Def.task {
+      val outDir = (Compile / sourceManaged).value / "scala" / "itac"
       val outFile = new File(outDir, "BuildInfo.scala")
       outDir.mkdirs
       val v = version.value
@@ -86,7 +86,8 @@ lazy val main = project
             |}
             |""".stripMargin)
       Seq(outFile)
-    }.taskValue
+    }.taskValue,
+    mimaPreviousArtifacts := Set.empty,
   )
 
 lazy val channel = project
@@ -96,7 +97,7 @@ lazy val channel = project
     name := "itac-channel",
 
     // Create the app manifest such that it includes the version string.
-    resourceGenerators in Compile += Def.task {
+    Compile / resourceGenerators += Def.task {
       val outDir = resourceManaged.value
       val outFile = new File(outDir, "itac.json")
       outDir.mkdirs
@@ -122,7 +123,7 @@ lazy val channel = project
 
     // Don't add _2.12 to the artifact name, and also don't add a dependency to the Scala lib.
     crossPaths := false,
-    autoScalaLibrary := false
-
+    autoScalaLibrary := false,
+    mimaPreviousArtifacts := Set.empty,
   )
 
