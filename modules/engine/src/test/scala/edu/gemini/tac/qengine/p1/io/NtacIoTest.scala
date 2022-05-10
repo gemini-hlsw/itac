@@ -109,7 +109,9 @@ class NtacIoTest {
       None,
       some(UUID.randomUUID()),
       lpSub,
-      im.ToOChoice.None
+      im.ToOChoice.None,
+      None,
+      false
     )
 
     val p = new ProposalFixture {
