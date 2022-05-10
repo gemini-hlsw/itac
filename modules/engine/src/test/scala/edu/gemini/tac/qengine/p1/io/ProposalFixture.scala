@@ -12,7 +12,7 @@ import Scalaz._
 class ProposalFixture {
   def oneHour       = im.TimeAmount(1.0, im.TimeUnit.HR)
 
-  def meta          = im.Meta(None, band3OptionChosen = true, overrideAffiliate = false)
+  def meta          = im.Meta(None, None, band3OptionChosen = true, overrideAffiliate = false)
   def semester      = im.Semester(2014, im.SemesterOption.A)
   def title         = "Test Proposal"
   def abs           = "My test proposal abstract"
@@ -81,7 +81,9 @@ class ProposalFixture {
     proposalKey,
     queueSubs,
     None,
-    tooOption
+    tooOption,
+    None,
+    false
   )
 
   def proposal = im.Proposal(
