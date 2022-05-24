@@ -43,7 +43,8 @@ class TargetDuplicationChecker(proposals: List[Proposal], val tolerance: Angle =
     same(o1.target, o2.target)
 
   def same(ti1: TargetInfo, ti2: TargetInfo): Boolean =
-    same(ti1.target, ti2.target)
+    // REL-3953 filter out clusters where the instruments differ
+    (ti1.instrument == ti2.instrument) && same(ti1.target, ti2.target)
 
   case class TargetInfo(proposalRef: String, pi: Investigator, target: Target, instrument: String) {
     def key: ClusterKey = ClusterKey(proposalRef, pi)
@@ -111,10 +112,8 @@ class TargetDuplicationChecker(proposals: List[Proposal], val tolerance: Angle =
     // infos.map(_.instrument).distinct.sorted.foreach(println)
 
     // Compute clusters and filter out those where they all have the same PI email.
-    // REL-3953 also filter out clusters where the instruments differ
     go(infos)
       .filterNot(_.keySet.map(_.pi.email).size == 1)
-      .filterNot(_.values.toList.foldMap(_.toList).distinctBy(_.instrument).size > 1)
 
   }
 
