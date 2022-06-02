@@ -34,7 +34,7 @@ lazy val engine = project
       "junit"                    % "junit"                       % "4.13"    % "test",
       "org.mockito"              % "mockito-all"                 % "1.10.19" % "test",
       "org.scalacheck"          %% "scalacheck"                  % "1.14.1"  % "test",
-      "org.scalatest"           %% "scalatest"                   % "3.1.1"   % "test",
+      "org.scalatest"           %% "scalatest"                   % "3.1.4"   % "test",
       "org.scalatestplus"       %% "scalacheck-1-14"             % "3.1.1.1" % "test",
       "org.slf4j"                % "slf4j-simple"                % "1.7.30"  % "test",
      ),
