@@ -28,7 +28,7 @@ lazy val engine = project
       "org.scala-lang.modules"  %% "scala-xml"                   % "2.0.0-M2",
       "org.slf4j"                % "slf4j-api"                   % "1.7.30",
       "javax.xml.bind"           % "jaxb-api"                    % "2.3.1",
-      "com.sun.xml.bind"         % "jaxb-impl"                   % "2.3.3",
+      "com.sun.xml.bind"         % "jaxb-impl"                   % "2.3.6",
       "com.sun.xml.bind"         % "jaxb-core"                   % "2.3.0.1",
       "com.novocode"             % "junit-interface"             % "0.11"    % "test",
       "junit"                    % "junit"                       % "4.13"    % "test",
