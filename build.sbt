@@ -49,8 +49,8 @@ lazy val main = project
   .settings(
     name := "itac-main",
     libraryDependencies ++= Seq(
-      "com.monovore"                 %% "decline-effect"         % "1.3.0",
-      "com.monovore"                 %% "decline"                % "1.3.0",
+      "com.monovore"                 %% "decline-effect"         % "1.4.0",
+      "com.monovore"                 %% "decline"                % "1.4.0",
       "edu.gemini"                   %% "gsp-math"               % "0.1.16", // <--- don't change to lucuma!
       "io.chrisdavenport"            %% "log4cats-slf4j"         % "1.1.1",
       "io.circe"                     %% "circe-core"             % "0.13.0",
