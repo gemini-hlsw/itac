@@ -60,7 +60,7 @@ lazy val main = project
       "com.sun.mail"                  % "javax.mail"             % "1.6.2",
       "org.apache.velocity"           % "velocity-engine-core"   % "2.2",    // save me jeebus
       "org.slf4j"                     % "slf4j-simple"           % "1.7.30",
-      "org.tpolecat"                 %% "atto-core"              % "0.8.0",
+      "org.tpolecat"                 %% "atto-core"              % "0.9.5",
       "org.typelevel"                %% "cats-effect"            % "2.2.0",
       "com.github.davidmoten"         % "word-wrap"              % "0.1.6",
       "org.apache.poi"                % "poi"                    % "4.1.2",  // over here too jeebus
