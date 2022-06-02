@@ -31,7 +31,7 @@ lazy val engine = project
       "com.sun.xml.bind"         % "jaxb-impl"                   % "2.3.3",
       "com.sun.xml.bind"         % "jaxb-core"                   % "2.3.0.1",
       "com.novocode"             % "junit-interface"             % "0.11"    % "test",
-      "junit"                    % "junit"                       % "4.13"    % "test",
+      "junit"                    % "junit"                       % "4.13.2"    % "test",
       "org.mockito"              % "mockito-all"                 % "1.10.19" % "test",
       "org.scalacheck"          %% "scalacheck"                  % "1.14.1"  % "test",
       "org.scalatest"           %% "scalatest"                   % "3.1.1"   % "test",
