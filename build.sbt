@@ -26,7 +26,7 @@ lazy val engine = project
       "edu.gemini.ocs"          %% "edu-gemini-shared-skyobject" % "2022001.1.2",
       "edu.gemini.ocs"          %% "edu-gemini-util-skycalc"     % "2022001.1.2",
       "org.scala-lang.modules"  %% "scala-xml"                   % "2.0.0-M2",
-      "org.slf4j"                % "slf4j-api"                   % "1.7.30",
+      "org.slf4j"                % "slf4j-api"                   % "1.7.36",
       "javax.xml.bind"           % "jaxb-api"                    % "2.3.1",
       "com.sun.xml.bind"         % "jaxb-impl"                   % "2.3.3",
       "com.sun.xml.bind"         % "jaxb-core"                   % "2.3.0.1",
@@ -36,7 +36,7 @@ lazy val engine = project
       "org.scalacheck"          %% "scalacheck"                  % "1.14.1"  % "test",
       "org.scalatest"           %% "scalatest"                   % "3.1.1"   % "test",
       "org.scalatestplus"       %% "scalacheck-1-14"             % "3.1.1.1" % "test",
-      "org.slf4j"                % "slf4j-simple"                % "1.7.30"  % "test",
+      "org.slf4j"                % "slf4j-simple"                % "1.7.36"  % "test",
      ),
     Test / compile / scalacOptions := Nil, // don't worry about warnings right now
   )
@@ -59,7 +59,7 @@ lazy val main = project
       "io.circe"                     %% "circe-yaml"             % "0.13.1",
       "com.sun.mail"                  % "javax.mail"             % "1.6.2",
       "org.apache.velocity"           % "velocity-engine-core"   % "2.2",    // save me jeebus
-      "org.slf4j"                     % "slf4j-simple"           % "1.7.30",
+      "org.slf4j"                     % "slf4j-simple"           % "1.7.36",
       "org.tpolecat"                 %% "atto-core"              % "0.8.0",
       "org.typelevel"                %% "cats-effect"            % "2.2.0",
       "com.github.davidmoten"         % "word-wrap"              % "0.1.6",
