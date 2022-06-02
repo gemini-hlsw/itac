@@ -29,7 +29,7 @@ lazy val engine = project
       "org.slf4j"                % "slf4j-api"                   % "1.7.30",
       "javax.xml.bind"           % "jaxb-api"                    % "2.3.1",
       "com.sun.xml.bind"         % "jaxb-impl"                   % "2.3.3",
-      "com.sun.xml.bind"         % "jaxb-core"                   % "2.3.0.1",
+      "com.sun.xml.bind"         % "jaxb-core"                   % "3.0.2",
       "com.novocode"             % "junit-interface"             % "0.11"    % "test",
       "junit"                    % "junit"                       % "4.13"    % "test",
       "org.mockito"              % "mockito-all"                 % "1.10.19" % "test",
