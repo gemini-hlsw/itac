@@ -64,7 +64,7 @@ lazy val main = project
       "org.typelevel"                %% "cats-effect"            % "2.2.0",
       "com.github.davidmoten"         % "word-wrap"              % "0.1.6",
       "org.apache.poi"                % "poi"                    % "4.1.2",  // over here too jeebus
-      "com.softwaremill.sttp.client" %% "core"                   % "2.2.9",
+      "com.softwaremill.sttp.client" %% "core"                   % "2.2.10",
       "org.typelevel"                %% "cats-testkit"           % "2.2.0" % "test",
       "org.typelevel"                %% "cats-testkit-scalatest" % "2.0.0" % "test",
     ),
