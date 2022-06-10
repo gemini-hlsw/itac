@@ -208,7 +208,7 @@ object EmailGen {
            |
            |Sandy Leggett, ITAC Chair (sandy.leggett@noirlab.edu)
            |Atsuko Nitta, Gemini North Head of Science Operations (atsuko.nitta@noirlab.edu)
-           |Fredrik Rantakyro, Gemini South Head of Science Operations (fredrik.rantakyro@noirlab.edu)
+           |Joanna Thomas-Osip, Gemini South Head of Science Operations (joanna.thomas@noirlab.edu)
            |""".stripMargin
   )
 
