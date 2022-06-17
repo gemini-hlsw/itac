@@ -65,7 +65,7 @@ lazy val main = project
       "com.github.davidmoten"         % "word-wrap"              % "0.1.6",
       "org.apache.poi"                % "poi"                    % "4.1.2",  // over here too jeebus
       "com.softwaremill.sttp.client" %% "core"                   % "2.2.9",
-      "org.typelevel"                %% "cats-testkit"           % "2.2.0" % "test",
+      "org.typelevel"                %% "cats-testkit"           % "2.8.0" % "test",
       "org.typelevel"                %% "cats-testkit-scalatest" % "2.0.0" % "test",
     ),
     sourceGenerators in Compile += Def.task {
