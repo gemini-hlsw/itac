@@ -7,7 +7,7 @@ import itac._
 import edu.gemini.tac.qengine.api.QueueEngine
 import java.nio.file.Path
 import cats.effect.{Blocker, ExitCode}
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import itac.config.PerSite
 import org.apache.poi.ss.usermodel.Workbook
 import edu.gemini.spModel.core.Site

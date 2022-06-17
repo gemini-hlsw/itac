@@ -16,8 +16,8 @@ import edu.gemini.spModel.core.Semester
 import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.impl.{ QueueEngine2 => QueueEngine }
 import gsp.math.Angle
-import io.chrisdavenport.log4cats.Logger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import itac.operation._
 import java.nio.file.Path
 import java.nio.file.Paths

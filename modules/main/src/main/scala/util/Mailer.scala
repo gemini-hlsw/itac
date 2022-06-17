@@ -9,7 +9,7 @@ import cats.implicits._
 import javax.mail._
 import javax.mail.Message.RecipientType.{ TO, CC }
 import javax.mail.internet._
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import cats.data.NonEmptyList
 import cats.Apply
 

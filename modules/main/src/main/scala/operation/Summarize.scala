@@ -5,7 +5,7 @@ package itac.operation
 
 import cats.effect.ExitCode
 import cats.implicits._
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import itac.Workspace
 import itac.Operation
 import cats.effect.Sync

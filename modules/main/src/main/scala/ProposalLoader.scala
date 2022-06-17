@@ -13,7 +13,7 @@ import javax.xml.bind.JAXBContext
 import edu.gemini.tac.qengine.p1.Proposal
 import edu.gemini.tac.qengine.p1.io.ProposalIo
 import scala.xml.XML
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 
 trait ProposalLoader[F[_]] {
 
