@@ -71,6 +71,11 @@ public final class ExcelRaBinCalc implements RaBinCalc {
             double eve  = ImprovedSkyCalc.lst(jdStart, longit);
             double morn = ImprovedSkyCalc.lst(jdEnd,   longit);
 
+            // Temporary patch until https://github.com/gemini-hlsw/ocs/pull/2051 propagates out.
+            // It's harmless thereafter so not a big deal.
+            if (eve < 0)  eve += 24;
+            if (morn < 0) morn += 24;
+
             for (int bin=0; bin<size.getBinCount(); ++bin) {
                 double ra = ras.get(bin).toHours().getMagnitude();
                 if (eve < morn) {
