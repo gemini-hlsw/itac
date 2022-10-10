@@ -19,6 +19,7 @@ import edu.gemini.model.p1.mutable.Proposal
 import itac.config.Common
 import itac.util.ProgIdHash
 import edu.gemini.tac.qengine.p1
+import scala.concurrent.duration._
 
 object Export {
 
@@ -67,6 +68,7 @@ object Export {
           multipartFile("attachment1", pdfs.p1pdf).contentType("application/pdf"),
           multipartFile("attachment2", pdfs.p1pdfStage2).contentType("application/pdf")
         ).get(uri"http://$odbHost:$odbPort/skeleton?convert=true")
+          .readTimeout(Duration.Inf) // Duration.Inf to turn read timeout off
 
         val res = req.send()
 
