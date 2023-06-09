@@ -83,6 +83,7 @@ class ProposalFixture {
     None,
     tooOption,
     None,
+    false,
     false
   )
 
