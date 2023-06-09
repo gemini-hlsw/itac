@@ -22,9 +22,9 @@ lazy val engine = project
   .settings(
     name := "itac-engine",
     libraryDependencies ++= Seq(
-      "edu.gemini.ocs"          %% "edu-gemini-model-p1"         % "2023001.1.1",
-      "edu.gemini.ocs"          %% "edu-gemini-shared-skyobject" % "2022101.1.3",
-      "edu.gemini.ocs"          %% "edu-gemini-util-skycalc"     % "2022101.1.3",
+      "edu.gemini.ocs"          %% "edu-gemini-model-p1"         % "2023102.2.1",
+      "edu.gemini.ocs"          %% "edu-gemini-shared-skyobject" % "2023101.2.1",
+      "edu.gemini.ocs"          %% "edu-gemini-util-skycalc"     % "2023101.2.1",
       "org.scala-lang.modules"  %% "scala-xml"                   % "2.0.0-M2",
       "org.slf4j"                % "slf4j-api"                   % "1.7.30",
       "javax.xml.bind"           % "jaxb-api"                    % "2.3.1",

@@ -162,16 +162,6 @@ object EmailGen {
            |
            |  $instructionsUrl
            |
-           |Please note that since the 2023A Call for Proposals was released there have been changes to both 
-           |the Gemini North and South semester on-sky dates. At Gemini North, we are not scheduling new 
-           |programs between February 1 and 28, due to the uncertainty in the timeline for the primary mirror
-           |to be reinstalled and characterized (see
-           |
-           |  https://www.gemini.edu/news/general-announcements/gemini-north-shutdown-updates
-           |
-           |for updates).   At Gemini South, the planned shutdown in April has been extended by one week, and
-           |now will run from April 3 to 28. 
-           |
            |PROGRAM SUMMARY
            |-----------------------
            |
@@ -216,7 +206,7 @@ object EmailGen {
            |
            |Regards,
            |
-           |Sandy Leggett, ITAC Chair (sandy.leggett@noirlab.edu)
+           |Mark Rawlings, ITAC Chair (mark.rawlings@noirlab.edu)
            |Atsuko Nitta, Gemini North Head of Science Operations (atsuko.nitta@noirlab.edu)
            |Joanna Thomas-Osip, Gemini South Head of Science Operations (joanna.thomas@noirlab.edu)
            |""".stripMargin
