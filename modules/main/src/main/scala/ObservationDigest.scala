@@ -81,6 +81,7 @@ object ObservationDigest {
       case b: Flamingos2BlueprintImaging    => (b.name, b.filters).hash
       case b: Flamingos2BlueprintLongslit   => (b.name, b.disperser, b.filters, b.fpu).hash
       case b: Flamingos2BlueprintMos        => (b.name, b.disperser, b.filters, b.preImaging).hash
+      case b: GhostBlueprint                => (b.name, b.resolutionMode, b.targetMode).hash
       case b: GmosSBlueprintIfu             => (b.name, b.disperser, b.filter, b.fpu).hash
       case b: GmosSBlueprintIfuNs           => (b.name, b.disperser, b.filter, b.fpu).hash
       case b: GmosSBlueprintImaging         => (b.name, b.filters).hash

@@ -39,6 +39,7 @@ trait MergeBlueprint {
       // each case is done by hand, new choices will be missed! ugh!
       // this means we could end up with a duplicate id. We will add 100 to new IDs just to be sure
       case c: Flamingos2BlueprintChoice => unNull(c.getImaging, c.getLongslit, c.getMos)
+      case c: GhostBlueprintChoice      => unNull(c.getGhost)
       case c: GmosNBlueprintChoice      => unNull(c.getIfu, c.getImaging, c.getLongslit, c.getLongslitNs, c.getMos)
       case c: GmosSBlueprintChoice      => unNull(c.getIfu, c.getIfuNs, c.getImaging, c.getLongslit, c.getLongslitNs, c.getMos)
       case c: GnirsBlueprintChoice      => unNull(c.getImaging, c.getSpectroscopy)
@@ -109,6 +110,9 @@ trait MergeBlueprint {
 
   val canonicalizeFlamingos2BlueprintMos: Canonicalizer[Flamingos2BlueprintMos] =
     canonicalizeBlueprintBase[Flamingos2BlueprintMos, Flamingos2BlueprintChoice](_ setMos _)
+
+  val canonicalizeGhostBlueprint: Canonicalizer[GhostBlueprint] =
+    canonicalizeBlueprintBase[GhostBlueprint, GhostBlueprintChoice](_ setGhost _)
 
   val canonicalizeGmosNBlueprintIfu: Canonicalizer[GmosNBlueprintIfu] =
     canonicalizeBlueprintBase[GmosNBlueprintIfu, GmosNBlueprintChoice](_ setIfu _)
@@ -220,6 +224,7 @@ trait MergeBlueprint {
       case bp: Flamingos2BlueprintImaging => canonicalizeFlamingos2BlueprintImaging(bp, into)
       case bp: Flamingos2BlueprintLongslit => canonicalizeFlamingos2BlueprintLongslit(bp, into)
       case bp: Flamingos2BlueprintMos => canonicalizeFlamingos2BlueprintMos(bp, into)
+      case bp: GhostBlueprint => canonicalizeGhostBlueprint(bp, into)
       case bp: GmosNBlueprintIfu => canonicalizeGmosNBlueprintIfu(bp, into)
       case bp: GmosNBlueprintImaging => canonicalizeGmosNBlueprintImaging(bp, into)
       case bp: GmosNBlueprintLongslit => canonicalizeGmosNBlueprintLongslit(bp, into)
