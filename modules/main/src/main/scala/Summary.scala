@@ -78,7 +78,7 @@ object Summary {
       val dec   = Declination.fromAngle.getOption(o.dec).map(Declination.fromStringSignedDMS.reverseGet).getOrElse(sys.error(s"unpossible: invalid declination for $bo"))
       val conds = f"${o.conditions.cc}%-5s ${o.conditions.iq}%-5s ${o.conditions.sb}%-5s ${o.conditions.wv}%-5s "
       val hrs   = o.time.toHours.value
-      f"  - $id  ${bo.band}%-4s  $hrs%5.1fh  $conds  $ra%16s  $dec%16s  ${if (disable) "DISABLE" else o.target.name.orEmpty}\n"
+      f"  - $id  ${bo.band}%-4s  $hrs%5.1fh  $conds  $ra%16s  $dec%16s  ${if (disable) "DISABLE" else o.p1Observation.blueprint.foldMap(_.name)}\n"
     }
 
     def yaml(disable: Option[Site])(implicit ev: Ordering[BandedObservation]): String =
