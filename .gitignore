@@ -13,6 +13,7 @@ metals.sbt
 .bloop/
 project/.bloop/
 .vscode
+.bsp
 
 # rob's local work
 work
