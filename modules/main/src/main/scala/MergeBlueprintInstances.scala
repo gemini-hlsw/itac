@@ -46,6 +46,9 @@ object MergeBlueprintInstances {
   implicit val EqFlamingos2BlueprintMos: Eq[Flamingos2BlueprintMos] =
     Eq.by(b => (b.getDisperser, b.getFilter))
 
+  implicit val EqGhostBlueprint: Eq[GhostBlueprint] =
+    Eq.by(b => (b.getResolutionMode, b.getTargetMode))
+
   implicit val EqGmosNBlueprintIfu: Eq[GmosNBlueprintIfu] =
     Eq.by(b => (b.getFpu, b.getAltair, b.getDisperser, b.getFilter))
 

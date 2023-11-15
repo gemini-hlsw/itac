@@ -71,6 +71,7 @@ object InstrumentScientistSpreadsheet {
     case object Alopeke    extends Instrument
     case object Dssi       extends Instrument
     case object Flamingos2 extends Instrument
+    case object Ghost      extends Instrument
     case object GmosN      extends Instrument
     case object GmosS      extends Instrument
     case object Gnirs      extends Instrument
@@ -92,7 +93,7 @@ object InstrumentScientistSpreadsheet {
     case object MaroonX    extends Instrument
 
     val all: List[Instrument] =
-      List(Alopeke, Dssi, Flamingos2, GmosN, GmosS, Gnirs, Gpi, Graces, Gsaoi, Igrins, Keck, Michelle, Nici, Nifs, Niri, Phoenix, Subaru, Texes, Trecs, Visitor, Zorro, MaroonX)
+      List(Alopeke, Dssi, Flamingos2, Ghost, GmosN, GmosS, Gnirs, Gpi, Graces, Gsaoi, Igrins, Keck, Michelle, Nici, Nifs, Niri, Phoenix, Subaru, Texes, Trecs, Visitor, Zorro, MaroonX)
 
     def forBlueprint(b: BlueprintBase): Instrument =
       b match {
@@ -101,6 +102,7 @@ object InstrumentScientistSpreadsheet {
         case _: Flamingos2BlueprintImaging    => Flamingos2
         case _: Flamingos2BlueprintLongslit   => Flamingos2
         case _: Flamingos2BlueprintMos        => Flamingos2
+        case _: GhostBlueprint                => Ghost
         case _: GmosNBlueprintIfu             => GmosN
         case _: GmosNBlueprintImaging         => GmosN
         case _: GmosNBlueprintLongslit        => GmosN
@@ -160,10 +162,11 @@ object InstrumentScientistSpreadsheet {
       case b: Flamingos2BlueprintImaging    => Props(Mode -> "Imaging", Filter -> b.getFilter)
       case b: Flamingos2BlueprintLongslit   => Props(Mode -> "Longslit", Filter -> b.getFilter, Disperser -> b.getDisperser, FPU -> b.getFpu)
       case b: Flamingos2BlueprintMos        => Props(Mode -> "MOS", Filter -> b.getFilter, Disperser -> b.getDisperser)
+      case _: GhostBlueprint                => Props()
       case b: GmosNBlueprintIfu             => Props(Mode -> "IFU", Filter -> b.getFilter, Disperser -> b.getDisperser, FPU -> b.getFpu) ++ props(b.getAltair)
       case b: GmosNBlueprintImaging         => Props(Mode -> "Imaging", Filter -> b.getFilter) ++ props(b.getAltair)
       case b: GmosNBlueprintLongslit        => Props(Mode -> "Longslit", Filter -> b.getFilter, Disperser -> b.getDisperser, FPU -> b.getFpu) ++ props(b.getAltair)
-      case b: GmosNBlueprintLongslitNs      => Props(Mode -> "Lonigslit-NS", Filter -> b.getFilter, Disperser -> b.getDisperser, FPU -> b.getFpu) ++ props(b.getAltair)
+      case b: GmosNBlueprintLongslitNs      => Props(Mode -> "Longslit-NS", Filter -> b.getFilter, Disperser -> b.getDisperser, FPU -> b.getFpu) ++ props(b.getAltair)
       case b: GmosNBlueprintMos             => Props(Mode -> "MOS", Filter -> b.getFilter, Disperser -> b.getDisperser, FPU -> b.getFpu) ++ props(b.getAltair)
       case b: GmosSBlueprintIfu             => Props(Mode -> "IFU", Filter -> b.getFilter, Disperser -> b.getDisperser, FPU -> b.getFpu)
       case b: GmosSBlueprintIfuNs           => Props(Mode -> "IFU-NS", Filter -> b.getFilter, Disperser -> b.getDisperser, FPU -> b.getFpu)
