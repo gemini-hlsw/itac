@@ -12,7 +12,7 @@ import edu.gemini.tac.qengine.api.QueueEngine
 import edu.gemini.tac.qengine.ctx.Partner
 import edu.gemini.tac.qengine.log._
 import edu.gemini.tac.qengine.p1.{ Proposal, QueueBand }
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import itac.util.Colors
 import java.nio.file.Path
 

@@ -10,7 +10,7 @@ import cats.implicits._
 import edu.gemini.tac.qengine.api.QueueEngine
 import edu.gemini.model.p1.immutable.TooTarget
 import edu.gemini.model.p1.immutable.VisitorBlueprint
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import java.nio.file.Path
 import itac.util.Colors
 import edu.gemini.tac.qengine.p1.QueueBand

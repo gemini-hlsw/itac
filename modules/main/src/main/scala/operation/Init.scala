@@ -8,7 +8,7 @@ import cats.effect.Blocker
 import cats.effect.ExitCode
 import cats.implicits._
 import edu.gemini.spModel.core.Semester
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import io.circe.syntax._
 import io.circe.yaml.syntax._
 import itac.config.LocalDateRange

@@ -3,7 +3,7 @@
 
 package itac
 
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import cats.effect.ExitCode
 import cats.effect.Blocker
 

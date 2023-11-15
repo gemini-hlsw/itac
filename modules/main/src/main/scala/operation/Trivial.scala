@@ -4,7 +4,7 @@
 package itac
 package operation
 
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import cats.effect.Blocker
 import cats._
 import cats.effect._

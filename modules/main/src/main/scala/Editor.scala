@@ -7,7 +7,7 @@ import cats.effect.Sync
 import cats.implicits._
 import edu.gemini.model.p1.mutable.Proposal
 import edu.gemini.model.p1.{ immutable => im }
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import java.io.File
 import edu.gemini.spModel.core
 
