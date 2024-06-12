@@ -10,21 +10,22 @@ import cats._
 import cats.effect._
 import edu.gemini.tac.qengine.api.QueueEngine
 import java.nio.file.Path
-// import javax.xml.bind.{ JAXBContext, Marshaller }
-// import edu.gemini.model.p1.mutable.ObjectFactory
+import javax.xml.bind.{ JAXBContext, Marshaller }
+import edu.gemini.model.p1.mutable.ObjectFactory
 import edu.gemini.model.p1.mutable._
 import itac.config.Common
 import itac.util.ProgIdHash
 import scala.jdk.CollectionConverters._
 import edu.gemini.tac.qengine.p1
+import java.io.OutputStream
 
 object TestExport {
 
-  // private lazy val context: JAXBContext =
-  //   JAXBContext.newInstance((new ObjectFactory).createProposal.getClass)
+  private lazy val context: JAXBContext =
+    JAXBContext.newInstance((new ObjectFactory).createProposal.getClass)
 
-  // private lazy val marshaller: Marshaller =
-  //   context.createMarshaller
+  private lazy val marshaller: Marshaller =
+    context.createMarshaller
 
   private def itac(pc: ProposalClassChoice): Option[Itac] =
     Option(pc.getClassical).flatMap(pc => Option(pc.getItac))       orElse
@@ -82,10 +83,12 @@ object TestExport {
 
         println(f"${System.identityHashCode(p).toHexString}%-10s ${pid}%-17s ${pdfs.map(checkFile).toList.mkString("  ")} ${ia.getBand()} $t%-10s $i%-12s $r")
 
-
         // Serialize the proposal to XML.
-        // marshaller.marshal(p, System.out)
-        // System.out.flush()
+        val devnull = new OutputStream {
+          def write(x$1: Int) = ()
+        }
+        marshaller.marshal(p, devnull)
+        devnull.flush()
 
       }
 
