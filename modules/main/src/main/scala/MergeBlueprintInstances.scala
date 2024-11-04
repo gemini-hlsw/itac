@@ -100,6 +100,9 @@ object MergeBlueprintInstances {
   implicit val EqIgrinsBlueprint: Eq[IgrinsBlueprint] =
     Eq.allEqual
 
+  implicit val EqIgrins2Blueprint: Eq[Igrins2Blueprint] =
+    Eq.by(_.getNodding())
+
   implicit val EqKeckBlueprint: Eq[KeckBlueprint] =
     Eq.by(b => (b.getInstrument()))
 

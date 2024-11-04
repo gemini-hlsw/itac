@@ -99,6 +99,7 @@ object ObservationDigest {
       case b: GracesBlueprint               => (b.name, b.fiberMode, b.readMode).hash
       case b: GpiBlueprint                  => (b.name, b.disperser, b.observingMode).hash
       case b: IgrinsBlueprint               => (b.name).hash
+      case b: Igrins2Blueprint              => (b.name, b.nodding).hash
       case b: MichelleBlueprintImaging      => (b.name, b.filters, b.polarimetry).hash
       case b: MichelleBlueprintSpectroscopy => (b.name, b.disperser, b.fpu).hash
       case b: NiciBlueprintCoronagraphic    => (b.name, b.blueFilters, b.dichroic, b.fpm, b.redFilters).hash
