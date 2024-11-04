@@ -79,6 +79,7 @@ object InstrumentScientistSpreadsheet {
     case object Graces     extends Instrument
     case object Gsaoi      extends Instrument
     case object Igrins     extends Instrument
+    case object Igrins2    extends Instrument
     case object Keck       extends Instrument
     case object Michelle   extends Instrument
     case object Nici       extends Instrument
@@ -120,6 +121,7 @@ object InstrumentScientistSpreadsheet {
         case _: GracesBlueprint               => Graces
         case _: GsaoiBlueprint                => Gsaoi
         case _: IgrinsBlueprint               => Igrins
+        case _: Igrins2Blueprint              => Igrins2
         case _: KeckBlueprint                 => Keck
         case _: MichelleBlueprintImaging      => Michelle
         case _: MichelleBlueprintSpectroscopy => Michelle

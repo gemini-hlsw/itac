@@ -179,6 +179,7 @@ final case class BulkEdit(
           case _: ZorroBlueprint   => true
           case _: MaroonXBlueprint => true
           case _: IgrinsBlueprint  => true
+          case _: Igrins2Blueprint => true
           case _: GracesBlueprint  => true
           case _: VisitorBlueprint => true
           case _                   => false

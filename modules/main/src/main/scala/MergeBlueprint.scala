@@ -48,6 +48,7 @@ trait MergeBlueprint {
       case c: GpiBlueprintChoice        => unNull(c.getGpi)
       case c: KeckBlueprint             => List(c) // schema definition error?
       case c: IgrinsBlueprintChoice     => unNull(c.getIgrins)
+      case c: Igrins2BlueprintChoice    => unNull(c.getIgrins2)
       case c: MichelleBlueprintChoice   => unNull(c.getImaging, c.getSpectroscopy)
       case c: NiciBlueprintChoice       => unNull(c.getCoronagraphic, c.getStandard)
       case c: NifsBlueprintChoice       => unNull(c.getAo, c.getNonAo)
@@ -165,6 +166,9 @@ trait MergeBlueprint {
   val canonicalizeIgrinsBlueprint: Canonicalizer[IgrinsBlueprint] =
     canonicalizeBlueprintBase[IgrinsBlueprint, IgrinsBlueprintChoice](_ setIgrins _)
 
+  val canonicalizeIgrins2Blueprint: Canonicalizer[Igrins2Blueprint] =
+    canonicalizeBlueprintBase[Igrins2Blueprint, Igrins2BlueprintChoice](_ setIgrins2 _)
+
   val canonicalizeKeckBlueprint: Canonicalizer[KeckBlueprint] =
     canonicalizeBlueprintBaseWithoutChoice[KeckBlueprint]
 
@@ -242,6 +246,7 @@ trait MergeBlueprint {
       case bp: GracesBlueprint => canonicalizeGracesBlueprint(bp, into)
       case bp: GsaoiBlueprint => canonicalizeGsaoiBlueprint(bp, into)
       case bp: IgrinsBlueprint => canonicalizeIgrinsBlueprint(bp, into)
+      case bp: Igrins2Blueprint => canonicalizeIgrins2Blueprint(bp, into)
       case bp: KeckBlueprint => canonicalizeKeckBlueprint(bp, into)
       case bp: MichelleBlueprintImaging => canonicalizeMichelleBlueprintImaging(bp, into)
       case bp: MichelleBlueprintSpectroscopy => canonicalizeMichelleBlueprintSpectroscopy(bp, into)
