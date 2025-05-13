@@ -135,6 +135,7 @@ class NtacIoTest {
         None,
         some(UUID.randomUUID()),
         im.ExchangePartner.SUBARU,
+        im.ToOChoice.None,
         List(ngoSubmission)
       )
     }
