@@ -89,7 +89,6 @@ abstract class AbstractExportOperation[F[_]: Sync](
               // println(s"[An] input file is ${e.proposals.head.p1xmlFile.getName} and the PDF file is ${e.proposals.head.p1pdfFile.getName}.")
               // println(SummaryDebug.summary(p))
 
-              // println(s"QUEUE: export(${e.proposals.toList.map(_.id)}, ..., ${e.programId}, ..., ...)")
               export(p, e.proposals.head.p1pdfs.map(pdfFile), e.programId, cc, pih)
 
             }
