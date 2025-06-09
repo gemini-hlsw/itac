@@ -14,6 +14,7 @@ import cats.data.NonEmptyChain
 import edu.gemini.model.p1.immutable.Investigator
 import edu.gemini.model.p1.immutable.BlueprintBase
 import edu.gemini.model.p1.immutable.VisitorBlueprint
+import edu.gemini.model.p1.immutable.Igrins2Blueprint
 
 /**
  *
@@ -93,6 +94,9 @@ class TargetDuplicationChecker(proposals: List[Proposal], val tolerance: Angle =
     // blueprint for MAROON-X and IGRINS (and who knows what else in the future?)
     def blueprintName(bb: BlueprintBase): String =
       bb match {
+        case i: Igrins2Blueprint => 
+          // the default toString includes the telluric count, which doesn't matter here :-\
+          s"IGRINS-2 ${i.nodding.value}"
         case v: VisitorBlueprint =>
           v.customName match {
             case "IGRINS - continuous observation" => "IGRINS"

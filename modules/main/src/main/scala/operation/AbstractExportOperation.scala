@@ -50,8 +50,8 @@ abstract class AbstractExportOperation[F[_]: Sync](
             ps.filter(_.site == qr.context.site)                // are at this site
               .filterNot(p => qr.proposalLog.proposalIds(p.id)) // but don't appear in the log
 
-          // Pick out classicals and those that shouldn't be here
-          val (classical, orphans) = nonQueue.partition(_.mode == Mode.Classical)
+          // Pick out those that shouldn't be here
+          val orphans = nonQueue.filterNot(_.mode == Mode.Classical)
 
           // These *should* all be classical. Let's be sure though.
           if (orphans.nonEmpty) {
@@ -63,13 +63,6 @@ abstract class AbstractExportOperation[F[_]: Sync](
 
           def pdfFile(name: String): File =
             cwd.resolve(s"pdfs/$name").toAbsolutePath.toFile
-
-          // Get classical *entries* and then add them.
-          qr.classical(classical).foreach { e =>
-            val p = e.proposals.head // don't handle joints yet, may not matter
-            addItacNode(p, e.programId, QueueBand.QBand1)
-            export(p.p1mutableProposal, p.p1pdfs.map(pdfFile), e.programId, cc, pih)
-          }
 
           QueueBand.values.foreach { qb =>
 
@@ -96,6 +89,7 @@ abstract class AbstractExportOperation[F[_]: Sync](
               // println(s"[An] input file is ${e.proposals.head.p1xmlFile.getName} and the PDF file is ${e.proposals.head.p1pdfFile.getName}.")
               // println(SummaryDebug.summary(p))
 
+              // println(s"QUEUE: export(${e.proposals.toList.map(_.id)}, ..., ${e.programId}, ..., ...)")
               export(p, e.proposals.head.p1pdfs.map(pdfFile), e.programId, cc, pih)
 
             }
