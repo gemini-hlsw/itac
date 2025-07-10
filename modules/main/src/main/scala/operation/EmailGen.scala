@@ -177,9 +177,15 @@ object EmailGen {
            |Additional Support:                  $geminiContactEmail
            |Program Key Password:                $progKey
            |
-           |Remote Eavesdropping Google Spreadsheet link (Band 1 and 2 only):
+           |If you would like to eavesdrop on the queue observations (Band 1 and 2 only, see
+           |https://www.gemini.edu/observing/phase-i-proposing-time/eavesdropping for details), please
+           |provide availability and point of contact information for your program under the appropriate
+           |tab here:
            |
            |  $eavesdroppingLink
+           |
+           |If you find that you cannot edit the eavesdropping spreadsheet, or if you would like to add
+           |edit access for someone else on your team, please write to your contact scientist.
            |
            |!!! Your program key password is necessary for accessing both your Phase II program using the
            |Observing Tool and your data in the Gemini Observatory Archive!!!
@@ -206,7 +212,7 @@ object EmailGen {
            |
            |Regards,
            |
-           |Mark Rawlings, ITAC Chair (mark.rawlings@noirlab.edu)
+           |Joan Font-Serra, ITAC Chair (joan.font@noirlab.edu)
            |Atsuko Nitta, Gemini North Head of Science Operations (atsuko.nitta@noirlab.edu)
            |Joanna Thomas-Osip, Gemini South Head of Science Operations (joanna.thomas@noirlab.edu)
            |""".stripMargin
