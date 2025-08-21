@@ -223,10 +223,10 @@ object SummaryObsEdit {
       itac.WaterVapor.WVAny.toString -> WaterVapor.wv100,
     )).toRight(s"Invalid SB: $s")
 
-  //  bcecb5a8  B1/2    0.3h  CC70  SB70  SBAny WVAny    20:34:13.370299   28:09:50.826099  my name
+  //  bcecb5a8  B1/2    0.3h  CC70  SB70  SBAny WVAny    20:34:13.370299   28:09:50.826099  my blueprint
   def fromString(s: String): Either[String, SummaryObsEdit] =
     s.trim.split("\\s+", 10) match {
-      case Array(hash, band, _, cc, iq, sb, wv, ra, dec, name) =>
+      case Array(hash, band, _, cc, iq, sb, wv, ra, dec, blueprint) =>
         for {
           h <- hashFromString(hash)
           b <- bandFromString(band)
@@ -236,8 +236,8 @@ object SummaryObsEdit {
           w <- wvFromString(wv)
           r <- RightAscension.fromStringHMS.getOption(ra).toRight(s"Invalid RA: $ra")
           d <- Declination.fromStringSignedDMS.getOption(dec).toRight(s"Invalid Dec: $dec")
-        } yield SummaryObsEdit(h, b, c, i, s, w, r, d, name)
-      case _ => Left("Not enough fields. Expected hash, band, time, cc, iq, sb, wv, ra, dec, name")
+        } yield SummaryObsEdit(h, b, c, i, s, w, r, d, blueprint)
+      case _ => Left("Not enough fields. Expected hash, band, time, cc, iq, sb, wv, ra, dec, blueprint")
     }
 
   implicit val DecoderObs: Decoder[SummaryObsEdit] =
