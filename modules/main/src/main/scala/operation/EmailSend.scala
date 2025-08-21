@@ -7,7 +7,7 @@ import cats.data.NonEmptyList
 import cats.effect._
 import cats.effect.Blocker
 import cats.implicits._
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import itac._
 import itac.util.Mailer
 import java.nio.charset.Charset

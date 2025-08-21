@@ -9,7 +9,7 @@ import itac.util.Colors
 import edu.gemini.tac.qengine.p1.QueueBand
 import edu.gemini.tac.qengine.api.QueueEngine
 import java.nio.file.Path
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import cats.effect.Blocker
 import cats._
 import cats.effect._

@@ -8,7 +8,7 @@ import cats.effect._
 import cats.implicits._
 import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.p2.rollover.RolloverReport
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import java.net.URL
 import scala.xml.Elem
 import scala.xml.XML

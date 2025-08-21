@@ -10,7 +10,7 @@ import cats.Parallel
 import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.p1.Proposal
 import edu.gemini.tac.qengine.p2.rollover.RolloverReport
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import io.circe.{ Encoder, Decoder, DecodingFailure }
 import io.circe.yaml.Printer
 import io.circe.CursorOp.DownField

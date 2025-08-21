@@ -8,7 +8,7 @@ import edu.gemini.model.p1.mutable._
 import edu.gemini.model.p1.{ immutable => im }
 import io.circe.Decoder
 import io.circe.HCursor
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import cats.effect.Sync
 import edu.gemini.spModel.core
 import scala.jdk.CollectionConverters._

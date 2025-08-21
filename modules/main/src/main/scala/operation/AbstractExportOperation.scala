@@ -14,7 +14,7 @@ import edu.gemini.tac.qengine.p1.QueueBand
 import cats.effect._
 import cats.implicits._
 import edu.gemini.tac.qengine.api.QueueEngine
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import java.nio.file.Path
 import itac.PrimaryNgo.Info
 import cats.data.NonEmptyList
