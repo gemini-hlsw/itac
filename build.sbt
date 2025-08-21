@@ -52,9 +52,9 @@ lazy val main = project
       "com.monovore"                 %% "decline"                % "1.3.0",
       "edu.gemini"                   %% "gsp-math"               % "0.1.16", // <--- don't change to lucuma!
       "io.chrisdavenport"            %% "log4cats-slf4j"         % "1.1.1",
-      "io.circe"                     %% "circe-core"             % "0.13.0",
-      "io.circe"                     %% "circe-generic"          % "0.13.0",
-      "io.circe"                     %% "circe-parser"           % "0.13.0",
+      "io.circe"                     %% "circe-core"             % "0.14.4",
+      "io.circe"                     %% "circe-generic"          % "0.14.4",
+      "io.circe"                     %% "circe-parser"           % "0.14.4",
       "io.circe"                     %% "circe-yaml"             % "0.13.1",
       "com.sun.mail"                  % "javax.mail"             % "1.6.2",
       "org.apache.velocity"           % "velocity-engine-core"   % "2.2",    // save me jeebus
