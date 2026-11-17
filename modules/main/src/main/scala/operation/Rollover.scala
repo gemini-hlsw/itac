@@ -13,7 +13,6 @@ import java.net.URL
 import scala.xml.Elem
 import scala.xml.XML
 import java.nio.file.{ Path, Paths }
-import scala.annotation.nowarn
 
 object Rollover {
 
