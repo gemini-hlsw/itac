@@ -3,7 +3,6 @@
 
 package itac.operation
 
-import cats._
 import cats.effect.Blocker
 import cats.effect.ExitCode
 import cats.implicits._
@@ -21,7 +20,7 @@ import cats.effect.Sync
 
 object Init {
 
-  def apply[F[_]: Sync: ContextShift: Parallel](semester: Semester): Operation[F] =
+  def apply[F[_]: Sync: ContextShift](semester: Semester): Operation[F] =
     new Operation[F] {
 
       def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] = {

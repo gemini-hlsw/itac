@@ -3,7 +3,6 @@
 
 package itac.operation
 
-import cats._
 import cats.effect.ExitCode
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
@@ -24,7 +23,7 @@ import edu.gemini.spModel.core.ProgramId
 
 object Duplicates {
 
-  def apply[F[_]: Sync: Parallel](
+  def apply[F[_]: Sync](
     qe:             QueueEngine,
     siteConfig:     Path,
     rolloverReport: Option[Path],

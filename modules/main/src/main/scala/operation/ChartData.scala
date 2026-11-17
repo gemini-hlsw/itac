@@ -4,7 +4,6 @@
 package itac
 package operation
 
-import cats._
 import cats.effect._
 import cats.implicits._
 import edu.gemini.tac.qengine.api.QueueEngine
@@ -17,7 +16,7 @@ import edu.gemini.tac.qengine.p1.QueueBand
 
 object ChartData {
 
-  def apply[F[_]: Sync: Parallel](
+  def apply[F[_]: Sync](
     qe:             QueueEngine,
     siteConfig:     Path,
     rolloverReport: Option[Path]

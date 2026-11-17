@@ -12,12 +12,12 @@ import io.chrisdavenport.log4cats.Logger
 import java.net.URL
 import scala.xml.Elem
 import scala.xml.XML
-import cats.Parallel
 import java.nio.file.{ Path, Paths }
+import scala.annotation.nowarn
 
 object Rollover {
 
-  def apply[F[_]: ContextShift: Parallel: Sync](
+  def apply[F[_]: ContextShift: Sync](
     site:  Site,
     out:   Option[Path]
   ): Operation[F] =
@@ -25,6 +25,7 @@ object Rollover {
 
       def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] = {
 
+        @nowarn // URL ctor below is deprecated
         val fetchXml: F[Elem] =
           log.info(s"Fetching current rollover report from ${site.displayName}...") *> {
           val host = if (site == Site.GN) "gnodb" else "gsodb"

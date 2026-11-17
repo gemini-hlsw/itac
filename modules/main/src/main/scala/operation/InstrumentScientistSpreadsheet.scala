@@ -46,7 +46,7 @@ object InstrumentScientistSpreadsheet {
     implicit val ExcelJavaBoolean: Excel[java.lang.Boolean] = (c, a) => if (a != null) c.setCellValue(if (a) "TRUE" else "")
     implicit val ExcelInstrument: Excel[Instrument] = (c, a) => if (a != null) c.setCellValue(a.toString)
     implicit def dxcelEnum[E <: Enum[E]]: Excel[E] = (c, a) => if (a != null) c.setCellValue(a.name)
-    implicit def list[A: Excel]: Excel[java.util.List[A]] = (c, a) => if (a != null) c.setCellValue(a.asScala.mkString(", "))
+    implicit def list[A]: Excel[java.util.List[A]] = (c, a) => if (a != null) c.setCellValue(a.asScala.mkString(", "))
   }
 
   trait Value {

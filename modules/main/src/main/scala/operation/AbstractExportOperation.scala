@@ -27,7 +27,7 @@ abstract class AbstractExportOperation[F[_]: Sync](
   rolloverReport: Option[Path]
 ) extends AbstractQueueOperation[F](qe, siteConfig, rolloverReport) {
 
-      def export(p: edu.gemini.model.p1.mutable.Proposal, pdfs: Proposal.Pdfs[File], pid: ProgramId, cc: Common, pih: ProgIdHash): Unit
+      def `export`(p: edu.gemini.model.p1.mutable.Proposal, pdfs: Proposal.Pdfs[File], pid: ProgramId, cc: Common, pih: ProgIdHash): Unit
 
       def doExport(ps: List[Proposal], qr: QueueResult, bes: Map[String, BulkEdit], cwd: Path, cc: Common, pih: ProgIdHash): F[ExitCode] =
         Sync[F].delay {
