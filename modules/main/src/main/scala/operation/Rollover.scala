@@ -28,7 +28,7 @@ object Rollover {
         val fetchXml: F[Elem] =
           log.info(s"Fetching current rollover report from ${site.displayName}...") *> {
           val host = if (site == Site.GN) "gnodb" else "gsodb"
-          @nowarn val url  = new URL(s"http://$host.gemini.edu:8442/rollover")
+          val url  = new URL(s"http://$host.gemini.edu:8442/rollover")
           b.blockOn(Sync[F].delay(XML.load(url)))
         }
 
