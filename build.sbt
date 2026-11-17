@@ -1,4 +1,4 @@
-
+ThisBuild / semanticdbVersion := "4.17.4"
 publish / skip := true
 
 inThisBuild(Seq(
