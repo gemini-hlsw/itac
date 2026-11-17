@@ -25,12 +25,11 @@ object Rollover {
 
       def run(ws: Workspace[F], log: Logger[F], b: Blocker): F[ExitCode] = {
 
-        @nowarn // URL ctor below is deprecated
         val fetchXml: F[Elem] =
           log.info(s"Fetching current rollover report from ${site.displayName}...") *> {
           val host = if (site == Site.GN) "gnodb" else "gsodb"
-          val url  = s"http://$host.gemini.edu:8442/rollover"
-          b.blockOn(Sync[F].delay(XML.load(new URL(url))))
+          @nowarn val url  = new URL(s"http://$host.gemini.edu:8442/rollover")
+          b.blockOn(Sync[F].delay(XML.load(url)))
         }
 
         val fetchRolloverReport: F[Either[String, RolloverReport]] =
