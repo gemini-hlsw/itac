@@ -12,12 +12,11 @@ import io.chrisdavenport.log4cats.Logger
 import java.net.URL
 import scala.xml.Elem
 import scala.xml.XML
-import cats.Parallel
 import java.nio.file.{ Path, Paths }
 
 object Rollover {
 
-  def apply[F[_]: ContextShift: Parallel: Sync](
+  def apply[F[_]: ContextShift: Sync](
     site:  Site,
     out:   Option[Path]
   ): Operation[F] =
@@ -28,8 +27,8 @@ object Rollover {
         val fetchXml: F[Elem] =
           log.info(s"Fetching current rollover report from ${site.displayName}...") *> {
           val host = if (site == Site.GN) "gnodb" else "gsodb"
-          val url  = s"http://$host.gemini.edu:8442/rollover"
-          b.blockOn(Sync[F].delay(XML.load(new URL(url))))
+          val url  = new URL(s"http://$host.gemini.edu:8442/rollover")
+          b.blockOn(Sync[F].delay(XML.load(url)))
         }
 
         val fetchRolloverReport: F[Either[String, RolloverReport]] =

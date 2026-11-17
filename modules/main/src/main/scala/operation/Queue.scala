@@ -4,7 +4,6 @@
 package itac
 package operation
 
-import cats._
 import cats.effect._
 import cats.implicits._
 import edu.gemini.spModel.core.Site
@@ -45,7 +44,7 @@ object Queue {
     * @param siteConfig path to site-specific configuration file, which can be absolute or relative
     *   (in which case it will be resolved relative to the workspace directory).
     */
-  def apply[F[_]: Sync: Parallel](
+  def apply[F[_]: Sync](
     qe:             QueueEngine,
     siteConfig:     Path,
     rolloverReport: Option[Path]

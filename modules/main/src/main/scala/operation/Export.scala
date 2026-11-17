@@ -6,7 +6,6 @@ package itac.operation
 import itac._
 import java.io.File
 import edu.gemini.spModel.core.ProgramId
-import cats._
 import cats.effect._
 import edu.gemini.tac.qengine.api.QueueEngine
 import java.nio.file.Path
@@ -29,7 +28,7 @@ object Export {
   private lazy val marshaller: Marshaller =
     context.createMarshaller
 
-  def apply[F[_]: Sync: Parallel](
+  def apply[F[_]: Sync](
     qe:             QueueEngine,
     siteConfig:     Path,
     rolloverReport: Option[Path],
@@ -39,7 +38,7 @@ object Export {
   ): Operation[F] =
     new AbstractExportOperation[F](qe, siteConfig, rolloverReport) {
 
-      def export(p: Proposal, pdfs: p1.Proposal.Pdfs[File], pid: ProgramId, cc: Common, pih: ProgIdHash): Unit = {
+      def `export`(p: Proposal, pdfs: p1.Proposal.Pdfs[File], pid: ProgramId, cc: Common, pih: ProgIdHash): Unit = {
 
         // If we gave an explicit list of progids, make sure pid is in it
         if (progids.nonEmpty && !progids.contains(pid))

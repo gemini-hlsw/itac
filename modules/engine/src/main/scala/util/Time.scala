@@ -72,7 +72,8 @@ object Time {
   class PercentMultiplier(p: Percent) {
     def *(t: Time): Time = t * p
   }
-  implicit val toPercentMultiplier = (p: Percent) => new PercentMultiplier(p)
+  implicit val toPercentMultiplier: Percent => PercentMultiplier = 
+    (p: Percent) => new PercentMultiplier(p)
 
   implicit val MonoidTime: Monoid[Time] =
     Monoid.instance(_ + _, Zero)

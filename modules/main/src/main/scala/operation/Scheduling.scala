@@ -11,13 +11,12 @@ import edu.gemini.tac.qengine.api.QueueEngine
 import java.nio.file.Path
 import io.chrisdavenport.log4cats.Logger
 import cats.effect.Blocker
-import cats._
 import cats.effect._
 import cats.implicits._
 
 object Scheduling {
 
-  def apply[F[_]: Sync: Parallel](
+  def apply[F[_]: Sync](
     qe:             QueueEngine,
     siteConfig:     Path,
     rolloverReport: Option[Path]

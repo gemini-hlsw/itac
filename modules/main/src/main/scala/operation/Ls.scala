@@ -19,7 +19,7 @@ import itac.util.Colors
 
 object Ls {
 
-  def apply[F[_]: Sync: Parallel](fields: NonEmptyList[Field], partnerNames: List[String]): Operation[F] =
+  def apply[F[_]: Sync](fields: NonEmptyList[Field], partnerNames: List[String]): Operation[F] =
     new Operation[F] {
 
       val order = fields.reduceMap(_.order)(Order.whenEqualMonoid)

@@ -222,7 +222,7 @@ trait MainOpts { this: CommandIOApp =>
       metavar = "program-id"
     ).map(_.map(ProgramId.parse)).orEmpty
 
-  lazy val export: Command[Operation[IO]] =
+  lazy val `export`: Command[Operation[IO]] =
     Command(
       name   = "export",
       header = "Export proposals to the specified ODB. You can re-run this if necessary (programs will be replaced)."

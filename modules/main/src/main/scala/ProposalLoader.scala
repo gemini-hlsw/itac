@@ -3,7 +3,6 @@
 
 package itac
 
-import cats._
 import cats.data._
 import cats.effect.Sync
 import cats.implicits._
@@ -37,7 +36,7 @@ object ProposalLoader {
     JAXBContext.newInstance(factory.createProposal().getClass()) //contextPackage, getClass.getClassLoader)
   }
 
-  def apply[F[_]: Sync: Parallel: Logger](
+  def apply[F[_]: Sync: Logger](
     when: Long,
     edits: Map[String, SummaryEdit],
     logger: Logger[F],

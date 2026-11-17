@@ -6,7 +6,6 @@ package itac
 import cats.effect.concurrent.Ref
 import cats.effect.Sync
 import cats.implicits._
-import cats.Parallel
 import edu.gemini.spModel.core.Site
 import edu.gemini.tac.qengine.p1.Proposal
 import edu.gemini.tac.qengine.p2.rollover.RolloverReport
@@ -115,11 +114,11 @@ object Workspace {
       // version = YamlVersion.Auto
     )
 
-  def apply[F[_]: Sync: Parallel](dir: Path, cc: Path, log: Logger[F], force: Boolean): F[Workspace[F]] =
+  def apply[F[_]: Sync](dir: Path, cc: Path, log: Logger[F], force: Boolean): F[Workspace[F]] =
     ItacException(s"Workspace directory not found: ${dir}").raiseError[F, Workspace[F]].unlessA(dir.toFile.getAbsoluteFile.isDirectory) *>
     Ref[F].of(Map.empty[Path, String]).map { cache =>
       new Workspace[F] {
-        implicit val _log = log: Logger[F]
+        implicit val _log: Logger[F] = log
 
         def cwd = dir.pure[F]
 
@@ -240,7 +239,7 @@ object Workspace {
             es   <- edits
             ps   <- ProposalLoader[F](when, es, log, mutator).loadMany(p.toFile.getAbsoluteFile)
             _    <- ps.traverse { case (f, Left(es)) => log.warn(s"${f.getName}: ${es.toList.mkString(", ")}") ; case _ => ().pure[F] }
-            psʹ   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
+//???       psʹ   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
             _    <- log.debug(s"Read ${ps.length} proposals.")
             ret   = ps.collect { case (_, Right(ps)) => ps.toList } .flatten
           } yield ret

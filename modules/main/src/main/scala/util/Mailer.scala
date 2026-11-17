@@ -11,7 +11,6 @@ import javax.mail.Message.RecipientType.{ TO, CC }
 import javax.mail.internet._
 import io.chrisdavenport.log4cats.Logger
 import cats.data.NonEmptyList
-import cats.Apply
 
 sealed trait Mailer[F[_]] {
   def send(m: Mailer.SafeMimeMessage): F[Unit]
@@ -57,7 +56,7 @@ object Mailer {
 
     }
 
-  def forDevelopment[F[_]: Apply](log: Logger[F]): Mailer[F] =
+  def forDevelopment[F[_]](log: Logger[F]): Mailer[F] =
     new Mailer[F] {
       override def send(m: SafeMimeMessage): F[Unit] =
         log.info(s"""Successfully pretended to send "${m.subject}" to ${m.toAddressString}.""")

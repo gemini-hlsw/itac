@@ -1,23 +1,14 @@
-
+ThisBuild / semanticdbVersion := "4.17.4"
 publish / skip := true
 
 inThisBuild(Seq(
-  scalaVersion := "2.13.3",
+  scalaVersion := "2.13.18",
   resolvers    += "Gemini Repository" at "https://github.com/gemini-hlsw/maven-repo/raw/master/releases",
   homepage := Some(url("https://github.com/gemini-hlsw/itac")),
 ) ++ gspPublishSettings)
 
-val commonSettings = Seq(
-  sonatypeCredentialHost := "s01.oss.sonatype.org",
-  sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
-)
-
-// probably unnecessary
-commonSettings
-
 lazy val engine = project
   .in(file("modules/engine"))
-  .settings(commonSettings)
   .settings(
     name := "itac-engine",
     libraryDependencies ++= Seq(
@@ -42,7 +33,6 @@ lazy val engine = project
 
 lazy val main = project
   .in(file("modules/main"))
-  .settings(commonSettings)
   .dependsOn(engine)
   .enablePlugins(AutomateHeaderPlugin)
   .settings(
@@ -90,7 +80,6 @@ lazy val main = project
 
 lazy val channel = project
   .in(file("modules/channel"))
-  .settings(commonSettings)
   .settings(
     name := "itac-channel",
 
